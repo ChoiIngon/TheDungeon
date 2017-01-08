@@ -35,6 +35,10 @@ namespace TheDungeon {
 			touchPad.onTouchUp += (() => {
 				if(Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
 				{
+					if(0.0f == delta.x)
+					{
+						return;
+					}
 					if(0.0f > delta.x)
 					{
 						StartCoroutine(Move(Room.East));
@@ -46,6 +50,11 @@ namespace TheDungeon {
 				}
 				else
 				{
+					if(0.0f == delta.y)
+					{
+						return;
+					}
+
 					if(0.0f > delta.y)
 					{
 						StartCoroutine(Move(Room.North));
