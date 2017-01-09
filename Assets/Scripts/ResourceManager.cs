@@ -46,6 +46,7 @@ public class ResourceManager : MonoBehaviour {
 		resource.Add ("dungeon_001__N_", Resources.Load <Sprite> ("Sprites/dungeon_001__N_"));
 		resource.Add ("dungeon_001__NE", Resources.Load <Sprite> ("Sprites/dungeon_001__NE"));
 		resource.Add ("dungeon_001___E", Resources.Load <Sprite> ("Sprites/dungeon_001___E"));
+		resource.Add ("monster_daemon", Resources.Load <Sprite> ("Sprites/monster_daemon"));
 		resource.Add ("monster_skeleton", Resources.Load <Sprite> ("Sprites/monster_skeleton"));
 		#endif
 	}

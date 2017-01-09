@@ -16,7 +16,7 @@ public class Monster : MonoBehaviour {
 		public string id;
 		public string name;
 		public int level;
-		public float health;
+		public int health;
 		public float defense;
 		public float attack;
 		public float speed;
@@ -38,6 +38,14 @@ public class Monster : MonoBehaviour {
 	public Info info;
 	public Data data;
 	public SpriteRenderer renderer;
+	public Animator animator;
+	public UIMonster ui;
+	void Start () {
+		renderer = transform.FindChild ("Sprite").GetComponent<SpriteRenderer>();
+		animator = transform.FindChild ("Sprite").GetComponent<Animator> ();
+		gameObject.SetActive (false);
+		ui.gameObject.SetActive (false);
+	}
 
 	public void Init(Info info)
 	{
@@ -45,18 +53,25 @@ public class Monster : MonoBehaviour {
 		data = new Data ();
 		data.health = info.health;
 		renderer.sprite = info.sprite;
+		ui.Init (info);
 		gameObject.SetActive (true);
+		ui.gameObject.SetActive (true);
+		StartCoroutine (Attack ());
 	}
 
-	void Start () {
-		renderer = GetComponent<SpriteRenderer> ();
-		TheDungeon.TouchPad touch = GetComponent<TheDungeon.TouchPad> ();
-		touch.onTouchDown += (Vector3 position) => {
-			gameObject.SetActive(false);
-			Debug.Log("touch down");
-		};
-	}
+	public IEnumerator Attack()
+	{
+		while (0.0f < data.health) {
+			yield return new WaitForSeconds (100.0f / info.speed);
+			animator.SetTrigger ("Attack");
+			data.health -= 10.0f;
+			ui.health.current = data.health;
+		}
 
+		gameObject.SetActive (false);
+		ui.gameObject.SetActive (false);
+	}
+		
 	public static Dictionary<string, Info> infos = new Dictionary<string, Info> ();
 	public static void Init()
 	{
@@ -68,7 +83,7 @@ public class Monster : MonoBehaviour {
 			info.id = row ["MONSTER_ID"];
 			info.name = row ["MONSTER_NAME"];
 			info.level = int.Parse (row ["MONSTER_LEVEL"]);
-			info.health = float.Parse (row ["HEALTH"]);
+			info.health = int.Parse (row ["HEALTH"]);
 			info.defense = float.Parse (row ["DEFENSE"]);
 			info.speed = float.Parse (row ["SPEED"]);
 			info.sprite = (Sprite)ResourceManager.Instance.Load(row ["SPRITE_PATH"]);

@@ -128,7 +128,7 @@ namespace TheDungeon {
 			
 			}
 
-			Monster.Info info = Monster.FindInfo ("TEST_001");
+			Monster.Info info = Monster.FindInfo ("DAEMON_001");
 			monster.Init (info);
 		}
 	}
