@@ -1364,10 +1364,10 @@ RectTransform:
   - {fileID: 356450819}
   m_Father: {fileID: 3914113}
   m_RootOrder: 3
-  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMin: {x: 1, y: 0.8}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1389233273
 MonoBehaviour:
@@ -1380,6 +1380,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3744c74e277034df6a4612361aa13627, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ROOM_SIZE: 19
+  size: 0
   roomPrefab: {fileID: 1000012332225224, guid: 89101db0c8a814ecd95a25e81b337ef8, type: 2}
   currentPosition: {fileID: 356450820}
 --- !u!1 &1479995460
