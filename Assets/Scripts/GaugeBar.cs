@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class GaugeBar : MonoBehaviour {
@@ -20,11 +21,16 @@ public class GaugeBar : MonoBehaviour {
 				return;
 			}
 			_gauge.localScale = new Vector3(scale, _gauge.localScale.y, _gauge.localScale.z);
+            _text.text = value.ToString() + "/" + max.ToString();
 		}
 	}
 	Transform _gauge;
+    Text _text;
 	// Use this for initialization
 	void Start () {
+        RectTransform rect = GetComponent<RectTransform>();
 		_gauge = transform.FindChild("Gauge");
-	}
+        _text = transform.FindChild("Text").GetComponent<Text>();
+        _text.fontSize = (int)rect.rect.height;
+    }
 }

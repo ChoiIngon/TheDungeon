@@ -10,7 +10,11 @@ public class UIMonster : MonoBehaviour {
 		health = transform.FindChild ("Health").GetComponent<GaugeBar> ();
 		Text name = transform.FindChild ("Name").GetComponent<Text> ();
 		name.text = info.name;
-		health.max = info.health;
+        RectTransform rect = name.GetComponent<RectTransform>();
+        name.fontSize = (int)rect.rect.height;
+
+        health.max = info.health;
 		health.current = info.health;
+
 	}
 }
