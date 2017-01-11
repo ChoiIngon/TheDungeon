@@ -37,14 +37,14 @@ public class Monster : MonoBehaviour {
 
 	public Info info;
 	public Data data;
-	public SpriteRenderer renderer;
 	public Animator animator;
 	public UIMonster ui;
+	public TrailRenderer trailPrefab;
 	void Start () {
-		renderer = transform.FindChild ("Sprite").GetComponent<SpriteRenderer>();
 		animator = transform.FindChild ("Sprite").GetComponent<Animator> ();
 		gameObject.SetActive (false);
 		ui.gameObject.SetActive (false);
+
 	}
 
 	public void Init(Info info)
@@ -52,26 +52,60 @@ public class Monster : MonoBehaviour {
 		this.info = info;
 		data = new Data ();
 		data.health = info.health;
-		renderer.sprite = info.sprite;
+		transform.FindChild ("Sprite").GetComponent<SpriteRenderer>().sprite = info.sprite;
 		ui.Init (info);
 		gameObject.SetActive (true);
 		ui.gameObject.SetActive (true);
-		StartCoroutine (Attack ());
+		StartCoroutine (Battle ());
 	}
 
-	public IEnumerator Attack()
+	public IEnumerator Battle()
 	{
 		while (0.0f < data.health) {
 			yield return new WaitForSeconds (100.0f / info.speed);
-			animator.SetTrigger ("Attack");
-			data.health -= 10.0f;
-			ui.health.current = data.health;
+			//animator.SetTrigger ("Attack");
+			int attackCount = 1;
+			float waitTime = 0.0f;
+			if (0 == Random.Range (0, 3)) {
+				attackCount += 1;
+				waitTime = 0.5f;
+			}
+			if (0 == Random.Range (0, 5)) {
+				attackCount += 1;
+				waitTime = 0.2f;
+			}
+
+			for (int i = 0; i < attackCount; i++) {
+				Damage (10);
+				yield return new WaitForSeconds (waitTime);
+			}
 		}
 
 		gameObject.SetActive (false);
 		ui.gameObject.SetActive (false);
 	}
-		
+
+	public void Damage(int damage)
+	{
+		TrailRenderer trail = GameObject.Instantiate<TrailRenderer> (trailPrefab);
+		trail.sortingLayerName = "Monster";
+		trail.sortingOrder = 1;
+
+		data.health -= damage;
+		ui.health.current = data.health;
+
+		const float length = 6.0f;
+		Vector3 direction = new Vector3 (Random.Range (-1.0f, 1.0f), Random.Range (-1.0f, 1.0f), 0.0f);
+		direction = length * direction.normalized;
+
+		Vector3 start = -1.0f * direction;
+		start.y += 1.0f;
+		direction.y += 1.0f;
+		trail.transform.localPosition = start;
+		iTween.MoveTo(trail.gameObject, direction, 0.3f);
+		iTween.ShakePosition (gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.3f);
+	}
+
 	public static Dictionary<string, Info> infos = new Dictionary<string, Info> ();
 	public static void Init()
 	{
