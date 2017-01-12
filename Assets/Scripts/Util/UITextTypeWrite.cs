@@ -8,6 +8,7 @@ public class UITextTypeWrite : MonoBehaviour {
     Text text;
     string copied;
     AudioSource audio;
+    public int lineCount = 7;
     public float charPerSecond = 20.0f;
     ScrollRect scrollRect;
     void Awake()
@@ -19,7 +20,7 @@ public class UITextTypeWrite : MonoBehaviour {
         audio = GetComponent<AudioSource>();
         scrollRect = GetComponentInParent<ScrollRect>();
         RectTransform rt = scrollRect.GetComponent<RectTransform>();
-        text.fontSize = (int)(rt.rect.height / 5.0f - text.lineSpacing);
+        text.fontSize = (int)(rt.rect.height / lineCount - text.lineSpacing);
         StartCoroutine(Play());
     }
 
