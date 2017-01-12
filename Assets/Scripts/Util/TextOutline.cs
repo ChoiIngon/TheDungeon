@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-using UnityEngine;
-using System.Collections;
 
 public class TextOutline : MonoBehaviour {
 
@@ -62,6 +60,7 @@ public class TextOutline : MonoBehaviour {
 			MeshRenderer otherMeshRenderer = transform.GetChild(i).GetComponent<MeshRenderer>();
 			otherMeshRenderer.sortingLayerID = meshRenderer.sortingLayerID;
 			otherMeshRenderer.sortingLayerName = meshRenderer.sortingLayerName;
+			otherMeshRenderer.sortingOrder = meshRenderer.sortingOrder - 1;
 		}
 	}
 

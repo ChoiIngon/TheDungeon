@@ -66,7 +66,6 @@ namespace TheDungeon {
 				}
 
 				delta = Vector3.zero;
-				Debug.Log("touch up");
 			}); 
 
 			Map.Instance.Init ();
@@ -114,7 +113,7 @@ namespace TheDungeon {
 				yield return null;
 			}
 
-			background.transform.position = new Vector3 (0.0f, 0.0f, 0.0f);
+			background.transform.localPosition = Vector3.zero;
 
 			Room current = Map.Instance.Move (direction);
 			MiniMap.Instance.CurrentPosition (current.id);

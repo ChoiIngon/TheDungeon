@@ -38,13 +38,21 @@ public class Monster : MonoBehaviour {
 	public Info info;
 	public Data data;
 	public Animator animator;
-	public UIMonster ui;
+
 	public TrailRenderer trailPrefab;
+	public GameObject damagePrefab;
+	public GaugeBar health;
+
 	void Start () {
 		animator = transform.FindChild ("Sprite").GetComponent<Animator> ();
 		gameObject.SetActive (false);
-		ui.gameObject.SetActive (false);
+		{
+			MeshRenderer meshRenderer = transform.FindChild ("Name").GetComponent<MeshRenderer> ();
+			meshRenderer.sortingLayerName = "UI";
+		}
 
+
+		health = transform.FindChild ("Health").GetComponent<GaugeBar> ();
 	}
 
 	public void Init(Info info)
@@ -52,17 +60,21 @@ public class Monster : MonoBehaviour {
 		this.info = info;
 		data = new Data ();
 		data.health = info.health;
+		health.max = info.health;
+		health.current = data.health;
 		transform.FindChild ("Sprite").GetComponent<SpriteRenderer>().sprite = info.sprite;
-		ui.Init (info);
+		//ui.Init (info);
+		TextMesh text = transform.FindChild ("Name").GetComponent<TextMesh> ();
+		text.text = info.name;
 		gameObject.SetActive (true);
-		ui.gameObject.SetActive (true);
 		StartCoroutine (Battle ());
 	}
 
 	public IEnumerator Battle()
 	{
+		yield return new WaitForSeconds (1.0f);
 		while (0.0f < data.health) {
-			yield return new WaitForSeconds (100.0f / info.speed);
+			
 			//animator.SetTrigger ("Attack");
 			int attackCount = 1;
 			float waitTime = 0.0f;
@@ -77,12 +89,16 @@ public class Monster : MonoBehaviour {
 
 			for (int i = 0; i < attackCount; i++) {
 				Damage (10);
+				GameObject.Instantiate<GameObject> (damagePrefab);
 				yield return new WaitForSeconds (waitTime);
 			}
-		}
 
+			yield return new WaitForSeconds (80.0f / info.speed - waitTime);
+
+		}
+		GameObject.Instantiate<GameObject> (damagePrefab);
 		gameObject.SetActive (false);
-		ui.gameObject.SetActive (false);
+
 	}
 
 	public void Damage(int damage)
@@ -92,7 +108,8 @@ public class Monster : MonoBehaviour {
 		trail.sortingOrder = 1;
 
 		data.health -= damage;
-		ui.health.current = data.health;
+		health.current = data.health;
+		//ui.health.current = data.health;
 
 		const float length = 6.0f;
 		Vector3 direction = new Vector3 (Random.Range (-1.0f, 1.0f), Random.Range (-1.0f, 1.0f), 0.0f);
