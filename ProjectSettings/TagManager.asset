@@ -51,6 +51,9 @@ TagManager:
   - name: Monster
     uniqueID: 326259081
     locked: 0
+  - name: Effect
+    uniqueID: 2144666763
+    locked: 0
   - name: UI
     uniqueID: 771169021
     locked: 0

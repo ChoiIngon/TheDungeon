@@ -150,7 +150,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   trailPrefab: {fileID: 96000013284185960, guid: cf4698763e84f45fc9837dfe4764fedd,
     type: 2}
-  damagePrefab: {fileID: 1000010779646346, guid: 4192e31438ad0442ab6918127eb55789,
+  damagePrefab: {fileID: 1000010443484688, guid: 4192e31438ad0442ab6918127eb55789,
     type: 2}
   health: {fileID: 0}
 --- !u!1 &3914109

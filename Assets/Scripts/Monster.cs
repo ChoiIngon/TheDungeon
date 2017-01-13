@@ -64,7 +64,7 @@ public class Monster : MonoBehaviour {
 		health.current = data.health;
 		SpriteRenderer renderer = transform.FindChild ("Sprite").GetComponent<SpriteRenderer> ();
 		renderer.sprite = info.sprite;
-		Debug.Log (renderer.sprite.pivot.ToString ());
+
 
 		//ui.Init (info);
 		TextMesh text = transform.FindChild ("Name").GetComponent<TextMesh> ();
@@ -111,6 +111,9 @@ public class Monster : MonoBehaviour {
 		trail.sortingOrder = 1;
 
 		data.health -= damage;
+		if (0 > data.health) {
+			data.health = 0;
+		}
 		health.current = data.health;
 
 		const float length = 4.0f;
@@ -123,6 +126,11 @@ public class Monster : MonoBehaviour {
 		trail.transform.localPosition = start;
 		GameObject effect = GameObject.Instantiate<GameObject> (damagePrefab);
 		effect.transform.position = Vector3.Lerp(start, direction, Random.Range(0.4f, 0.6f));
+		MeshRenderer renderer = effect.transform.Find ("Text").GetComponent<MeshRenderer> ();
+		renderer.sortingLayerName = "Effect";
+
+		TextMesh text = effect.transform.FindChild ("Text").GetComponent<TextMesh> ();
+		text.text = "-" + damage.ToString ();
 		iTween.MoveTo(trail.gameObject, direction, 0.3f);
 		iTween.ShakePosition (gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.3f);
 	}
