@@ -62,7 +62,10 @@ public class Monster : MonoBehaviour {
 		data.health = info.health;
 		health.max = info.health;
 		health.current = data.health;
-		transform.FindChild ("Sprite").GetComponent<SpriteRenderer>().sprite = info.sprite;
+		SpriteRenderer renderer = transform.FindChild ("Sprite").GetComponent<SpriteRenderer> ();
+		renderer.sprite = info.sprite;
+		Debug.Log (renderer.sprite.pivot.ToString ());
+
 		//ui.Init (info);
 		TextMesh text = transform.FindChild ("Name").GetComponent<TextMesh> ();
 		text.text = info.name;
@@ -89,7 +92,7 @@ public class Monster : MonoBehaviour {
 
 			for (int i = 0; i < attackCount; i++) {
 				Damage (10);
-				GameObject.Instantiate<GameObject> (damagePrefab);
+
 				yield return new WaitForSeconds (waitTime);
 			}
 
@@ -109,16 +112,17 @@ public class Monster : MonoBehaviour {
 
 		data.health -= damage;
 		health.current = data.health;
-		//ui.health.current = data.health;
 
-		const float length = 6.0f;
+		const float length = 4.0f;
 		Vector3 direction = new Vector3 (Random.Range (-1.0f, 1.0f), Random.Range (-1.0f, 1.0f), 0.0f);
 		direction = length * direction.normalized;
 
 		Vector3 start = -1.0f * direction;
-		start.y += 1.0f;
-		direction.y += 1.0f;
+		start.y += 0.5f;
+		direction.y += 0.5f;
 		trail.transform.localPosition = start;
+		GameObject effect = GameObject.Instantiate<GameObject> (damagePrefab);
+		effect.transform.position = Vector3.Lerp(start, direction, Random.Range(0.4f, 0.6f));
 		iTween.MoveTo(trail.gameObject, direction, 0.3f);
 		iTween.ShakePosition (gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.3f);
 	}

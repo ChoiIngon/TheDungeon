@@ -27,6 +27,7 @@ public class ResourceManager : MonoBehaviour {
 	{
 		resource = new Dictionary<string, Object> ();	
 
+		/*
 		#if UNITY_EDITOR
 		string path = Application.dataPath;
 		{
@@ -38,6 +39,7 @@ public class ResourceManager : MonoBehaviour {
 			}
 		}
 		#else
+		*/
 		resource.Add ("dungeon_001____", Resources.Load <Sprite> ("Sprites/dungeon_001____"));
 		resource.Add ("dungeon_001_W__", Resources.Load <Sprite> ("Sprites/dungeon_001_W__"));
 		resource.Add ("dungeon_001_WN_", Resources.Load <Sprite> ("Sprites/dungeon_001_WN_"));
@@ -48,7 +50,7 @@ public class ResourceManager : MonoBehaviour {
 		resource.Add ("dungeon_001___E", Resources.Load <Sprite> ("Sprites/dungeon_001___E"));
 		resource.Add ("monster_daemon", Resources.Load <Sprite> ("Sprites/monster_daemon"));
 		resource.Add ("monster_skeleton", Resources.Load <Sprite> ("Sprites/monster_skeleton"));
-		#endif
+		//#endif
 	}
 
 	Dictionary<string, Object> resource;
