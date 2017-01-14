@@ -8,8 +8,8 @@ namespace TheDungeon {
 	    //public string buttonName;
 	    //public GameObject holder;
 		public delegate void OnTouchDownDelegate(Vector3 position);
-	    public delegate void OnTouchUpDelegate();
-	    public delegate void OnTouchDragDelegate(Vector3 delta);
+		public delegate void OnTouchUpDelegate(Vector3 position);
+		public delegate void OnTouchDragDelegate(Vector3 position);
 	    public OnTouchDownDelegate onTouchDown;
 	    public OnTouchUpDelegate onTouchUp;
 	    public OnTouchDragDelegate onTouchDrag;
@@ -21,7 +21,6 @@ namespace TheDungeon {
 				return touchCollider.size;
 			}
 		}
-
 		public Vector3 offset {
 			
 			set {
@@ -70,7 +69,7 @@ namespace TheDungeon {
 			{
 				if (null != onTouchUp)
 				{
-					onTouchUp();
+					onTouchUp(lastPressPosition);
 				}
 				pressed = false;
 			}
@@ -81,7 +80,7 @@ namespace TheDungeon {
 				);
 				if(null != onTouchDrag && currentPressPosition != lastPressPosition)
 				{
-					onTouchDrag(currentPressPosition - lastPressPosition);
+					onTouchDrag(currentPressPosition);
 				}
 				lastPressPosition = currentPressPosition;
 			}

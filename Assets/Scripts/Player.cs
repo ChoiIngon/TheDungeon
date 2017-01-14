@@ -21,35 +21,37 @@ public class Player : MonoBehaviour {
 			return _instance;  
 		}  
 	}
-
-	public int level;
-	public int exp;
-	public int health;
-	public float strength;
-	public float defense;
-	public float speed;
-	public float attack {
-		get {
-			return 1.0f + strength;
+	[System.Serializable]
+	public class Data {
+		public int level;
+		public int exp;
+		public int health;
+		public float strength;
+		public float defense;
+		public float speed;
+		public Data()
+		{
+			level = 1;
+			exp = 0;
+			health = 100;
+			strength = 1.0f;
+			defense = 1.0f;
+			speed = 1.0f;
 		}
 	}
-	public void Init()
-	{
-		level = 1;
-		exp = 0;
-		health = 20;
-		strength = 10.0f;
-		defense = 4.0f;
-		speed = 1.0f;
+	public Data data = new Data();
+	public float attack {
+		get {
+			return 1.0f + data.strength;
+		}
 	}
-
+	public GameObject ui;
+	public GameObject damage;
+	GaugeBar health;
 	// Use this for initialization
 	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+		health = ui.transform.FindChild ("Health").GetComponent<GaugeBar> ();
+		RectTransform rt = ui.transform.GetComponent<RectTransform> ();
+		rt.position = Camera.main.WorldToScreenPoint (transform.position);
 	}
 }

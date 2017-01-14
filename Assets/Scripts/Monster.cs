@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -33,84 +34,107 @@ public class Monster : MonoBehaviour {
 	{
 		public float health;
 	}
-	// Use this for initialization
 
 	public Info info;
 	public Data data;
-	Animator animator;
+	public GameObject ui;
 
 	public TrailRenderer trailPrefab;
 	public GameObject damagePrefab;
 	public Coin coinPrefab;
-	public GaugeBar health;
+	public BloodMark bloodMarkPrefab;
+
+	private Animator animator;
+	SpriteRenderer renderer;
+	private Text name;
+	private GaugeBar health;
 
 	void Start () {
 		animator = transform.FindChild ("Sprite").GetComponent<Animator> ();
+		renderer = transform.FindChild ("Sprite").GetComponent<SpriteRenderer> ();
+		name = ui.transform.FindChild ("Name").GetComponent<Text> ();
+		health = ui.transform.FindChild ("Health").GetComponent<GaugeBar> ();
 		gameObject.SetActive (false);
-		{
-			MeshRenderer meshRenderer = transform.FindChild ("Name").GetComponent<MeshRenderer> ();
-			meshRenderer.sortingLayerName = "UI";
-		}
 
-
-		health = transform.FindChild ("Health").GetComponent<GaugeBar> ();
+		RectTransform rt = ui.transform.GetComponent<RectTransform> ();
+		rt.position = Camera.main.WorldToScreenPoint (new Vector3(transform.position.x, transform.position.y - 0.5f, 0.0f));
+		ui.gameObject.SetActive (false);
 	}
 
-	public void Init(Info info)
+	public void Init(Info info_)
 	{
-		this.info = info;
+		info = info_;
+		name.text = info.name;
+		renderer.sprite = info.sprite;
+
 		data = new Data ();
 		data.health = info.health;
 		health.max = info.health;
 		health.current = data.health;
-		SpriteRenderer renderer = transform.FindChild ("Sprite").GetComponent<SpriteRenderer> ();
-		renderer.sprite = info.sprite;
 
-		//ui.Init (info);
-		TextMesh text = transform.FindChild ("Name").GetComponent<TextMesh> ();
-		text.text = info.name;
 		gameObject.SetActive (true);
+		ui.gameObject.SetActive (true);
 		StartCoroutine (Battle ());
 	}
 
 	public IEnumerator Battle()
 	{
-		yield return new WaitForSeconds (1.0f);
+		yield return new WaitForSeconds (0.5f);
 		while (0.0f < data.health) {
-			
-			//animator.SetTrigger ("Attack");
-			int attackCount = 1;
 			float waitTime = 0.0f;
-			if (0 == Random.Range (0, 3)) {
-				attackCount += 1;
-				waitTime = 0.5f;
-			}
-			if (0 == Random.Range (0, 5)) {
-				attackCount += 1;
-				waitTime = 0.2f;
-			}
+			if (0 == Random.Range (0, 2)) {
+				int attackCount = 1;
 
-			for (int i = 0; i < attackCount; i++) {
-				Damage (10);
+				if (0 == Random.Range (0, 3)) {
+					attackCount += 1;
+					waitTime = 0.5f;
+				}
+				if (0 == Random.Range (0, 5)) {
+					attackCount += 1;
+					waitTime = 0.2f;
+				}
 
-				yield return new WaitForSeconds (waitTime);
+				for (int i = 0; i < attackCount; i++) {
+					Damage (10);
+					yield return new WaitForSeconds (waitTime);
+				}
 			}
-
+			else 
+			{
+				Attack ();
+			}
 			yield return new WaitForSeconds (80.0f / info.speed - waitTime);
 
 		}
+
+		ui.gameObject.SetActive (false);
 		GameObject.Instantiate<GameObject> (damagePrefab);
+
 		int coinCount = Random.Range (1, 25);
 		for (int i = 0; i < coinCount; i++) {
 			Coin coin = GameObject.Instantiate<Coin> (coinPrefab);
 			float scale = Random.Range (1.0f, 1.5f);
 			coin.transform.localScale = new Vector3 (scale, scale, 1.0f);
-			coin.groundPos = transform.position.y;
-
+			coin.transform.position = transform.position;
 			iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
 		}
 		gameObject.SetActive (false);
 
+	}
+
+	public void Attack()
+	{
+		iTween.CameraFadeFrom (0.1f, 0.1f);
+		iTween.ShakePosition (Camera.main.gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.1f);
+		animator.SetTrigger ("Attack");
+		BloodMark bloodMark = GameObject.Instantiate<BloodMark> (bloodMarkPrefab);
+
+		bloodMark.transform.position = new Vector3(
+			Random.Range(Screen.width/2 - Screen.width /2 * 0.85f, Screen.width/2 + Screen.width/2 * 0.9f), 
+			Random.Range(Screen.height/2 - Screen.height /2 * 0.85f, Screen.height/2 + Screen.height/2 * 0.9f),
+			0.0f
+		);
+		bloodMark.transform.SetParent (Player.Instance.damage.transform);
 	}
 
 	public void Damage(int damage)
@@ -141,7 +165,7 @@ public class Monster : MonoBehaviour {
 		TextMesh text = effect.transform.FindChild ("Text").GetComponent<TextMesh> ();
 		text.text = "-" + damage.ToString ();
 		iTween.MoveTo(trail.gameObject, direction, 0.3f);
-		iTween.ShakePosition (gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.3f);
+		iTween.ShakePosition (gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.1f);
 	}
 
 	public static Dictionary<string, Info> infos = new Dictionary<string, Info> ();

@@ -2,27 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class MiniMap : MonoBehaviour {
-	private static MiniMap _instance;  
-	public static MiniMap Instance  
-	{  
-		get  
-		{  
-			if (!_instance) 
-			{  
-				_instance = (MiniMap)GameObject.FindObjectOfType(typeof(MiniMap));  
-				if (!_instance)  
-				{  
-					GameObject container = new GameObject();  
-					container.name = "MiniMap";  
-					_instance = container.AddComponent<MiniMap>();  
-				}  
-			}  
-
-			return _instance;  
-		}  
-	}
-
+public class UIMap : MonoBehaviour {
 	public float ROOM_SIZE = 19.0f;
     public float size = 0.0f;
 	public GameObject roomPrefab;

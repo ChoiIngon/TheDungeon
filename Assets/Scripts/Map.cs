@@ -28,6 +28,7 @@ public class Map : MonoBehaviour {
 
 	public Room current = null;
 	public Room[] rooms = new Room[WIDTH * HEIGHT];
+	public UIMap miniMap;
 	// Use this for initialization
 	public void Init() {
 		for(int i=0; i<WIDTH*HEIGHT; i++) {
@@ -96,6 +97,9 @@ public class Map : MonoBehaviour {
 			exitIndex = Random.Range (0, WIDTH * HEIGHT);
 		} while(exitIndex == startIndex);
 		current = rooms [startIndex];
+
+		miniMap.Init ();
+		miniMap.CurrentPosition (current.id);
 	}
 
 	public Room Move(int direction)
@@ -105,6 +109,7 @@ public class Map : MonoBehaviour {
 		}
 		current = current.doors [direction];
 		current.visit = true;
+		miniMap.CurrentPosition (current.id);
 		return current;
 	}
 

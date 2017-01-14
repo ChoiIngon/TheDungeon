@@ -22,7 +22,7 @@ GameObject:
   - 96: {fileID: 96000013284185960}
   - 114: {fileID: 114000012776303824}
   m_Layer: 0
-  m_Name: Effect_SwordTrail
+  m_Name: Effect_PlayerAttack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -54,7 +54,7 @@ TrailRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 2100000, guid: f4dd0bba6decdd5418fd3d541ff5f7f0, type: 2}
+  - {fileID: 2100000, guid: 8bd90b0c37ce44e52bbc7fb0b8624833, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
@@ -71,24 +71,24 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_Time: 0.3
-  m_StartWidth: 1.2
+  m_StartWidth: 0.8
   m_EndWidth: 0.2
   m_Colors:
     m_Color[0]:
       serializedVersion: 2
-      rgba: 4278190178
+      rgba: 4278190243
     m_Color[1]:
       serializedVersion: 2
-      rgba: 4278190335
+      rgba: 4278190243
     m_Color[2]:
       serializedVersion: 2
-      rgba: 4278190335
+      rgba: 4294967295
     m_Color[3]:
       serializedVersion: 2
-      rgba: 2858048255
+      rgba: 2868903935
     m_Color[4]:
       serializedVersion: 2
-      rgba: 10987519
+      rgba: 16777215
   m_MinVertexDistance: 0.1
   m_Autodestruct: 0
 --- !u!114 &114000012776303824

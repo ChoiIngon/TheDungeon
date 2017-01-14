@@ -21,7 +21,7 @@ GameObject:
   - 4: {fileID: 4000012383461066}
   - 114: {fileID: 114000011835892308}
   m_Layer: 0
-  m_Name: Effect_Damage
+  m_Name: Effect_MonsterDamage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -404,7 +404,7 @@ ParticleSystem:
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 1}
+      maxColor: {r: 0.72156864, g: 0, b: 0, a: 1}
       minMaxState: 0
     startSize:
       scalar: 0.4
@@ -1878,7 +1878,7 @@ ParticleSystemRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 2100000, guid: a24f217235cba48c49d63936f2132b65, type: 2}
+  - {fileID: 2100000, guid: 8bd90b0c37ce44e52bbc7fb0b8624833, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}

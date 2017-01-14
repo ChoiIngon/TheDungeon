@@ -22,7 +22,7 @@ GameObject:
   - 222: {fileID: 222000013832433602}
   - 114: {fileID: 114000011532670032}
   m_Layer: 5
-  m_Name: MiniMapPosition
+  m_Name: UIMapPosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

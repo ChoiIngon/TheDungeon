@@ -7,32 +7,35 @@ namespace TheDungeon {
 		public const float DISTANCE = 6.4f; // 이지 사이즈가 1130 * 640 이라서...
 		public const float speed = 12.8f;
 
-		public Text text;
-		public GameObject background;
-		private Monster monster;
+		public UITextBox textBox;
+		public GameObject rooms;
+		public Monster monster;
+		public Texture2D fadeout;
 		private SpriteRenderer currentRenderer;
 		private SpriteRenderer[] doorRenderer = new SpriteRenderer[Room.Max];
-		Vector3 delta = Vector3.zero;
+		Vector3 touchPoint = Vector3.zero;
 
 		// Use this for initialization
 		void Start () {
-			monster = background.transform.FindChild ("Current/Monster").GetComponent<Monster> ();
-			currentRenderer = background.transform.FindChild ("Current").GetComponent<SpriteRenderer> ();
-			doorRenderer[Room.North] =  background.transform.FindChild ("North").GetComponent<SpriteRenderer> ();
-			doorRenderer[Room.East] =  background.transform.FindChild ("East").GetComponent<SpriteRenderer> ();
-			doorRenderer[Room.South] =  background.transform.FindChild ("South").GetComponent<SpriteRenderer> ();
-			doorRenderer[Room.West] =  background.transform.FindChild ("West").GetComponent<SpriteRenderer> ();
+			iTween.CameraFadeAdd (fadeout);
+
+			currentRenderer = rooms.transform.FindChild ("Current").GetComponent<SpriteRenderer> ();
+			doorRenderer[Room.North] =  rooms.transform.FindChild ("North").GetComponent<SpriteRenderer> ();
+			doorRenderer[Room.East] =  rooms.transform.FindChild ("East").GetComponent<SpriteRenderer> ();
+			doorRenderer[Room.South] =  rooms.transform.FindChild ("South").GetComponent<SpriteRenderer> ();
+			doorRenderer[Room.West] =  rooms.transform.FindChild ("West").GetComponent<SpriteRenderer> ();
 
 			ResourceManager.Instance.Init ();
 			Monster.Init ();
 			monster.gameObject.SetActive (false);
 			TheDungeon.TouchPad touchPad = GetComponent<TheDungeon.TouchPad> ();
 
-			touchPad.onTouchDrag += ((Vector3 delta) => {
-				this.delta += delta;
-			});
+			touchPad.onTouchDown += (Vector3 position) => {
+				touchPoint = position;
+			};
 
-			touchPad.onTouchUp += (() => {
+			touchPad.onTouchUp += (Vector3 position) => {
+				Vector3 delta = position - touchPoint;
 				if(Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
 				{
 					if(0.0f == delta.x)
@@ -65,12 +68,10 @@ namespace TheDungeon {
 					}
 				}
 
-				delta = Vector3.zero;
-			}); 
+				touchPoint = Vector3.zero;
+			}; 
 
 			Map.Instance.Init ();
-			MiniMap.Instance.Init ();
-
 			currentRenderer.sprite = Map.Instance.current.sprite;
 			for(int i=0; i<Room.Max; i++) {
 				Room door = Map.Instance.current.doors [i];
@@ -92,7 +93,7 @@ namespace TheDungeon {
 
 			while (DISTANCE > movement) {
 				movement += Time.deltaTime * speed;
-				Vector3 position = background.transform.position;
+				Vector3 position = rooms.transform.position;
 				switch (direction) {
 				case Room.North :
 					position = new Vector3 (position.x, position.y, position.z - Time.deltaTime * speed);
@@ -109,14 +110,13 @@ namespace TheDungeon {
 				default :
 					break;
 				}
-				background.transform.position = position;
+				rooms.transform.position = position;
 				yield return null;
 			}
 
-			background.transform.localPosition = Vector3.zero;
+			rooms.transform.localPosition = Vector3.zero;
 
 			Room current = Map.Instance.Move (direction);
-			MiniMap.Instance.CurrentPosition (current.id);
 
 			currentRenderer.sprite = Map.Instance.current.sprite;
 			for(int i=0; i<Room.Max; i++) {
@@ -124,11 +124,12 @@ namespace TheDungeon {
 				if (null != door) {
 					doorRenderer [i].sprite = door.sprite;
 				}
-			
 			}
 
-			Monster.Info info = Monster.FindInfo ("DAEMON_001");
-			monster.Init (info);
+			if (30 > Random.Range (0, 100)) {
+				Monster.Info info = Monster.FindInfo ("DAEMON_001");
+				monster.Init (info);
+			}
 		}
 	}
 }

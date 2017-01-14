@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class GaugeBar : MonoBehaviour {
@@ -24,13 +25,10 @@ public class GaugeBar : MonoBehaviour {
 		}
 	}
 	Transform _gauge;
-	TextMesh _text;
+	Text _text;
 	// Use this for initialization
 	void Start () {
 		_gauge = transform.FindChild("Gauge");
-		_text = transform.FindChild("Text").GetComponent<TextMesh>();
-		MeshRenderer meshRenderer = transform.FindChild ("Text").GetComponent<MeshRenderer> ();
-		meshRenderer.sortingLayerName = "UI";
-		meshRenderer.sortingOrder = 3;
+		_text = transform.FindChild("Text").GetComponent<Text>();
     }
 }
