@@ -37,10 +37,11 @@ public class Monster : MonoBehaviour {
 
 	public Info info;
 	public Data data;
-	public Animator animator;
+	Animator animator;
 
 	public TrailRenderer trailPrefab;
 	public GameObject damagePrefab;
+	public Coin coinPrefab;
 	public GaugeBar health;
 
 	void Start () {
@@ -64,7 +65,6 @@ public class Monster : MonoBehaviour {
 		health.current = data.health;
 		SpriteRenderer renderer = transform.FindChild ("Sprite").GetComponent<SpriteRenderer> ();
 		renderer.sprite = info.sprite;
-
 
 		//ui.Init (info);
 		TextMesh text = transform.FindChild ("Name").GetComponent<TextMesh> ();
@@ -100,6 +100,15 @@ public class Monster : MonoBehaviour {
 
 		}
 		GameObject.Instantiate<GameObject> (damagePrefab);
+		int coinCount = Random.Range (1, 25);
+		for (int i = 0; i < coinCount; i++) {
+			Coin coin = GameObject.Instantiate<Coin> (coinPrefab);
+			float scale = Random.Range (1.0f, 1.5f);
+			coin.transform.localScale = new Vector3 (scale, scale, 1.0f);
+			coin.groundPos = transform.position.y;
+
+			iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
+		}
 		gameObject.SetActive (false);
 
 	}

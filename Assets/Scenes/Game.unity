@@ -147,12 +147,13 @@ MonoBehaviour:
       exp: 0
   data:
     health: 0
-  animator: {fileID: 0}
   trailPrefab: {fileID: 96000013284185960, guid: cf4698763e84f45fc9837dfe4764fedd,
     type: 2}
   damagePrefab: {fileID: 1000010443484688, guid: 4192e31438ad0442ab6918127eb55789,
     type: 2}
-  health: {fileID: 0}
+  coinPrefab: {fileID: 114000013134874174, guid: b36d7c4bfc2f94188b0ab2e9324cddc6,
+    type: 2}
+  health: {fileID: 1991288707}
 --- !u!1 &3914109
 GameObject:
   m_ObjectHideFlags: 0
