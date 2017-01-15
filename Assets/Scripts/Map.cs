@@ -74,17 +74,17 @@ public class Map : MonoBehaviour {
 
 		foreach (Room room in rooms) {
 			string file = "dungeon_001_";
-			if (null != room.doors [Room.West]) {
+			if (null != room.next [Room.West]) {
 				file += "W";
 			} else {
 				file += "_";
 			}
-			if (null != room.doors [Room.North]) {
+			if (null != room.next [Room.North]) {
 				file += "N";
 			} else {
 				file += "_";
 			}
-			if (null != room.doors [Room.East]) {
+			if (null != room.next [Room.East]) {
 				file += "E";
 			} else {
 				file += "_";
@@ -104,10 +104,10 @@ public class Map : MonoBehaviour {
 
 	public Room Move(int direction)
 	{
-		if (null == current.doors [direction]) {
+		if (null == current.next [direction]) {
 			return null;
 		}
-		current = current.doors [direction];
+		current = current.next [direction];
 		current.visit = true;
 		miniMap.CurrentPosition (current.id);
 		return current;

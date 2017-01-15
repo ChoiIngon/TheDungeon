@@ -8,12 +8,15 @@ namespace TheDungeon {
 		{
 			Idle,
 			Popup,
-			Battle
+			Battle,
+			Move
 		}
 		[System.Serializable]
 		public class PlayerButton
 		{
+			public string name;
 			public Button button;
+			public Sprite sprite;
 			public GameObject ui;
 		}
 		private static Controller _instance;  
@@ -59,7 +62,12 @@ namespace TheDungeon {
 
 			for (int i = 0; i < buttons.Length; i++) {
 				int index = i;
-				buttons [index].button.onClick.AddListener (() => {
+				PlayerButton button = buttons [index];
+				Text name = button.button.transform.FindChild ("Text").GetComponent<Text>();
+				name.text = button.name;
+				Image image = button.button.GetComponent<Image>();
+				image.sprite = button.sprite;
+				button.button.onClick.AddListener (() => {
 					if(null == buttons[index].ui)
 					{
 						return;
@@ -77,7 +85,7 @@ namespace TheDungeon {
 
 			currentRenderer.sprite = Map.Instance.current.sprite;
 			for(int i=0; i<Room.Max; i++) {
-				Room door = Map.Instance.current.doors [i];
+				Room door = Map.Instance.current.next [i];
 				if (null != door) {
 					doorRenderer [i].sprite = door.sprite;
 				}
@@ -129,9 +137,11 @@ namespace TheDungeon {
 		// Update is called once per frame
 		public IEnumerator Move(int direction)
 		{
+			SetState (State.Move);
 			Room room = Map.Instance.current;
 			Room next = room.GetNext (direction);
 			if (null == next) {
+				SetState (State.Idle);
 				yield break;
 			}
 			float movement = 0.0f;
@@ -161,11 +171,11 @@ namespace TheDungeon {
 
 			rooms.transform.localPosition = Vector3.zero;
 
-			Room current = Map.Instance.Move (direction);
+			Map.Instance.Move (direction);
 
 			currentRenderer.sprite = Map.Instance.current.sprite;
 			for(int i=0; i<Room.Max; i++) {
-				Room door = Map.Instance.current.doors [i];
+				Room door = Map.Instance.current.next [i];
 				if (null != door) {
 					doorRenderer [i].sprite = door.sprite;
 				}
@@ -175,6 +185,8 @@ namespace TheDungeon {
 				SetState (State.Battle);
 				Monster.Info info = Monster.FindInfo ("DAEMON_001");
 				monster.Init (info);
+			} else {
+				SetState (State.Idle);
 			}
 		}
 		public void SetState(State state)
@@ -190,12 +202,8 @@ namespace TheDungeon {
 				}
 				break;
 			case State.Battle:
-				input.enabled = false;
-				for (int i = 0; i < buttons.Length; i++) {
-					buttons [i].button.enabled = false;
-				}
-				break;
 			case State.Popup:
+			case State.Move :
 				input.enabled = false;
 				for (int i = 0; i < buttons.Length; i++) {
 					buttons [i].button.enabled = false;

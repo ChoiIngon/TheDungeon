@@ -46,10 +46,12 @@ public class Player : MonoBehaviour {
 	}
 	public GameObject ui;
 	public GameObject damage;
-	GaugeBar health;
+	GaugeBar health = null;
 	// Use this for initialization
 	void Start () {
 		health = ui.transform.FindChild ("Health").GetComponent<GaugeBar> ();
+		health.max = 0;
+		health.current = 0;
 		RectTransform rt = ui.transform.GetComponent<RectTransform> ();
 		rt.position = Camera.main.WorldToScreenPoint (transform.position);
 	}

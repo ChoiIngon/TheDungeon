@@ -45,8 +45,8 @@ public class Monster : MonoBehaviour {
 	public BloodMark bloodMarkPrefab;
 
 	private Animator animator;
-	SpriteRenderer renderer;
-	private Text name;
+	private new SpriteRenderer renderer;
+	private new Text name;
 	private GaugeBar health;
 
 	void Start () {
@@ -176,7 +176,6 @@ public class Monster : MonoBehaviour {
 	public static Dictionary<string, Info> infos = new Dictionary<string, Info> ();
 	public static void Init()
 	{
-		TextAsset text = (TextAsset)ResourceManager.Instance.Load ("info_monster");
 		CSVReader reader = new CSVReader ("Config/info_monster");
 
 		foreach (CSVReader.Row row in reader) {

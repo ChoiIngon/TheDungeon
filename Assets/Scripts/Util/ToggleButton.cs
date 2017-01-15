@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections;
-
-using System;
-using UnityEngine;
 using UnityEngine.UI;
+using System;
+using System.Collections;
 
 public class ToggleButton : Toggle
 {

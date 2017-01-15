@@ -8,18 +8,22 @@ public class GaugeBar : MonoBehaviour {
 	{
 		set
 		{
-			float scale = value / max;
-			if(0.0f > scale)
-			{
-				scale = 0.0f;
-			}
-			if(1.0f < scale)
-			{
-				scale = 1.0f;
+			
+			if (0 >= max) {
+				return;
 			}
 			if (null == _gauge) {
 				return;
 			}
+
+			float scale = value / max;
+			if (0.0f > scale) {
+				scale = 0.0f;
+			}
+			if (1.0f < scale) {
+				scale = 1.0f;
+			}
+
 			_gauge.localScale = new Vector3(scale, _gauge.localScale.y, _gauge.localScale.z);
             _text.text = value.ToString() + "/" + max.ToString();
 		}

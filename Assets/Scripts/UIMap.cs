@@ -30,16 +30,16 @@ public class UIMap : MonoBehaviour {
 				obj.transform.FindChild ("Room/SouthDoor").gameObject.SetActive (true);
 				obj.transform.FindChild ("Room/WestDoor").gameObject.SetActive (true);
 				Room room = Map.Instance.rooms [roomID++];
-				if (null == room.doors [Room.North]) {
+				if (null == room.next [Room.North]) {
 					obj.transform.FindChild ("Room/NorthDoor").gameObject.SetActive (false);
 				}
-				if (null == room.doors [Room.East]) {
+				if (null == room.next [Room.East]) {
 					obj.transform.FindChild ("Room/EastDoor").gameObject.SetActive (false);
 				}
-				if (null == room.doors [Room.South]) {
+				if (null == room.next [Room.South]) {
 					obj.transform.FindChild ("Room/SouthDoor").gameObject.SetActive (false);
 				}
-				if (null == room.doors [Room.West]) {
+				if (null == room.next [Room.West]) {
 					obj.transform.FindChild ("Room/WestDoor").gameObject.SetActive (false);
 				}
 				obj.SetActive (false);

@@ -16,14 +16,14 @@ public class Room
 		visit = false;
 		sprite = null;
 		for (int direction = 0; direction < Max; direction++) {
-			doors [direction] = null;
+			next [direction] = null;
 		}
 	}
 	public int id;
 	public int group;
 	public bool visit;
 	public Sprite sprite;
-	public Room[] doors = new Room[Max];
+	public Room[] next = new Room[Max];
 
 	public Room Connect(int direction)
 	{
@@ -31,20 +31,20 @@ public class Room
 		if (null == other) {
 			return null;
 		}
-		doors [direction] = other;
+		next [direction] = other;
 
 		switch (direction) {
 		case North:
-			other.doors [South] = this;
+			other.next [South] = this;
 			break;
 		case East:
-			other.doors [West] = this;
+			other.next [West] = this;
 			break;
 		case South:
-			other.doors [North] = this;
+			other.next [North] = this;
 			break;
 		case West:
-			other.doors [East] = this;
+			other.next [East] = this;
 			break;
 		}
 		return other;
@@ -83,6 +83,6 @@ public class Room
 		if (0 > direction || Max <= direction) {
 			throw new System.Exception ("room id:" + direction + ", invalid direction:" + direction);
 		}
-		return doors [direction];
+		return next [direction];
 	}
 };
