@@ -55,9 +55,14 @@ public class Monster : MonoBehaviour {
 		name = ui.transform.FindChild ("Name").GetComponent<Text> ();
 		health = ui.transform.FindChild ("Health").GetComponent<GaugeBar> ();
 		gameObject.SetActive (false);
-
-		RectTransform rt = ui.transform.GetComponent<RectTransform> ();
-		rt.position = Camera.main.WorldToScreenPoint (new Vector3(transform.position.x, transform.position.y - 0.5f, 0.0f));
+		{
+			RectTransform rt = ui.transform.GetComponent<RectTransform> ();
+			rt.position = Camera.main.WorldToScreenPoint (new Vector3 (transform.position.x, transform.position.y - 0.5f, 0.0f));
+		}
+		{
+			RectTransform rt = name.gameObject.GetComponent<RectTransform> ();
+			name.fontSize = (int)(rt.rect.height - name.lineSpacing);
+		}
 		ui.gameObject.SetActive (false);
 	}
 
@@ -119,7 +124,7 @@ public class Monster : MonoBehaviour {
 			iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
 		}
 		gameObject.SetActive (false);
-
+		UITextBox.Instance.text = "test test test test test test test test";
 	}
 
 	public void Attack()
@@ -128,19 +133,18 @@ public class Monster : MonoBehaviour {
 		iTween.ShakePosition (Camera.main.gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.1f);
 		animator.SetTrigger ("Attack");
 		BloodMark bloodMark = GameObject.Instantiate<BloodMark> (bloodMarkPrefab);
-
+		bloodMark.transform.SetParent (Player.Instance.damage.transform);
 		bloodMark.transform.position = new Vector3(
 			Random.Range(Screen.width/2 - Screen.width /2 * 0.85f, Screen.width/2 + Screen.width/2 * 0.9f), 
 			Random.Range(Screen.height/2 - Screen.height /2 * 0.85f, Screen.height/2 + Screen.height/2 * 0.9f),
 			0.0f
 		);
-		bloodMark.transform.SetParent (Player.Instance.damage.transform);
 	}
 
 	public void Damage(int damage)
 	{
 		TrailRenderer trail = GameObject.Instantiate<TrailRenderer> (trailPrefab);
-		trail.sortingLayerName = "Monster";
+		trail.sortingLayerName = "Effect";
 		trail.sortingOrder = 1;
 
 		data.health -= damage;

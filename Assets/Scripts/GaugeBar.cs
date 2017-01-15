@@ -30,5 +30,7 @@ public class GaugeBar : MonoBehaviour {
 	void Start () {
 		_gauge = transform.FindChild("Gauge");
 		_text = transform.FindChild("Text").GetComponent<Text>();
+		RectTransform rt = _text.gameObject.GetComponent<RectTransform> ();
+		_text.fontSize = (int)(rt.rect.height - _text.lineSpacing);
     }
 }
