@@ -7,7 +7,14 @@ namespace TheDungeon {
 		public enum State
 		{
 			Idle,
+			Popup,
 			Battle
+		}
+		[System.Serializable]
+		public class PlayerButton
+		{
+			public Button button;
+			public GameObject ui;
 		}
 		private static Controller _instance;  
 		public static Controller Instance  
@@ -32,6 +39,9 @@ namespace TheDungeon {
 		public const float speed = 12.8f;
 
 		public UITextBox textBox;
+		public UIEquipment equipment;
+		public PlayerButton[] buttons;
+
 		public GameObject rooms;
 		public Monster monster;
 		public Texture2D fadeout;
@@ -47,6 +57,16 @@ namespace TheDungeon {
 			Monster.Init ();
 			iTween.CameraFadeAdd (fadeout);
 
+			for (int i = 0; i < buttons.Length; i++) {
+				int index = i;
+				buttons [index].button.onClick.AddListener (() => {
+					if(null == buttons[index].ui)
+					{
+						return;
+					}
+					buttons[index].ui.SetActive(true);
+				});
+			}
 			currentRenderer = rooms.transform.FindChild ("Current").GetComponent<SpriteRenderer> ();
 			doorRenderer[Room.North] =  rooms.transform.FindChild ("North").GetComponent<SpriteRenderer> ();
 			doorRenderer[Room.East] =  rooms.transform.FindChild ("East").GetComponent<SpriteRenderer> ();
@@ -165,9 +185,21 @@ namespace TheDungeon {
 			switch (state) {
 			case State.Idle:
 				input.enabled = true;
+				for (int i = 0; i < buttons.Length; i++) {
+					buttons [i].button.enabled = true;
+				}
 				break;
 			case State.Battle:
 				input.enabled = false;
+				for (int i = 0; i < buttons.Length; i++) {
+					buttons [i].button.enabled = false;
+				}
+				break;
+			case State.Popup:
+				input.enabled = false;
+				for (int i = 0; i < buttons.Length; i++) {
+					buttons [i].button.enabled = false;
+				}
 				break;
 			}
 			this.state = state;
