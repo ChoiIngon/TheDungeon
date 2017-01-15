@@ -17,7 +17,6 @@ public class Player : MonoBehaviour {
 					_instance = container.AddComponent<Player>();  
 				}  
 			}  
-
 			return _instance;  
 		}  
 	}

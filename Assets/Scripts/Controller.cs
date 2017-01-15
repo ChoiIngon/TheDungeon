@@ -4,6 +4,30 @@ using UnityEngine.UI;
 
 namespace TheDungeon {
 	public class Controller : MonoBehaviour {
+		public enum State
+		{
+			Idle,
+			Battle
+		}
+		private static Controller _instance;  
+		public static Controller Instance  
+		{  
+			get  
+			{  
+				if (!_instance) 
+				{  
+					_instance = (Controller)GameObject.FindObjectOfType(typeof(Controller));  
+					if (!_instance)  
+					{  
+						GameObject container = new GameObject();  
+						container.name = "Controller";  
+						_instance = container.AddComponent<Controller>();  
+					}  
+				}  
+				return _instance;  
+			}  
+		}
+
 		public const float DISTANCE = 6.4f; // 이지 사이즈가 1130 * 640 이라서...
 		public const float speed = 12.8f;
 
@@ -13,10 +37,14 @@ namespace TheDungeon {
 		public Texture2D fadeout;
 		private SpriteRenderer currentRenderer;
 		private SpriteRenderer[] doorRenderer = new SpriteRenderer[Room.Max];
-		Vector3 touchPoint = Vector3.zero;
-
+		private TheDungeon.TouchPad input;
+		private Vector3 touchPoint = Vector3.zero;
+		private State state;
 		// Use this for initialization
 		void Start () {
+			ResourceManager.Instance.Init ();
+			Map.Instance.Init ();
+			Monster.Init ();
 			iTween.CameraFadeAdd (fadeout);
 
 			currentRenderer = rooms.transform.FindChild ("Current").GetComponent<SpriteRenderer> ();
@@ -25,16 +53,21 @@ namespace TheDungeon {
 			doorRenderer[Room.South] =  rooms.transform.FindChild ("South").GetComponent<SpriteRenderer> ();
 			doorRenderer[Room.West] =  rooms.transform.FindChild ("West").GetComponent<SpriteRenderer> ();
 
-			ResourceManager.Instance.Init ();
-			Monster.Init ();
 			monster.gameObject.SetActive (false);
-			TheDungeon.TouchPad touchPad = GetComponent<TheDungeon.TouchPad> ();
 
-			touchPad.onTouchDown += (Vector3 position) => {
+			currentRenderer.sprite = Map.Instance.current.sprite;
+			for(int i=0; i<Room.Max; i++) {
+				Room door = Map.Instance.current.doors [i];
+				if (null != door) {
+					doorRenderer [i].sprite = door.sprite;
+				}
+			}
+
+			input = GetComponent<TheDungeon.TouchPad> ();
+			input.onTouchDown += (Vector3 position) => {
 				touchPoint = position;
 			};
-
-			touchPad.onTouchUp += (Vector3 position) => {
+			input.onTouchUp += (Vector3 position) => {
 				Vector3 delta = position - touchPoint;
 				if(Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
 				{
@@ -69,16 +102,8 @@ namespace TheDungeon {
 				}
 
 				touchPoint = Vector3.zero;
-			}; 
-
-			Map.Instance.Init ();
-			currentRenderer.sprite = Map.Instance.current.sprite;
-			for(int i=0; i<Room.Max; i++) {
-				Room door = Map.Instance.current.doors [i];
-				if (null != door) {
-					doorRenderer [i].sprite = door.sprite;
-				}
-			}
+			};
+			SetState (State.Idle);
 		}
 	
 		// Update is called once per frame
@@ -127,9 +152,25 @@ namespace TheDungeon {
 			}
 
 			if (30 > Random.Range (0, 100)) {
+				SetState (State.Battle);
 				Monster.Info info = Monster.FindInfo ("DAEMON_001");
 				monster.Init (info);
 			}
+		}
+		public void SetState(State state)
+		{
+			if (this.state == state) {
+				return;
+			}
+			switch (state) {
+			case State.Idle:
+				input.enabled = true;
+				break;
+			case State.Battle:
+				input.enabled = false;
+				break;
+			}
+			this.state = state;
 		}
 	}
 }

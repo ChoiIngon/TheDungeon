@@ -125,6 +125,7 @@ public class Monster : MonoBehaviour {
 		}
 		gameObject.SetActive (false);
 		UITextBox.Instance.text = "test test test test test test test test";
+		TheDungeon.Controller.Instance.SetState (TheDungeon.Controller.State.Idle);
 	}
 
 	public void Attack()

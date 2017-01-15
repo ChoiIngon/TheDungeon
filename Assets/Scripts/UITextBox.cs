@@ -27,7 +27,6 @@ public class UITextBox : MonoBehaviour {
 					_instance = container.AddComponent<UITextBox>();  
 				}  
 			}  
-
 			return _instance;  
 		}  
 	}
@@ -41,19 +40,18 @@ public class UITextBox : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		button = transform.FindChild ("Button").GetComponent<Button> ();
+		button.gameObject.SetActive (false);
 		button.onClick.AddListener (() => {
 			if(null != coroutine)
 			{
 				StopCoroutine(coroutine);
+				coroutine = null;
 				contents.text = copied;
-
 			}
 			else
 			{
-				Vector3 position = transform.position;
-				position.y -= height;
-				transform.position = position;
 				button.gameObject.SetActive(false);
+				StartCoroutine(DownTextBox());
 			}
 		});
 	
@@ -69,6 +67,10 @@ public class UITextBox : MonoBehaviour {
 			RectTransform rt = GetComponent<RectTransform> ();
 			height = rt.rect.height;
 		}
+		{
+			RectTransform rt = button.GetComponent<RectTransform> ();
+			rt.sizeDelta = new Vector2 (rt.sizeDelta.x, Screen.height + height);
+		}
 	}
 		
 	IEnumerator Type()
@@ -76,7 +78,7 @@ public class UITextBox : MonoBehaviour {
 		contents.text = "";
 		while (0.0f >= transform.position.y) {
 			Vector3 position = transform.position;
-			position.y += height * Time.deltaTime;
+			position.y += height * Time.deltaTime * 2.0f;
 			transform.position = position;
 			yield return null;
 		}
@@ -93,5 +95,16 @@ public class UITextBox : MonoBehaviour {
 			yield return new WaitForSeconds(1.0f / charPerSecond);
 		}
 		coroutine = null;
+	}
+
+	IEnumerator DownTextBox()
+	{
+		while (-height < transform.position.y) {
+			Vector3 position = transform.position;
+			position.y -= height * Time.deltaTime * 2.0f;
+			transform.position = position;
+			yield return null;
+		}
+		transform.position = new Vector3 (transform.position.x, -height, 0.0f);
 	}
 }
