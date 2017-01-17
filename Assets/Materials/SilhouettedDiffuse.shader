@@ -6,10 +6,10 @@
 		_MainTex("Base (RGB)", 2D) = "white" { }
 	}
 
-		CGINCLUDE
-#include "UnityCG.cginc"
+	CGINCLUDE
+	#include "UnityCG.cginc"
 
-		struct appdata {
+	struct appdata {
 		float4 vertex : POSITION;
 		float3 normal : NORMAL;
 	};
@@ -36,54 +36,54 @@
 	}
 	ENDCG
 
-		SubShader{
+	SubShader{
 		Tags{ "Queue" = "Transparent" }
 
 		// note that a vertex shader is specified here but its using the one above
 		Pass{
-		Name "OUTLINE"
-		Tags{ "LightMode" = "Always" }
-		Cull Off
-		ZWrite Off
-		ZTest Always
-		ColorMask RGB // alpha not used
+			Name "OUTLINE"
+			Tags{ "LightMode" = "Always" }
+			Cull Off
+			ZWrite Off
+			ZTest Always
+			ColorMask RGB // alpha not used
 
-					  // you can choose what kind of blending mode you want for the outline
-		Blend SrcAlpha OneMinusSrcAlpha // Normal
-										//Blend One One // Additive
-										//Blend One OneMinusDstColor // Soft Additive
-										//Blend DstColor Zero // Multiplicative
-										//Blend DstColor SrcColor // 2x Multiplicative
+						  // you can choose what kind of blending mode you want for the outline
+			Blend SrcAlpha OneMinusSrcAlpha // Normal
+											//Blend One One // Additive
+											//Blend One OneMinusDstColor // Soft Additive
+											//Blend DstColor Zero // Multiplicative
+											//Blend DstColor SrcColor // 2x Multiplicative
 
-		CGPROGRAM
-#pragma vertex vert
-#pragma fragment frag
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
 
-		half4 frag(v2f i) :COLOR{
-		return i.color;
-	}
-		ENDCG
-	}
+			half4 frag(v2f i) :COLOR{
+				return i.color;
+			}
+			ENDCG
+		}
 
 		Pass{
-		Name "BASE"
-		ZWrite On
-		ZTest LEqual
-		Blend SrcAlpha OneMinusSrcAlpha
-		Material{
-		Diffuse[_Color]
-		Ambient[_Color]
-	}
+			Name "BASE"
+			ZWrite On
+			ZTest LEqual
+			Blend SrcAlpha OneMinusSrcAlpha
+			Material{
+			Diffuse[_Color]
+			Ambient[_Color]
+		}
 		Lighting On
 		SetTexture[_MainTex]{
-		ConstantColor[_Color]
-		Combine texture * constant
-	}
+			ConstantColor[_Color]
+			Combine texture * constant
+		}
 		SetTexture[_MainTex]{
-		Combine previous * primary DOUBLE
+			Combine previous * primary DOUBLE
+		}
 	}
-	}
-	}
+}
 
 		SubShader{
 		Tags{ "Queue" = "Transparent" }
