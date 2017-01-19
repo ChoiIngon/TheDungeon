@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 
 public class UIInventory : MonoBehaviour {
+	public Text itemName;
+
 	public Dictionary<string, Sprite> sprites = new Dictionary<string, Sprite>();
 	public UIInventorySlot uiSlotPrefab;
 	[HideInInspector]
@@ -22,5 +24,7 @@ public class UIInventory : MonoBehaviour {
 		}
 		*/
 		selected = null;
+	}
+	public void SetSeletedItemInfo(ItemData data) {
 	}
 }

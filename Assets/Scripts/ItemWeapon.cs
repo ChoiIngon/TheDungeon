@@ -2,14 +2,13 @@
 using System.Collections;
 
 public class WeaponItemInfo : ItemInfo {
+	public bool twoHanded;
 	public int attack;
-	public int speed;
 
-	/*
 	public WeaponItemInfo() {
-		category = ItemInfo.Category.Weapon;
+		category = ItemInfo.Category.Hand;
 	}
-	*/
+
 	public override ItemData CreateInstance()
 	{
 		WeaponItemData data = new WeaponItemData ();

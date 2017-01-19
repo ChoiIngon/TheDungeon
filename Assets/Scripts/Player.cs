@@ -21,6 +21,10 @@ public class Player : MonoBehaviour {
 		}  
 	}
 	[System.Serializable]
+	public class Info {
+		public int health;
+	}
+	[System.Serializable]
 	public class Data {
 		public int level;
 		public int exp;
@@ -54,5 +58,92 @@ public class Player : MonoBehaviour {
 		health.current = 0;
 		RectTransform rt = ui.transform.GetComponent<RectTransform> ();
 		rt.position = Camera.main.WorldToScreenPoint (transform.position);
+	}
+
+	Inventory inventory = new Inventory ();
+	EquipmentItemData helmet;
+	EquipmentItemData[] hands = new EquipmentItemData[2];
+	EquipmentItemData[] rings = new EquipmentItemData[2];
+	EquipmentItemData armor;
+	EquipmentItemData shoes;
+	public void EquipItem(ItemData item, int index)
+	{
+		EquipmentItemData equipment = (EquipmentItemData)item;
+		if (null == equipment) {
+			return;
+		}
+		UnequipItem (equipment.info.category, index);
+		switch (equipment.info.category) {
+		case ItemInfo.Category.Armor:
+			armor = equipment;
+			break;
+		case ItemInfo.Category.Hand:
+			{
+				WeaponItemInfo info = (WeaponItemInfo)item.info;
+				if (true == info.twoHanded) {
+					hands [0] = equipment;
+					hands [1] = equipment;
+				} else {
+					hands [index] = equipment;
+				}
+			}
+			break;
+		case ItemInfo.Category.Helmet:
+			helmet = equipment;
+			break;
+		case ItemInfo.Category.Ring:
+			rings [index] = equipment;
+			break;
+		case ItemInfo.Category.Shoes:
+			shoes = equipment;
+			break;
+		default :
+			throw new System.Exception ("Unequiptable item");
+		}
+	}
+	public void UnequipItem(ItemInfo.Category category, int index)
+	{
+		switch (category) {
+		case ItemInfo.Category.Armor:
+			if (null != armor) {
+				inventory.Put (armor);
+				armor = null;
+			}
+			break;
+		case ItemInfo.Category.Hand:
+			if(null != hands[index])
+			{
+				inventory.Put(hands [index]);
+				if (hands [0] == hands [1]) {
+					hands [0] = null;
+					hands [1] = null;
+				} else {
+					hands [index] = null;
+				}
+			}
+			break;
+		case ItemInfo.Category.Helmet:
+			if (null != helmet) {
+				inventory.Put (helmet);
+				helmet = null;
+			}
+			break;
+		case ItemInfo.Category.Ring:
+			if(null != rings[index])
+			{
+				inventory.Put(rings [index]);
+				rings [index] = null;
+			}
+			break;
+		case ItemInfo.Category.Shoes:
+			if (null != shoes) {
+				inventory.Put (shoes);
+				shoes = null;
+			}
+			break;
+		default :
+			throw new System.Exception ("Unequiptable item");
+			break;
+		}
 	}
 }

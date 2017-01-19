@@ -3,52 +3,38 @@ using System.Collections;
 
 public class Inventory
 {
-	public class Slot
-	{
-		public int index;
-		public int count;
-		public ItemData item;
-	};
-	public const int MAX_SLOT_COUNT = 24;
-	public int weight;
-	public int maxWeight;
+	public const int MAX_SLOT_COUNT = 15;
 	public int gold;
-	public Slot[] slots = new Slot[MAX_SLOT_COUNT];
+	public ItemData[] items = new ItemData[MAX_SLOT_COUNT];
 	public UIInventory ui;
 
 	public void Put(ItemData data)
 	{
-		if(maxWeight < weight + data.info.weight)
-		{
-			throw new System.Exception("over burdden");
-		}
 		switch (data.info.category) {
+		case ItemInfo.Category.Key :
 		case ItemInfo.Category.Potion:
-			foreach(Slot slot in slots)
+			foreach(ItemData item in items)
 			{
-				if(null == slot) {
+				if(null == item) {
 					continue;
 				}
-				if(data.info.id == slot.item.info.id)
+				if(item.info.id == data.info.id)
 				{
-					slot.count += 1;
-					weight += data.info.weight;
+					item.count += data.count;
 					return;
 				}
 			}
 			break;
+		default :
+			break;
 		}
 
-		for(int i=0;i<slots.Length; i++)
+		for(int i=0;i<items.Length; i++)
 		{
-			Slot slot = slots[i];
-			if(null == slot)
+			ItemData item = items[i];
+			if(null == item)
 			{
-				slots[i] = new Slot();
-				slots[i].item = data;
-				slots[i].index = i;
-				slots[i].count = 1;
-				weight += data.info.weight;
+				items [i] = data;
 				return;
 			}
 		}
@@ -57,17 +43,14 @@ public class Inventory
 
 	public ItemData Pull(int index)
 	{
-		Slot slot = slots [index];
-		if (null == slot) {
+		ItemData item = items [index];
+		if (null == item) {
 			throw new System.Exception("no item");
 		}
 
-		ItemData item = slot.item;
-		weight -= item.info.weight;
-
-		slot.count -= 1;
-		if (0 == slot.count) {
-			slots [index] = null;
+		item.count -= 1;
+		if (0 == item.count) {
+			items [index] = null;
 		}
 		return item;
 	}

@@ -118,7 +118,7 @@ public class Map : MonoBehaviour {
 		foreach (Room room in rooms) {
 			if (group == room.group) {
 				for (int direction = 0; direction < Room.Max; direction++) {
-					Room other = room.GetNeighbor (direction);
+					Room other = room.GetNext (direction);
 					if (null != other && group != other.group) {
 						outerRooms.Add (room);
 						break;
@@ -129,7 +129,7 @@ public class Map : MonoBehaviour {
 		return outerRooms;
 	}
 
-	void ChangeGroupID(int from, int to)
+	private void ChangeGroupID(int from, int to)
 	{
 		for (int i = 0; i < Map.WIDTH * Map.HEIGHT; i++) {
 			Room room = rooms [i];

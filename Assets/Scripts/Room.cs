@@ -49,7 +49,7 @@ public class Room
 		}
 		return other;
 	}
-	public Room GetNeighbor(int direction)
+	private Room GetNeighbor(int direction)
 	{
 		if (0 > direction || Max <= direction) {
 			throw new System.Exception ("room id:" + direction + ", invalid direction:" + direction);
