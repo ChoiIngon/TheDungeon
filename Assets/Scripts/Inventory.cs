@@ -1,15 +1,30 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[System.Serializable]
 public class Inventory
 {
+	[System.Serializable]
+	public class Slot {
+		public int index;
+		public int count;
+		public ItemData item;
+	}
 	public const int MAX_SLOT_COUNT = 15;
 	public int gold;
-	public ItemData[] items = new ItemData[MAX_SLOT_COUNT];
+	public Slot[] slots = new Slot[MAX_SLOT_COUNT];
 	public UIInventory ui;
+
+	public Inventory()
+	{
+		for (int i = 0; i < MAX_SLOT_COUNT; i++) {
+			slots [i] = new Slot ();
+		}
+	}
 
 	public void Put(ItemData data)
 	{
+		/*
 		switch (data.info.category) {
 		case ItemInfo.Category.Key :
 		case ItemInfo.Category.Potion:
@@ -28,13 +43,15 @@ public class Inventory
 		default :
 			break;
 		}
-
-		for(int i=0;i<items.Length; i++)
+		*/
+		for(int i=0;i<slots.Length; i++)
 		{
-			ItemData item = items[i];
-			if(null == item)
+			Slot slot = slots[i];
+			if(null == slot.item)
 			{
-				items [i] = data;
+				slot.item = data;
+				slot.count = 1;
+				ui.Put (slot);
 				return;
 			}
 		}
@@ -43,15 +60,15 @@ public class Inventory
 
 	public ItemData Pull(int index)
 	{
-		ItemData item = items [index];
-		if (null == item) {
+		Slot slot = slots [index];
+		if (null == slot.item) {
 			throw new System.Exception("no item");
 		}
 
-		item.count -= 1;
-		if (0 == item.count) {
-			items [index] = null;
+		slot.count -= 1;
+		if (0 == slot.count) {
+			slot.item = null;
 		}
-		return item;
+		return slot.item;
 	}
 }

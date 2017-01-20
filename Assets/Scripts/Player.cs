@@ -60,7 +60,10 @@ public class Player : MonoBehaviour {
 		rt.position = Camera.main.WorldToScreenPoint (transform.position);
 	}
 
-	Inventory inventory = new Inventory ();
+	public void Init()
+	{
+	}
+	public Inventory inventory;
 	EquipmentItemData helmet;
 	EquipmentItemData[] hands = new EquipmentItemData[2];
 	EquipmentItemData[] rings = new EquipmentItemData[2];

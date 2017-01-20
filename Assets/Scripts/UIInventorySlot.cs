@@ -4,33 +4,15 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 
-
-public class UIInventorySlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandler {
-    public void OnPointerDown(PointerEventData evt)
-    {
-        Debug.Log("pointer down");
-    }
-
-    public void OnPointerUp(PointerEventData evt)
-    {
-        Debug.Log("pointer up");
-    }
-    /*
-	public Inventory.Slot slot;
-	public Character.EquipPart equipPart;
-	public void Init(Inventory.Slot slot)
+[System.Serializable]
+public class UIInventorySlot : UISlot {
+	public override void OnSelect()
 	{
-		this.slot = slot;
-		GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Texture/Item/"+slot.item.info.id);
-		Transform count = transform.FindChild ("Count");
-		count.GetComponent<Text> ().text = slot.count.ToString ();
-	}
-	public void OnClick()
-	{
-		if (null == slot) {
-			return;
+		for (int i = 0; i < inventory.equipmentSlots.Length; i++) {
+			UIEquipmentSlot other = inventory.equipmentSlots [i];
+			if (item.info.category == other.category) {
+				other.arrow.gameObject.SetActive (true);
+			}
 		}
-		ItemInfoView.Instance.Init (this);
 	}
-	*/
 }

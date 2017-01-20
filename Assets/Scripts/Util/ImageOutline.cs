@@ -9,9 +9,13 @@ public class ImageOutline : MonoBehaviour
 
     private Image image;
 
-    void OnEnable()
+	void OnEnable()
+	{
+		image = GetComponent<Image>();
+	}
+    void Update()
     {
-        image = GetComponent<Image>();
+        
         Material mat = Instantiate(image.material);
         mat.SetFloat("_Outline", 1f);
         mat.SetColor("_OutlineColor", color);

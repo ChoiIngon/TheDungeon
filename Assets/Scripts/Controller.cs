@@ -42,7 +42,6 @@ namespace TheDungeon {
 		public const float speed = 12.8f;
 
 		public UITextBox textBox;
-		public UIEquipment equipment;
 		public PlayerButton[] buttons;
 
 		public GameObject rooms;
@@ -50,13 +49,14 @@ namespace TheDungeon {
 		public Texture2D fadeout;
 		private SpriteRenderer currentRenderer;
 		private SpriteRenderer[] doorRenderer = new SpriteRenderer[Room.Max];
-		private TheDungeon.TouchPad input;
+		private TouchInput input;
 		private Vector3 touchPoint = Vector3.zero;
 		private State state;
 		// Use this for initialization
 		void Start () {
 			ResourceManager.Instance.Init ();
 			Map.Instance.Init ();
+			Player.Instance.Init ();
 			Monster.Init ();
 			iTween.CameraFadeAdd (fadeout);
 
@@ -91,7 +91,7 @@ namespace TheDungeon {
 				}
 			}
 
-			input = GetComponent<TheDungeon.TouchPad> ();
+			input = GetComponent<TouchInput> ();
 			input.onTouchDown += (Vector3 position) => {
 				touchPoint = position;
 			};

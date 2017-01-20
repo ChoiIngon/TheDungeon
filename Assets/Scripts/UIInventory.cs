@@ -1,30 +1,54 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 
 
 public class UIInventory : MonoBehaviour {
 	public Text itemName;
-
-	public Dictionary<string, Sprite> sprites = new Dictionary<string, Sprite>();
-	public UIInventorySlot uiSlotPrefab;
 	[HideInInspector]
-	public UIInventorySlot selected;
 
-	public Transform slots;
+	public UIInventorySlot[] inventorySlots;
+	public UIEquipmentSlot[] equipmentSlots;
 	//public Button[] buttons;
-	public Text weight;
 	public Text gold;
 	void Start() {
-		/*
-		for (int i=0; i<Inventory.MAX_SLOT_COUNT; i++) {
-			UIInventorySlot slot = Instantiate<UIInventorySlot>(uiSlotPrefab);
-			slot.transform.SetParent(slots, false);
+		{
+			inventorySlots = new UIInventorySlot[Inventory.MAX_SLOT_COUNT];
+			Transform tr = transform.FindChild ("InventorySlots");
+			for (int i = 0; i < Inventory.MAX_SLOT_COUNT; i++) {
+				UIInventorySlot slot = tr.GetChild (i).GetComponent<UIInventorySlot> ();
+				slot.inventory = this;
+				inventorySlots [i] = slot;
+			}
 		}
-		*/
-		selected = null;
+		{
+			equipmentSlots = new UIEquipmentSlot[7];
+			Transform tr = transform.FindChild ("EquipmentSlots");
+			for (int i = 0; i < 7; i++) {
+				UIEquipmentSlot slot = tr.GetChild (i).GetComponent<UIEquipmentSlot> ();
+				slot.inventory = this;
+				equipmentSlots [i] = slot;
+			}
+		}
+
+		WeaponItemInfo item = new WeaponItemInfo ();
+		Player.Instance.inventory.Put (item.CreateInstance());
 	}
-	public void SetSeletedItemInfo(ItemData data) {
+
+	public void SetSelectedSlot(UISlot slot)
+	{
+		for (int i = 0; i < inventorySlots.Length; i++) {
+			inventorySlots [i].outline.size = 0;
+		}
+		slot.outline.size = 3;
+	}
+
+	public void Put(Inventory.Slot data)
+	{
+		UIInventorySlot slot = inventorySlots [data.index];
+		slot.item = data.item;
+		slot.Activate (true);
 	}
 }
