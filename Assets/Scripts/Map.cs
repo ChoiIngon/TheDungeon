@@ -118,8 +118,8 @@ public class Map : MonoBehaviour {
 		foreach (Room room in rooms) {
 			if (group == room.group) {
 				for (int direction = 0; direction < Room.Max; direction++) {
-					Room other = room.GetNext (direction);
-					if (null != other && group != other.group) {
+                    Room other = room.GetNeighbor(direction);
+                    if (null != other && group != other.group) {
 						outerRooms.Add (room);
 						break;
 					}
