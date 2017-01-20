@@ -1,10 +1,21 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 
-public class UIInventorySlot : MonoBehaviour {
-	/*
+
+public class UIInventorySlot : MonoBehaviour, IPointerDownHandler, IPointerUpHandler {
+    public void OnPointerDown(PointerEventData evt)
+    {
+        Debug.Log("pointer down");
+    }
+
+    public void OnPointerUp(PointerEventData evt)
+    {
+        Debug.Log("pointer up");
+    }
+    /*
 	public Inventory.Slot slot;
 	public Character.EquipPart equipPart;
 	public void Init(Inventory.Slot slot)
