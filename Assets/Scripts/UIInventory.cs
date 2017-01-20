@@ -11,7 +11,7 @@ public class UIInventory : MonoBehaviour {
 
 	public UIInventorySlot[] inventorySlots;
 	public UIEquipmentSlot[] equipmentSlots;
-	//public Button[] buttons;
+	public Button button;
 	public Text gold;
 	void Start() {
 		{
@@ -33,6 +33,10 @@ public class UIInventory : MonoBehaviour {
 			}
 		}
 
+		button = transform.FindChild ("Close").GetComponent<Button> ();
+		button.onClick.AddListener (() => {
+			gameObject.SetActive(false);
+		});
 		WeaponItemInfo item = new WeaponItemInfo ();
 		Player.Instance.inventory.Put (item.CreateInstance());
 	}
@@ -50,5 +54,13 @@ public class UIInventory : MonoBehaviour {
 		UIInventorySlot slot = inventorySlots [data.index];
 		slot.item = data.item;
 		slot.Activate (true);
+	}
+
+	public void Equip(ItemInfo.Category category, int index)
+	{
+	}
+	public void Unequip(ItemInfo.Category category, int index)
+	{
+		
 	}
 }

@@ -85,6 +85,7 @@ public class UISlot : MonoBehaviour {
 		if (null == item) {
 			return;
 		}
+		OnDrop ();
 		clone.transform.SetParent (null);
 		Destroy (clone.gameObject);
 		clone = null;

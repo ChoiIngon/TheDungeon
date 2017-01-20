@@ -17,4 +17,9 @@ public class UIEquipmentSlot : UISlot {
 	{
 	}
 
+	public void SetItem(ItemData data)
+	{
+		item = data;
+		Activate(true);
+	}
 }

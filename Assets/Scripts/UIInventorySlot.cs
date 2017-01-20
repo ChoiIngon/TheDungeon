@@ -15,4 +15,18 @@ public class UIInventorySlot : UISlot {
 			}
 		}
 	}
+	public override void OnDrop() {
+		for (int i = 0; i < inventory.equipmentSlots.Length; i++) {
+			UIEquipmentSlot other = inventory.equipmentSlots [i];
+			if (item.info.category != other.category) {
+				continue;
+			}
+			if (false == clone.rectTransform.rect.Overlaps (other.rect)) {
+				continue;
+			}
+			Player.Instance.EquipItem (item, other.index);
+			other.SetItem (item);
+			break;
+		}
+	}
 }
