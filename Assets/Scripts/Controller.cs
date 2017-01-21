@@ -47,6 +47,7 @@ namespace TheDungeon {
 		public GameObject rooms;
 		public Monster monster;
 		public Texture2D fadeout;
+		public UIInventory inventory;
 		private SpriteRenderer currentRenderer;
 		private SpriteRenderer[] doorRenderer = new SpriteRenderer[Room.Max];
 		private TouchInput input;
@@ -55,6 +56,7 @@ namespace TheDungeon {
 		// Use this for initialization
 		void Start () {
 			ResourceManager.Instance.Init ();
+			ItemManager.Instance.Init ();
 			Map.Instance.Init ();
 			Player.Instance.Init ();
 			Monster.Init ();

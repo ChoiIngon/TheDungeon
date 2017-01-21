@@ -35,8 +35,8 @@ public class UIInventory : MonoBehaviour {
 		close = transform.FindChild ("Close").GetComponent<Button> ();
 		close.onClick.AddListener (() => {
 			gameObject.SetActive(false);
-			WeaponItemInfo item = new WeaponItemInfo ();
-			Player.Instance.inventory.Put (item.CreateInstance());
+
+			Player.Instance.inventory.Put (ItemManager.Instance.CreateItem("ITEM_WEAPON_" + Random.Range(0, 5).ToString()));
 
 			ArmorItemInfo armor = new ArmorItemInfo ();
 			Player.Instance.inventory.Put (armor.CreateInstance());

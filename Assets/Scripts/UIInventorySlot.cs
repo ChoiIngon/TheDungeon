@@ -7,6 +7,14 @@ using System.Collections.Generic;
 [System.Serializable]
 public class UIInventorySlot : UISlot {
 	public Inventory.Slot data;
+	public override void Activate(bool flag)
+	{
+		base.Activate (flag);
+		if (true == flag) {
+			icon.sprite = data.item.info.icon;
+			grade.color = UISlot.GetGradeColor (data.item.info.grade);
+		}
+	}
 	public override void OnSelect()
 	{
 		if (null == data) {
@@ -38,7 +46,7 @@ public class UIInventorySlot : UISlot {
 				continue;
 			}
 			Rect rhs = clone.rectTransform.rect;
-			Rect lhs = other.rect;
+			Rect lhs = other.rectTransform.rect;
 			rhs.position = (Vector2)clone.transform.position;
 			lhs.position = (Vector2)other.transform.position;
 			if (false == rhs.Overlaps(lhs)) {
@@ -49,7 +57,8 @@ public class UIInventorySlot : UISlot {
 				inventory.equipmentSlots [j].arrow.gameObject.SetActive(false);
 			}
 			ItemData item = Player.Instance.inventory.Pull (data.index);
-			Player.Instance.EquipItem (item, other.index);
+			EquipmentItemData prev = Player.Instance.EquipItem (item, other.index);
+			Player.Instance.inventory.Put (prev);
 			other.item = item;
 			other.Activate (true);
 			this.outline.size = 0;

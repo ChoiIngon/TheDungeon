@@ -89,7 +89,7 @@ public class Map : MonoBehaviour {
 			} else {
 				file += "_";
 			}
-			room.sprite = (Sprite)ResourceManager.Instance.Load (file);
+			room.sprite = ResourceManager.Instance.Load<Sprite> (file);
 		}
 		int startIndex = Random.Range (0, WIDTH * HEIGHT);
 		int exitIndex = 0;

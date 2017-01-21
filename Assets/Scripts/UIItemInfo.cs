@@ -12,33 +12,9 @@ public class UIItemInfo : MonoBehaviour {
 		set {
 			itemName.text = value.info.name;
 			itemIcon.sprite = value.info.icon;
-			itemGrade.color = GetItemGradeColor (value.info.grade);
+			itemGrade.color = UISlot.GetGradeColor (value.info.grade);
 		}
 	}
 
-	private Color GetItemGradeColor(ItemInfo.Grade grade)
-	{
-		Color color = Color.white;
-		switch (grade) {
-		case ItemInfo.Grade.Low:
-			color = Color.grey;
-			break;
-		case ItemInfo.Grade.Normal:
-			color = Color.white;
-			break;
-		case ItemInfo.Grade.High:
-			color = Color.green;
-			break;
-		case ItemInfo.Grade.Magic:
-			color = Color.blue;
-			break;
-		case ItemInfo.Grade.Rare:
-			color = new Color (0xFF, 0x8C, 0x00);
-			break;
-		case ItemInfo.Grade.Legendary:
-			color = Color.red;
-			break;
-		}
-		return color;
-	}
+
 }

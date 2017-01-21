@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Player : MonoBehaviour {
 	private static Player _instance;  
@@ -42,113 +43,57 @@ public class Player : MonoBehaviour {
 			speed = 1.0f;
 		}
 	}
-	public Data data = new Data();
+
+	GaugeBar health = null;
+	public GameObject ui;
+	public GameObject damage;
+	public Data data;
+	public Inventory inventory;
+	public Dictionary<Tuple<ItemInfo.Category, int>, EquipmentItemData> equipments;
+
 	public float attack {
 		get {
 			return 1.0f + data.strength;
 		}
 	}
-	public GameObject ui;
-	public GameObject damage;
-	GaugeBar health = null;
-	// Use this for initialization
-	void Start () {
+
+	public void Init() {
+		data = new Data ();
+
 		health = ui.transform.FindChild ("Health").GetComponent<GaugeBar> ();
 		health.max = 0;
 		health.current = 0;
-		RectTransform rt = ui.transform.GetComponent<RectTransform> ();
-		rt.position = Camera.main.WorldToScreenPoint (transform.position);
-	}
+		ui.transform.GetComponent<RectTransform> ().position = Camera.main.WorldToScreenPoint (transform.position);
 
-	public void Init()
-	{
+		equipments = new Dictionary<Tuple<ItemInfo.Category, int>, EquipmentItemData>();
+		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Helmet, 0), null);
+		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Hand, 0), null);
+		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Hand, 1), null);
+		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Armor, 0), null);
+		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Ring, 0), null);
+		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Ring, 1), null);
+		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Shoes, 0), null);
+
 		inventory.Init ();
 	}
-	public Inventory inventory;
-	public EquipmentItemData helmet;
-	public EquipmentItemData[] hands = new EquipmentItemData[2];
-	public EquipmentItemData[] rings = new EquipmentItemData[2];
-	public EquipmentItemData armor;
-	public EquipmentItemData shoes;
 
-	public void EquipItem(ItemData item, int index)
-	{
-		EquipmentItemData equipment = (EquipmentItemData)item;
-		if (null == equipment) {
-			return;
-		}
-		UnequipItem (equipment.info.category, index);
-		switch (equipment.info.category) {
-		case ItemInfo.Category.Armor:
-			armor = equipment;
-			break;
-		case ItemInfo.Category.Hand:
-			{
-				WeaponItemInfo info = (WeaponItemInfo)item.info;
-				if (true == info.twoHanded) {
-					hands [0] = equipment;
-					hands [1] = equipment;
-				} else {
-					hands [index] = equipment;
-				}
-			}
-			break;
-		case ItemInfo.Category.Helmet:
-			helmet = equipment;
-			break;
-		case ItemInfo.Category.Ring:
-			rings [index] = equipment;
-			break;
-		case ItemInfo.Category.Shoes:
-			shoes = equipment;
-			break;
-		default :
-			throw new System.Exception ("Unequiptable item");
-		}
+	public T GetEquipement<T>(ItemInfo.Category category, int index) where T:ItemData {
+		return equipments [new Tuple<ItemInfo.Category, int> (category, index)] as T;
 	}
-	public void UnequipItem(ItemInfo.Category category, int index)
-	{
-		switch (category) {
-		case ItemInfo.Category.Armor:
-			if (null != armor) {
-				inventory.Put (armor);
-				armor = null;
-			}
-			break;
-		case ItemInfo.Category.Hand:
-			if(null != hands[index])
-			{
-				inventory.Put(hands [index]);
-				if (hands [0] == hands [1]) {
-					hands [0] = null;
-					hands [1] = null;
-				} else {
-					hands [index] = null;
-				}
-			}
-			break;
-		case ItemInfo.Category.Helmet:
-			if (null != helmet) {
-				inventory.Put (helmet);
-				helmet = null;
-			}
-			break;
-		case ItemInfo.Category.Ring:
-			if(null != rings[index])
-			{
-				inventory.Put(rings [index]);
-				rings [index] = null;
-			}
-			break;
-		case ItemInfo.Category.Shoes:
-			if (null != shoes) {
-				inventory.Put (shoes);
-				shoes = null;
-			}
-			break;
-		default :
-			throw new System.Exception ("Unequiptable item");
-			break;
+
+	public EquipmentItemData EquipItem(ItemData item, int index) {
+		if (null == item) {
+			return null;
 		}
+		EquipmentItemData curr = (EquipmentItemData)item;
+		EquipmentItemData prev = equipments [new Tuple<ItemInfo.Category, int> (curr.info.category, index)];
+		equipments [new Tuple<ItemInfo.Category, int> (curr.info.category, index)] = curr;
+		return prev;
+	}
+
+	public EquipmentItemData UnequipItem(ItemInfo.Category category, int index) {
+		EquipmentItemData item = equipments [new Tuple<ItemInfo.Category, int> (category, index)];
+		equipments [new Tuple<ItemInfo.Category, int> (category, index)] = null;
+		return item;
 	}
 }

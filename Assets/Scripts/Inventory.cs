@@ -12,19 +12,23 @@ public class Inventory
 	}
 	public const int MAX_SLOT_COUNT = 15;
 	public int gold;
-	public Slot[] slots = new Slot[MAX_SLOT_COUNT];
+	public Slot[] slots;
 	public UIInventory ui;
 
 	public void Init()
 	{
+		slots = new Slot[MAX_SLOT_COUNT];
 		for (int i = 0; i < MAX_SLOT_COUNT; i++) {
 			slots [i] = new Slot ();
 			slots [i].index = i;
 		}
 		ui.Init ();
 	}
-	public void Put(ItemData data)
+	public bool Put(ItemData data)
 	{
+		if (null == data) {
+			return true;
+		}
 		/*
 		switch (data.info.category) {
 		case ItemInfo.Category.Key :
@@ -45,6 +49,7 @@ public class Inventory
 			break;
 		}
 		*/
+
 		for(int i=0;i<slots.Length; i++)
 		{
 			Slot slot = slots[i];
@@ -53,10 +58,10 @@ public class Inventory
 				slot.item = data;
 				slot.count = 1;
 				ui.ActivateInventorySlot (slot.index, true);
-				return;
+				return true;
 			}
 		}
-		throw new System.Exception ("no more room in inventory");
+		return false;
 	}
 	public ItemData Pull(int index)
 	{

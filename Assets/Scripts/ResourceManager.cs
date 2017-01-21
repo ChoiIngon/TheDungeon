@@ -77,9 +77,9 @@ public class ResourceManager : MonoBehaviour {
 		return null;
 	}
 
-	public Object Load(string name) {
+	public T Load<T>(string name) where T : Object {
 		if (true == resource.ContainsKey (name)) {
-			return resource [name];
+			return resource [name] as T;
 		}
 		return null;
 	}

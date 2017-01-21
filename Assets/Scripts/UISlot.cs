@@ -5,16 +5,14 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class UISlot : MonoBehaviour {
-	Image icon;
-	Image border;
-	public Image clone;
-	public Rect rect {
-		get {
-			return border.rectTransform.rect;
-		}
-	}
-	Image grade;
+	// Image border;
+	public Image icon;
+	public Image grade;
 	public ImageOutline outline;
+
+	public Image clone;
+	public RectTransform rectTransform;
+
 	public int index;
 	public UIInventory inventory;
 
@@ -45,10 +43,10 @@ public class UISlot : MonoBehaviour {
 			});
 			trigger.triggers.Add (entry);
 		}
+		rectTransform = GetComponent<RectTransform> ();
 		icon = transform.FindChild ("ItemIcon").GetComponent<Image> ();
 		outline = transform.FindChild ("ItemIcon").GetComponent<ImageOutline> ();
 		grade = transform.FindChild ("ItemGrade").GetComponent<Image> ();
-		border = transform.FindChild("Border").GetComponent<Image>();
 		outline.size = 0;
 		Activate (false);
 	}
@@ -88,10 +86,35 @@ public class UISlot : MonoBehaviour {
 	public virtual void OnDrop()
 	{
 	}
-
 	public virtual void Activate(bool flag)
 	{
 		icon.gameObject.SetActive (flag);
 		grade.gameObject.SetActive (flag);
+	}
+
+	public static Color GetGradeColor(ItemInfo.Grade grade)
+	{
+		Color color = Color.white;
+		switch (grade) {
+		case ItemInfo.Grade.Low:
+			color = Color.grey;
+			break;
+		case ItemInfo.Grade.Normal:
+			color = Color.white;
+			break;
+		case ItemInfo.Grade.High:
+			color = Color.green;
+			break;
+		case ItemInfo.Grade.Magic:
+			color = Color.blue;
+			break;
+		case ItemInfo.Grade.Rare:
+			color = new Color (0xFF, 0x8C, 0x00);
+			break;
+		case ItemInfo.Grade.Legendary:
+			color = Color.red;
+			break;
+		}
+		return color;
 	}
 }

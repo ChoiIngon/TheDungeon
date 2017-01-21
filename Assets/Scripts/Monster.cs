@@ -186,7 +186,7 @@ public class Monster : MonoBehaviour {
 			info.health = int.Parse (row ["HEALTH"]);
 			info.defense = float.Parse (row ["DEFENSE"]);
 			info.speed = float.Parse (row ["SPEED"]);
-			info.sprite = (Sprite)ResourceManager.Instance.Load(row ["SPRITE_PATH"]);
+			info.sprite = ResourceManager.Instance.Load<Sprite>(row ["SPRITE_PATH"]);
 			info.reward.gold = int.Parse (row ["REWARD_GOLD"]);
 			info.reward.exp = int.Parse (row ["REWARD_EXP"]);
 
