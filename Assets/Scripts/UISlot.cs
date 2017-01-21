@@ -17,7 +17,7 @@ public class UISlot : MonoBehaviour {
 	public ImageOutline outline;
 	public int index;
 	public UIInventory inventory;
-	public ItemData item;
+
 	public void Start()
 	{
 		EventTrigger trigger = GetComponent<EventTrigger>( );
@@ -53,12 +53,9 @@ public class UISlot : MonoBehaviour {
 		Activate (false);
 	}
 
-	public void OnPointerDown( PointerEventData data )
+	public void OnPointerDown( PointerEventData evt )
 	{
-		if (null == item) {
-			return;
-		}
-		inventory.SetSelectedSlot (this);
+		inventory.selected = this;
 
 		clone = Instantiate<Image> (icon);
 		clone.transform.SetParent (inventory.transform);
@@ -72,19 +69,13 @@ public class UISlot : MonoBehaviour {
 		OnSelect ();
 	}
 
-	public void OnDrag( PointerEventData data )
+	public void OnDrag( PointerEventData evt )
 	{
-		if (null == item) {
-			return;
-		}
-		clone.transform.position = data.position;
+		clone.transform.position = evt.position;
 	}
 
-	public void OnPointerUp( PointerEventData data )
+	public void OnPointerUp( PointerEventData evt )
 	{
-		if (null == item) {
-			return;
-		}
 		OnDrop ();
 		clone.transform.SetParent (null);
 		Destroy (clone.gameObject);

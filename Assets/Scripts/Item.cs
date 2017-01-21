@@ -32,7 +32,7 @@ public abstract class ItemInfo {
 		Shoes,
 		Potion,
 		Key,
-		Max
+		All
 	}
 	public enum Grade
 	{
@@ -41,11 +41,11 @@ public abstract class ItemInfo {
 		High,
 		Magic,
 		Rare,
-		Legendary
+		Legendary,
+		All
 	}
 	public string id;
 	public string name;
-	public int level;
 
 	public int price;
 	public Sprite icon;
@@ -66,20 +66,35 @@ public abstract class ItemData {
 	*/
 }
 
+[System.Serializable]
 public abstract class EquipmentItemData : ItemData {
-	public int seq;
 	/*
 	public Character.EquipPart part;
 	public abstract Character.Status GetStatus();
 	*/
 }
 
-public class ItemManager : MonoBehaviour {
-	private Dictionary<string, ItemInfo> dictItemInfo;
-	public ItemManager() {
+public class ItemManager {
+	private Dictionary<string, ItemInfo> infos;
+	public ItemData CreateRandomItem(ItemInfo.Category category, ItemInfo.Grade grade)
+	{
+		return null;
 	}
-	/*
+	public ItemData CreateItem(string id) {
+		return FindInfo<ItemInfo> (id).CreateInstance ();
+	}
+
+	public T FindInfo<T>(string id) where T:ItemInfo
+	{
+		if (false == infos.ContainsKey (id)) {
+			throw new System.Exception ("can't find item info(id:" + id + ")");
+		}
+		return infos[id] as T;
+	}
+
 	public void Init() {
+		infos = new Dictionary<string, ItemInfo> ();
+		/*
 		dictItemInfo = new Dictionary<string, ItemInfo>();
 		TextAsset resource = Resources.Load ("Config/ItemInfo") as TextAsset;
 		JSONNode root = JSON.Parse (resource.text);
@@ -92,7 +107,9 @@ public class ItemManager : MonoBehaviour {
 		InitPotionItemInfo(root);
 
 		Debug.Log ("init complete ItemManager");
+		*/
 	}
+	/*
 	private void InitRingItemInfo(JSONNode root)
 	{
 		JSONNode itemInfos = root ["ring"];
@@ -200,10 +217,5 @@ public class ItemManager : MonoBehaviour {
 			dictItemInfo.Add (itemInfo.id, itemInfo);
 		}
 	}
-	public ItemInfo Find(string id) {
-		return dictItemInfo [id];
-	}
-	public ItemData CreateInstance(string id) {
-		return dictItemInfo [id].CreateInstance ();
-	}*/
+	*/
 }

@@ -15,13 +15,14 @@ public class Inventory
 	public Slot[] slots = new Slot[MAX_SLOT_COUNT];
 	public UIInventory ui;
 
-	public Inventory()
+	public void Init()
 	{
 		for (int i = 0; i < MAX_SLOT_COUNT; i++) {
 			slots [i] = new Slot ();
+			slots [i].index = i;
 		}
+		ui.Init ();
 	}
-
 	public void Put(ItemData data)
 	{
 		/*
@@ -51,13 +52,12 @@ public class Inventory
 			{
 				slot.item = data;
 				slot.count = 1;
-				ui.Put (slot);
+				ui.ActivateInventorySlot (slot.index, true);
 				return;
 			}
 		}
 		throw new System.Exception ("no more room in inventory");
 	}
-
 	public ItemData Pull(int index)
 	{
 		Slot slot = slots [index];
@@ -66,9 +66,11 @@ public class Inventory
 		}
 
 		slot.count -= 1;
+		ItemData item = slot.item;
 		if (0 == slot.count) {
 			slot.item = null;
+			ui.ActivateInventorySlot (slot.index, false);
 		}
-		return slot.item;
+		return item;
 	}
 }

@@ -7,19 +7,16 @@ using System.Collections.Generic;
 public class UIEquipmentSlot : UISlot {
 	public ItemInfo.Category category;
 	public Image arrow;
-	void Start( )
+	public ItemData item;
+	new void Start( )
 	{
 		base.Start ();
 		arrow = transform.FindChild ("Arrow").GetComponent<Image> ();
 	}
 
-	public override void OnDrop()
+	public void Equip(ItemData item)
 	{
-	}
-
-	public void SetItem(ItemData data)
-	{
-		item = data;
+		this.item = item;
 		Activate(true);
 	}
 }

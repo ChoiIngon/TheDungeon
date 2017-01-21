@@ -62,13 +62,15 @@ public class Player : MonoBehaviour {
 
 	public void Init()
 	{
+		inventory.Init ();
 	}
 	public Inventory inventory;
-	EquipmentItemData helmet;
-	EquipmentItemData[] hands = new EquipmentItemData[2];
-	EquipmentItemData[] rings = new EquipmentItemData[2];
-	EquipmentItemData armor;
-	EquipmentItemData shoes;
+	public EquipmentItemData helmet;
+	public EquipmentItemData[] hands = new EquipmentItemData[2];
+	public EquipmentItemData[] rings = new EquipmentItemData[2];
+	public EquipmentItemData armor;
+	public EquipmentItemData shoes;
+
 	public void EquipItem(ItemData item, int index)
 	{
 		EquipmentItemData equipment = (EquipmentItemData)item;

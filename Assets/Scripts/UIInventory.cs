@@ -6,20 +6,19 @@ using System.Collections.Generic;
 
 
 public class UIInventory : MonoBehaviour {
-	public Text itemName;
-	[HideInInspector]
-
+	public UIItemInfo itemInfo;
 	public UIInventorySlot[] inventorySlots;
 	public UIEquipmentSlot[] equipmentSlots;
-	public Button button;
+	public Button close;
 	public Text gold;
-	void Start() {
+	public void Init() {
 		{
 			inventorySlots = new UIInventorySlot[Inventory.MAX_SLOT_COUNT];
 			Transform tr = transform.FindChild ("InventorySlots");
 			for (int i = 0; i < Inventory.MAX_SLOT_COUNT; i++) {
 				UIInventorySlot slot = tr.GetChild (i).GetComponent<UIInventorySlot> ();
 				slot.inventory = this;
+				slot.data = Player.Instance.inventory.slots [i];
 				inventorySlots [i] = slot;
 			}
 		}
@@ -33,34 +32,44 @@ public class UIInventory : MonoBehaviour {
 			}
 		}
 
-		button = transform.FindChild ("Close").GetComponent<Button> ();
-		button.onClick.AddListener (() => {
+		close = transform.FindChild ("Close").GetComponent<Button> ();
+		close.onClick.AddListener (() => {
 			gameObject.SetActive(false);
+			WeaponItemInfo item = new WeaponItemInfo ();
+			Player.Instance.inventory.Put (item.CreateInstance());
+
+			ArmorItemInfo armor = new ArmorItemInfo ();
+			Player.Instance.inventory.Put (armor.CreateInstance());
 		});
-		WeaponItemInfo item = new WeaponItemInfo ();
-		Player.Instance.inventory.Put (item.CreateInstance());
 	}
 
-	public void SetSelectedSlot(UISlot slot)
-	{
-		for (int i = 0; i < inventorySlots.Length; i++) {
-			inventorySlots [i].outline.size = 0;
+	public UISlot selected {
+		set {
+			for (int i = 0; i < inventorySlots.Length; i++) {
+				inventorySlots [i].outline.size = 0;
+			}
+			for (int i = 0; i < 7; i++) {
+				equipmentSlots [i].outline.size = 0;
+			}
+			if (null != value) {
+				value.outline.size = 3;
+			}
 		}
-		slot.outline.size = 3;
+	}
+	public void ActivateInventorySlot(int index, bool flag)
+	{
+		UIInventorySlot slot = inventorySlots [index];
+		slot.Activate (flag);
 	}
 
-	public void Put(Inventory.Slot data)
+	public void ActivateEquipmentSlot(ItemInfo.Category category, int index, bool flag)
 	{
-		UIInventorySlot slot = inventorySlots [data.index];
-		slot.item = data.item;
-		slot.Activate (true);
-	}
-
-	public void Equip(ItemInfo.Category category, int index)
-	{
-	}
-	public void Unequip(ItemInfo.Category category, int index)
-	{
-		
+		for (int i = 0; i < 7; i++) {
+			UIEquipmentSlot slot = equipmentSlots [i];
+			if (slot.category == category && slot.index == index) {
+				slot.Activate (flag);
+				break;
+			}
+		}
 	}
 }
