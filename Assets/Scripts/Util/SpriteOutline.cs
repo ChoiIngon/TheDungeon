@@ -13,7 +13,6 @@ public class SpriteOutline : MonoBehaviour
 	}
     void Update()
     {
-        
         MaterialPropertyBlock mpb = new MaterialPropertyBlock();
         spriteRenderer.GetPropertyBlock(mpb);
         mpb.SetFloat("_Outline", 1f);

@@ -15,8 +15,8 @@ public class ImageOutline : MonoBehaviour
 	}
     void Update()
     {
-        
         Material mat = Instantiate(image.material);
+		mat.name = name;
         mat.SetFloat("_Outline", 1f);
         mat.SetColor("_OutlineColor", color);
         mat.SetFloat("_OutlineSize", size);
