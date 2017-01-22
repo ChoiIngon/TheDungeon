@@ -81,6 +81,7 @@ public class UITextBox : MonoBehaviour {
 		
 	IEnumerator Type()
 	{
+		Controller.Instance.SetState (Controller.State.Popup);
 		RectTransform rt = GetComponent<RectTransform> ();
 		height = rt.rect.height;
 
@@ -89,12 +90,11 @@ public class UITextBox : MonoBehaviour {
 			Vector2 position = rt.anchoredPosition;
 			position.y += height * Time.deltaTime * 2.0f;
 			rt.anchoredPosition = position;
-			Debug.Log ("anchored position:" + rt.anchoredPosition);
 			yield return null;
 		}
-		Debug.Log ("anchored position:" + rt.anchoredPosition);
+
 		rt.anchoredPosition = new Vector2 (rt.anchoredPosition.x, height);
-		//transform.localPosition = new Vector3 (transform.localPosition.x, height, transform.localPosition.z);
+
 		button.gameObject.SetActive (true);
 		foreach (char c in copied)
 		{
@@ -119,5 +119,6 @@ public class UITextBox : MonoBehaviour {
 			yield return null;
 		}
 		transform.position = new Vector3 (transform.position.x, 0.0f, 0.0f);
+		Controller.Instance.SetState (Controller.State.Idle);
 	}
 }

@@ -84,6 +84,7 @@ public class Monster : MonoBehaviour {
 
 	public IEnumerator Battle()
 	{
+		Controller.Instance.SetState (Controller.State.Battle);
 		yield return new WaitForSeconds (0.5f);
 		while (0.0f < data.health) {
 			float waitTime = 0.0f;
@@ -124,8 +125,9 @@ public class Monster : MonoBehaviour {
 			iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
 		}
 		gameObject.SetActive (false);
+		Controller.Instance.SetState (Controller.State.Idle);
+
 		UITextBox.Instance.text = "test test test test test test test test";
-		TheDungeon.Controller.Instance.SetState (TheDungeon.Controller.State.Idle);
 	}
 
 	public void Attack()

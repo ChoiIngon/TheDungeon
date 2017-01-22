@@ -7,6 +7,13 @@ using System.Collections.Generic;
 [System.Serializable]
 public class UIInventorySlot : UISlot {
 	public Inventory.Slot data;
+	void OnEnable()
+	{
+		Controller.Instance.SetState (Controller.State.Popup);
+	}
+	void OnDisable() {
+		Controller.Instance.SetState (Controller.State.Idle);
+	}
 	public override void Activate(bool flag)
 	{
 		base.Activate (flag);
@@ -61,7 +68,7 @@ public class UIInventorySlot : UISlot {
 			Player.Instance.inventory.Put (prev);
 			other.item = item;
 			other.Activate (true);
-			this.outline.size = 0;
+			//this.outline.size = 0;
 			break;
 		}
 	}

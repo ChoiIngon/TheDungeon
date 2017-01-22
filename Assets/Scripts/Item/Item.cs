@@ -100,6 +100,7 @@ public class ItemManager {
 	public void Init() {
 		infos = new Dictionary<string, ItemInfo> ();
 		InitWeaponItemInfo ();
+		InitArmorItemInfo ();
 		/*
 		dictItemInfo = new Dictionary<string, ItemInfo>();
 		TextAsset resource = Resources.Load ("Config/ItemInfo") as TextAsset;
@@ -146,23 +147,22 @@ public class ItemManager {
 			dictItemInfo.Add (itemInfo.id, itemInfo);
 		}
 	}
-	private void InitShirtItemInfo(JSONNode root)
+	*/
+	private void InitArmorItemInfo()
 	{
-		JSONNode itemInfos = root ["shirt"];
-		for (int i=0; i<itemInfos.Count; i++) {
-			JSONNode jsonInfo = itemInfos[i];
-			ShirtItemInfo itemInfo = new ShirtItemInfo();
-			itemInfo.id = jsonInfo["id"];
-			itemInfo.name = jsonInfo["name"];
-			itemInfo.cost = jsonInfo["cost"].AsInt;
-			itemInfo.weight = jsonInfo["weight"].AsInt;
-			itemInfo.description = jsonInfo["description"];
-			itemInfo.defense = jsonInfo["defense"].AsInt;
-			itemInfo.speed = jsonInfo["speed"].AsInt;
-			dictItemInfo.Add (itemInfo.id, itemInfo);
+		for(int i=0; i<10; i++)
+		{
+			ArmorItemInfo info = new ArmorItemInfo ();
+			info.name = "Armor_" + i.ToString ();
+			info.price = 100;
+			info.grade = (ItemInfo.Grade)Random.Range ((int)ItemInfo.Grade.Low, (int)ItemInfo.Grade.All);
+			info.icon = ResourceManager.Instance.Load<Sprite> ("item_shirt_003");
+			info.id = "ITEM_ARMOR_" + i.ToString ();
+
+			infos.Add (info.id, info);
 		}
 	}
-	*/
+
 	private void InitWeaponItemInfo()
 	{
 		for(int i=0; i<10; i++)
@@ -174,7 +174,6 @@ public class ItemManager {
 			info.attack = Random.Range (1, 10);
 			info.icon = ResourceManager.Instance.Load<Sprite> ("item_sword_003");
 			info.id = "ITEM_WEAPON_" + i.ToString ();
-			info.twoHanded = 0 == Random.Range (0, 2) ? true : false;
 			infos.Add (info.id, info);
 		}
 	}

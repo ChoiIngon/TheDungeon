@@ -2,7 +2,6 @@
 using System.Collections;
 
 public class WeaponItemInfo : ItemInfo {
-	public bool twoHanded;
 	public int attack;
 
 	public WeaponItemInfo() {

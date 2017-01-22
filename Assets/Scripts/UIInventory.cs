@@ -36,19 +36,23 @@ public class UIInventory : MonoBehaviour {
 		close.onClick.AddListener (() => {
 			gameObject.SetActive(false);
 
-			Player.Instance.inventory.Put (ItemManager.Instance.CreateItem("ITEM_WEAPON_" + Random.Range(0, 5).ToString()));
-
-			ArmorItemInfo armor = new ArmorItemInfo ();
-			Player.Instance.inventory.Put (armor.CreateInstance());
+			Player.Instance.inventory.Put (ItemManager.Instance.CreateItem("ITEM_WEAPON_" + Random.Range(0, 10).ToString()));
+			Player.Instance.inventory.Put(ItemManager.Instance.CreateItem("ITEM_ARMOR_" + Random.Range(0, 10).ToString()));
 		});
 	}
 
 	public void OnEnable()
 	{
 		itemInfo.gameObject.SetActive (false);
+		Controller.Instance.SetState (Controller.State.Popup);
+	}
+	public void OnDisable()
+	{
+		Controller.Instance.SetState (Controller.State.Idle);
 	}
 	public UISlot selected {
 		set {
+			/*
 			for (int i = 0; i < inventorySlots.Length; i++) {
 				inventorySlots [i].outline.size = 0;
 			}
@@ -58,6 +62,7 @@ public class UIInventory : MonoBehaviour {
 			if (null != value) {
 				value.outline.size = 3;
 			}
+			*/
 		}
 	}
 	public void ActivateInventorySlot(int index, bool flag)
