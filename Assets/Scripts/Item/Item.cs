@@ -2,27 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ItemAttributeInfo
+public class ItemAttribute
 {
 	public enum Type {
+		Attack
 	}
+	public Type type;
 	public float min;
 	public float max;
-	public ItemAttributeData CreateInstance()
-	{
-		ItemAttributeData data = new ItemAttributeData ();
-		data.info = this;
-		data.value = Random.Range (min, max);
-		return data;
-	}
+	public string description;
 }
-
-public class ItemAttributeData
-{
-	public ItemAttributeInfo info;
-	public float value;
-}
-
+	
 public abstract class ItemInfo {
 	public const int MAX_EQUIPMEMT_CATEGORY = 5;
 	public enum Category {
@@ -52,7 +42,8 @@ public abstract class ItemInfo {
 	public Sprite icon;
 	public Category category;
 	public Grade grade;
-	public List<ItemAttributeInfo> attributes = new List<ItemAttributeInfo> ();
+	public ItemAttribute 		mainAttribute;
+	public List<ItemAttribute> 	secondaryAttributes = new List<ItemAttribute>();
 	public abstract ItemData CreateInstance();
 }
 
@@ -60,6 +51,7 @@ public abstract class ItemData {
 	public ItemInfo info;
 	public int count;
 	public int seq;
+
 	/*
 	public virtual Character.Status Use (Character character) {
 		throw new System.Exception ("the item can not be used");

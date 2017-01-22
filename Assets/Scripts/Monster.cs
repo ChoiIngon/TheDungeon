@@ -100,7 +100,7 @@ public class Monster : MonoBehaviour {
 				}
 
 				for (int i = 0; i < attackCount; i++) {
-					Damage (10);
+					Damage (30);
 					yield return new WaitForSeconds (waitTime);
 				}
 			}
@@ -134,7 +134,7 @@ public class Monster : MonoBehaviour {
 		iTween.ShakePosition (Camera.main.gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.1f);
 		animator.SetTrigger ("Attack");
 		BloodMark bloodMark = GameObject.Instantiate<BloodMark> (bloodMarkPrefab);
-		bloodMark.transform.SetParent (Player.Instance.damage.transform);
+		bloodMark.transform.SetParent (Player.Instance.damage.transform, false);
 		bloodMark.transform.position = new Vector3(
 			Random.Range(Screen.width/2 - Screen.width /2 * 0.85f, Screen.width/2 + Screen.width/2 * 0.9f), 
 			Random.Range(Screen.height/2 - Screen.height /2 * 0.85f, Screen.height/2 + Screen.height/2 * 0.9f),

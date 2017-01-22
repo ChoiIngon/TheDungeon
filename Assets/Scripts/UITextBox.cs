@@ -66,6 +66,12 @@ public class UITextBox : MonoBehaviour {
 		{
 			RectTransform rt = GetComponent<RectTransform> ();
 			height = rt.rect.height;
+
+			Debug.Log ("position:" + rt.position);
+			Debug.Log ("local position:" + rt.localPosition);
+			Debug.Log ("anchored position:" + rt.anchoredPosition);
+			//rt.position = new Vector3 (rt.position.x, rt.position.y + height, rt.position.z);
+			//Debug.Log (rt.position);
 		}
 		{
 			RectTransform rt = button.GetComponent<RectTransform> ();
@@ -75,13 +81,20 @@ public class UITextBox : MonoBehaviour {
 		
 	IEnumerator Type()
 	{
+		RectTransform rt = GetComponent<RectTransform> ();
+		height = rt.rect.height;
+
 		contents.text = "";
-		while (0.0f >= transform.position.y) {
-			Vector3 position = transform.position;
+		while (height >= rt.anchoredPosition.y) {
+			Vector2 position = rt.anchoredPosition;
 			position.y += height * Time.deltaTime * 2.0f;
-			transform.position = position;
+			rt.anchoredPosition = position;
+			Debug.Log ("anchored position:" + rt.anchoredPosition);
 			yield return null;
 		}
+		Debug.Log ("anchored position:" + rt.anchoredPosition);
+		rt.anchoredPosition = new Vector2 (rt.anchoredPosition.x, height);
+		//transform.localPosition = new Vector3 (transform.localPosition.x, height, transform.localPosition.z);
 		button.gameObject.SetActive (true);
 		foreach (char c in copied)
 		{
@@ -99,12 +112,12 @@ public class UITextBox : MonoBehaviour {
 
 	IEnumerator DownTextBox()
 	{
-		while (-height < transform.position.y) {
+		while (0 < transform.position.y) {
 			Vector3 position = transform.position;
 			position.y -= height * Time.deltaTime * 2.0f;
 			transform.position = position;
 			yield return null;
 		}
-		transform.position = new Vector3 (transform.position.x, -height, 0.0f);
+		transform.position = new Vector3 (transform.position.x, 0.0f, 0.0f);
 	}
 }

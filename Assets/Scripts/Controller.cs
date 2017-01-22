@@ -183,7 +183,7 @@ namespace TheDungeon {
 				}
 			}
 
-			if (30 > Random.Range (0, 100)) {
+			if (100 > Random.Range (0, 100)) {
 				SetState (State.Battle);
 				Monster.Info info = Monster.FindInfo ("DAEMON_001");
 				monster.Init (info);

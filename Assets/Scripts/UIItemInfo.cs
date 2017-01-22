@@ -13,6 +13,7 @@ public class UIItemInfo : MonoBehaviour {
 			itemName.text = value.info.name;
 			itemIcon.sprite = value.info.icon;
 			itemGrade.color = UISlot.GetGradeColor (value.info.grade);
+			gameObject.SetActive (true);
 		}
 	}
 

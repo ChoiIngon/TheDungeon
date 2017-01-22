@@ -43,6 +43,10 @@ public class UIInventory : MonoBehaviour {
 		});
 	}
 
+	public void OnEnable()
+	{
+		itemInfo.gameObject.SetActive (false);
+	}
 	public UISlot selected {
 		set {
 			for (int i = 0; i < inventorySlots.Length; i++) {

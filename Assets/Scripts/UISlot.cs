@@ -56,13 +56,14 @@ public class UISlot : MonoBehaviour {
 		inventory.selected = this;
 
 		clone = Instantiate<Image> (icon);
-		clone.transform.SetParent (inventory.transform);
+		clone.transform.SetParent (inventory.transform, false);
 
 		RectTransform rtClone = clone.rectTransform;
 		rtClone.anchorMax = new Vector2(0.5f, 0.5f);
 		rtClone.anchorMin = new Vector2(0.5f, 0.5f);
 		rtClone.localScale = Vector3.one;
 		rtClone.sizeDelta = new Vector2 (100.0f, 100.0f); //rtOriginal.sizeDelta;
+
 		clone.transform.position = transform.position;
 		OnSelect ();
 	}
@@ -70,6 +71,7 @@ public class UISlot : MonoBehaviour {
 	public void OnDrag( PointerEventData evt )
 	{
 		clone.transform.position = evt.position;
+		Debug.Log (clone.transform.position);
 	}
 
 	public void OnPointerUp( PointerEventData evt )
