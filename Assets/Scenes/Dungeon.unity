@@ -2463,7 +2463,7 @@ MonoBehaviour:
   itemIcon: {fileID: 1909807200}
   itemGrade: {fileID: 653425263}
   itemMainStat: {fileID: 91468015}
-  itemSecondaryStat: {fileID: 1439635675}
+  itemSubStat: {fileID: 1439635675}
 --- !u!1 &736679894
 GameObject:
   m_ObjectHideFlags: 0
@@ -4658,7 +4658,7 @@ GameObject:
   - component: {fileID: 1439635676}
   - component: {fileID: 1439635675}
   m_Layer: 5
-  m_Name: ItemSecondaryStat
+  m_Name: ItemSubStat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

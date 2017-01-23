@@ -2,17 +2,49 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ItemAttribute
+public abstract class ItemStat
 {
 	public enum Type {
-		Attack
+		Attack,
+		Defense,
+		Speed,
+		Health
 	}
 	public Type type;
+	public string description;
+	public abstract float GetValue ();
+}
+
+public class ConstItemStat : ItemStat
+{
+	public ConstItemStat(ItemStat.Type type, float value, string description)
+	{
+		this.type = type;
+		this.value = value;
+		this.description = description;
+	}
+	public float value;
+	public override float GetValue() {
+		return value;
+	}
+}
+
+public class RandomItemStat : ItemStat
+{
 	public float min;
 	public float max;
-	public string description;
+	public RandomItemStat(ItemStat.Type type, float min, float max, string description)
+	{
+		this.type = type;
+		this.min = min;
+		this.max = max;
+		this.description = description;
+	}
+	public override float GetValue() {
+		return Random.Range (min, max);
+	}
 }
-	
+		
 public abstract class ItemInfo {
 	public const int MAX_EQUIPMEMT_CATEGORY = 5;
 	public enum Category {
@@ -42,8 +74,8 @@ public abstract class ItemInfo {
 	public Sprite icon;
 	public Category category;
 	public Grade grade;
-	public ItemAttribute 		mainAttribute;
-	public List<ItemAttribute> 	secondaryAttributes = new List<ItemAttribute>();
+	public ItemStat 		mainStat;
+	public List<ItemStat> 	subStat = new List<ItemStat>();
 	public abstract ItemData CreateInstance();
 }
 
@@ -62,7 +94,6 @@ public abstract class ItemData {
 [System.Serializable]
 public abstract class EquipmentItemData : ItemData {
 	/*
-	public Character.EquipPart part;
 	public abstract Character.Status GetStatus();
 	*/
 }
@@ -158,7 +189,6 @@ public class ItemManager {
 			info.grade = (ItemInfo.Grade)Random.Range ((int)ItemInfo.Grade.Low, (int)ItemInfo.Grade.All);
 			info.icon = ResourceManager.Instance.Load<Sprite> ("item_shirt_003");
 			info.id = "ITEM_ARMOR_" + i.ToString ();
-
 			infos.Add (info.id, info);
 		}
 	}
@@ -174,6 +204,7 @@ public class ItemManager {
 			info.attack = Random.Range (1, 10);
 			info.icon = ResourceManager.Instance.Load<Sprite> ("item_sword_003");
 			info.id = "ITEM_WEAPON_" + i.ToString ();
+			info.mainStat = new RandomItemStat (ItemStat.Type.Attack, i + 1, i + 14, "ATK : " + (i + 1) + " ~ " + (i + 14));
 			infos.Add (info.id, info);
 		}
 	}
