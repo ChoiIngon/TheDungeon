@@ -52,17 +52,15 @@ public class UIInventory : MonoBehaviour {
 	}
 	public UISlot selected {
 		set {
-			/*
 			for (int i = 0; i < inventorySlots.Length; i++) {
-				inventorySlots [i].outline.size = 0;
+				inventorySlots [i].outline.outline = false;
 			}
 			for (int i = 0; i < 7; i++) {
-				equipmentSlots [i].outline.size = 0;
+				equipmentSlots [i].outline.outline = false;
 			}
 			if (null != value) {
-				value.outline.size = 3;
+				value.outline.outline = true;
 			}
-			*/
 		}
 	}
 	public void ActivateInventorySlot(int index, bool flag)

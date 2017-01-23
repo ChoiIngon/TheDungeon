@@ -68,8 +68,8 @@ public class UIInventorySlot : UISlot {
 			Player.Instance.inventory.Put (prev);
 			other.item = item;
 			other.Activate (true);
-			//this.outline.size = 0;
-			break;
+			this.outline.outline = false;
+			return;
 		}
 	}
 }

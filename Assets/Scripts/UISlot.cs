@@ -8,7 +8,7 @@ public class UISlot : MonoBehaviour {
 	// Image border;
 	public Image icon;
 	public Image grade;
-	//public ImageOutline outline;
+	public ImageOutline outline;
 
 	public Image clone;
 	public RectTransform rectTransform;
@@ -45,9 +45,9 @@ public class UISlot : MonoBehaviour {
 		}
 		rectTransform = GetComponent<RectTransform> ();
 		icon = transform.FindChild ("ItemIcon").GetComponent<Image> ();
-		//outline = transform.FindChild ("ItemIcon").GetComponent<ImageOutline> ();
+		outline = transform.FindChild ("ItemIcon").GetComponent<ImageOutline> ();
 		grade = transform.FindChild ("ItemGrade").GetComponent<Image> ();
-		//outline.size = 0;
+		outline.outline = false;
 		Activate (false);
 	}
 
@@ -119,4 +119,10 @@ public class UISlot : MonoBehaviour {
 		}
 		return color;
 	}
+	void onDrawGizmos()
+	{
+		//Gizmos.color = Color.blue;
+		//Gizmos.DrawWireCube(transform.position,new Vector3(rectTransform.rect.x, rectTransform.rect.y, 0.0f));
+	}
+
 }

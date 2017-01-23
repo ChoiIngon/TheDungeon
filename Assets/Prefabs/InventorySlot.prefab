@@ -38,6 +38,7 @@ GameObject:
   - component: {fileID: 224721455018733810}
   - component: {fileID: 222257332458808510}
   - component: {fileID: 114658796331129864}
+  - component: {fileID: 114864027658681488}
   m_Layer: 5
   m_Name: ItemIcon
   m_TagString: Untagged
@@ -178,7 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: cb27d0826355dd84194c824dfc2f9cc8, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
@@ -194,6 +195,19 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114864027658681488
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1548260162822806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2800fdf9b4c3804b8763d9a71a754d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: {r: 1, g: 0, b: 0, a: 1}
+  outline: 0
 --- !u!222 &222257332458808510
 CanvasRenderer:
   m_ObjectHideFlags: 1

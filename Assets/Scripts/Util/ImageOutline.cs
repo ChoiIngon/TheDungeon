@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class ImageOutline : MonoBehaviour
 {
     public Color color = Color.white;
-    public int size = 0;
+    public bool outline = false;
 
     private Image image;
 
@@ -17,9 +17,9 @@ public class ImageOutline : MonoBehaviour
     {
         Material mat = Instantiate(image.material);
 		mat.name = name;
-        mat.SetFloat("_Outline", 1f);
+        mat.SetFloat("_Outline", outline ? 1f : 0f);
         mat.SetColor("_OutlineColor", color);
-        mat.SetFloat("_OutlineSize", size);
+        //mat.SetFloat("_OutlineSize", size);
         image.material = mat;
     }
 }

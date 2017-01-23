@@ -78,7 +78,7 @@ public class UIEquipmentSlot : UISlot {
 			Player.Instance.EquipItem (prev, index);
 			this.Equip(prev);
 
-			//this.outline.size = 0;
+			this.outline.outline = false;
 			return;
 		}
 
@@ -100,7 +100,7 @@ public class UIEquipmentSlot : UISlot {
 			Player.Instance.UnequipItem (item.info.category, index);
 			Unequip ();
 
-			//this.outline.size = 0;
+			this.outline.outline = false;
 			for (int j = 0; j < inventory.equipmentSlots.Length; j++) {
 				inventory.equipmentSlots [j].arrow.gameObject.SetActive(false);
 			}
