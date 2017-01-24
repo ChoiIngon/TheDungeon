@@ -30,6 +30,28 @@ public class Player : MonoBehaviour {
     public float speed;
     public float critcal;
 
+	[System.Serializable]
+	public struct Stat
+	{
+		public int curHealth;
+		public int maxHealth;
+		public float attack;
+		public float defense;
+		public float speed;
+		public float critcal;
+
+		static public Stat operator + (Stat rhs, Stat lhs)
+		{
+			rhs.curHealth += lhs.curHealth;
+			rhs.maxHealth += lhs.maxHealth;
+			rhs.attack += lhs.attack;
+			rhs.defense += lhs.defense;
+			rhs.speed += lhs.speed;
+			rhs.critcal += lhs.critcal;
+			return rhs;
+		}
+	}
+
     public Inventory inventory;
     public Dictionary<Tuple<ItemInfo.Category, int>, EquipmentItemData> equipments;
 

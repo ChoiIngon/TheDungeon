@@ -2,46 +2,116 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public abstract class ItemStat
+public abstract class ItemStatTrigger
 {
-	public enum Type {
-		Attack,
-		Defense,
-		Speed,
-		Health
-	}
-	public Type type;
-	public string description;
-	public abstract float GetValue ();
+	public abstract bool IsAvailable (Player.Stat stat);
 }
 
-public class ConstItemStat : ItemStat
+public class ItemStatTrigger_LowHealth : ItemStatTrigger
 {
-	public ConstItemStat(ItemStat.Type type, float value, string description)
+	float percent;
+	public ItemStatTrigger_LowHealth(float percent)
 	{
-		this.type = type;
+		this.percent = percent;
+	}
+	public override bool IsAvailable(Player.Stat stat)
+	{
+		if (stat.curHealth <= stat.maxHealth * percent) {
+			return true;
+		}
+		return false;
+	}
+}
+
+public abstract class ItemStat
+{
+	public string description;
+	public ItemStatTrigger trigger;
+	public abstract Player.Stat GetStat (Player.Stat stat);
+}
+
+public class ItemStat_IncreaseMaxHealth : ItemStat
+{
+	float percent;
+	public ItemStat_IncreaseMaxHealth(float percent, string description)
+	{
+		this.percent = percent;
+		this.description = description;
+	}
+
+	public override Player.Stat GetStat (Player.Stat stat)
+	{
+		Player.Stat result = new Player.Stat();
+		result.maxHealth = (int)(stat.maxHealth * percent);
+		return result;
+	}
+}
+public class ItemStat_IncreaseAttack : ItemStat
+{
+	float value;
+	public ItemStat_IncreaseAttack(ItemStatTrigger trigger, float value, string description)
+	{
+		this.trigger = trigger;
 		this.value = value;
 		this.description = description;
 	}
-	public float value;
-	public override float GetValue() {
-		return value;
+
+	public override Player.Stat GetStat (Player.Stat stat)
+	{
+		Player.Stat result  = new Player.Stat();
+		result.attack = value;
+		return result;
 	}
 }
-
-public class RandomItemStat : ItemStat
+public class ItemStat_IncreaseDefense : ItemStat
 {
-	public float min;
-	public float max;
-	public RandomItemStat(ItemStat.Type type, float min, float max, string description)
+	float value;
+	public ItemStat_IncreaseDefense(ItemStatTrigger trigger, float value, string description)
 	{
-		this.type = type;
-		this.min = min;
-		this.max = max;
+		this.trigger = trigger;
+		this.value = value;
 		this.description = description;
 	}
-	public override float GetValue() {
-		return Random.Range (min, max);
+
+	public override Player.Stat GetStat (Player.Stat stat)
+	{
+		Player.Stat result = new Player.Stat();
+		result.defense = value;
+		return result;
+	}
+}
+public class ItemStat_IncreaseSpeed : ItemStat
+{
+	public float value;
+	public ItemStat_IncreaseSpeed(ItemStatTrigger trigger, float value, string description)
+	{
+		this.trigger = trigger;
+		this.value = value;
+		this.description = description;
+	}
+
+	public override Player.Stat GetStat (Player.Stat stat)
+	{
+		Player.Stat result = new Player.Stat();
+		result.speed = value;
+		return result;
+	}
+}
+public class ItemStat_IncreaseCritical : ItemStat
+{
+	public float percent;
+	public ItemStat_IncreaseCritical(ItemStatTrigger trigger, float percent, string description)
+	{
+		this.trigger = trigger;
+		this.percent = percent;
+		this.description = description;
+	}
+
+	public override Player.Stat GetStat (Player.Stat stat)
+	{
+		Player.Stat result = new Player.Stat();
+		result.critcal = percent;
+		return result;
 	}
 }
 		
@@ -67,15 +137,13 @@ public abstract class ItemInfo {
 		Legendary,
 		All
 	}
-	public string id;
-	public string name;
-
-	public int price;
-	public Sprite icon;
+	public string 	id;
+	public string 	name;
+	public Sprite 	icon;
 	public Category category;
-	public Grade grade;
-	public ItemStat 		mainStat;
-	public List<ItemStat> 	subStat = new List<ItemStat>();
+	public Grade 	grade;
+	public int 		price;
+	public ItemStat mainStat;
 	public abstract ItemData CreateInstance();
 }
 
@@ -90,16 +158,25 @@ public abstract class ItemData {
 	}
 	*/
 }
-
+	
 [System.Serializable]
-public abstract class EquipmentItemData : ItemData {
+public class EquipmentItemData : ItemData {
+	public List<ItemStat>	subStats = new List<ItemStat>();
+
 	/*
 	public abstract Character.Status GetStatus();
 	*/
 }
 
+public class ConsumeItemData : ItemData {
+	public void Consume()
+	{
+	}
+}
+
 public class ItemManager {
 	private Dictionary<string, ItemInfo> infos;
+//	private List<ItemStat> [] stats = new ItemStat[ItemInfo.Grade];
 	private static ItemManager _instance;  
 	public static ItemManager Instance  
 	{  
@@ -189,6 +266,7 @@ public class ItemManager {
 			info.grade = (ItemInfo.Grade)Random.Range ((int)ItemInfo.Grade.Low, (int)ItemInfo.Grade.All);
 			info.icon = ResourceManager.Instance.Load<Sprite> ("item_shirt_003");
 			info.id = "ITEM_ARMOR_" + i.ToString ();
+			info.mainStat = new ItemStat_IncreaseDefense (null, i + 1, "DEF : +" + (i + 1));
 			infos.Add (info.id, info);
 		}
 	}
@@ -204,7 +282,7 @@ public class ItemManager {
 			info.attack = Random.Range (1, 10);
 			info.icon = ResourceManager.Instance.Load<Sprite> ("item_sword_003");
 			info.id = "ITEM_WEAPON_" + i.ToString ();
-			info.mainStat = new RandomItemStat (ItemStat.Type.Attack, i + 1, i + 14, "ATK : " + (i + 1) + " ~ " + (i + 14));
+			info.mainStat = new ItemStat_IncreaseAttack(null, i+1, "ATK : +" + (i + 1));
 			infos.Add (info.id, info);
 		}
 	}
