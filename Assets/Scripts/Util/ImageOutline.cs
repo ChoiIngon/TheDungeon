@@ -6,6 +6,7 @@ public class ImageOutline : MonoBehaviour
 {
     public Color color = Color.white;
     public bool outline = false;
+    //public int size = 0;
 
     private Image image;
 

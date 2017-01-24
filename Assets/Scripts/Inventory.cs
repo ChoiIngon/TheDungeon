@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class Inventory
@@ -78,4 +79,24 @@ public class Inventory
 		}
 		return item;
 	}
+
+    public List<ItemData> Get(ItemInfo.Category category) 
+    {
+        List<ItemData> datas = new List<ItemData>();
+        foreach (Slot slot in slots)
+        {
+            if(null == slot.item)
+            {
+                continue;
+            }
+            if(category != slot.item.info.category)
+            {
+                continue;
+            }
+            datas.Add(slot.item);
+        }
+
+        return datas;
+    }
+
 }

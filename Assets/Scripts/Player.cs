@@ -21,51 +21,34 @@ public class Player : MonoBehaviour {
 			return _instance;  
 		}  
 	}
-	[System.Serializable]
-	public class Info {
-		public int health;
-	}
-	[System.Serializable]
-	public class Data {
-		public int level;
-		public int exp;
-		public int health;
-		public float strength;
-		public float defense;
-		public float speed;
-		public Data()
-		{
-			level = 1;
-			exp = 0;
-			health = 100;
-			strength = 1.0f;
-			defense = 1.0f;
-			speed = 1.0f;
-		}
-	}
 
-	GaugeBar health = null;
-	public GameObject ui;
+    public int level;
+    public int exp;
+    public GaugeBar health;
+    public float attack;
+    public float defense;
+    public float speed;
+    public float critcal;
+
+    public Inventory inventory;
+    public Dictionary<Tuple<ItemInfo.Category, int>, EquipmentItemData> equipments;
+
+    public GameObject ui;
 	public GameObject damage;
-	public Data data;
-	public Inventory inventory;
-	public Dictionary<Tuple<ItemInfo.Category, int>, EquipmentItemData> equipments;
 
-	public float attack {
-		get {
-			return 1.0f + data.strength;
-		}
-	}
-
-	public void Init() {
-		data = new Data ();
-
-		health = ui.transform.FindChild ("Health").GetComponent<GaugeBar> ();
-		health.max = 0;
-		health.current = 0;
-		ui.transform.GetComponent<RectTransform> ().position = Camera.main.WorldToScreenPoint (transform.position);
-
-		equipments = new Dictionary<Tuple<ItemInfo.Category, int>, EquipmentItemData>();
+    public void Init() {
+        level = 0;
+        exp = 0;
+        health = ui.transform.FindChild("Health").GetComponent<GaugeBar>();
+        health.max = 1;
+        health.current = health.max;
+        attack = 0.0f;
+        defense = 0.0f;
+        speed = 0.0f;
+        critcal = 0.0f;
+    
+        // init equipments
+        equipments = new Dictionary<Tuple<ItemInfo.Category, int>, EquipmentItemData>();
 		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Helmet, 0), null);
 		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Hand, 0), null);
 		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Hand, 1), null);
@@ -74,10 +57,18 @@ public class Player : MonoBehaviour {
 		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Ring, 1), null);
 		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Shoes, 0), null);
 
+        // init inventory
 		inventory.Init ();
-	}
+
+        // init ui
+        ui.transform.GetComponent<RectTransform>().position = Camera.main.WorldToScreenPoint(transform.position);
+    }
 
 	public T GetEquipement<T>(ItemInfo.Category category, int index) where T:ItemData {
+        if(equipments.ContainsKey(new Tuple<ItemInfo.Category, int>(category, index)))
+        {
+            return null;
+        }
 		return equipments [new Tuple<ItemInfo.Category, int> (category, index)] as T;
 	}
 
