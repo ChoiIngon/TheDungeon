@@ -29,14 +29,8 @@ public class Monster : MonoBehaviour {
 			reward = new Reward();
 		}
 	}
-	[System.Serializable]
-	public class Data
-	{
-		public float health;
-	}
-
+	
 	public Info info;
-	public Data data;
 	public GameObject ui;
 
 	public TrailRenderer trailPrefab;
@@ -72,10 +66,8 @@ public class Monster : MonoBehaviour {
 		name.text = info.name;
 		renderer.sprite = info.sprite;
 
-		data = new Data ();
-		data.health = info.health;
 		health.max = info.health;
-		health.current = data.health;
+		health.current = health.max;
 
 		gameObject.SetActive (true);
 		ui.gameObject.SetActive (true);
@@ -86,7 +78,7 @@ public class Monster : MonoBehaviour {
 	{
 		Controller.Instance.SetState (Controller.State.Battle);
 		yield return new WaitForSeconds (0.5f);
-		while (0.0f < data.health) {
+		while (0.0f < health.current) {
 			float waitTime = 0.0f;
 			if (0 == Random.Range (0, 2)) {
 				int attackCount = 1;
@@ -110,7 +102,6 @@ public class Monster : MonoBehaviour {
 				Attack ();
 			}
 			yield return new WaitForSeconds (80.0f / info.speed - waitTime);
-
 		}
 
 		ui.gameObject.SetActive (false);
@@ -133,7 +124,7 @@ public class Monster : MonoBehaviour {
 	public void Attack()
 	{
 		iTween.CameraFadeFrom (0.1f, 0.1f);
-		iTween.ShakePosition (Camera.main.gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.1f);
+		iTween.ShakePosition (Camera.main.gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.2f);
 		animator.SetTrigger ("Attack");
 		BloodMark bloodMark = GameObject.Instantiate<BloodMark> (bloodMarkPrefab);
 		bloodMark.transform.SetParent (Player.Instance.damage.transform, false);
@@ -146,15 +137,11 @@ public class Monster : MonoBehaviour {
 
 	public void Damage(int damage)
 	{
-		TrailRenderer trail = GameObject.Instantiate<TrailRenderer> (trailPrefab);
+        health.current = health.current - damage;
+
+        TrailRenderer trail = GameObject.Instantiate<TrailRenderer> (trailPrefab);
 		trail.sortingLayerName = "Effect";
 		trail.sortingOrder = 1;
-
-		data.health -= damage;
-		if (0 > data.health) {
-			data.health = 0;
-		}
-		health.current = data.health;
 
 		const float length = 4.0f;
 		Vector3 direction = new Vector3 (Random.Range (-1.0f, 1.0f), Random.Range (-1.0f, 1.0f), 0.0f);
