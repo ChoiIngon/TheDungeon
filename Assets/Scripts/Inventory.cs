@@ -9,7 +9,7 @@ public class Inventory
 	public class Slot {
 		public int index;
 		public int count;
-		public ItemData item;
+		public Item item;
 	}
 	public const int MAX_SLOT_COUNT = 15;
 	public int gold;
@@ -25,7 +25,7 @@ public class Inventory
 		}
 		ui.Init ();
 	}
-	public bool Put(ItemData data)
+	public bool Put(Item data)
 	{
 		if (null == data) {
 			return true;
@@ -64,7 +64,7 @@ public class Inventory
 		}
 		return false;
 	}
-	public ItemData Pull(int index)
+	public Item Pull(int index)
 	{
 		Slot slot = slots [index];
 		if (null == slot.item) {
@@ -72,31 +72,11 @@ public class Inventory
 		}
 
 		slot.count -= 1;
-		ItemData item = slot.item;
+		Item item = slot.item;
 		if (0 == slot.count) {
 			slot.item = null;
 			ui.ActivateInventorySlot (slot.index, false);
 		}
 		return item;
 	}
-
-    public List<ItemData> Get(ItemInfo.Category category) 
-    {
-        List<ItemData> datas = new List<ItemData>();
-        foreach (Slot slot in slots)
-        {
-            if(null == slot.item)
-            {
-                continue;
-            }
-            if(category != slot.item.info.category)
-            {
-                continue;
-            }
-            datas.Add(slot.item);
-        }
-
-        return datas;
-    }
-
 }

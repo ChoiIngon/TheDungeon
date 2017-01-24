@@ -761,6 +761,10 @@ Prefab:
       propertyPath: category
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1403666236045708, guid: 064c7e8fae5aa4ec091ff79893ff87f5, type: 2}
+      propertyPath: m_Name
+      value: Helmet
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 064c7e8fae5aa4ec091ff79893ff87f5, type: 2}
   m_IsPrefabParent: 0
@@ -1368,6 +1372,15 @@ Prefab:
         type: 2}
       propertyPath: category
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114359898118443496, guid: 064c7e8fae5aa4ec091ff79893ff87f5,
+        type: 2}
+      propertyPath: part
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1403666236045708, guid: 064c7e8fae5aa4ec091ff79893ff87f5, type: 2}
+      propertyPath: m_Name
+      value: RingSlot_0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 064c7e8fae5aa4ec091ff79893ff87f5, type: 2}
@@ -2118,6 +2131,15 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 114359898118443496, guid: 064c7e8fae5aa4ec091ff79893ff87f5,
+        type: 2}
+      propertyPath: part
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1403666236045708, guid: 064c7e8fae5aa4ec091ff79893ff87f5, type: 2}
+      propertyPath: m_Name
+      value: ShoesSlot
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 064c7e8fae5aa4ec091ff79893ff87f5, type: 2}
   m_IsPrefabParent: 0
@@ -2307,7 +2329,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 740236482678a499e813c3b614b34029, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5e9f45776fd7f0e4e8848534c41b1a0f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3510,6 +3532,15 @@ Prefab:
       propertyPath: category
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 114359898118443496, guid: 064c7e8fae5aa4ec091ff79893ff87f5,
+        type: 2}
+      propertyPath: part
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1403666236045708, guid: 064c7e8fae5aa4ec091ff79893ff87f5, type: 2}
+      propertyPath: m_Name
+      value: Armor
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 064c7e8fae5aa4ec091ff79893ff87f5, type: 2}
   m_IsPrefabParent: 0
@@ -4608,6 +4639,15 @@ Prefab:
       propertyPath: index
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114359898118443496, guid: 064c7e8fae5aa4ec091ff79893ff87f5,
+        type: 2}
+      propertyPath: part
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1403666236045708, guid: 064c7e8fae5aa4ec091ff79893ff87f5, type: 2}
+      propertyPath: m_Name
+      value: RingSlot_1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 064c7e8fae5aa4ec091ff79893ff87f5, type: 2}
   m_IsPrefabParent: 0
@@ -5571,6 +5611,15 @@ Prefab:
       propertyPath: index
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114359898118443496, guid: 064c7e8fae5aa4ec091ff79893ff87f5,
+        type: 2}
+      propertyPath: part
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1403666236045708, guid: 064c7e8fae5aa4ec091ff79893ff87f5, type: 2}
+      propertyPath: m_Name
+      value: Hand_1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 064c7e8fae5aa4ec091ff79893ff87f5, type: 2}
   m_IsPrefabParent: 0
@@ -6391,6 +6440,15 @@ Prefab:
         type: 2}
       propertyPath: category
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114359898118443496, guid: 064c7e8fae5aa4ec091ff79893ff87f5,
+        type: 2}
+      propertyPath: part
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1403666236045708, guid: 064c7e8fae5aa4ec091ff79893ff87f5, type: 2}
+      propertyPath: m_Name
+      value: Hand_2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 064c7e8fae5aa4ec091ff79893ff87f5, type: 2}

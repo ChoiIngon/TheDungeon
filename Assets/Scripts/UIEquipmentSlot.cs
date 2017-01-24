@@ -5,16 +5,16 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class UIEquipmentSlot : UISlot {
-	public ItemInfo.Category category;
+	public EquipmentItem.Part part;
 	public Image arrow;
-	public ItemData item;
+	public EquipmentItem item;
 	new void Start( )
 	{
 		base.Start ();
 		arrow = transform.FindChild ("Arrow").GetComponent<Image> ();
 	}
 
-	public void Equip(ItemData item)
+	public void Equip(EquipmentItem item)
 	{
 		this.item = item;
 		if (null == item) {
@@ -36,13 +36,13 @@ public class UIEquipmentSlot : UISlot {
 		}
 		for (int i = 0; i < inventory.equipmentSlots.Length; i++) {
 			UIEquipmentSlot other = inventory.equipmentSlots [i];
-			if (item.info.category == other.category && this != other) {
+			if (item.part == other.part && this != other) {
 				other.arrow.gameObject.SetActive (true);
 			} else {
 				other.arrow.gameObject.SetActive (false);
 			}
 		}
-		inventory.itemInfo.data = item;
+		inventory.itemInfo.item = item;
 	}
 
 	public override void OnDrop() {
@@ -54,7 +54,7 @@ public class UIEquipmentSlot : UISlot {
 			if (this == other) {
 				continue;
 			}
-			if (item.info.category != other.category) {
+			if (item.part != other.part) {
 				continue;
 			}
 			Rect rhs = clone.rectTransform.rect;
@@ -69,10 +69,10 @@ public class UIEquipmentSlot : UISlot {
 				inventory.equipmentSlots [j].arrow.gameObject.SetActive(false);
 			}
 
-			EquipmentItemData curr = Player.Instance.UnequipItem (item.info.category, index);
+			EquipmentItem curr = Player.Instance.UnequipItem (item.part, index);
 			this.Unequip ();
 
-			EquipmentItemData prev = Player.Instance.EquipItem (curr, other.index);
+			EquipmentItem prev = Player.Instance.EquipItem (curr, other.index);
 			other.Equip(curr);
 
 			Player.Instance.EquipItem (prev, index);
@@ -97,7 +97,7 @@ public class UIEquipmentSlot : UISlot {
 				return;
 			}
 
-			Player.Instance.UnequipItem (item.info.category, index);
+			Player.Instance.UnequipItem (item.part, index);
 			Unequip ();
 
 			this.outline.outline = false;
@@ -111,8 +111,8 @@ public class UIEquipmentSlot : UISlot {
 	{
 		base.Activate (flag && null != item);
 		if (true == flag && null != item) {
-			icon.sprite = item.info.icon;
-			grade.color = UISlot.GetGradeColor (item.info.grade);
+			icon.sprite = item.icon;
+			grade.color = UISlot.GetGradeColor (item.grade);
 		}
 	}
 }

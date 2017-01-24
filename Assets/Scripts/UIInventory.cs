@@ -38,6 +38,7 @@ public class UIInventory : MonoBehaviour {
 
 			Player.Instance.inventory.Put (ItemManager.Instance.CreateItem("ITEM_WEAPON_" + Random.Range(0, 10).ToString()));
 			Player.Instance.inventory.Put(ItemManager.Instance.CreateItem("ITEM_ARMOR_" + Random.Range(0, 10).ToString()));
+			Player.Instance.inventory.Put(ItemManager.Instance.CreateItem("ITEM_RING_" + Random.Range(0, 10).ToString()));
 		});
 	}
 
@@ -69,11 +70,11 @@ public class UIInventory : MonoBehaviour {
 		slot.Activate (flag);
 	}
 
-	public void ActivateEquipmentSlot(ItemInfo.Category category, int index, bool flag)
+	public void ActivateEquipmentSlot(EquipmentItem.Part part, int index, bool flag)
 	{
 		for (int i = 0; i < 7; i++) {
 			UIEquipmentSlot slot = equipmentSlots [i];
-			if (slot.category == category && slot.index == index) {
+			if (slot.part == part && slot.index == index) {
 				slot.Activate (flag);
 				break;
 			}

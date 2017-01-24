@@ -39,7 +39,7 @@ public class Player : MonoBehaviour {
 		public float defense;
 		public float speed;
 		public float critcal;
-
+		public float goldBonus;
 		static public Stat operator + (Stat rhs, Stat lhs)
 		{
 			rhs.curHealth += lhs.curHealth;
@@ -48,12 +48,13 @@ public class Player : MonoBehaviour {
 			rhs.defense += lhs.defense;
 			rhs.speed += lhs.speed;
 			rhs.critcal += lhs.critcal;
+			rhs.goldBonus += lhs.goldBonus;
 			return rhs;
 		}
 	}
 
     public Inventory inventory;
-    public Dictionary<Tuple<ItemInfo.Category, int>, EquipmentItemData> equipments;
+	public Dictionary<Tuple<EquipmentItem.Part, int>, EquipmentItem> equipments;
 
     public GameObject ui;
 	public GameObject damage;
@@ -70,14 +71,14 @@ public class Player : MonoBehaviour {
         critcal = 0.0f;
     
         // init equipments
-        equipments = new Dictionary<Tuple<ItemInfo.Category, int>, EquipmentItemData>();
-		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Helmet, 0), null);
-		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Hand, 0), null);
-		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Hand, 1), null);
-		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Armor, 0), null);
-		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Ring, 0), null);
-		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Ring, 1), null);
-		equipments.Add (new Tuple<ItemInfo.Category, int> (ItemInfo.Category.Shoes, 0), null);
+		equipments = new Dictionary<Tuple<EquipmentItem.Part, int>, EquipmentItem>();
+		equipments.Add (new Tuple<EquipmentItem.Part, int> (EquipmentItem.Part.Helmet, 0), null);
+		equipments.Add (new Tuple<EquipmentItem.Part, int> (EquipmentItem.Part.Hand, 0), null);
+		equipments.Add (new Tuple<EquipmentItem.Part, int> (EquipmentItem.Part.Hand, 1), null);
+		equipments.Add (new Tuple<EquipmentItem.Part, int> (EquipmentItem.Part.Armor, 0), null);
+		equipments.Add (new Tuple<EquipmentItem.Part, int> (EquipmentItem.Part.Ring, 0), null);
+		equipments.Add (new Tuple<EquipmentItem.Part, int> (EquipmentItem.Part.Ring, 1), null);
+		equipments.Add (new Tuple<EquipmentItem.Part, int> (EquipmentItem.Part.Shoes, 0), null);
 
         // init inventory
 		inventory.Init ();
@@ -86,27 +87,27 @@ public class Player : MonoBehaviour {
         ui.transform.GetComponent<RectTransform>().position = Camera.main.WorldToScreenPoint(transform.position);
     }
 
-	public T GetEquipement<T>(ItemInfo.Category category, int index) where T:ItemData {
-        if(equipments.ContainsKey(new Tuple<ItemInfo.Category, int>(category, index)))
+	public EquipmentItem GetEquipement(EquipmentItem.Part category, int index) {
+        if(equipments.ContainsKey(new Tuple<EquipmentItem.Part, int>(category, index)))
         {
             return null;
         }
-		return equipments [new Tuple<ItemInfo.Category, int> (category, index)] as T;
+		return equipments [new Tuple<EquipmentItem.Part, int> (category, index)];
 	}
 
-	public EquipmentItemData EquipItem(ItemData item, int index) {
+	public EquipmentItem EquipItem(EquipmentItem item, int index) {
 		if (null == item) {
 			return null;
 		}
-		EquipmentItemData curr = (EquipmentItemData)item;
-		EquipmentItemData prev = equipments [new Tuple<ItemInfo.Category, int> (curr.info.category, index)];
-		equipments [new Tuple<ItemInfo.Category, int> (curr.info.category, index)] = curr;
+
+		EquipmentItem prev = equipments [new Tuple<EquipmentItem.Part, int> (item.part, index)];
+		equipments [new Tuple<EquipmentItem.Part, int> (item.part, index)] = item;
 		return prev;
 	}
 
-	public EquipmentItemData UnequipItem(ItemInfo.Category category, int index) {
-		EquipmentItemData item = equipments [new Tuple<ItemInfo.Category, int> (category, index)];
-		equipments [new Tuple<ItemInfo.Category, int> (category, index)] = null;
+	public EquipmentItem UnequipItem(EquipmentItem.Part category, int index) {
+		EquipmentItem item = equipments [new Tuple<EquipmentItem.Part, int> (category, index)];
+		equipments [new Tuple<EquipmentItem.Part, int> (category, index)] = null;
 		return item;
 	}
 }

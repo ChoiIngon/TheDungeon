@@ -50,11 +50,17 @@ public class ResourceManager : MonoBehaviour {
 		resource.Add ("dungeon_001___E", Resources.Load <Sprite> ("Sprites/dungeon_001___E"));
 		resource.Add ("monster_daemon", Resources.Load <Sprite> ("Sprites/monster_daemon"));
 		resource.Add ("monster_skeleton", Resources.Load <Sprite> ("Sprites/monster_skeleton"));
+		resource.Add ("item_ring_001", Resources.Load<Sprite> ("Sprites/Item/item_ring_001"));
 		resource.Add ("item_ring_002", Resources.Load<Sprite> ("Sprites/Item/item_ring_002"));
 		resource.Add ("item_ring_003", Resources.Load<Sprite> ("Sprites/Item/item_ring_003"));
+		resource.Add ("item_shield_001", Resources.Load<Sprite> ("Sprites/Item/item_shield_001"));
+		resource.Add ("item_shield_002", Resources.Load<Sprite> ("Sprites/Item/item_shield_002"));
 		resource.Add ("item_shield_003", Resources.Load<Sprite> ("Sprites/Item/item_shield_003"));
+		resource.Add ("item_shirt_001", Resources.Load<Sprite> ("Sprites/Item/item_shirt_001"));
 		resource.Add ("item_shirt_002", Resources.Load<Sprite> ("Sprites/Item/item_shirt_002"));
 		resource.Add ("item_shirt_003", Resources.Load<Sprite> ("Sprites/Item/item_shirt_003"));
+		resource.Add ("item_sword_001", Resources.Load<Sprite> ("Sprites/Item/item_sword_001"));
+		resource.Add ("item_sword_002", Resources.Load<Sprite> ("Sprites/Item/item_sword_002"));
 		resource.Add ("item_sword_003", Resources.Load<Sprite> ("Sprites/Item/item_sword_003"));
 		//#endif
 	}

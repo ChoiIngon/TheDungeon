@@ -8,14 +8,23 @@ public class UIItemInfo : MonoBehaviour {
 	public Image itemGrade;
 	public Text itemMainStat;
 	public Text itemSubStat;
-	public ItemData data {
+	public Item item {
 		set {
-			itemName.text = value.info.name;
-			itemIcon.sprite = value.info.icon;
-			itemGrade.color = UISlot.GetGradeColor (value.info.grade);
-			itemMainStat.text = "";
-			if (null != value.info.mainStat) {
-				itemMainStat.text = value.info.mainStat.description;
+			itemName.text = value.name;
+			itemIcon.sprite = value.icon;
+			itemGrade.color = UISlot.GetGradeColor (value.grade);
+			switch(value.type)
+			{
+			case Item.Type.Equipment:
+				EquipmentItem equipment = (EquipmentItem)value;
+				itemMainStat.text = equipment.mainStat.description;
+				itemSubStat.text = "";
+				for (int i = 0; i < equipment.subStats.Count; i++) {
+					itemSubStat.text += equipment.subStats [i].description + "\n";
+				}
+				break;
+			default :
+				break;
 			}
 			gameObject.SetActive (true);
 		}

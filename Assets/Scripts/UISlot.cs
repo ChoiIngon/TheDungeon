@@ -94,26 +94,26 @@ public class UISlot : MonoBehaviour {
 		grade.gameObject.SetActive (flag);
 	}
 
-	public static Color GetGradeColor(ItemInfo.Grade grade)
+	public static Color GetGradeColor(EquipmentItem.Grade grade)
 	{
 		Color color = Color.white;
 		switch (grade) {
-		case ItemInfo.Grade.Low:
+		case EquipmentItem.Grade.Low:
 			color = Color.grey;
 			break;
-		case ItemInfo.Grade.Normal:
+		case EquipmentItem.Grade.Normal:
 			color = Color.white;
 			break;
-		case ItemInfo.Grade.High:
+		case EquipmentItem.Grade.High:
 			color = Color.green;
 			break;
-		case ItemInfo.Grade.Magic:
+		case EquipmentItem.Grade.Magic:
 			color = Color.blue;
 			break;
-		case ItemInfo.Grade.Rare:
+		case EquipmentItem.Grade.Rare:
 			color = new Color (0xFF, 0x8C, 0x00);
 			break;
-		case ItemInfo.Grade.Legendary:
+		case EquipmentItem.Grade.Legendary:
 			color = Color.red;
 			break;
 		}
