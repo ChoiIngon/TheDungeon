@@ -67,9 +67,6 @@ public class UITextBox : MonoBehaviour {
 			RectTransform rt = GetComponent<RectTransform> ();
 			height = rt.rect.height;
 
-			Debug.Log ("position:" + rt.position);
-			Debug.Log ("local position:" + rt.localPosition);
-			Debug.Log ("anchored position:" + rt.anchoredPosition);
 			//rt.position = new Vector3 (rt.position.x, rt.position.y + height, rt.position.z);
 			//Debug.Log (rt.position);
 		}
@@ -81,7 +78,7 @@ public class UITextBox : MonoBehaviour {
 		
 	IEnumerator Type()
 	{
-		Controller.Instance.SetState (Controller.State.Popup);
+		DungeonMain.Instance.enableInput = false;
 		RectTransform rt = GetComponent<RectTransform> ();
 		height = rt.rect.height;
 
@@ -119,6 +116,6 @@ public class UITextBox : MonoBehaviour {
 			yield return null;
 		}
 		transform.position = new Vector3 (transform.position.x, 0.0f, 0.0f);
-		Controller.Instance.SetState (Controller.State.Idle);
+		DungeonMain.Instance.enableInput = true;
 	}
 }

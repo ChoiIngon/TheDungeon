@@ -76,7 +76,7 @@ public class Monster : MonoBehaviour {
 
 	public IEnumerator Battle()
 	{
-		Controller.Instance.SetState (Controller.State.Battle);
+		DungeonMain.Instance.enableInput = false;
 		yield return new WaitForSeconds (0.5f);
 		while (0.0f < health.current) {
 			float waitTime = 0.0f;
@@ -116,7 +116,7 @@ public class Monster : MonoBehaviour {
 			iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
 		}
 		gameObject.SetActive (false);
-		Controller.Instance.SetState (Controller.State.Idle);
+		DungeonMain.Instance.enableInput = true;
 
 		UITextBox.Instance.text = "test test test test test test test test";
 	}
@@ -163,6 +163,7 @@ public class Monster : MonoBehaviour {
 	}
 
 	public static Dictionary<string, Info> infos = new Dictionary<string, Info> ();
+
 	public static void Init()
 	{
 		CSVReader reader = new CSVReader ("Config/info_monster");
@@ -188,7 +189,10 @@ public class Monster : MonoBehaviour {
 		if (false == infos.ContainsKey (id)) {
 			return null;
 		}
-
 		return infos[id];
+	}
+
+	public static Info GetRandomMonster(int level) {
+		return null;
 	}
 }

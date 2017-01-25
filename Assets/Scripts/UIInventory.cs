@@ -45,11 +45,11 @@ public class UIInventory : MonoBehaviour {
 	public void OnEnable()
 	{
 		itemInfo.gameObject.SetActive (false);
-		Controller.Instance.SetState (Controller.State.Popup);
+		DungeonMain.Instance.enableInput = false;
 	}
 	public void OnDisable()
 	{
-		Controller.Instance.SetState (Controller.State.Idle);
+		DungeonMain.Instance.enableInput = true;
 	}
 	public UISlot selected {
 		set {

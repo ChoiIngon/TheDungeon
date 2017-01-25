@@ -7,13 +7,6 @@ using System.Collections.Generic;
 [System.Serializable]
 public class UIInventorySlot : UISlot {
 	public Inventory.Slot data;
-	void OnEnable()
-	{
-		Controller.Instance.SetState (Controller.State.Popup);
-	}
-	void OnDisable() {
-		Controller.Instance.SetState (Controller.State.Idle);
-	}
 	public override void Activate(bool flag)
 	{
 		base.Activate (flag);

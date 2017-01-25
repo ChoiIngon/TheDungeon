@@ -121,7 +121,7 @@ Transform:
   m_Children:
   - {fileID: 1562312905}
   m_Father: {fileID: 853562127}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2598113
 MonoBehaviour:
@@ -2519,7 +2519,7 @@ GameObject:
   - component: {fileID: 736679895}
   - component: {fileID: 736679896}
   m_Layer: 0
-  m_Name: Map
+  m_Name: Dungeon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2534,7 +2534,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 796858572}
   m_Father: {fileID: 853562127}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2549,6 +2550,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e3795b114ee4dd3970456faa38d5d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  exit: 0
+  move: 0
   miniMap: {fileID: 1389233273}
 --- !u!1001 &761882443
 Prefab:
@@ -2783,7 +2786,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 796858571}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -2792,8 +2795,8 @@ Transform:
   - {fileID: 198068884}
   - {fileID: 801725346}
   - {fileID: 1479995461}
-  m_Father: {fileID: 853562127}
-  m_RootOrder: 1
+  m_Father: {fileID: 736679895}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &801323551
 Prefab:
@@ -3099,7 +3102,7 @@ GameObject:
   - component: {fileID: 853562128}
   - component: {fileID: 853562129}
   m_Layer: 0
-  m_Name: Controller
+  m_Name: DungeonMain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3116,7 +3119,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 736679895}
-  - {fileID: 796858572}
   - {fileID: 2598112}
   - {fileID: 1081049933}
   m_Father: {fileID: 0}
@@ -3155,31 +3157,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 853562126}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36ab94cf44c034373be54d6cfdd3790a, type: 3}
+  m_Script: {fileID: 11500000, guid: 3ab873c002d3b43318fbde72f178063b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textBox: {fileID: 1796612746}
+  textBox: {fileID: 0}
+  inventory: {fileID: 0}
   buttons:
-  - name: Inventory
-    button: {fileID: 1155813416}
-    sprite: {fileID: 21300000, guid: 5ee98c5d478f8433da86f13df335f0ab, type: 3}
-    ui: {fileID: 1437952178}
   - name: 
-    button: {fileID: 1927127327}
-    sprite: {fileID: 21300000, guid: 5ee98c5d478f8433da86f13df335f0ab, type: 3}
-    ui: {fileID: 0}
-  - name: Quest
-    button: {fileID: 1697391028}
-    sprite: {fileID: 21300000, guid: 4a786b9863c26454ab4f9a8adb4f2333, type: 3}
-    ui: {fileID: 0}
+    sprite: {fileID: 0}
+    target: {fileID: 0}
+    button: {fileID: 0}
   - name: 
-    button: {fileID: 1625948572}
-    sprite: {fileID: 21300000, guid: 5ee98c5d478f8433da86f13df335f0ab, type: 3}
-    ui: {fileID: 0}
-  rooms: {fileID: 796858571}
-  monster: {fileID: 2598113}
-  fadeout: {fileID: 2800000, guid: 38b380795d4f2498c92a8caf8fa27405, type: 3}
-  inventory: {fileID: 1437952182}
+    sprite: {fileID: 0}
+    target: {fileID: 0}
+    button: {fileID: 0}
+  - name: 
+    sprite: {fileID: 0}
+    target: {fileID: 0}
+    button: {fileID: 0}
+  - name: 
+    sprite: {fileID: 0}
+    target: {fileID: 0}
+    button: {fileID: 0}
+  rooms: {fileID: 0}
+  monster: {fileID: 0}
+  fadeout: {fileID: 0}
   input: {fileID: 0}
 --- !u!224 &905800197 stripped
 RectTransform:
@@ -3924,7 +3926,7 @@ Transform:
   m_Children:
   - {fileID: 769812282}
   m_Father: {fileID: 853562127}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1081049934
 MonoBehaviour:

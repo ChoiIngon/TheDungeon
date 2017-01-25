@@ -3,8 +3,6 @@ using System.Collections;
 
 [RequireComponent(typeof(BoxCollider2D))]
 public class TouchInput : MonoBehaviour {
-	    //public string buttonName;
-	    //public GameObject holder;
 	public delegate void OnTouchDownDelegate(Vector3 position);
 	public delegate void OnTouchUpDelegate(Vector3 position);
 	public delegate void OnTouchDragDelegate(Vector3 position);
