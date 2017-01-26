@@ -29,11 +29,17 @@ public class DungeonMain : MonoBehaviour {
 			if (true == value) {
 				input.enabled = true;
 				for (int i = 0; i < buttons.Length; i++) {
+					if (null == buttons [i].button) {
+						continue;
+					}
 					buttons [i].button.enabled = true;
 				}
 			} else {
 				input.enabled = false;
 				for (int i = 0; i < buttons.Length; i++) {
+					if (null == buttons [i].button) {
+						continue;
+					}
 					buttons [i].button.enabled = false;
 				}
 			}
@@ -60,7 +66,7 @@ public class DungeonMain : MonoBehaviour {
 	}
 
 	public UITextBox textBox;
-	public UIInventory inventory;
+	//public UIInventory inventory;
 	public UIButton[] buttons;
 
 	public GameObject rooms;
@@ -83,9 +89,15 @@ public class DungeonMain : MonoBehaviour {
 
 		for (int i = 0; i < buttons.Length; i++) {
 			UIButton button = buttons [i];
-			button.button.transform.FindChild ("Text").GetComponent<Text>().text = button.name;
-			button.button.GetComponent<Image>().sprite = button.sprite;
+			if (null == button.button) {
+				continue;
+			}
+			button.button.transform.FindChild ("Text").GetComponent<Text> ().text = button.name;
+			button.button.GetComponent<Image> ().sprite = button.sprite;
 			button.button.onClick.AddListener (button.OnClick);
+			if (null == button.target) {
+				button.button.gameObject.SetActive (false);
+			}
 		}
 
 		currentRenderer = rooms.transform.FindChild ("Current").GetComponent<SpriteRenderer> ();
@@ -93,8 +105,6 @@ public class DungeonMain : MonoBehaviour {
 		doorRenderer[Dungeon.East] =  rooms.transform.FindChild ("East").GetComponent<SpriteRenderer> ();
 		doorRenderer[Dungeon.South] =  rooms.transform.FindChild ("South").GetComponent<SpriteRenderer> ();
 		doorRenderer[Dungeon.West] =  rooms.transform.FindChild ("West").GetComponent<SpriteRenderer> ();
-
-		monster.gameObject.SetActive (false);
 
 		/*
 		currentRenderer.sprite = Dungeon.Instance.current.sprite;
@@ -156,6 +166,22 @@ public class DungeonMain : MonoBehaviour {
 		Dungeon.Room next = room.GetNext (direction);
 		if (null == next) {
 			enableInput = true;
+			switch (direction) {
+			case Dungeon.North:
+				iTween.PunchPosition (rooms.gameObject, new Vector3 (0.0f, 0.0f, 1.0f), 0.5f);
+				break;
+			case Dungeon.East :
+				iTween.PunchPosition (rooms.gameObject, new Vector3 (1.0f, 0.0f, 0.0f), 0.5f);
+				break;
+			case Dungeon.South :
+				iTween.PunchPosition (rooms.gameObject, new Vector3 (0.0f, 0.0f, -1.0f), 0.5f);
+				break;
+			case Dungeon.West:
+				iTween.PunchPosition (rooms.gameObject, new Vector3 (-1.0f, 0.0f, 0.5f), 0.5f);
+				break;
+			default :
+				break;
+			}
 			yield break;
 		}
 		float movement = 0.0f;
@@ -196,7 +222,7 @@ public class DungeonMain : MonoBehaviour {
 			}
 		}
 */
-		if (null != Dungeon.Instance.current) {
+		if (null != Dungeon.Instance.current.monster) {
 			monster.Init (Dungeon.Instance.current.monster);
 		} else {
 			enableInput = true;

@@ -2936,7 +2936,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 801725345}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -6.3}
+  m_LocalPosition: {x: 0, y: 0, z: -7.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 796858572}
@@ -3160,28 +3160,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ab873c002d3b43318fbde72f178063b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textBox: {fileID: 0}
-  inventory: {fileID: 0}
+  textBox: {fileID: 1796612746}
   buttons:
+  - name: Inventory
+    sprite: {fileID: 21300000, guid: 5ee98c5d478f8433da86f13df335f0ab, type: 3}
+    target: {fileID: 1437952178}
+    button: {fileID: 1155813416}
   - name: 
     sprite: {fileID: 0}
     target: {fileID: 0}
-    button: {fileID: 0}
+    button: {fileID: 1927127327}
   - name: 
     sprite: {fileID: 0}
     target: {fileID: 0}
-    button: {fileID: 0}
+    button: {fileID: 1697391028}
   - name: 
     sprite: {fileID: 0}
     target: {fileID: 0}
-    button: {fileID: 0}
-  - name: 
-    sprite: {fileID: 0}
-    target: {fileID: 0}
-    button: {fileID: 0}
-  rooms: {fileID: 0}
-  monster: {fileID: 0}
-  fadeout: {fileID: 0}
+    button: {fileID: 1625948572}
+  rooms: {fileID: 796858571}
+  monster: {fileID: 2598113}
+  fadeout: {fileID: 2800000, guid: 38b380795d4f2498c92a8caf8fa27405, type: 3}
   input: {fileID: 0}
 --- !u!224 &905800197 stripped
 RectTransform:
@@ -6469,6 +6468,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1844700547}
   - component: {fileID: 1844700548}
+  - component: {fileID: 1844700549}
   m_Layer: 0
   m_Name: Current
   m_TagString: Untagged
@@ -6524,6 +6524,22 @@ SpriteRenderer:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
+--- !u!114 &1844700549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1844700546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63147c49406a946e8ba336ecdd888168, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  doors:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &1909807198
 GameObject:
   m_ObjectHideFlags: 0
