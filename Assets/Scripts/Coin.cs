@@ -8,6 +8,7 @@ public class Coin : MonoBehaviour {
 	private float bounceCooef = 0.6f;
 	private float gravity = -9.8f;
 	private Animator animator;
+	private Coroutine coroutine;
 	// Use this for initialization
 	void Start () {
 		animator = transform.FindChild ("Sprite").GetComponent<Animator> (); 
@@ -16,9 +17,15 @@ public class Coin : MonoBehaviour {
 		velocity = transform.forward * Random.Range(0.5f, 1.0f);
 		// Throw upwards
 		velocity.y = Random.Range(4.0f, 6.0f);
-		StartCoroutine(Bounce());
+		coroutine = StartCoroutine(Bounce());
 	}
-	
+
+	public void Stop()
+	{
+		StopCoroutine (coroutine);
+		iTween.MoveTo (gameObject, new Vector3 (-2.5f, 5.0f, 0.0f), 0.1f);
+		DestroyObject (gameObject, 0.1f);
+	}
 	IEnumerator Bounce ()
 	{
 		while ( velocity.sqrMagnitude > sleepThreshold )
@@ -36,6 +43,7 @@ public class Coin : MonoBehaviour {
 				velocity.y = -velocity.y;
 				velocity *= bounceCooef;
 			}
+
 			yield return null;
 		}
 

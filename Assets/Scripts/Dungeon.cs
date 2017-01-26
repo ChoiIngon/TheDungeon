@@ -12,15 +12,11 @@ public class Dungeon : MonoBehaviour {
 	public const int Max = 4;
 
 	private static Dungeon _instance;  
-	public static Dungeon Instance  
-	{  
-		get  
-		{  
-			if (!_instance) 
-			{  
+	public static Dungeon Instance {  
+		get {  
+			if (!_instance) {  
 				_instance = (Dungeon)GameObject.FindObjectOfType(typeof(Dungeon));  
-				if (!_instance)  
-				{  
+				if (!_instance) {  
 					GameObject container = new GameObject();  
 					container.name = "Dungeon";  
 					_instance = container.AddComponent<Dungeon>();  
@@ -136,10 +132,18 @@ public class Dungeon : MonoBehaviour {
 			group = (group + 1) % (WIDTH * HEIGHT);
 		}
 
-		int start = Random.Range (0, WIDTH * HEIGHT);
-		rooms[start].type = Room.Type.Start;
-		current = rooms [start];
+		List<Room> candidates = new List<Room> (rooms);
+		int start = Random.Range (0, candidates.Count);
+		candidates[start].type = Room.Type.Start;
+		current = candidates [start];
+		candidates.RemoveAt (start);
 
+		int monsterCount = Random.Range (4, 6);
+		for (int i = 0; i < monsterCount; i++) {
+			int index = Random.Range (0, candidates.Count);
+			candidates [index].monster = Monster.FindInfo ("DAEMON_001");
+			candidates.RemoveAt (index);
+		}
 		miniMap.Init ();
 		miniMap.CurrentPosition (current.id);
 	}

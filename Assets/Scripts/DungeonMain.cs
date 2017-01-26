@@ -70,6 +70,7 @@ public class DungeonMain : MonoBehaviour {
 	public UIButton[] buttons;
 
 	public GameObject rooms;
+	public GameObject coins;
 	public Monster monster;
 	public Texture2D fadeout;
 
@@ -82,9 +83,10 @@ public class DungeonMain : MonoBehaviour {
 	void Start () {
 		ResourceManager.Instance.Init ();
 		ItemManager.Instance.Init ();
+		Monster.Init ();
 		Dungeon.Instance.Init ();
 		Player.Instance.Init ();
-		Monster.Init ();
+
 		iTween.CameraFadeAdd (fadeout);
 
 		for (int i = 0; i < buttons.Length; i++) {
@@ -155,13 +157,13 @@ public class DungeonMain : MonoBehaviour {
 
 			touchPoint = Vector3.zero;
 		};
+		coins = new GameObject ();
 		enableInput = true;
 	}
 
 	// Update is called once per frame
 	public IEnumerator Move(int direction)
 	{
-		enableInput = false;
 		Dungeon.Room room = Dungeon.Instance.current;
 		Dungeon.Room next = room.GetNext (direction);
 		if (null == next) {
@@ -170,10 +172,10 @@ public class DungeonMain : MonoBehaviour {
 			case Dungeon.North:
 				iTween.PunchPosition (rooms.gameObject, new Vector3 (0.0f, 0.0f, 1.0f), 0.5f);
 				break;
-			case Dungeon.East :
+			case Dungeon.East:
 				iTween.PunchPosition (rooms.gameObject, new Vector3 (1.0f, 0.0f, 0.0f), 0.5f);
 				break;
-			case Dungeon.South :
+			case Dungeon.South:
 				iTween.PunchPosition (rooms.gameObject, new Vector3 (0.0f, 0.0f, -1.0f), 0.5f);
 				break;
 			case Dungeon.West:
@@ -183,6 +185,37 @@ public class DungeonMain : MonoBehaviour {
 				break;
 			}
 			yield break;
+		} 
+		/*
+		else {
+			enableInput = false;
+			switch (direction) {
+			case Dungeon.North:
+				iTween.MoveTo (rooms.gameObject, new Vector3 (0.0f, 0.0f, -DISTANCE), 0.5f);
+				break;
+			case Dungeon.East:
+				iTween.MoveTo (rooms.gameObject, new Vector3 (-DISTANCE, 0.0f, 0.0f), 0.5f);
+				break;
+			case Dungeon.South:
+				iTween.MoveTo (rooms.gameObject, new Vector3 (0.0f, 0.0f, DISTANCE), 0.5f);
+				break;
+			case Dungeon.West:
+				iTween.MoveTo (rooms.gameObject, new Vector3 (DISTANCE, 0.0f, 0.5f), 0.5f);
+				break;
+			default :
+				break;
+			}
+			yield return new WaitForSeconds (0.5f);
+			enableInput = true;
+		}
+		*/
+		if(0 < coins.transform.childCount) {
+			while (0 < coins.transform.childCount) {
+				Coin coin = coins.transform.GetChild (0).GetComponent<Coin>();
+				coin.transform.SetParent (null);
+				coin.Stop ();
+			}
+			yield return new WaitForSeconds (0.1f);
 		}
 		float movement = 0.0f;
 
@@ -211,7 +244,7 @@ public class DungeonMain : MonoBehaviour {
 		}
 
 		rooms.transform.localPosition = Vector3.zero;
-
+		
 		Dungeon.Instance.Move (direction);
 		/*
 		currentRenderer.sprite = Map.Instance.current.sprite;
@@ -224,9 +257,56 @@ public class DungeonMain : MonoBehaviour {
 */
 		if (null != Dungeon.Instance.current.monster) {
 			monster.Init (Dungeon.Instance.current.monster);
-		} else {
-			enableInput = true;
-		}
+			StartCoroutine (Battle ());
+		} 
 	}
 
+	public IEnumerator Battle()
+	{
+		DungeonMain.Instance.enableInput = false;
+		yield return new WaitForSeconds (0.5f);
+		while (0.0f < monster.health.current) {
+			float waitTime = 0.0f;
+			if (0 == Random.Range (0, 2)) {
+				int attackCount = 1;
+
+				if (0 == Random.Range (0, 3)) {
+					attackCount += 1;
+					waitTime = 0.5f;
+				}
+				if (0 == Random.Range (0, 5)) {
+					attackCount += 1;
+					waitTime = 0.2f;
+				}
+
+				for (int i = 0; i < attackCount; i++) {
+					monster.Damage (30);
+					yield return new WaitForSeconds (waitTime);
+				}
+			}
+			else 
+			{
+				monster.Attack ();
+			}
+			yield return new WaitForSeconds (50.0f / monster.info.speed - waitTime);
+		}
+
+		Dungeon.Instance.current.monster = null;
+
+		GameObject.Instantiate<GameObject> (monster.damagePrefab);
+
+		int coinCount = Random.Range (1, 25);
+		for (int i = 0; i < coinCount; i++) {
+			Coin coin = GameObject.Instantiate<Coin> (monster.coinPrefab);
+			float scale = Random.Range (1.0f, 1.5f);
+			coin.transform.SetParent (coins.transform);
+			coin.transform.localScale = new Vector3 (scale, scale, 1.0f);
+			coin.transform.position = monster.transform.position;
+			iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
+		}
+		monster.gameObject.SetActive (false);
+		DungeonMain.Instance.enableInput = true;
+
+		UITextBox.Instance.text = "test test test test test test test test";
+	}
 }

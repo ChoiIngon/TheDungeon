@@ -41,7 +41,7 @@ public class Monster : MonoBehaviour {
 	private Animator animator;
 	private new SpriteRenderer renderer;
 	private new Text name;
-	private GaugeBar health;
+	public GaugeBar health;
 
 	void Start () {
 		animator = transform.FindChild ("Sprite").GetComponent<Animator> ();
@@ -62,6 +62,7 @@ public class Monster : MonoBehaviour {
 
 	public void Init(Info info_)
 	{
+		DungeonMain.Instance.enableInput = false;
 		info = info_;
 		name.text = info.name;
 		renderer.sprite = info.sprite;
@@ -71,9 +72,11 @@ public class Monster : MonoBehaviour {
 
 		gameObject.SetActive (true);
 		ui.gameObject.SetActive (true);
-		StartCoroutine (Battle ());
 	}
-
+	public void OnDisable()
+	{
+		ui.gameObject.SetActive (false);
+	}
 	public IEnumerator Battle()
 	{
 		DungeonMain.Instance.enableInput = false;
@@ -101,9 +104,10 @@ public class Monster : MonoBehaviour {
 			{
 				Attack ();
 			}
-			yield return new WaitForSeconds (80.0f / info.speed - waitTime);
+			yield return new WaitForSeconds (50.0f / info.speed - waitTime);
 		}
 
+		Dungeon.Instance.current.monster = null;
 		ui.gameObject.SetActive (false);
 		GameObject.Instantiate<GameObject> (damagePrefab);
 
