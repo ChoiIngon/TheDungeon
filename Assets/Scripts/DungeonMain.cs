@@ -29,12 +29,22 @@ public class DungeonMain : MonoBehaviour {
 			if (true == value) {
 				input.enabled = true;
 				for (int i = 0; i < buttons.Length; i++) {
-					buttons [i].button.enabled = true;
+                    if(null == buttons[i].ui)
+                    {
+                        continue;
+                    }
+					buttons [i].ui.enabled = true;
 				}
 			} else {
 				input.enabled = false;
-				for (int i = 0; i < buttons.Length; i++) {
-					buttons [i].button.enabled = false;
+                
+
+                for (int i = 0; i < buttons.Length; i++) {
+                    if (null == buttons[i].ui)
+                    {
+                        continue;
+                    }
+                    buttons [i].ui.enabled = false;
 				}
 			}
 		}
@@ -47,7 +57,7 @@ public class DungeonMain : MonoBehaviour {
 		public Sprite sprite;
 
 		public GameObject target;
-		public Button button;
+		public Button ui;
 
 		public void OnClick() {
 			DungeonMain.Instance.enableInput = false;
@@ -61,7 +71,7 @@ public class DungeonMain : MonoBehaviour {
 
 	public UITextBox textBox;
 	public UIInventory inventory;
-	public UIButton[] buttons;
+	
 
 	public GameObject rooms;
 	public Monster monster;
@@ -69,8 +79,9 @@ public class DungeonMain : MonoBehaviour {
 
 	private SpriteRenderer currentRenderer;
 	private SpriteRenderer[] doorRenderer = new SpriteRenderer[Dungeon.Max];
-	public TouchInput input;
-	private Vector3 touchPoint = Vector3.zero;
+	private TouchInput input;
+    public UIButton[] buttons;
+    private Vector3 touchPoint = Vector3.zero;
 
 	// Use this for initialization
 	void Start () {
@@ -83,9 +94,17 @@ public class DungeonMain : MonoBehaviour {
 
 		for (int i = 0; i < buttons.Length; i++) {
 			UIButton button = buttons [i];
-			button.button.transform.FindChild ("Text").GetComponent<Text>().text = button.name;
-			button.button.GetComponent<Image>().sprite = button.sprite;
-			button.button.onClick.AddListener (button.OnClick);
+            if(null == button.ui)
+            {
+                continue;
+            }
+			button.ui.transform.FindChild ("Text").GetComponent<Text>().text = button.name;
+			button.ui.GetComponent<Image>().sprite = button.sprite;
+            if(null == button.target)
+            {
+                button.ui.gameObject.SetActive(false);
+            }
+			button.ui.onClick.AddListener (button.OnClick);
 		}
 
 		currentRenderer = rooms.transform.FindChild ("Current").GetComponent<SpriteRenderer> ();
@@ -155,8 +174,25 @@ public class DungeonMain : MonoBehaviour {
 		Dungeon.Room room = Dungeon.Instance.current;
 		Dungeon.Room next = room.GetNext (direction);
 		if (null == next) {
-			enableInput = true;
-			yield break;
+            switch (direction)
+            {
+                case Dungeon.North:
+                    iTween.PunchPosition(rooms.gameObject, new Vector3(0.0f, 0.0f, -1.0f), 0.5f);
+                    break;
+                case Dungeon.East:
+                    iTween.PunchPosition(rooms.gameObject, new Vector3(-1.0f, 0.0f, 0.0f), 0.5f);
+                    break;
+                case Dungeon.South:
+                    iTween.PunchPosition(rooms.gameObject, new Vector3(0.0f, 0.0f, 1.0f), 0.5f);
+                    break;
+                case Dungeon.West:
+                    iTween.PunchPosition(rooms.gameObject, new Vector3(1.0f, 0.0f, 0.0f), 0.5f);
+                    break;
+                default:
+                    break;
+            }
+            enableInput = true;
+            yield break;
 		}
 		float movement = 0.0f;
 
@@ -187,16 +223,8 @@ public class DungeonMain : MonoBehaviour {
 		rooms.transform.localPosition = Vector3.zero;
 
 		Dungeon.Instance.Move (direction);
-		/*
-		currentRenderer.sprite = Map.Instance.current.sprite;
-		for(int i=0; i<Room.Max; i++) {
-			Room door = Map.Instance.current.next [i];
-			if (null != door) {
-				doorRenderer [i].sprite = door.sprite;
-			}
-		}
-*/
-		if (null != Dungeon.Instance.current) {
+		
+		if (null != Dungeon.Instance.current.monster) {
 			monster.Init (Dungeon.Instance.current.monster);
 		} else {
 			enableInput = true;
