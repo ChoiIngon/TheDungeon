@@ -138,7 +138,7 @@ public class Dungeon : MonoBehaviour {
 		current = candidates [start];
 		candidates.RemoveAt (start);
 
-		int monsterCount = Random.Range (4, 6);
+		int monsterCount = Random.Range (8, 10);
 		for (int i = 0; i < monsterCount; i++) {
 			int index = Random.Range (0, candidates.Count);
 			candidates [index].monster = Monster.FindInfo ("DAEMON_001");
