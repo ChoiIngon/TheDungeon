@@ -21,7 +21,7 @@ public class DungeonMain : MonoBehaviour {
 			return _instance;  
 		}  
 	}
-	public const float DISTANCE = 6.4f; // 이지 사이즈가 1130 * 640 이라서...
+	public const float DISTANCE = 7.2f; // 이지 사이즈가 1130 * 640 이라서...
 	public const float MOVETIME = 0.3f;
 
 	public bool enableInput {
@@ -65,26 +65,30 @@ public class DungeonMain : MonoBehaviour {
 		}
 	}
 
-	public UITextBox textBox;
-	//public UIInventory inventory;
-	public UIButton[] buttons;
+	public UIButton[] 	buttons;
+	public UITextBox 	textBox;
+	public UICoin 		coin;
+	public UIMiniMap	miniMap;
 
-	public GameObject rooms;
-	public GameObject coins;
 	public Monster monster;
 	public Texture2D fadeout;
 
-	private SpriteRenderer currentRenderer;
-	private SpriteRenderer[] doorRenderer = new SpriteRenderer[Dungeon.Max];
-	public TouchInput input;
+	public GameObject rooms;
+
+	private Room current;
+	private Room[] next = new Room[Dungeon.Max];
+
+	private GameObject reward;
+
+	private TouchInput input;
 	private Vector3 touchPoint = Vector3.zero;
 
-	// Use this for initialization
 	void Start () {
 		ResourceManager.Instance.Init ();
 		ItemManager.Instance.Init ();
 		Monster.Init ();
 		Dungeon.Instance.Init ();
+
 		Player.Instance.Init ();
 
 		iTween.CameraFadeAdd (fadeout);
@@ -102,21 +106,18 @@ public class DungeonMain : MonoBehaviour {
 			}
 		}
 
-		currentRenderer = rooms.transform.FindChild ("Current").GetComponent<SpriteRenderer> ();
-		doorRenderer[Dungeon.North] =  rooms.transform.FindChild ("North").GetComponent<SpriteRenderer> ();
-		doorRenderer[Dungeon.East] =  rooms.transform.FindChild ("East").GetComponent<SpriteRenderer> ();
-		doorRenderer[Dungeon.South] =  rooms.transform.FindChild ("South").GetComponent<SpriteRenderer> ();
-		doorRenderer[Dungeon.West] =  rooms.transform.FindChild ("West").GetComponent<SpriteRenderer> ();
+		current = rooms.transform.FindChild ("Current").GetComponent<Room> ();
+		next [Dungeon.North] = rooms.transform.FindChild ("North").GetComponent<Room> ();
+		next [Dungeon.North].transform.position = new Vector3 (0.0f, 0.0f, DISTANCE);
+		next [Dungeon.East] =  rooms.transform.FindChild ("East").GetComponent<Room> ();
+		next [Dungeon.East].transform.position = new Vector3 (DISTANCE, 0.0f, 0.0f);
+		next [Dungeon.South] =  rooms.transform.FindChild ("South").GetComponent<Room> ();
+		next [Dungeon.South].transform.position = new Vector3 (0.0f, 0.0f, -DISTANCE);
+		next [Dungeon.West] =  rooms.transform.FindChild ("West").GetComponent<Room> ();
+		next [Dungeon.West].transform.position = new Vector3 (-DISTANCE, 0.0f, 0.0f);
 
-		/*
-		currentRenderer.sprite = Dungeon.Instance.current.sprite;
-		for(int i=0; i<Room.Max; i++) {
-			Dungeon.Room door = Dungeon.Instance.current.next [i];
-			if (null != door) {
-				doorRenderer [i].sprite = door.sprite;
-			}
-		}
-		*/
+		RectTransform uiMain = transform.FindChild ("UI/Main").GetComponent<RectTransform>();
+		uiMain.position = Camera.main.WorldToScreenPoint(monster.transform.position);
 		input = GetComponent<TouchInput> ();
 		input.onTouchDown += (Vector3 position) => {
 			touchPoint = position;
@@ -157,11 +158,16 @@ public class DungeonMain : MonoBehaviour {
 
 			touchPoint = Vector3.zero;
 		};
-		coins = new GameObject ();
+		reward = new GameObject ();
+		reward.transform.SetParent (transform);
+		reward.name = "Reward";
 		enableInput = true;
+
+		InitRooms ();
+		miniMap.Init ();
+		miniMap.CurrentPosition (Dungeon.Instance.current.id);
 	}
 
-	// Update is called once per frame
 	public IEnumerator Move(int direction)
 	{
 		Dungeon.Room room = Dungeon.Instance.current;
@@ -209,9 +215,9 @@ public class DungeonMain : MonoBehaviour {
 			enableInput = true;
 		}
 		*/
-		if(0 < coins.transform.childCount) {
-			while (0 < coins.transform.childCount) {
-				Coin coin = coins.transform.GetChild (0).GetComponent<Coin>();
+		if(0 < reward.transform.childCount) {
+			while (0 < reward.transform.childCount) {
+				Coin coin = reward.transform.GetChild (0).GetComponent<Coin>();
 				coin.transform.SetParent (null);
 				coin.Stop ();
 			}
@@ -246,21 +252,13 @@ public class DungeonMain : MonoBehaviour {
 		rooms.transform.localPosition = Vector3.zero;
 		
 		Dungeon.Instance.Move (direction);
-		/*
-		currentRenderer.sprite = Map.Instance.current.sprite;
-		for(int i=0; i<Room.Max; i++) {
-			Room door = Map.Instance.current.next [i];
-			if (null != door) {
-				doorRenderer [i].sprite = door.sprite;
-			}
-		}
-*/
+		InitRooms ();
+		miniMap.CurrentPosition (Dungeon.Instance.current.id);
 		if (null != Dungeon.Instance.current.monster) {
 			monster.Init (Dungeon.Instance.current.monster);
 			StartCoroutine (Battle ());
 		} 
 	}
-
 	public IEnumerator Battle()
 	{
 		DungeonMain.Instance.enableInput = false;
@@ -299,14 +297,28 @@ public class DungeonMain : MonoBehaviour {
 		for (int i = 0; i < coinCount; i++) {
 			Coin coin = GameObject.Instantiate<Coin> (monster.coinPrefab);
 			float scale = Random.Range (1.0f, 1.5f);
-			coin.transform.SetParent (coins.transform);
+			coin.transform.SetParent (reward.transform);
 			coin.transform.localScale = new Vector3 (scale, scale, 1.0f);
 			coin.transform.position = monster.transform.position;
 			iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
 		}
 		monster.gameObject.SetActive (false);
+		Player.Instance.AddExp (monster.info.reward.exp);
 		DungeonMain.Instance.enableInput = true;
 
-		UITextBox.Instance.text = "test test test test test test test test";
+		UITextBox.Instance.text = "You defeated \'daemon\'\n" +
+		"Coins : +" + monster.info.reward.gold + "\n" +
+		"Exp : +" + monster.info.reward.exp + "\n" +
+		"Level : " + 1 + " -> " + 2;
+	}
+	private void InitRooms()
+	{
+		current.Init (Dungeon.Instance.current);
+		for(int i=0; i<Dungeon.Max; i++) {
+			Dungeon.Room room = Dungeon.Instance.current.next [i];
+			if (null != room) {
+				next [i].Init (room);
+			}
+		}
 	}
 }

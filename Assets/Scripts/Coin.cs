@@ -23,7 +23,7 @@ public class Coin : MonoBehaviour {
 	public void Stop()
 	{
 		StopCoroutine (coroutine);
-		iTween.MoveTo (gameObject, new Vector3 (-2.5f, 5.0f, 0.0f), 0.1f);
+		iTween.MoveTo (gameObject, DungeonMain.Instance.coin.position, 0.1f);
 		DestroyObject (gameObject, 0.1f);
 	}
 	IEnumerator Bounce ()
@@ -48,7 +48,12 @@ public class Coin : MonoBehaviour {
 		}
 
 		float t = Random.Range (0.5f, 0.8f);
-		iTween.MoveTo (gameObject, new Vector3 (-2.5f, 5.0f, 0.0f), t);
+		iTween.MoveTo (gameObject, DungeonMain.Instance.coin.position, t);
 		DestroyObject (gameObject, t);
+	}
+
+	public void OnDisable()
+	{
+		DungeonMain.Instance.coin.Add (Random.Range (1, 1000));
 	}
 }

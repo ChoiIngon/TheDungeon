@@ -23,8 +23,10 @@ public class Player : MonoBehaviour {
 	}
 
     public int level;
-    public int exp;
+    
     public GaugeBar health;
+	public GaugeBar exp;
+	public int gold;
     public float attack;
     public float defense;
     public float speed;
@@ -61,10 +63,15 @@ public class Player : MonoBehaviour {
 
     public void Init() {
         level = 0;
-        exp = 0;
+
+		exp = ui.transform.FindChild("Exp").GetComponent<GaugeBar>();
+		exp.max = 1;
+		exp.current = 0;
+
         health = ui.transform.FindChild("Health").GetComponent<GaugeBar>();
         health.max = 1;
         health.current = health.max;
+
         attack = 0.0f;
         defense = 0.0f;
         speed = 0.0f;
@@ -82,9 +89,6 @@ public class Player : MonoBehaviour {
 
         // init inventory
 		inventory.Init ();
-
-        // init ui
-        ui.transform.GetComponent<RectTransform>().position = Camera.main.WorldToScreenPoint(transform.position);
     }
 
 	public EquipmentItem GetEquipement(EquipmentItem.Part category, int index) {
@@ -109,5 +113,19 @@ public class Player : MonoBehaviour {
 		EquipmentItem item = equipments [new Tuple<EquipmentItem.Part, int> (category, index)];
 		equipments [new Tuple<EquipmentItem.Part, int> (category, index)] = null;
 		return item;
+	}
+
+	public void AddCoin(int amount)
+	{
+	}
+
+	public void AddExp(int amount)
+	{
+		exp.current += amount;	
+		while (exp.current >= exp.max) {
+			exp.current -= exp.max;
+			level += 1;
+			exp.max += 1;
+		}
 	}
 }

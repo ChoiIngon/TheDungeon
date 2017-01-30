@@ -49,6 +49,7 @@ public class Monster : MonoBehaviour {
 		name = ui.transform.FindChild ("Name").GetComponent<Text> ();
 		health = ui.transform.FindChild ("Health").GetComponent<GaugeBar> ();
 		gameObject.SetActive (false);
+		/*
 		{
 			RectTransform rt = ui.transform.GetComponent<RectTransform> ();
 			rt.position = Camera.main.WorldToScreenPoint (new Vector3 (transform.position.x, transform.position.y - 0.5f, 0.0f));
@@ -57,6 +58,7 @@ public class Monster : MonoBehaviour {
 			RectTransform rt = name.gameObject.GetComponent<RectTransform> ();
 			name.fontSize = (int)(rt.rect.height - name.lineSpacing);
 		}
+		*/
 		ui.gameObject.SetActive (false);
 	}
 
@@ -77,54 +79,7 @@ public class Monster : MonoBehaviour {
 	{
 		ui.gameObject.SetActive (false);
 	}
-	public IEnumerator Battle()
-	{
-		DungeonMain.Instance.enableInput = false;
-		yield return new WaitForSeconds (0.5f);
-		while (0.0f < health.current) {
-			float waitTime = 0.0f;
-			if (0 == Random.Range (0, 2)) {
-				int attackCount = 1;
-
-				if (0 == Random.Range (0, 3)) {
-					attackCount += 1;
-					waitTime = 0.5f;
-				}
-				if (0 == Random.Range (0, 5)) {
-					attackCount += 1;
-					waitTime = 0.2f;
-				}
-
-				for (int i = 0; i < attackCount; i++) {
-					Damage (30);
-					yield return new WaitForSeconds (waitTime);
-				}
-			}
-			else 
-			{
-				Attack ();
-			}
-			yield return new WaitForSeconds (50.0f / info.speed - waitTime);
-		}
-
-		Dungeon.Instance.current.monster = null;
-		ui.gameObject.SetActive (false);
-		GameObject.Instantiate<GameObject> (damagePrefab);
-
-		int coinCount = Random.Range (1, 25);
-		for (int i = 0; i < coinCount; i++) {
-			Coin coin = GameObject.Instantiate<Coin> (coinPrefab);
-			float scale = Random.Range (1.0f, 1.5f);
-			coin.transform.localScale = new Vector3 (scale, scale, 1.0f);
-			coin.transform.position = transform.position;
-			iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
-		}
-		gameObject.SetActive (false);
-		DungeonMain.Instance.enableInput = true;
-
-		UITextBox.Instance.text = "test test test test test test test test";
-	}
-
+	 
 	public void Attack()
 	{
 		iTween.CameraFadeFrom (0.1f, 0.1f);

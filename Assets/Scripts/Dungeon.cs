@@ -67,7 +67,7 @@ public class Dungeon : MonoBehaviour {
 	public int exit;
 	public int move;
 	public Room[] rooms = new Room[WIDTH * HEIGHT];
-	public UIMiniMap miniMap;
+
 	// Use this for initialization
 	public void Init() {
 		exit = 0;
@@ -144,8 +144,10 @@ public class Dungeon : MonoBehaviour {
 			candidates [index].monster = Monster.FindInfo ("DAEMON_001");
 			candidates.RemoveAt (index);
 		}
-		miniMap.Init ();
-		miniMap.CurrentPosition (current.id);
+
+		int end = Random.Range (0, candidates.Count);
+		candidates [end].type = Room.Type.Exit;
+		candidates.RemoveAt (end);
 	}
 
 	public Room Move(int direction)
@@ -155,7 +157,9 @@ public class Dungeon : MonoBehaviour {
 		}
 		current = current.next [direction];
 		current.visit = true;
-		miniMap.CurrentPosition (current.id);
+		if (Room.Type.Exit == current.type) {
+			UITextBox.Instance.text = "Here is the Exit";
+		}
 		return current;
 	}
 		
