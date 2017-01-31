@@ -5,7 +5,7 @@ Temp/
 Obj/
 UnityGenerated/
 Library/
-.apk
+*.apk
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
