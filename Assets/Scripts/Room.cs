@@ -5,8 +5,13 @@ using UnityEngine.Assertions;
 
 public class Room : MonoBehaviour
 {
-	public Sprite[] doors;
-	void OnEnable()
+	public GameObject[] doors;
+	public void Init(Dungeon.Room data)
 	{
+		for (int i = 0; i < doors.Length; i++) {
+			if (null != doors [i]) {
+				doors [i].SetActive ((bool)(null != data.next [i]));
+			}
+		}
 	}
 }

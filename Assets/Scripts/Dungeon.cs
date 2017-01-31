@@ -12,15 +12,11 @@ public class Dungeon : MonoBehaviour {
 	public const int Max = 4;
 
 	private static Dungeon _instance;  
-	public static Dungeon Instance  
-	{  
-		get  
-		{  
-			if (!_instance) 
-			{  
+	public static Dungeon Instance {  
+		get {  
+			if (!_instance) {  
 				_instance = (Dungeon)GameObject.FindObjectOfType(typeof(Dungeon));  
-				if (!_instance)  
-				{  
+				if (!_instance) {  
 					GameObject container = new GameObject();  
 					container.name = "Dungeon";  
 					_instance = container.AddComponent<Dungeon>();  
@@ -71,7 +67,7 @@ public class Dungeon : MonoBehaviour {
 	public int exit;
 	public int move;
 	public Room[] rooms = new Room[WIDTH * HEIGHT];
-	public UIMiniMap miniMap;
+
 	// Use this for initialization
 	public void Init() {
 		exit = 0;
@@ -136,12 +132,22 @@ public class Dungeon : MonoBehaviour {
 			group = (group + 1) % (WIDTH * HEIGHT);
 		}
 
-		int start = Random.Range (0, WIDTH * HEIGHT);
-		rooms[start].type = Room.Type.Start;
-		current = rooms [start];
+		List<Room> candidates = new List<Room> (rooms);
+		int start = Random.Range (0, candidates.Count);
+		candidates[start].type = Room.Type.Start;
+		current = candidates [start];
+		candidates.RemoveAt (start);
 
-		miniMap.Init ();
-		miniMap.CurrentPosition (current.id);
+		int monsterCount = Random.Range (8, 10);
+		for (int i = 0; i < monsterCount; i++) {
+			int index = Random.Range (0, candidates.Count);
+			candidates [index].monster = Monster.FindInfo ("DAEMON_001");
+			candidates.RemoveAt (index);
+		}
+
+		int end = Random.Range (0, candidates.Count);
+		candidates [end].type = Room.Type.Exit;
+		candidates.RemoveAt (end);
 	}
 
 	public Room Move(int direction)
@@ -151,7 +157,9 @@ public class Dungeon : MonoBehaviour {
 		}
 		current = current.next [direction];
 		current.visit = true;
-		miniMap.CurrentPosition (current.id);
+		if (Room.Type.Exit == current.type) {
+			UITextBox.Instance.text = "Here is the Exit";
+		}
 		return current;
 	}
 		
