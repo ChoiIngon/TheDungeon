@@ -3,58 +3,29 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class UITextBox : MonoBehaviour {
+	public enum State
+	{
+		Hide,
+		Raise,
+		Typing,
+		Complete,
+		Fall
+	}
+	public State state;
 	public int lineCount;
 	public float charPerSecond;
 	public float moveSpeed;
-	public string text {
-		set {
-			copied = value;
-			coroutine = StartCoroutine(Type());
-		}
-	}
-	private static UITextBox _instance;  
-	public static UITextBox Instance  
-	{  
-		get  
-		{  
-			if (!_instance) 
-			{  
-				_instance = (UITextBox)GameObject.FindObjectOfType(typeof(UITextBox));  
-				if (!_instance)  
-				{  
-					GameObject container = new GameObject();  
-					container.name = "UITextBox";  
-					_instance = container.AddComponent<UITextBox>();  
-				}  
-			}  
-			return _instance;  
-		}  
-	}
-	Text contents;
-	string copied;
-	ScrollRect scrollRect;
-	AudioSource audioSource;
-	Button button;
-	Coroutine coroutine;
-	float height;
+	public AudioSource audioSource;
+
+	private Text contents;
+	private string copied;
+	private ScrollRect scrollRect;
+	private Button button;
+	private float height;
 	// Use this for initialization
 	void Start () {
 		button = transform.FindChild ("Button").GetComponent<Button> ();
 		button.gameObject.SetActive (false);
-		button.onClick.AddListener (() => {
-			if(null != coroutine)
-			{
-				StopCoroutine(coroutine);
-				coroutine = null;
-				contents.text = copied;
-			}
-			else
-			{
-				button.gameObject.SetActive(false);
-				StartCoroutine(DownTextBox());
-			}
-		});
-	
 		contents = transform.FindChild ("ScrollView/Viewport/Contents").GetComponent<Text> ();
 		audioSource = GetComponent<AudioSource> ();
 
@@ -66,19 +37,17 @@ public class UITextBox : MonoBehaviour {
 		{
 			RectTransform rt = GetComponent<RectTransform> ();
 			height = rt.rect.height;
-
-			//rt.position = new Vector3 (rt.position.x, rt.position.y + height, rt.position.z);
-			//Debug.Log (rt.position);
 		}
 		{
 			RectTransform rt = button.GetComponent<RectTransform> ();
 			rt.sizeDelta = new Vector2 (rt.sizeDelta.x, Screen.height + height);
 		}
+		state = State.Hide;
 	}
 		
-	IEnumerator Type()
+	public IEnumerator Write(string text)
 	{
-		DungeonMain.Instance.enableInput = false;
+		state = State.Raise;
 		RectTransform rt = GetComponent<RectTransform> ();
 		height = rt.rect.height;
 
@@ -92,8 +61,11 @@ public class UITextBox : MonoBehaviour {
 
 		rt.anchoredPosition = new Vector2 (rt.anchoredPosition.x, height);
 
+		state = State.Typing;
+		button.onClick.AddListener (WriteAll);
 		button.gameObject.SetActive (true);
-		foreach (char c in copied)
+
+		foreach (char c in text)
 		{
 			audioSource.Play();
 			contents.text += c;
@@ -101,14 +73,17 @@ public class UITextBox : MonoBehaviour {
 			{
 				scrollRect.verticalNormalizedPosition = 0.0f;
 			}
-
 			yield return new WaitForSeconds(1.0f / charPerSecond);
+			if (State.Complete == state) {
+				contents.text = text;
+				break;
+			}
 		}
-		coroutine = null;
-	}
 
-	IEnumerator DownTextBox()
-	{
+		state = State.Complete;
+		while (State.Fall != state) {
+			yield return null;
+		}
 		while (0 < transform.position.y) {
 			Vector3 position = transform.position;
 			position.y -= height * Time.deltaTime * 2.0f;
@@ -116,6 +91,19 @@ public class UITextBox : MonoBehaviour {
 			yield return null;
 		}
 		transform.position = new Vector3 (transform.position.x, 0.0f, 0.0f);
-		DungeonMain.Instance.enableInput = true;
+	}
+
+	public void WriteAll()
+	{
+		state = State.Complete;
+		button.onClick.RemoveAllListeners ();
+		button.onClick.AddListener(HideTextBox);
+	}
+
+	public void HideTextBox()
+	{
+		state = State.Fall;
+		button.onClick.RemoveAllListeners ();
+		button.gameObject.SetActive (false);
 	}
 }

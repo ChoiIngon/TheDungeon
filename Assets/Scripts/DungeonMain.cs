@@ -167,13 +167,23 @@ public class DungeonMain : MonoBehaviour {
 		miniMap.Init ();
 		miniMap.CurrentPosition (Dungeon.Instance.current.id);
 	}
-
-	public IEnumerator Move(int direction)
+	private void InitRooms()
 	{
+		current.Init (Dungeon.Instance.current);
+		for(int i=0; i<Dungeon.Max; i++) {
+			Dungeon.Room room = Dungeon.Instance.current.next [i];
+			if (null != room) {
+				next [i].Init (room);
+			}
+		}
+	}
+	IEnumerator Move(int direction)
+	{
+		enableInput = false;
 		Dungeon.Room room = Dungeon.Instance.current;
 		Dungeon.Room next = room.GetNext (direction);
 		if (null == next) {
-			enableInput = true;
+			
 			switch (direction) {
 			case Dungeon.North:
 				iTween.PunchPosition (rooms.gameObject, new Vector3 (0.0f, 0.0f, 1.0f), 0.5f);
@@ -190,31 +200,10 @@ public class DungeonMain : MonoBehaviour {
 			default :
 				break;
 			}
+			enableInput = true;
 			yield break;
 		} 
-		/*
-		else {
-			enableInput = false;
-			switch (direction) {
-			case Dungeon.North:
-				iTween.MoveTo (rooms.gameObject, new Vector3 (0.0f, 0.0f, -DISTANCE), 0.5f);
-				break;
-			case Dungeon.East:
-				iTween.MoveTo (rooms.gameObject, new Vector3 (-DISTANCE, 0.0f, 0.0f), 0.5f);
-				break;
-			case Dungeon.South:
-				iTween.MoveTo (rooms.gameObject, new Vector3 (0.0f, 0.0f, DISTANCE), 0.5f);
-				break;
-			case Dungeon.West:
-				iTween.MoveTo (rooms.gameObject, new Vector3 (DISTANCE, 0.0f, 0.5f), 0.5f);
-				break;
-			default :
-				break;
-			}
-			yield return new WaitForSeconds (0.5f);
-			enableInput = true;
-		}
-		*/
+
 		if(0 < reward.transform.childCount) {
 			while (0 < reward.transform.childCount) {
 				Coin coin = reward.transform.GetChild (0).GetComponent<Coin>();
@@ -249,20 +238,20 @@ public class DungeonMain : MonoBehaviour {
 			yield return null;
 		}
 
-		rooms.transform.localPosition = Vector3.zero;
+		rooms.transform.position = Vector3.zero;
 		
 		Dungeon.Instance.Move (direction);
+
 		InitRooms ();
 		miniMap.CurrentPosition (Dungeon.Instance.current.id);
 		if (null != Dungeon.Instance.current.monster) {
 			monster.Init (Dungeon.Instance.current.monster);
-			StartCoroutine (Battle ());
+			yield return StartCoroutine (Battle ());
 		} 
+		enableInput = true;
 	}
-	public IEnumerator Battle()
+	IEnumerator Battle()
 	{
-		DungeonMain.Instance.enableInput = false;
-		yield return new WaitForSeconds (0.5f);
 		while (0.0f < monster.health.current) {
 			float waitTime = 0.0f;
 			if (0 == Random.Range (0, 2)) {
@@ -290,9 +279,12 @@ public class DungeonMain : MonoBehaviour {
 		}
 
 		Dungeon.Instance.current.monster = null;
-
 		GameObject.Instantiate<GameObject> (monster.damagePrefab);
-
+		monster.gameObject.SetActive (false);
+		yield return StartCoroutine (Win (monster.info));
+	}
+	IEnumerator Win(Monster.Info info)
+	{
 		int coinCount = Random.Range (1, 25);
 		for (int i = 0; i < coinCount; i++) {
 			Coin coin = GameObject.Instantiate<Coin> (monster.coinPrefab);
@@ -302,23 +294,14 @@ public class DungeonMain : MonoBehaviour {
 			coin.transform.position = monster.transform.position;
 			iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
 		}
-		monster.gameObject.SetActive (false);
-		Player.Instance.AddExp (monster.info.reward.exp);
-		DungeonMain.Instance.enableInput = true;
 
-		UITextBox.Instance.text = "You defeated \'daemon\'\n" +
-		"Coins : +" + monster.info.reward.gold + "\n" +
-		"Exp : +" + monster.info.reward.exp + "\n" +
-		"Level : " + 1 + " -> " + 2;
-	}
-	private void InitRooms()
-	{
-		current.Init (Dungeon.Instance.current);
-		for(int i=0; i<Dungeon.Max; i++) {
-			Dungeon.Room room = Dungeon.Instance.current.next [i];
-			if (null != room) {
-				next [i].Init (room);
-			}
-		}
+		int level = (int)Player.Instance.exp.max;
+		Player.Instance.AddExp(info.reward.exp);	
+
+		yield return StartCoroutine(textBox.Write("You defeated \'daemon\'\n" +
+			"Coins : +" + monster.info.reward.gold + "\n" +
+			"Exp : +" + monster.info.reward.exp + "\n" +
+			"Level : " + level + " -> " + Player.Instance.exp.max
+		));
 	}
 }

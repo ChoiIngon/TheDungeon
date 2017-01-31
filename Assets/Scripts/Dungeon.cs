@@ -157,9 +157,6 @@ public class Dungeon : MonoBehaviour {
 		}
 		current = current.next [direction];
 		current.visit = true;
-		if (Room.Type.Exit == current.type) {
-			UITextBox.Instance.text = "Here is the Exit";
-		}
 		return current;
 	}
 		
