@@ -9,17 +9,16 @@ public class UIMiniMap : MonoBehaviour
 	public GameObject roomPrefab;
 	public Image currentPosition;
 	private GameObject[] rooms;
-
-	public void Init ()
+	void Awake()
 	{
 		int roomID = 0;
 		RectTransform t = GetComponent<RectTransform> ();
 		t.sizeDelta = new Vector2 (t.rect.height, t.sizeDelta.y);
 		ROOM_SIZE = t.rect.height / Dungeon.HEIGHT;
-		rooms = new GameObject[Dungeon.WIDTH * Dungeon.HEIGHT];
 		float scale = ROOM_SIZE / 19.0f;
 		currentPosition.GetComponent<RectTransform> ().localScale = new Vector3 (scale, scale, 1.0f);
 
+		rooms = new GameObject[Dungeon.WIDTH * Dungeon.HEIGHT];
 		for (int y = 0; y < Dungeon.HEIGHT; y++) {
 			for (int x = 0; x < Dungeon.WIDTH; x++) {
 				GameObject obj = GameObject.Instantiate<GameObject> (roomPrefab);
@@ -30,6 +29,23 @@ public class UIMiniMap : MonoBehaviour
 				obj.transform.FindChild ("Room/EastDoor").gameObject.SetActive (true);
 				obj.transform.FindChild ("Room/SouthDoor").gameObject.SetActive (true);
 				obj.transform.FindChild ("Room/WestDoor").gameObject.SetActive (true);
+				obj.SetActive (false);
+				rooms [y * Dungeon.WIDTH + x] = obj;
+			}
+		}
+	}
+	public void Init ()
+	{
+		int roomID = 0;
+		RectTransform t = GetComponent<RectTransform> ();
+		t.sizeDelta = new Vector2 (t.rect.height, t.sizeDelta.y);
+		ROOM_SIZE = t.rect.height / Dungeon.HEIGHT;
+		float scale = ROOM_SIZE / 19.0f;
+		currentPosition.GetComponent<RectTransform> ().localScale = new Vector3 (scale, scale, 1.0f);
+
+		for (int y = 0; y < Dungeon.HEIGHT; y++) {
+			for (int x = 0; x < Dungeon.WIDTH; x++) {
+				GameObject obj = rooms [y * Dungeon.WIDTH + x];
 				Dungeon.Room room = Dungeon.Instance.rooms [roomID++];
 				if (null == room.next [Dungeon.North]) {
 					obj.transform.FindChild ("Room/NorthDoor").gameObject.SetActive (false);
@@ -44,7 +60,6 @@ public class UIMiniMap : MonoBehaviour
 					obj.transform.FindChild ("Room/WestDoor").gameObject.SetActive (false);
 				}
 				obj.SetActive (false);
-				rooms [y * Dungeon.WIDTH + x] = obj;
 			}
 		}
 

@@ -248,6 +248,13 @@ public class DungeonMain : MonoBehaviour {
 			monster.Init (Dungeon.Instance.current.monster);
 			yield return StartCoroutine (Battle ());
 		} 
+		if (Dungeon.Room.Type.Exit == Dungeon.Instance.current.type) {
+			yield return StartCoroutine(textBox.Write("Here is Exit"));
+			Dungeon.Instance.Init ();
+			InitRooms ();
+			miniMap.Init ();
+			miniMap.CurrentPosition (Dungeon.Instance.current.id);
+		}
 		enableInput = true;
 	}
 	IEnumerator Battle()
@@ -294,14 +301,24 @@ public class DungeonMain : MonoBehaviour {
 			coin.transform.position = monster.transform.position;
 			iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
 		}
-
+		Vector3 position = Player.Instance.exp.GetComponent<RectTransform> ().position;
+		Player.Instance.exp.GetComponent<RectTransform> ().position = Camera.main.WorldToScreenPoint (monster.transform.position);
 		int level = (int)Player.Instance.exp.max;
-		Player.Instance.AddExp(info.reward.exp);	
-
+		int exp = info.reward.exp + (int)Player.Instance.exp.current;
+		Player.Instance.exp.current = 0;
+		while (Player.Instance.exp.max < exp) {
+			yield return StartCoroutine(Player.Instance.exp.DeferredChange(Player.Instance.exp.max, 0.25f));
+			exp -= (int)Player.Instance.exp.max;
+			Player.Instance.level += 1;
+			Player.Instance.exp.max = Player.Instance.level;
+			Player.Instance.exp.current = 0.0f;
+		}
+		yield return StartCoroutine(Player.Instance.exp.DeferredChange (exp, 0.1f));
 		yield return StartCoroutine(textBox.Write("You defeated \'daemon\'\n" +
 			"Coins : +" + monster.info.reward.gold + "\n" +
 			"Exp : +" + monster.info.reward.exp + "\n" +
 			"Level : " + level + " -> " + Player.Instance.exp.max
 		));
+		Player.Instance.exp.GetComponent<RectTransform> ().position = position;
 	}
 }

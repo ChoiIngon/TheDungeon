@@ -64,17 +64,17 @@ public class Monster : MonoBehaviour {
 
 	public void Init(Info info_)
 	{
-		DungeonMain.Instance.enableInput = false;
+		gameObject.SetActive (true);
+		ui.gameObject.SetActive (true);
+
 		info = info_;
 		name.text = info.name;
 		renderer.sprite = info.sprite;
 
 		health.max = info.health;
 		health.current = health.max;
-
-		gameObject.SetActive (true);
-		ui.gameObject.SetActive (true);
 	}
+
 	public void OnDisable()
 	{
 		ui.gameObject.SetActive (false);
@@ -96,7 +96,7 @@ public class Monster : MonoBehaviour {
 
 	public void Damage(int damage)
 	{
-        health.current = health.current - damage;
+		StartCoroutine(health.DeferredChange(-damage, 0.2f));
 
         TrailRenderer trail = GameObject.Instantiate<TrailRenderer> (trailPrefab);
 		trail.sortingLayerName = "Effect";
