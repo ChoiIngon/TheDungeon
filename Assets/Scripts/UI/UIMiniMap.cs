@@ -25,10 +25,6 @@ public class UIMiniMap : MonoBehaviour
 				obj.transform.SetParent (transform);
 				obj.transform.localScale = new Vector3 (scale, scale, 1.0f);
 				obj.transform.localPosition = new Vector3 (x * ROOM_SIZE - ROOM_SIZE * Dungeon.WIDTH, -y * ROOM_SIZE, 0.0f);
-				obj.transform.FindChild ("Room/NorthDoor").gameObject.SetActive (true);
-				obj.transform.FindChild ("Room/EastDoor").gameObject.SetActive (true);
-				obj.transform.FindChild ("Room/SouthDoor").gameObject.SetActive (true);
-				obj.transform.FindChild ("Room/WestDoor").gameObject.SetActive (true);
 				obj.SetActive (false);
 				rooms [y * Dungeon.WIDTH + x] = obj;
 			}
@@ -47,6 +43,10 @@ public class UIMiniMap : MonoBehaviour
 			for (int x = 0; x < Dungeon.WIDTH; x++) {
 				GameObject obj = rooms [y * Dungeon.WIDTH + x];
 				Dungeon.Room room = Dungeon.Instance.rooms [roomID++];
+				obj.transform.FindChild ("Room/NorthDoor").gameObject.SetActive (true);
+				obj.transform.FindChild ("Room/EastDoor").gameObject.SetActive (true);
+				obj.transform.FindChild ("Room/SouthDoor").gameObject.SetActive (true);
+				obj.transform.FindChild ("Room/WestDoor").gameObject.SetActive (true);
 				if (null == room.next [Dungeon.North]) {
 					obj.transform.FindChild ("Room/NorthDoor").gameObject.SetActive (false);
 				}
