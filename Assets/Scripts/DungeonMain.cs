@@ -86,6 +86,7 @@ public class DungeonMain : MonoBehaviour {
 	void Start () {
 		ResourceManager.Instance.Init ();
 		ItemManager.Instance.Init ();
+		QuestManager.Instance.Init ();
 		Monster.Init ();
 		Dungeon.Instance.Init ();
 
@@ -157,6 +158,13 @@ public class DungeonMain : MonoBehaviour {
 			}
 
 			touchPoint = Vector3.zero;
+		};
+		QuestManager.Instance.onComplete += (QuestData quest) =>
+		{
+			StartCoroutine(textBox.Write(
+				quest.name + " is completed!!\n" +
+				"strangth : +1"
+			));
 		};
 		reward = new GameObject ();
 		reward.transform.SetParent (transform);
@@ -320,5 +328,6 @@ public class DungeonMain : MonoBehaviour {
 			"Level : " + level + " -> " + Player.Instance.exp.max
 		));
 		Player.Instance.exp.GetComponent<RectTransform> ().position = position;
+		QuestManager.Instance.Update (QuestProgress.Type.KillMonster, info.id);
 	}
 }
