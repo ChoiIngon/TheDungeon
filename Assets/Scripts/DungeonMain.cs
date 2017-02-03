@@ -69,6 +69,7 @@ public class DungeonMain : MonoBehaviour {
 
 	public UIButton[] 	buttons;
 	public UITextBox 	textBox;
+	public UIDialogBox	dialogBox;
 	public UICoin 		coin;
 	public UIMiniMap	miniMap;
 
@@ -262,12 +263,16 @@ public class DungeonMain : MonoBehaviour {
 			monster.Init (Dungeon.Instance.current.monster);
 			yield return StartCoroutine (Battle ());
 		} 
+
 		if (Dungeon.Room.Type.Exit == Dungeon.Instance.current.type) {
-			yield return StartCoroutine(textBox.Write("Here is Exit"));
-			Dungeon.Instance.Init ();
-			InitRooms ();
-			miniMap.Init ();
-			miniMap.CurrentPosition (Dungeon.Instance.current.id);
+			dialogBox.onSubmit += () =>  {
+				Dungeon.Instance.Init ();
+				InitRooms ();
+				miniMap.Init ();
+				miniMap.CurrentPosition (Dungeon.Instance.current.id);
+				Debug.Log("on submit");
+			};
+			yield return StartCoroutine(dialogBox.Write("Do you want go down the stair?"));
 		}
 		enableInput = true;
 	}

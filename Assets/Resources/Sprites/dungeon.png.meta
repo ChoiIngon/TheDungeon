@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 64a8e5a12338c4accb72e9fe66db3432
-timeCreated: 1485755355
+timeCreated: 1486147002
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -9,6 +9,7 @@ TextureImporter:
     21300004: door_west
     21300006: door_north
     21300008: door_east
+    21300010: stair
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -108,9 +109,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 740
-        y: 756
+        y: 765
         width: 720
-        height: 524
+        height: 515
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -123,7 +124,7 @@ TextureImporter:
         x: 740
         y: 0
         width: 95
-        height: 546
+        height: 544
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -149,7 +150,20 @@ TextureImporter:
         x: 839
         y: 0
         width: 95
-        height: 546
+        height: 544
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: stair
+      rect:
+        serializedVersion: 2
+        x: 724
+        y: 546
+        width: 600
+        height: 219
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
