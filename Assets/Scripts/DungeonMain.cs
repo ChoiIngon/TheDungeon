@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
+using System.Collections;
+using System.Collections.Generic;
 
 public class DungeonMain : MonoBehaviour {
 	private static DungeonMain _instance;  
@@ -84,6 +86,10 @@ public class DungeonMain : MonoBehaviour {
 	private Vector3 touchPoint = Vector3.zero;
 
 	void Start () {
+        Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>
+        {
+
+        });
 		ResourceManager.Instance.Init ();
 		ItemManager.Instance.Init ();
 		QuestManager.Instance.Init ();
@@ -329,5 +335,10 @@ public class DungeonMain : MonoBehaviour {
 		));
 		Player.Instance.exp.GetComponent<RectTransform> ().position = position;
 		QuestManager.Instance.Update (QuestProgress.Type.KillMonster, info.id);
-	}
+
+        Analytics.CustomEvent("KillMonster", new Dictionary<string, object>
+        {
+            {"monster_id", info.id }
+        });
+    }
 }

@@ -84,15 +84,25 @@ public class QuestManager : Singleton<QuestManager> {
 	//private delegate QuestCompleteCondition CreateCompleteConditionInstance (JSONNode attr);
 	public void Init() {
 		completes = new Dictionary<string, CompleteQuest>();
-		quests = new Dictionary<string, QuestData>();
-
-		QuestData quest = new QuestData();
-		quest.id = "QUEST_001";
-		quest.name = "First Blood";
-		quest.progresses.Add (new QuestProgress_KillMonster() { monsterID="", goal=1, progress = 0});
-		quest.state = QuestData.State.AccecptWait;
-		quest.Start ();
-		quests.Add (quest.id, quest);
+        quests = new Dictionary<string, QuestData> {
+            { "QUEST_001",  new QuestData() {
+                id = "QUEST_001", name = "First Blood", state = QuestData.State.AccecptWait,
+                progresses = new List<QuestProgress> {
+                    new QuestProgress_KillMonster() { monsterID = "", goal = 1, progress = 0 }
+                }
+            } },
+            { "QUEST_002",  new QuestData() {
+                id = "QUEST_002", name = "Daemon Hunter", state = QuestData.State.AccecptWait,
+                progresses = new List<QuestProgress> {
+                    new QuestProgress_KillMonster() { monsterID = "DAEMON_001", goal = 3, progress = 0 }
+                }
+            } }
+        };
+        foreach(var itr in quests)
+        {
+            QuestData quest = itr.Value;
+            quest.Start();
+        }
 	}
 
 	public void Update(QuestProgress.Type type, string id)

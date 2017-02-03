@@ -11,7 +11,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: 2013_10 - Sample Assets
+  productName: TheDungeon
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13333334, g: 0.17254902, b: 0.21176471, a: 1}
@@ -451,7 +451,7 @@ PlayerSettings:
     15: CROSS_PLATFORM_INPUT;MOBILE_INPUT
     16: CROSS_PLATFORM_INPUT;MOBILE_INPUT
   platformArchitecture:
-    iOS: 2
+    iOS: 0
   scriptingBackend:
     Android: 0
     Metro: 2
@@ -554,7 +554,7 @@ PlayerSettings:
     Purchasing: 0
     UNet: 0
     Unity_Ads: 0
-  cloudProjectId: 
-  projectName: 
-  organizationId: 
+  cloudProjectId: 4a1b5f44-5763-4543-99be-0873f2dddb82
+  projectName: TheDungeon
+  organizationId: kukuta
   cloudEnabled: 0
