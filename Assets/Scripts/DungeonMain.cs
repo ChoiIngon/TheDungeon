@@ -334,7 +334,7 @@ public class DungeonMain : MonoBehaviour {
 			"Level : " + level + " -> " + Player.Instance.exp.max
 		));
 		Player.Instance.exp.GetComponent<RectTransform> ().position = position;
-		QuestManager.Instance.Update (QuestProgress.Type.KillMonster, info.id);
+		QuestManager.Instance.Update ("KillMonster", info.id);
 
         Analytics.CustomEvent("KillMonster", new Dictionary<string, object>
         {

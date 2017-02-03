@@ -71,7 +71,6 @@ public class UISlot : MonoBehaviour {
 	public void OnDrag( PointerEventData evt )
 	{
 		clone.transform.position = evt.position;
-		Debug.Log (clone.transform.position);
 	}
 
 	public void OnPointerUp( PointerEventData evt )

@@ -16,7 +16,6 @@ public class UICoin : MonoBehaviour {
 		position = Camera.main.ScreenToWorldPoint (
 			new Vector3(image.rectTransform.position.x, image.rectTransform.position.y, DungeonMain.DISTANCE)
 		);
-		Debug.Log (position);
 		text.text = coinCount.ToString (); 
 	}
 

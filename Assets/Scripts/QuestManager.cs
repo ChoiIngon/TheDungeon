@@ -1,6 +1,51 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
+using UnityEngine.Assertions;
+#endif
 using System.Collections;
 using System.Collections.Generic;
+
+public class QuestProgress
+{
+    public string type;
+    public string key;
+    public int goal;
+    public int progress;
+    public virtual void Start()
+    {
+#if UNITY_EDITOR
+        Assert.AreNotEqual(null, type);
+        Assert.AreNotEqual("", type);
+#endif
+        if (false == QuestManager.Instance.updates.ContainsKey(type))
+        {
+            QuestManager.Instance.updates[type] = this.Update;
+        }
+        else
+        {
+            QuestManager.Instance.updates[type] += this.Update;
+        }
+    }
+
+    public virtual bool IsComplete()
+    {
+        if (progress >= goal)
+        {
+            QuestManager.Instance.updates[type] -= this.Update;
+            return true;
+        }
+        return false;
+    }
+
+    public virtual void Update(string key)
+    {
+        if ("" == this.key || this.key == key)
+        {
+            progress++;
+        }
+    }
+}
+
 
 public class QuestData {
 	public enum State {
@@ -75,26 +120,33 @@ public class CompleteQuest {
 public class QuestManager : Singleton<QuestManager> {
 	public delegate void UpdateDelegate(string key);
 	public delegate void CompleteDelegate(QuestData quests);
-	public UpdateDelegate[]  updates = new UpdateDelegate[(int)QuestProgress.Type.Max];
-	public CompleteDelegate onComplete;
+    public Dictionary<string, UpdateDelegate> updates = new Dictionary<string, UpdateDelegate>();
 	public Dictionary<string, CompleteQuest> completes = new Dictionary<string, CompleteQuest>();
 	public Dictionary<string, QuestData> quests = new Dictionary<string, QuestData>();
 
-	//private delegate QuestStartCondition CreateStartConditionInstance(JSONNode attr);
-	//private delegate QuestCompleteCondition CreateCompleteConditionInstance (JSONNode attr);
-	public void Init() {
+    public CompleteDelegate onComplete;
+    //private delegate QuestStartCondition CreateStartConditionInstance(JSONNode attr);
+    //private delegate QuestCompleteCondition CreateCompleteConditionInstance (JSONNode attr);
+    public void Init() {
 		completes = new Dictionary<string, CompleteQuest>();
         quests = new Dictionary<string, QuestData> {
             { "QUEST_001",  new QuestData() {
                 id = "QUEST_001", name = "First Blood", state = QuestData.State.AccecptWait,
                 progresses = new List<QuestProgress> {
-                    new QuestProgress_KillMonster() { monsterID = "", goal = 1, progress = 0 }
+                    new QuestProgress() { type = "KillMonster", key = "", goal = 1, progress = 0 }
                 }
             } },
             { "QUEST_002",  new QuestData() {
                 id = "QUEST_002", name = "Daemon Hunter", state = QuestData.State.AccecptWait,
                 progresses = new List<QuestProgress> {
-                    new QuestProgress_KillMonster() { monsterID = "DAEMON_001", goal = 3, progress = 0 }
+                    new QuestProgress() { type = "KillMonster", key = "DAEMON_001", goal = 3, progress = 0 }
+                }
+            } },
+            { "QUEST_003", new QuestData() {
+                id = "QUEST_003", name = "Cutting it close", state = QuestData.State.AccecptWait,
+                progresses = new List<QuestProgress>
+                {
+                    new QuestProgress() { type = "Heal", key = "", goal = 1, progress = 0 }
                 }
             } }
         };
@@ -105,12 +157,12 @@ public class QuestManager : Singleton<QuestManager> {
         }
 	}
 
-	public void Update(QuestProgress.Type type, string id)
+	public void Update(string type, string key)
 	{
-		if (null == updates [(int)type]) {
+		if (null == updates [type]) {
 			return;
 		}
-		updates [(int)type] (id);
+		updates [type] (key);
 		foreach (var itr in quests) {
 			QuestData quest = itr.Value;
 			if (true == quest.IsComplete ()) {
