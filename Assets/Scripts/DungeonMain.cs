@@ -74,32 +74,25 @@ public class DungeonMain : MonoBehaviour {
 	public UIMiniMap	miniMap;
 
 	public Monster monster;
-	public Texture2D fadeout;
+	private Color cameraFadeColor;
 
-	public GameObject rooms;
-
+	private Transform coins;
+	private Transform rooms;
 	private Room current;
 	private Room[] next = new Room[Dungeon.Max];
-
-	private GameObject reward;
 
 	private TouchInput input;
 	private Vector3 touchPoint = Vector3.zero;
 	void Start () {
-        Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>
-        {
-
-        });
+        Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
 		ResourceManager.Instance.Init ();
 		ItemManager.Instance.Init ();
 		QuestManager.Instance.Init ();
-		Monster.Init ();
-		Dungeon.Instance.Init ();
-
+		MonsterManager.Instance.Init ();
 		Player.Instance.Init ();
-
-		iTween.CameraFadeAdd (fadeout);
-
+		Dungeon.Instance.Init ();
+		iTween.CameraFadeAdd ();
+		SetCameraFadeColor (Color.white);
 		for (int i = 0; i < buttons.Length; i++) {
 			UIButton button = buttons [i];
 			if (null == button.button) {
@@ -113,14 +106,16 @@ public class DungeonMain : MonoBehaviour {
 			}
 		}
 
-		current = rooms.transform.FindChild ("Current").GetComponent<Room> ();
-		next [Dungeon.North] = rooms.transform.FindChild ("North").GetComponent<Room> ();
+		coins = transform.FindChild ("Coins");
+		rooms = transform.FindChild ("Rooms");
+		current = rooms.FindChild ("Current").GetComponent<Room> ();
+		next [Dungeon.North] = rooms.FindChild ("North").GetComponent<Room> ();
 		next [Dungeon.North].transform.position = new Vector3 (0.0f, 0.0f, DISTANCE);
-		next [Dungeon.East] =  rooms.transform.FindChild ("East").GetComponent<Room> ();
+		next [Dungeon.East] =  rooms.FindChild ("East").GetComponent<Room> ();
 		next [Dungeon.East].transform.position = new Vector3 (DISTANCE, 0.0f, 0.0f);
-		next [Dungeon.South] =  rooms.transform.FindChild ("South").GetComponent<Room> ();
+		next [Dungeon.South] =  rooms.FindChild ("South").GetComponent<Room> ();
 		next [Dungeon.South].transform.position = new Vector3 (0.0f, 0.0f, -DISTANCE);
-		next [Dungeon.West] =  rooms.transform.FindChild ("West").GetComponent<Room> ();
+		next [Dungeon.West] =  rooms.FindChild ("West").GetComponent<Room> ();
 		next [Dungeon.West].transform.position = new Vector3 (-DISTANCE, 0.0f, 0.0f);
 
 		RectTransform uiMain = transform.FindChild ("UI/Main").GetComponent<RectTransform>();
@@ -173,17 +168,15 @@ public class DungeonMain : MonoBehaviour {
 			));
 		};
 
-		reward = new GameObject ();
-		reward.transform.SetParent (transform);
-		reward.name = "Reward";
 		enableInput = true;
 
 		InitRooms ();
 		miniMap.Init ();
 		miniMap.CurrentPosition (Dungeon.Instance.current.id);
 	}
-	private void InitRooms()
+	void InitRooms()
 	{
+		rooms.transform.position = Vector3.zero;
 		current.Init (Dungeon.Instance.current);
 		for(int i=0; i<Dungeon.Max; i++) {
 			Dungeon.Room room = Dungeon.Instance.current.next [i];
@@ -198,7 +191,6 @@ public class DungeonMain : MonoBehaviour {
 		Dungeon.Room room = Dungeon.Instance.current;
 		Dungeon.Room next = room.GetNext (direction);
 		if (null == next) {
-			
 			switch (direction) {
 			case Dungeon.North:
 				iTween.PunchPosition (rooms.gameObject, new Vector3 (0.0f, 0.0f, 1.0f), 0.5f);
@@ -219,20 +211,20 @@ public class DungeonMain : MonoBehaviour {
 			yield break;
 		} 
 
-		if(0 < reward.transform.childCount) {
-			while (0 < reward.transform.childCount) {
-				Coin coin = reward.transform.GetChild (0).GetComponent<Coin>();
+		if(0 < coins.childCount) {
+			while (0 < coins.childCount) {
+				Coin coin = coins.GetChild (0).GetComponent<Coin>();
 				coin.transform.SetParent (null);
 				coin.Stop ();
 			}
 			yield return new WaitForSeconds (0.1f);
 		}
-		float movement = 0.0f;
 
+		float movement = 0.0f;
 		float speed = DISTANCE / MOVETIME;
 		while (DISTANCE > movement) {
 			movement += Time.deltaTime * speed;
-			Vector3 position = rooms.transform.position;
+			Vector3 position = rooms.position;
 			switch (direction) {
 			case Dungeon.North :
 				position = new Vector3 (position.x, position.y, position.z - Time.deltaTime * speed);
@@ -249,12 +241,9 @@ public class DungeonMain : MonoBehaviour {
 			default :
 				break;
 			}
-			rooms.transform.position = position;
+			rooms.position = position;
 			yield return null;
 		}
-
-		rooms.transform.position = Vector3.zero;
-		
 		Dungeon.Instance.Move (direction);
 
 		InitRooms ();
@@ -264,8 +253,8 @@ public class DungeonMain : MonoBehaviour {
 			yield return StartCoroutine (Battle ());
 		} 
 
-		bool goDown = false;
 		if (Dungeon.Room.Type.Exit == Dungeon.Instance.current.type) {
+			bool goDown = false;
 			dialogBox.onSubmit += () =>  {
 				goDown = true;
 			};
@@ -276,12 +265,16 @@ public class DungeonMain : MonoBehaviour {
 				InitRooms ();
 				miniMap.Init ();
 				miniMap.CurrentPosition (Dungeon.Instance.current.id);
+				iTween.CameraFadeTo(0.0f, 1.0f);
+				yield return new WaitForSeconds (1.0f);
+				SetCameraFadeColor (Color.white);
 			}
 		}
 		enableInput = true;
 	}
 	IEnumerator Battle()
 	{
+		yield return new WaitForSeconds (1.0f);
 		while (0.0f < monster.health.current) {
 			float waitTime = 0.0f;
 			if (0 == Random.Range (0, 2)) {
@@ -319,7 +312,7 @@ public class DungeonMain : MonoBehaviour {
 		for (int i = 0; i < coinCount; i++) {
 			Coin coin = GameObject.Instantiate<Coin> (monster.coinPrefab);
 			float scale = Random.Range (1.0f, 1.5f);
-			coin.transform.SetParent (reward.transform);
+			coin.transform.SetParent (coins);
 			coin.transform.localScale = new Vector3 (scale, scale, 1.0f);
 			coin.transform.position = monster.transform.position;
 			iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
@@ -353,7 +346,9 @@ public class DungeonMain : MonoBehaviour {
 	bool isComplete = false;
 	IEnumerator GoDown()
 	{
+		SetCameraFadeColor (Color.black);
 		Vector3 position = Camera.main.transform.position;
+		iTween.CameraFadeTo(1.0f, 1.0f);
 		iTween.MoveTo (Camera.main.gameObject, iTween.Hash(
 			"x", current.stair.transform.position.x,
 			"y", current.stair.transform.position.y,
@@ -372,5 +367,14 @@ public class DungeonMain : MonoBehaviour {
 	void OnComplete()
 	{
 		isComplete = true;	
+	}
+	void SetCameraFadeColor(Color color)
+	{
+		Texture2D colorTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+		// set the pixel values
+		colorTexture.SetPixel(0, 0, color);
+		// Apply all SetPixel calls
+		colorTexture.Apply();
+		iTween.CameraFadeSwap (colorTexture);
 	}
 }

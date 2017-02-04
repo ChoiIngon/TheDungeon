@@ -40,16 +40,9 @@ public class ResourceManager : MonoBehaviour {
 		}
 		#else
 		*/
-		resource.Add ("dungeon_001____", Resources.Load <Sprite> ("Sprites/dungeon_001____"));
-		resource.Add ("dungeon_001_W__", Resources.Load <Sprite> ("Sprites/dungeon_001_W__"));
-		resource.Add ("dungeon_001_WN_", Resources.Load <Sprite> ("Sprites/dungeon_001_WN_"));
-		resource.Add ("dungeon_001_W_E", Resources.Load <Sprite> ("Sprites/dungeon_001_W_E"));
-		resource.Add ("dungeon_001_WNE", Resources.Load <Sprite> ("Sprites/dungeon_001_WNE"));
-		resource.Add ("dungeon_001__N_", Resources.Load <Sprite> ("Sprites/dungeon_001__N_"));
-		resource.Add ("dungeon_001__NE", Resources.Load <Sprite> ("Sprites/dungeon_001__NE"));
-		resource.Add ("dungeon_001___E", Resources.Load <Sprite> ("Sprites/dungeon_001___E"));
 		resource.Add ("monster_daemon", Resources.Load <Sprite> ("Sprites/monster_daemon"));
 		resource.Add ("monster_skeleton", Resources.Load <Sprite> ("Sprites/monster_skeleton"));
+		resource.Add ("monster_succubus", Resources.Load <Sprite> ("Sprites/monster_succubus"));
 		resource.Add ("item_ring_001", Resources.Load<Sprite> ("Sprites/Item/item_ring_001"));
 		resource.Add ("item_ring_002", Resources.Load<Sprite> ("Sprites/Item/item_ring_002"));
 		resource.Add ("item_ring_003", Resources.Load<Sprite> ("Sprites/Item/item_ring_003"));

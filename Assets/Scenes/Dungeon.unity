@@ -274,7 +274,7 @@ RectTransform:
   - {fileID: 1437952179}
   - {fileID: 167237060}
   m_Father: {fileID: 853562127}
-  m_RootOrder: 2
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3307,6 +3307,34 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.ScrollRect+ScrollRectEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!1 &841955329
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 841955330}
+  m_Layer: 0
+  m_Name: Coins
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &841955330
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 841955329}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 853562127}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &853562126
 GameObject:
   m_ObjectHideFlags: 0
@@ -3337,8 +3365,9 @@ Transform:
   m_Children:
   - {fileID: 2598112}
   - {fileID: 1081049933}
-  - {fileID: 3914113}
+  - {fileID: 841955330}
   - {fileID: 796858572}
+  - {fileID: 3914113}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3400,8 +3429,6 @@ MonoBehaviour:
   coin: {fileID: 1001817841}
   miniMap: {fileID: 1389233273}
   monster: {fileID: 2598113}
-  fadeout: {fileID: 2800000, guid: 38b380795d4f2498c92a8caf8fa27405, type: 3}
-  rooms: {fileID: 796858571}
 --- !u!1 &886684693
 GameObject:
   m_ObjectHideFlags: 0

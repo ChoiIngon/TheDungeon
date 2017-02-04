@@ -552,7 +552,7 @@ PlayerSettings:
     Game_Performance: 0
     Hub: 0
     Purchasing: 0
-    UNet: 0
+    UNet: 1
     Unity_Ads: 0
   cloudProjectId: 4a1b5f44-5763-4543-99be-0873f2dddb82
   projectName: TheDungeon

@@ -11,7 +11,6 @@ public class UIMiniMap : MonoBehaviour
 	private GameObject[] rooms;
 	void Awake()
 	{
-		int roomID = 0;
 		RectTransform t = GetComponent<RectTransform> ();
 		t.sizeDelta = new Vector2 (t.rect.height, t.sizeDelta.y);
 		ROOM_SIZE = t.rect.height / Dungeon.HEIGHT;
