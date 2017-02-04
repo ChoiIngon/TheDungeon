@@ -85,7 +85,6 @@ public class DungeonMain : MonoBehaviour {
 
 	private TouchInput input;
 	private Vector3 touchPoint = Vector3.zero;
-
 	void Start () {
         Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>
         {
@@ -173,6 +172,7 @@ public class DungeonMain : MonoBehaviour {
 				"strangth : +1"
 			));
 		};
+
 		reward = new GameObject ();
 		reward.transform.SetParent (transform);
 		reward.name = "Reward";
@@ -264,15 +264,19 @@ public class DungeonMain : MonoBehaviour {
 			yield return StartCoroutine (Battle ());
 		} 
 
+		bool goDown = false;
 		if (Dungeon.Room.Type.Exit == Dungeon.Instance.current.type) {
 			dialogBox.onSubmit += () =>  {
+				goDown = true;
+			};
+			yield return StartCoroutine(dialogBox.Write("Do you want go down the stair?"));
+			if (true == goDown) {
+				yield return StartCoroutine (GoDown ());
 				Dungeon.Instance.Init ();
 				InitRooms ();
 				miniMap.Init ();
 				miniMap.CurrentPosition (Dungeon.Instance.current.id);
-				Debug.Log("on submit");
-			};
-			yield return StartCoroutine(dialogBox.Write("Do you want go down the stair?"));
+			}
 		}
 		enableInput = true;
 	}
@@ -346,4 +350,27 @@ public class DungeonMain : MonoBehaviour {
             {"monster_id", info.id }
         });
     }
+	bool isComplete = false;
+	IEnumerator GoDown()
+	{
+		Vector3 position = Camera.main.transform.position;
+		iTween.MoveTo (Camera.main.gameObject, iTween.Hash(
+			"x", current.stair.transform.position.x,
+			"y", current.stair.transform.position.y,
+			"z", current.stair.transform.position.z-0.5f,
+			"time", 1.0f,
+			"oncomplete", "OnComplete",
+			"oncompletetarget", gameObject
+		));
+		yield return new WaitForSeconds (1.0f);
+		while (false == isComplete) {
+			yield return null;
+		}
+		isComplete = false;
+		Camera.main.transform.position = position;
+	}
+	void OnComplete()
+	{
+		isComplete = true;	
+	}
 }

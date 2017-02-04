@@ -19,16 +19,19 @@ public class UIDialogBox : MonoBehaviour {
 	}
 
 	private void Submit() {
+		content.text = "";
+		gameObject.SetActive(false);
 		if (null != onSubmit) {
 			onSubmit ();
 		}
-		Close ();
+		active = false;
+		onSubmit = null;
 	}
 
 	private void Close() {
-		active = false;
 		content.text = "";
 		gameObject.SetActive(false);
+		active = false;
 		onSubmit = null;
 	}
 		
