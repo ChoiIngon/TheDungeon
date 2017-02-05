@@ -274,6 +274,7 @@ public class DungeonMain : MonoBehaviour {
 	}
 	IEnumerator Battle()
 	{
+		miniMap.gameObject.SetActive (false);
 		yield return new WaitForSeconds (1.0f);
 		while (0.0f < monster.health.current) {
 			float waitTime = 0.0f;
@@ -304,6 +305,7 @@ public class DungeonMain : MonoBehaviour {
 		Dungeon.Instance.current.monster = null;
 		GameObject.Instantiate<GameObject> (monster.damagePrefab);
 		monster.gameObject.SetActive (false);
+		miniMap.gameObject.SetActive (true);
 		yield return StartCoroutine (Win (monster.info));
 	}
 	IEnumerator Win(Monster.Info info)

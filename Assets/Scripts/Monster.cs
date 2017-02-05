@@ -120,38 +120,4 @@ public class Monster : MonoBehaviour {
 		iTween.MoveTo(trail.gameObject, direction, 0.3f);
 		iTween.ShakePosition (gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.1f);
 	}
-
-	public static Dictionary<string, Info> infos = new Dictionary<string, Info> ();
-
-	public static void Init()
-	{
-		CSVReader reader = new CSVReader ("Config/info_monster");
-
-		foreach (CSVReader.Row row in reader) {
-			Info info = new Info ();
-			info.id = row ["MONSTER_ID"];
-			info.name = row ["MONSTER_NAME"];
-			info.level = int.Parse (row ["MONSTER_LEVEL"]);
-			info.health = int.Parse (row ["HEALTH"]);
-			info.defense = float.Parse (row ["DEFENSE"]);
-			info.speed = float.Parse (row ["SPEED"]);
-			info.sprite = ResourceManager.Instance.Load<Sprite>(row ["SPRITE_PATH"]);
-			info.reward.gold = int.Parse (row ["REWARD_GOLD"]);
-			info.reward.exp = int.Parse (row ["REWARD_EXP"]);
-
-			infos.Add (info.id, info);
-		}
-	}
-
-	public static Info FindInfo(string id)
-	{
-		if (false == infos.ContainsKey (id)) {
-			return null;
-		}
-		return infos[id];
-	}
-
-	public static Info GetRandomMonster(int level) {
-		return null;
-	}
 }

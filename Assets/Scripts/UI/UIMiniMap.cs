@@ -4,73 +4,61 @@ using System.Collections;
 
 public class UIMiniMap : MonoBehaviour
 {
-	public float ROOM_SIZE = 19.0f;
-	public float size = 0.0f;
-	public GameObject roomPrefab;
-	public Image currentPosition;
-	private GameObject[] rooms;
+	public float ROOM_SIZE = 50.0f;
+	public UIMiniMapRoom roomPrefab;
+	public Sprite stairSprite;
+	public Sprite roomSprite;
+	private UIMiniMapRoom[] rooms;
+	private int current;
+	private Color activateColor = new Color (1.0f, 1.0f, 1.0f, 1.0f);
+	private Color deactivateColor = new Color(1.0f, 1.0f, 1.0f, 0.2f);
+
 	void Awake()
 	{
-		RectTransform t = GetComponent<RectTransform> ();
-		t.sizeDelta = new Vector2 (t.rect.height, t.sizeDelta.y);
-		ROOM_SIZE = t.rect.height / Dungeon.HEIGHT;
-		float scale = ROOM_SIZE / 19.0f;
-		currentPosition.GetComponent<RectTransform> ().localScale = new Vector3 (scale, scale, 1.0f);
+		{
+			RectTransform rectTransform = GetComponent<RectTransform> ();
+			float width = Dungeon.WIDTH * ROOM_SIZE;
+			float height = Dungeon.HEIGHT * ROOM_SIZE;
+			rectTransform.sizeDelta = new Vector2 (width, height);
+		}
 
-		rooms = new GameObject[Dungeon.WIDTH * Dungeon.HEIGHT];
+		rooms = new UIMiniMapRoom[Dungeon.WIDTH * Dungeon.HEIGHT];
 		for (int y = 0; y < Dungeon.HEIGHT; y++) {
 			for (int x = 0; x < Dungeon.WIDTH; x++) {
-				GameObject obj = GameObject.Instantiate<GameObject> (roomPrefab);
-				obj.transform.SetParent (transform);
-				obj.transform.localScale = new Vector3 (scale, scale, 1.0f);
-				obj.transform.localPosition = new Vector3 (x * ROOM_SIZE - ROOM_SIZE * Dungeon.WIDTH, -y * ROOM_SIZE, 0.0f);
-				obj.SetActive (false);
-				rooms [y * Dungeon.WIDTH + x] = obj;
+				UIMiniMapRoom room = GameObject.Instantiate<UIMiniMapRoom> (roomPrefab);
+				room.transform.SetParent (this.transform, false);
+				room.transform.localPosition = new Vector3 (x * ROOM_SIZE, -y * ROOM_SIZE, 0.0f);
+				room.gameObject.SetActive (false);
+				rooms [y * Dungeon.WIDTH + x] = room;
 			}
 		}
 	}
+
 	public void Init ()
 	{
-		int roomID = 0;
-		RectTransform t = GetComponent<RectTransform> ();
-		t.sizeDelta = new Vector2 (t.rect.height, t.sizeDelta.y);
-		ROOM_SIZE = t.rect.height / Dungeon.HEIGHT;
-		float scale = ROOM_SIZE / 19.0f;
-		currentPosition.GetComponent<RectTransform> ().localScale = new Vector3 (scale, scale, 1.0f);
-
 		for (int y = 0; y < Dungeon.HEIGHT; y++) {
 			for (int x = 0; x < Dungeon.WIDTH; x++) {
-				GameObject obj = rooms [y * Dungeon.WIDTH + x];
-				Dungeon.Room room = Dungeon.Instance.rooms [roomID++];
-				obj.transform.FindChild ("Room/NorthDoor").gameObject.SetActive (true);
-				obj.transform.FindChild ("Room/EastDoor").gameObject.SetActive (true);
-				obj.transform.FindChild ("Room/SouthDoor").gameObject.SetActive (true);
-				obj.transform.FindChild ("Room/WestDoor").gameObject.SetActive (true);
-				if (null == room.next [Dungeon.North]) {
-					obj.transform.FindChild ("Room/NorthDoor").gameObject.SetActive (false);
+				UIMiniMapRoom miniRoom = rooms [y * Dungeon.WIDTH + x];
+				Dungeon.Room room = Dungeon.Instance.rooms [y * Dungeon.WIDTH + x];
+				for (int i = 0; i < Dungeon.Max; i++) {
+					miniRoom.next [i].gameObject.SetActive ((bool)(null != room.next [i]));
 				}
-				if (null == room.next [Dungeon.East]) {
-					obj.transform.FindChild ("Room/EastDoor").gameObject.SetActive (false);
+				miniRoom.room.sprite = roomSprite;
+				if (Dungeon.Room.Type.Exit == room.type) {
+					miniRoom.room.sprite = stairSprite;
 				}
-				if (null == room.next [Dungeon.South]) {
-					obj.transform.FindChild ("Room/SouthDoor").gameObject.SetActive (false);
-				}
-				if (null == room.next [Dungeon.West]) {
-					obj.transform.FindChild ("Room/WestDoor").gameObject.SetActive (false);
-				}
-				obj.SetActive (false);
+				miniRoom.gameObject.SetActive (false);
 			}
 		}
-
-		currentPosition.transform.SetSiblingIndex (transform.childCount);
-		CurrentPosition (Dungeon.Instance.current.id);
+		current = Dungeon.Instance.current.id;
+		rooms [current].color = activateColor;
 	}
 
 	public void CurrentPosition (int id)
 	{
-		int y = id / Dungeon.WIDTH;
-		int x = id % Dungeon.WIDTH;
-		currentPosition.transform.localPosition = new Vector3 (x * ROOM_SIZE - ROOM_SIZE * Dungeon.WIDTH, -y * ROOM_SIZE, 0.0f);
-		rooms [id].SetActive (true);
+		rooms [current].color = deactivateColor;
+		rooms [id].color = activateColor;
+		rooms [id].gameObject.SetActive (true);
+		current = id;
 	}
 }
