@@ -86,10 +86,10 @@ public class Dungeon : MonoBehaviour {
 			if (0 < outerRooms.Count) {
 				Room room = outerRooms [Random.Range (0, outerRooms.Count)];
 				int direction = Random.Range (0, Max);
-
 				for (int j = 0; j < Max; j++) {
 					Room other = GetNeighbor (room.id, direction);
 					if (null == other) {
+						direction = (direction + 1) % Max;
 						continue;
 					}
 					room.next [direction] = other;
@@ -114,8 +114,8 @@ public class Dungeon : MonoBehaviour {
 						} else {
 							ChangeGroupID (room.group, other.group);
 						}
+						break;
 					}
-					break;
 
 					direction = (direction + 1) % Max;
 				}

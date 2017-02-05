@@ -10,6 +10,13 @@ public class Coin : MonoBehaviour {
 	private Animator animator;
 	private Coroutine coroutine;
 	// Use this for initialization
+
+	public int amount;
+	public void Init(int amount)
+	{
+		this.amount = amount;
+	}
+
 	void Start () {
 		animator = transform.FindChild ("Sprite").GetComponent<Animator> (); 
 		animator.Play("Spin", -1, Random.Range(0.0f, 1.0f));
@@ -54,6 +61,6 @@ public class Coin : MonoBehaviour {
 
 	public void OnDisable()
 	{
-		DungeonMain.Instance.coin.Add (Random.Range (1, 1000));
+		DungeonMain.Instance.coin.Add (amount);
 	}
 }

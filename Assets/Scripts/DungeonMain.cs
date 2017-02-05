@@ -28,35 +28,36 @@ public class DungeonMain : MonoBehaviour {
 
 	public bool enableInput {
 		set {
-			if (true == value) {
-				input.enabled = true;
-				for (int i = 0; i < buttons.Length; i++) {
-					if (null == buttons [i].button) {
-						continue;
-					}
-					buttons [i].button.enabled = true;
+			input.enabled = value;
+			for (int i = 0; i < mainButtons.Length; i++) {
+				if (null == mainButtons [i].button) {
+					continue;
 				}
-			} else {
-				input.enabled = false;
-				for (int i = 0; i < buttons.Length; i++) {
-					if (null == buttons [i].button) {
-						continue;
-					}
-					buttons [i].button.enabled = false;
-				}
+				mainButtons [i].button.enabled = true;
 			}
 		}
 	}
 
 	[System.Serializable]
-	public class UIButton
+	public class UIMainButton
 	{
 		public string name;
 		public Sprite sprite;
-
 		public GameObject target;
 		public Button button;
 
+		public void Init()
+		{
+			if (null == button) {
+				return;
+			}
+			button.transform.FindChild ("Text").GetComponent<Text> ().text = name;
+			button.GetComponent<Image> ().sprite = sprite;
+			button.onClick.AddListener (OnClick);
+			if (null == target) {
+				button.gameObject.SetActive (false);
+			}
+		}
 		public void OnClick() {
 			DungeonMain.Instance.enableInput = false;
 			if(null == target)
@@ -67,16 +68,16 @@ public class DungeonMain : MonoBehaviour {
 		}
 	}
 
-	public UIButton[] 	buttons;
-	public UITextBox 	textBox;
-	public UIDialogBox	dialogBox;
-	public UICoin 		coin;
-	public UIMiniMap	miniMap;
+	public UIMainButton[] 	mainButtons;
+	public UITextBox 		textBox;
+	public UIDialogBox		dialogBox;
+	public UICoin 			coin;
+	public UIMiniMap		miniMap;
 
 	public Monster monster;
-	private Color cameraFadeColor;
 
-	private Transform coins;
+	private Color cameraFadeColor;
+	public Transform coins;
 	private Transform rooms;
 	private Room current;
 	private Room[] next = new Room[Dungeon.Max];
@@ -85,26 +86,6 @@ public class DungeonMain : MonoBehaviour {
 	private Vector3 touchPoint = Vector3.zero;
 	void Start () {
         Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
-		ResourceManager.Instance.Init ();
-		ItemManager.Instance.Init ();
-		QuestManager.Instance.Init ();
-		MonsterManager.Instance.Init ();
-		Player.Instance.Init ();
-		Dungeon.Instance.Init ();
-		iTween.CameraFadeAdd ();
-		SetCameraFadeColor (Color.white);
-		for (int i = 0; i < buttons.Length; i++) {
-			UIButton button = buttons [i];
-			if (null == button.button) {
-				continue;
-			}
-			button.button.transform.FindChild ("Text").GetComponent<Text> ().text = button.name;
-			button.button.GetComponent<Image> ().sprite = button.sprite;
-			button.button.onClick.AddListener (button.OnClick);
-			if (null == button.target) {
-				button.button.gameObject.SetActive (false);
-			}
-		}
 
 		coins = transform.FindChild ("Coins");
 		rooms = transform.FindChild ("Rooms");
@@ -117,15 +98,35 @@ public class DungeonMain : MonoBehaviour {
 		next [Dungeon.South].transform.position = new Vector3 (0.0f, 0.0f, -DISTANCE);
 		next [Dungeon.West] =  rooms.FindChild ("West").GetComponent<Room> ();
 		next [Dungeon.West].transform.position = new Vector3 (-DISTANCE, 0.0f, 0.0f);
-
+		for (int i = 0; i < mainButtons.Length; i++) {
+			UIMainButton mainButton = mainButtons [i];
+			mainButton.Init ();
+		}
 		RectTransform uiMain = transform.FindChild ("UI/Main").GetComponent<RectTransform>();
 		uiMain.position = Camera.main.WorldToScreenPoint(monster.transform.position);
+
+		ResourceManager.Instance.Init ();
+		ItemManager.Instance.Init ();
+		QuestManager.Instance.Init ();
+		MonsterManager.Instance.Init ();
+		Player.Instance.Init ();
+		Dungeon.Instance.Init ();
+		iTween.CameraFadeAdd ();
+
+		SetCameraFadeColor (Color.white);
+
 		input = GetComponent<TouchInput> ();
 		input.onTouchDown += (Vector3 position) => {
 			touchPoint = position;
 		};
 		input.onTouchUp += (Vector3 position) => {
+			float distance = Vector3.Distance(touchPoint, position);
+			if(0.01f > distance)
+			{
+				return;
+			}
 			Vector3 delta = position - touchPoint;
+
 			if(Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
 			{
 				if(0.0f == delta.x)
@@ -258,7 +259,7 @@ public class DungeonMain : MonoBehaviour {
 			dialogBox.onSubmit += () =>  {
 				goDown = true;
 			};
-			yield return StartCoroutine(dialogBox.Write("Do you want go down the stair?"));
+			yield return StartCoroutine(dialogBox.Write("Do you want to go down the stair?"));
 			if (true == goDown) {
 				yield return StartCoroutine (GoDown ());
 				Dungeon.Instance.Init ();
@@ -310,36 +311,20 @@ public class DungeonMain : MonoBehaviour {
 	}
 	IEnumerator Win(Monster.Info info)
 	{
-		int coinCount = Random.Range (1, 25);
-		for (int i = 0; i < coinCount; i++) {
-			Coin coin = GameObject.Instantiate<Coin> (monster.coinPrefab);
-			float scale = Random.Range (1.0f, 1.5f);
-			coin.transform.SetParent (coins);
-			coin.transform.localScale = new Vector3 (scale, scale, 1.0f);
-			coin.transform.position = monster.transform.position;
-			iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
-		}
-		Vector3 position = Player.Instance.exp.GetComponent<RectTransform> ().position;
-		Player.Instance.exp.GetComponent<RectTransform> ().position = Camera.main.WorldToScreenPoint (monster.transform.position);
+		monster.Dead ();
+
 		int level = (int)Player.Instance.exp.max;
-		int exp = info.reward.exp + (int)Player.Instance.exp.current;
-		Player.Instance.exp.current = 0;
-		while (Player.Instance.exp.max < exp) {
-			yield return StartCoroutine(Player.Instance.exp.DeferredChange(Player.Instance.exp.max, 0.25f));
-			exp -= (int)Player.Instance.exp.max;
-			Player.Instance.level += 1;
-			Player.Instance.exp.max = Player.Instance.level;
-			Player.Instance.exp.current = 0.0f;
-		}
-		yield return StartCoroutine(Player.Instance.exp.DeferredChange (exp, 0.1f));
-		yield return StartCoroutine(textBox.Write("You defeated \'daemon\'\n" +
+		yield return StartCoroutine(Player.Instance.AddExp(info.reward.exp));
+		yield return new WaitForSeconds (0.5f);
+		yield return StartCoroutine(textBox.Write("You defeated \'" + info.name +"\'\n" +
 			"Coins : +" + monster.info.reward.gold + "\n" +
 			"Exp : +" + monster.info.reward.exp + "\n" +
-			"Level : " + level + " -> " + Player.Instance.exp.max
+			"Level : " + level + " -> " + Player.Instance.level + "\n" +
+			"-str : +1\n" +
+			"-spd : +1\n" +
+			"-cri : +0.03\n"
 		));
-		Player.Instance.exp.GetComponent<RectTransform> ().position = position;
 		QuestManager.Instance.Update ("KillMonster", info.id);
-
         Analytics.CustomEvent("KillMonster", new Dictionary<string, object>
         {
             {"monster_id", info.id }

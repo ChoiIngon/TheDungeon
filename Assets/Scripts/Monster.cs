@@ -120,4 +120,28 @@ public class Monster : MonoBehaviour {
 		iTween.MoveTo(trail.gameObject, direction, 0.3f);
 		iTween.ShakePosition (gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.1f);
 	}
+
+	public void Dead()
+	{
+		int coinCount = info.reward.gold;
+		int amount = 1;
+		float scale = 1.0f;
+		while (0 < coinCount) {
+			int count = Random.Range (1, 10);
+			for (int i = 0; i < count; i++) {
+				Coin coin = GameObject.Instantiate<Coin> (coinPrefab);
+				coin.amount = Mathf.Min(amount, coinCount);
+				coin.transform.SetParent (DungeonMain.Instance.coins);
+				coin.transform.localScale = new Vector3 (scale, scale, 1.0f);
+				coin.transform.position = transform.position;
+				iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
+				coinCount -= amount;
+				if (0 >= coinCount) {
+					return;
+				}
+			}
+			amount *= 10;
+			scale += 0.1f;
+		}
+	}
 }

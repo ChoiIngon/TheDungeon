@@ -5,10 +5,12 @@ using UnityEngine.UI;
 public class UIDialogBox : MonoBehaviour {
 	public Button submit;
 	public Button cancel;
+
 	public event System.Action onSubmit;
 	public Text content;
 	private RectTransform rectTransform;
 	private bool active;
+
 	// Use this for initialization
 	void Start () {
 		rectTransform = GetComponent<RectTransform> ();

@@ -119,13 +119,18 @@ public class Player : MonoBehaviour {
 	{
 	}
 
-	public void AddExp(int amount)
+	public IEnumerator AddExp(int amount)
 	{
-		exp.current += amount;	
-		while (exp.current >= exp.max) {
-			exp.current -= exp.max;
+		int incExp = amount + (int)exp.current;
+		exp.current = 0;
+		while (exp.max < incExp) {
+			yield return StartCoroutine(exp.DeferredChange(exp.max, 0.25f));
+			incExp -= (int)exp.max;
 			level += 1;
-			exp.max += 1;
+			exp.max = Player.Instance.level;
+			exp.current = 0;
+			// levelup effect
 		}
+		yield return StartCoroutine(exp.DeferredChange (incExp, 0.1f));
 	}
 }
