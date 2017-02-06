@@ -13,5 +13,9 @@ public class UIMiniMapRoom : MonoBehaviour {
 				next [i].color = value;
 			}
 		}
+        get
+        {
+            return room.color;
+        }
 	}
 }

@@ -26,6 +26,7 @@ public class UIMiniMap : MonoBehaviour
 		for (int y = 0; y < Dungeon.HEIGHT; y++) {
 			for (int x = 0; x < Dungeon.WIDTH; x++) {
 				UIMiniMapRoom room = GameObject.Instantiate<UIMiniMapRoom> (roomPrefab);
+                UnityEngine.Assertions.Assert.AreNotEqual(null, room);
 				room.transform.SetParent (this.transform, false);
 				room.transform.localPosition = new Vector3 (x * ROOM_SIZE, -y * ROOM_SIZE, 0.0f);
 				room.gameObject.SetActive (false);
@@ -61,4 +62,67 @@ public class UIMiniMap : MonoBehaviour
 		rooms [id].gameObject.SetActive (true);
 		current = id;
 	}
+
+    public IEnumerator Hide(float time)
+    {
+        float alpha = 1.0f;
+        while (0.0f < alpha)
+        {
+            for (int id = 0; id < Dungeon.HEIGHT * Dungeon.WIDTH; id++)
+            {
+                UIMiniMapRoom miniRoom = rooms[id];
+                Color color = miniRoom.color;
+                color.a *= alpha;
+                miniRoom.color = color;
+            }
+            alpha = alpha - Time.deltaTime/time;
+            yield return null;
+        }
+        for (int id = 0; id < Dungeon.HEIGHT * Dungeon.WIDTH; id++)
+        {
+            UIMiniMapRoom miniRoom = rooms[id];
+            Color color = miniRoom.color;
+            color.a = 0.0f;
+            miniRoom.color = color;
+        }
+    }
+    public IEnumerator Show(float time)
+    {
+        float alpha = 0.0f;
+        while (1.0f > alpha)
+        {
+            for (int id = 0; id < Dungeon.HEIGHT * Dungeon.WIDTH; id++)
+            {
+                UIMiniMapRoom miniRoom = rooms[id];
+                Color color = miniRoom.color;
+                color.a = alpha;
+                if(current == id)
+                {
+                    color.a = Mathf.Min(activateColor.a, color.a);
+                }
+                else
+                {
+                    color.a = Mathf.Min(deactivateColor.a, color.a);
+                }
+                miniRoom.color = color;
+            }
+            alpha += Time.deltaTime / time;
+            yield return null;
+        }
+        for (int id = 0; id < Dungeon.HEIGHT * Dungeon.WIDTH; id++)
+        {
+            UIMiniMapRoom miniRoom = rooms[id];
+            Color color = miniRoom.color;
+            if (current == id)
+            {
+                color.a = activateColor.a;
+            }
+            else
+            {
+                color.a = deactivateColor.a;
+            }
+            miniRoom.color = color;
+        }
+    }
 }
+
