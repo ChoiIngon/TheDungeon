@@ -23,6 +23,10 @@ public class ItemStatTrigger_LowHealth : ItemStatTrigger
 	}
 }
 
+public abstract class ItemEnchantmemt
+{
+}
+
 public abstract class ItemStat
 {
 	public string description;
@@ -168,6 +172,7 @@ public class EquipmentItem : Item {
 	public Part		part;
 	public ItemStat mainStat;
 	public List<ItemStat> subStats = new List<ItemStat> ();
+    public ItemEnchantmemt enchantment;
 
 	public Player.Stat GetStat(Player.Stat stat)
 	{
