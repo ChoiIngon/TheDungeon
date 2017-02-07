@@ -61,7 +61,9 @@ public class Player : MonoBehaviour {
     public GameObject ui;
 	public GameObject damage;
 
+	public Stat stat;
     public void Init() {
+		stat = new Stat ();
         level = 0;
 
 		exp = ui.transform.FindChild("Exp").GetComponent<GaugeBar>();
@@ -132,5 +134,29 @@ public class Player : MonoBehaviour {
 			// levelup effect
 		}
 		yield return StartCoroutine(exp.DeferredChange (incExp, 0.1f));
+	}
+
+	public void Attack(Monster monster)
+	{
+		Stat bonus = new Stat ();
+		foreach (var itr in equipments) {
+			EquipmentItem item = itr.Value;
+			bonus += item.GetStat (stat);
+		}
+		bonus += stat;
+
+		if (bonus.critcal >= Random.Range (0, 1)) {
+			monster.Damage ((int)(bonus.attack * 3.0f));
+			// critical effect
+		} else {
+			monster.Damage ((int)bonus.attack);
+		}
+
+		for (int i = 0; i < 2; i++) {
+			EquipmentItem hand = equipments [new Tuple<EquipmentItem.Part, int> (EquipmentItem.Part.Hand, i)];
+			if (null != hand && null != hand.enchantment) {
+				hand.enchantment.Enchant (monster);
+			}
+		}
 	}
 }

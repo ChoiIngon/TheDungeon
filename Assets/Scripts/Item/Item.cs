@@ -23,117 +23,9 @@ public class ItemStatTrigger_LowHealth : ItemStatTrigger
 	}
 }
 
-public abstract class ItemEnchantmemt
-{
-}
 
-public abstract class ItemStat
-{
-	public string description;
-	public ItemStatTrigger trigger;
-	public abstract Player.Stat GetStat (Player.Stat stat);
-}
 
-public class ItemStat_IncreaseMaxHealth : ItemStat
-{
-	float percent;
-	public ItemStat_IncreaseMaxHealth(float percent, string description)
-	{
-		this.percent = percent;
-		this.description = description;
-	}
 
-	public override Player.Stat GetStat (Player.Stat stat)
-	{
-		Player.Stat result = new Player.Stat();
-		result.maxHealth = (int)(stat.maxHealth * percent);
-		return result;
-	}
-}
-public class ItemStat_IncreaseAttack : ItemStat
-{
-	float value;
-	public ItemStat_IncreaseAttack(ItemStatTrigger trigger, float value, string description)
-	{
-		this.trigger = trigger;
-		this.value = value;
-		this.description = description;
-	}
-
-	public override Player.Stat GetStat (Player.Stat stat)
-	{
-		Player.Stat result  = new Player.Stat();
-		result.attack = value;
-		return result;
-	}
-}
-public class ItemStat_IncreaseDefense : ItemStat
-{
-	float value;
-	public ItemStat_IncreaseDefense(ItemStatTrigger trigger, float value, string description)
-	{
-		this.trigger = trigger;
-		this.value = value;
-		this.description = description;
-	}
-
-	public override Player.Stat GetStat (Player.Stat stat)
-	{
-		Player.Stat result = new Player.Stat();
-		result.defense = value;
-		return result;
-	}
-}
-public class ItemStat_IncreaseSpeed : ItemStat
-{
-	public float value;
-	public ItemStat_IncreaseSpeed(ItemStatTrigger trigger, float value, string description)
-	{
-		this.trigger = trigger;
-		this.value = value;
-		this.description = description;
-	}
-
-	public override Player.Stat GetStat (Player.Stat stat)
-	{
-		Player.Stat result = new Player.Stat();
-		result.speed = value;
-		return result;
-	}
-}
-public class ItemStat_IncreaseCritical : ItemStat
-{
-	public float percent;
-	public ItemStat_IncreaseCritical(ItemStatTrigger trigger, float percent, string description)
-	{
-		this.trigger = trigger;
-		this.percent = percent;
-		this.description = description;
-	}
-
-	public override Player.Stat GetStat (Player.Stat stat)
-	{
-		Player.Stat result = new Player.Stat();
-		result.critcal = percent;
-		return result;
-	}
-}
-public class ItemStat_IncreaseGoldBonus : ItemStat {
-	public float percent;
-	public ItemStat_IncreaseGoldBonus(ItemStatTrigger trigger, float percent, string description)
-	{
-		this.trigger = trigger;
-		this.percent = percent;
-		this.description = description;
-	}
-
-	public override Player.Stat GetStat (Player.Stat stat)
-	{
-		Player.Stat result = new Player.Stat();
-		result.goldBonus = percent;
-		return result;
-	}
-}
 public abstract class Item {
 	public enum Type {
 		Equipment,
@@ -156,59 +48,21 @@ public abstract class Item {
 	public Type 	type;
 	public Grade 	grade;	
 	public int 		price;
+	public int		level;
 	public abstract Item CreateInstance();
+	public List<string> Actions() {
+		List<string> actions = new List<string> ();
+		actions.Add ("DROP");
+		return actions;
+	}
+
+	public void Pickup()
+	{
+		Player.Instance.inventory.Put (this);
+	}
 }
 	
-[System.Serializable]
-public class EquipmentItem : Item {
-	public enum Part {
-		Helmet,
-		Hand,
-		Armor,
-		Ring,
-		Shoes
-	}
 
-	public Part		part;
-	public ItemStat mainStat;
-	public List<ItemStat> subStats = new List<ItemStat> ();
-    public ItemEnchantmemt enchantment;
-
-	public Player.Stat GetStat(Player.Stat stat)
-	{
-		Player.Stat result = new Player.Stat ();
-		result += mainStat.GetStat (stat);
-		for (int i = 0; i < subStats.Count; i++) {
-			if (null != subStats [i].trigger && false == subStats[i].trigger.IsAvailable(stat)) {
-				continue;
-			}
-			result += subStats [i].GetStat (stat);
-		}
-		return result;
-	}
-	public override Item CreateInstance()
-	{
-		EquipmentItem item = new EquipmentItem ();
-		item.id = id;
-		item.name = name;
-		item.icon = icon;
-		item.type = type;
-		item.price = price;
-		item.grade = grade;
-		item.part = part;
-		item.mainStat = mainStat;
-		List<ItemStat> tmp = new List<ItemStat> (subStats); 
-		for (int i = 0; i < ((int)grade - (int)Grade.Normal); i++) {
-			if (0 == tmp.Count) {
-				break;
-			}
-			int index = Random.Range (0, tmp.Count);
-			item.subStats.Add (tmp [index]);
-			tmp.RemoveAt (index);
-		}
-		return item;
-	}
-}
 	
 public class ItemManager {
 	private Dictionary<string, Item> items;
@@ -271,8 +125,8 @@ public class ItemManager {
 			item.grade = (EquipmentItem.Grade)Random.Range ((int)EquipmentItem.Grade.Low, (int)EquipmentItem.Grade.Max);
 			item.icon = ResourceManager.Instance.Load<Sprite> ("item_ring_00" + (i % 3 +1).ToString());
 			item.part = EquipmentItem.Part.Ring;
-			item.mainStat = new ItemStat_IncreaseCritical(null, (i+1)/100, "CRI : +" + (i + 1) + "%");
-			item.subStats.Add(new ItemStat_IncreaseGoldBonus(null, (i+1)/100, "gold bonus : +" + (i+1) +"%"));
+			item.mainStat = new ItemStat_Critical( (i+1)/100, "CRI : +" + (i + 1) + "%");
+			item.subStats.Add(new ItemStat_GoldBonus((i+1)/100, "gold bonus : +" + (i+1) +"%"));
 			items.Add (item.id, item);
 		}
 	}
@@ -305,7 +159,7 @@ public class ItemManager {
 			item.grade = (EquipmentItem.Grade)Random.Range ((int)EquipmentItem.Grade.Low, (int)EquipmentItem.Grade.Max);
 			item.icon = ResourceManager.Instance.Load<Sprite> ("item_shirt_00" + (i % 3 +1).ToString());
 			item.part = EquipmentItem.Part.Armor;
-			item.mainStat = new ItemStat_IncreaseDefense (null, i + 1, "DEF : +" + (i + 1));
+			item.mainStat = new ItemStat_Defense ( i + 1, "DEF : +" + (i + 1));
 			items.Add (item.id, item);
 		}
 	}
@@ -321,7 +175,7 @@ public class ItemManager {
 			item.grade = (EquipmentItem.Grade)Random.Range ((int)EquipmentItem.Grade.Low, (int)EquipmentItem.Grade.Max);
 			item.icon = ResourceManager.Instance.Load<Sprite> ("item_sword_00" + (i % 3 +1).ToString());
 			item.part = EquipmentItem.Part.Hand;
-			item.mainStat = new ItemStat_IncreaseAttack(null, i+1, "ATK : +" + (i + 1));
+			item.mainStat = new ItemStat_Attack(i+1, "ATK : +" + (i + 1));
 			items.Add (item.id, item);
 		}
 	}

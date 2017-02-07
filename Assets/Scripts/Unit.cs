@@ -3,20 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Unit : MonoBehaviour {
-    public List<Buff> buffs;
-    public int maxHealth;
-    public float speed;
-    // Use this for initialization
-    void Start () {
-        buffs = new List<Buff>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+	[System.Serializable]
+	public struct Stat
+	{
+		public int curHealth;
+		public int maxHealth;
+		public float attack;
+		public float defense;
+		public float speed;
+		public float critcal;
+		public float goldBonus;
+		public float expBonus;
+		static public Stat operator + (Stat rhs, Stat lhs)
+		{
+			rhs.curHealth += lhs.curHealth;
+			rhs.maxHealth += lhs.maxHealth;
+			rhs.attack += lhs.attack;
+			rhs.defense += lhs.defense;
+			rhs.speed += lhs.speed;
+			rhs.critcal += lhs.critcal;
+			rhs.goldBonus += lhs.goldBonus;
+			rhs.expBonus += lhs.expBonus;
+			return rhs;
+		}
 	}
 
-    public virtual void OnDamage(int damage)
-    {
-    }
+    public List<Buff> buffs;
+	public Stat stats;
+    // Use this for initialization
+    void Init () {
+		stats = new Stat ();
+        buffs = new List<Buff>();
+	}
+	public virtual void Attack(Unit defender)
+	{
+		defender.Damage (0);
+	}
+	public virtual void Damage (int damage)
+	{
+	}
 }

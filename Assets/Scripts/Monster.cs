@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public class Monster : MonoBehaviour {
+public class Monster : Unit {
 
 	[System.Serializable]
 	public class Info
@@ -94,7 +94,7 @@ public class Monster : MonoBehaviour {
 		);
 	}
 
-	public void Damage(int damage)
+	public override void Damage(int damage)
 	{
 		StartCoroutine(health.DeferredChange(-damage, 0.2f));
 

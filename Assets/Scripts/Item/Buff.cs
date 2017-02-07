@@ -14,16 +14,17 @@ public abstract class Buff {
 
 public class Buff_Blaze : Buff
 {
-    public int turn;
+    public int duration;
     public Buff_Blaze(Unit target) : base(target)
     {
-        target.buffs.Add(this);
+		duration = 8;
     }
 
     public override void OnBuff()
     {
-        target.OnDamage(0);
-        if (0 >= turn)
+		duration -= 1;
+        target.Damage(0);
+		if (0 >= duration)
         {
             target.buffs.Remove(this);
         }
@@ -40,7 +41,7 @@ public class Buff_Venom : Buff
 
     public override void OnBuff()
     {
-        target.OnDamage(0);
+        target.Damage(0);
         if (0 >= turn)
         {
             target.buffs.Remove(this);
@@ -57,7 +58,7 @@ public class Buff_GrimReaper : Buff
 
     public override void OnBuff()
     {
-        target.OnDamage(target.maxHealth);
+		target.Damage(target.stats.maxHealth);
         target.buffs.Remove(this);
     }
 }
@@ -68,14 +69,14 @@ public class Buff_Stun : Buff
     public float speed;
     public Buff_Stun(Unit target) : base(target)
     {
-        this.speed = target.speed;
+        this.speed = target.stats.speed;
         target.buffs.Add(this);
     }
 
     public override void OnBuff()
     {
 
-        target.speed = 0.0f;
+		target.stats.speed = 0.0f;
         if (0 >= turn)
         {
             target.buffs.Remove(this);
@@ -89,13 +90,13 @@ public class Buff_Chill : Buff
     public float speed;
     public Buff_Chill(Unit target) : base(target)
     {
-        this.speed = target.speed;
+		this.speed = target.stats.speed;
         target.buffs.Add(this);
     }
 
     public override void OnBuff()
     {
-        target.speed = 0.0f;
+		target.stats.speed = 0.0f;
         if (0 >= turn)
         {
             target.buffs.Remove(this);
@@ -109,14 +110,14 @@ public class Buff_Unstable : Buff
     public float speed;
     public Buff_Unstable(Unit target) : base(target)
     {
-        this.speed = target.speed;
+		this.speed = target.stats.speed;
         target.buffs.Add(this);
     }
 
     public override void OnBuff()
     {
 
-        target.speed = 0.0f;
+		target.stats.speed = 0.0f;
         if (0 >= turn)
         {
             target.buffs.Remove(this);
@@ -130,14 +131,14 @@ public class Buff_Terror : Buff
     public float speed;
     public Buff_Terror(Unit target) : base(target)
     {
-        this.speed = target.speed;
+		this.speed = target.stats.speed;
         target.buffs.Add(this);
     }
 
     public override void OnBuff()
     {
 
-        target.speed = 0.0f;
+		target.stats.speed = 0.0f;
         if (0 >= turn)
         {
             target.buffs.Remove(this);
@@ -151,14 +152,14 @@ public class Buff_Luck : Buff
     public float speed;
     public Buff_Luck(Unit target) : base(target)
     {
-        this.speed = target.speed;
+		this.speed = target.stats.speed;
         target.buffs.Add(this);
     }
 
     public override void OnBuff()
     {
 
-        target.speed = 0.0f;
+		target.stats.speed = 0.0f;
         if (0 >= turn)
         {
             target.buffs.Remove(this);
