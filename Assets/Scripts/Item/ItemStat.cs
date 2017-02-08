@@ -94,9 +94,9 @@ public class ItemStat_Critical : ItemStat
 	}
 }
 
-public class ItemStat_GoldBonus : ItemStat {
+public class ItemStat_CoinBonus : ItemStat {
 	public float percent;
-	public ItemStat_GoldBonus( float percent, string description)
+	public ItemStat_CoinBonus( float percent, string description)
 	{
 		this.percent = percent;
 		this.description = description;
@@ -105,7 +105,7 @@ public class ItemStat_GoldBonus : ItemStat {
 	public override Player.Stat GetStat (Player.Stat stat)
 	{
 		Player.Stat result = new Player.Stat();
-		result.goldBonus = percent;
+		result.coinBonus = percent;
 		return result;
 	}
 }

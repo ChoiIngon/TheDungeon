@@ -33,6 +33,7 @@ public class Coin : MonoBehaviour {
 		iTween.MoveTo (gameObject, DungeonMain.Instance.coin.position, 0.1f);
 		DestroyObject (gameObject, 0.1f);
 	}
+
 	IEnumerator Bounce ()
 	{
 		while ( velocity.sqrMagnitude > sleepThreshold )
@@ -61,6 +62,8 @@ public class Coin : MonoBehaviour {
 
 	public void OnDisable()
 	{
-		DungeonMain.Instance.coin.Add (amount);
+		if (true == Application.isPlaying) {
+			DungeonMain.Instance.coin.ChangeAmount (amount);
+		}
 	}
 }

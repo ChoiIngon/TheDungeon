@@ -116,7 +116,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2598111}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -2.1, z: 0}
+  m_LocalPosition: {x: 0, y: -2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1562312905}
@@ -134,6 +134,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80c5049f738b64b6b9ea261ec442130d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  level: 0
+  stats:
+    curHealth: 0
+    maxHealth: 0
+    attack: 0
+    defense: 0
+    speed: 0
+    critcal: 0
+    coinBonus: 0
+    expBonus: 0
+  ui: {fileID: 997705904}
+  health: {fileID: 1761233408}
   info:
     id: 
     name: 
@@ -144,18 +156,12 @@ MonoBehaviour:
     speed: 0
     sprite: {fileID: 0}
     reward:
-      gold: 0
+      coin: 0
       exp: 0
-  ui: {fileID: 997705903}
   trailPrefab: {fileID: 96000013284185960, guid: cf4698763e84f45fc9837dfe4764fedd,
     type: 2}
   damagePrefab: {fileID: 1000010443484688, guid: 4192e31438ad0442ab6918127eb55789,
     type: 2}
-  coinPrefab: {fileID: 114000013134874174, guid: b36d7c4bfc2f94188b0ab2e9324cddc6,
-    type: 2}
-  bloodMarkPrefab: {fileID: 114000012513297828, guid: 4bbc7d42488f6404c9f216602db9ff42,
-    type: 2}
-  health: {fileID: 0}
 --- !u!114 &2598114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -575,6 +581,12 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 91468013}
+--- !u!114 &123663920 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114769195182883524, guid: 8ee137f7ba70d4b23963333d52a3c0bd,
+    type: 2}
+  m_PrefabInternal: {fileID: 802850226}
+  m_Script: {fileID: 11500000, guid: 9119f34cbf6fb411fa9a7ec00a1db724, type: 3}
 --- !u!1 &167237059
 GameObject:
   m_ObjectHideFlags: 0
@@ -2560,87 +2572,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3713cded0f2d47c4db87d39ac0c0f21b, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &769812281
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 769812282}
-  - component: {fileID: 769812285}
-  - component: {fileID: 769812284}
-  - component: {fileID: 769812283}
-  m_Layer: 0
-  m_Name: Sphere
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &769812282
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 769812281}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.05, y: 0.05, z: 0.05}
-  m_Children: []
-  m_Father: {fileID: 1081049933}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &769812283
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 769812281}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_PreserveUVs: 1
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
---- !u!135 &769812284
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 769812281}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!33 &769812285
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 769812281}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1001 &787643943
 Prefab:
   m_ObjectHideFlags: 0
@@ -3318,7 +3249,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 841955329}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 853562127}
@@ -3907,7 +3838,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 222636b7d5ac64b98a0d8c84604b947f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coinCount: 0
+  count: 0
   currentCount: 0
   text: {fileID: 0}
   image: {fileID: 0}
@@ -4334,8 +4265,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.7, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 769812282}
+  m_Children: []
   m_Father: {fileID: 853562127}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4351,15 +4281,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level: 0
+  stats:
+    curHealth: 0
+    maxHealth: 0
+    attack: 0
+    defense: 0
+    speed: 0
+    critcal: 0
+    coinBonus: 0
+    expBonus: 0
+  ui: {fileID: 2045860430}
   health: {fileID: 801323553}
-  exp: {fileID: 0}
-  gold: 0
-  attack: 0
-  defense: 0
-  speed: 0
-  critcal: 0
+  exp: {fileID: 123663920}
+  coin: {fileID: 1001817841}
+  bloodMarkPanel: {fileID: 602499273}
+  bloodMarkPrefab: {fileID: 114000012513297828, guid: 4bbc7d42488f6404c9f216602db9ff42,
+    type: 2}
+  coinPrefab: {fileID: 114000013134874174, guid: b36d7c4bfc2f94188b0ab2e9324cddc6,
+    type: 2}
   inventory:
-    gold: 10
+    gold: 0
     slots:
     - index: 0
       count: 0
@@ -4392,8 +4333,6 @@ MonoBehaviour:
     - index: 0
       count: 0
     ui: {fileID: 1437952182}
-  ui: {fileID: 722617016}
-  damage: {fileID: 602499272}
 --- !u!1001 &1091496751
 Prefab:
   m_ObjectHideFlags: 0
@@ -6656,6 +6595,12 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1697391026}
+--- !u!114 &1761233408 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114769195182883524, guid: 8ee137f7ba70d4b23963333d52a3c0bd,
+    type: 2}
+  m_PrefabInternal: {fileID: 205461250}
+  m_Script: {fileID: 11500000, guid: 9119f34cbf6fb411fa9a7ec00a1db724, type: 3}
 --- !u!1001 &1782107447
 Prefab:
   m_ObjectHideFlags: 0

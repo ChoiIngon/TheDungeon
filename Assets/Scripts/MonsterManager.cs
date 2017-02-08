@@ -19,7 +19,7 @@ public class MonsterManager : Singleton<MonsterManager> {
 			info.defense = float.Parse (row ["DEFENSE"]);
 			info.speed = float.Parse (row ["SPEED"]);
 			info.sprite = ResourceManager.Instance.Load<Sprite>(row ["SPRITE_PATH"]);
-			info.reward.gold = int.Parse (row ["REWARD_GOLD"]);
+			info.reward.coin = int.Parse (row ["REWARD_COIN"]);
 			info.reward.exp = int.Parse (row ["REWARD_EXP"]);
 
 			infoDict.Add (info.id, info);

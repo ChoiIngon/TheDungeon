@@ -276,9 +276,15 @@ public class DungeonMain : MonoBehaviour {
 	IEnumerator Battle()
 	{
         yield return StartCoroutine(miniMap.Hide(1.0f));
-		while (0.0f < monster.health.current) {
+		// attack per second
+		float playerAPS = Player.Instance.stats.speed/monster.info.speed; 
+		float monsterAPS = 1.0f;
+		float playerTurn = playerAPS;
+		float monsterTurn = monsterAPS;
+		while (0.0f < monster.health.current && 0.0f < Player.Instance.health.current) {
 			float waitTime = 0.0f;
-			if (0 == Random.Range (0, 2)) {
+
+			if (monsterTurn + Random.Range(0, monsterAPS * 0.3f) < playerTurn + Random.Range(0, playerAPS * 0.3f) ) {
 				int attackCount = 1;
 
 				if (0 == Random.Range (0, 3)) {
@@ -291,15 +297,17 @@ public class DungeonMain : MonoBehaviour {
 				}
 
 				for (int i = 0; i < attackCount; i++) {
-					monster.Damage (30);
+					Player.Instance.Attack(monster);
 					yield return new WaitForSeconds (waitTime);
 				}
+				monsterTurn += monsterAPS;
 			}
 			else 
 			{
-				monster.Attack ();
+				monster.Attack (Player.Instance);
+				playerTurn += playerAPS;
 			}
-			yield return new WaitForSeconds (50.0f / monster.info.speed - waitTime);
+			yield return new WaitForSeconds (0.7f);
 		}
 
 		Dungeon.Instance.current.monster = null;
@@ -311,13 +319,12 @@ public class DungeonMain : MonoBehaviour {
     }
 	IEnumerator Win(Monster.Info info)
 	{
-		monster.Dead ();
-
-		int level = (int)Player.Instance.exp.max;
-		yield return StartCoroutine(Player.Instance.AddExp(info.reward.exp));
+		Player.Instance.AddCoin (info.reward.coin + (int)Random.Range(0, info.reward.coin * 0.1f));
+		int level = Player.Instance.level;
+		yield return StartCoroutine(Player.Instance.AddExp(info.reward.exp + (int)Random.Range(0, info.reward.exp * 0.1f)));
 		yield return new WaitForSeconds (0.5f);
 		yield return StartCoroutine(textBox.Write("You defeated \'" + info.name +"\'\n" +
-			"Coins : +" + monster.info.reward.gold + "\n" +
+			"Coins : +" + monster.info.reward.coin + "\n" +
 			"Exp : +" + monster.info.reward.exp + "\n" +
 			"Level : " + level + " -> " + Player.Instance.level + "\n" +
 			"-str : +1\n" +

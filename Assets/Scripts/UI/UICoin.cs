@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UICoin : MonoBehaviour {
-	public int coinCount;
+	public int count;
 	public int currentCount;
 	public Text text;
 	public Image image;
@@ -16,24 +16,24 @@ public class UICoin : MonoBehaviour {
 		position = Camera.main.ScreenToWorldPoint (
 			new Vector3(image.rectTransform.position.x, image.rectTransform.position.y, DungeonMain.DISTANCE)
 		);
-		text.text = coinCount.ToString (); 
+		text.text = count.ToString (); 
 	}
 
-	public void Add(int amount)
+	public void ChangeAmount(int amount)
 	{
-		coinCount += amount;
-		StartCoroutine (Increase (amount));
+		count += amount;
+		StartCoroutine (DeferredChange (amount));
 	}
 
-	IEnumerator Increase(int amount)
+	IEnumerator DeferredChange(int amount)
 	{
-		currentCount = coinCount - amount;
+		currentCount = count - amount;
 		int increase = amount / 10;
-		while (0 < increase && currentCount < coinCount) {
+		while (0 < increase && currentCount < count) {
 			currentCount += increase;
 			text.text = currentCount.ToString ();
 			yield return new WaitForSeconds (0.1f);
 		}
-		text.text = coinCount.ToString ();
+		text.text = count.ToString ();
 	}
 }

@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class GaugeBar : MonoBehaviour {
+public class UIGaugeBar : MonoBehaviour {
 	public float max;
 	public float current
 	{

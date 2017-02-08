@@ -12,7 +12,7 @@ public class Unit : MonoBehaviour {
 		public float defense;
 		public float speed;
 		public float critcal;
-		public float goldBonus;
+		public float coinBonus;
 		public float expBonus;
 		static public Stat operator + (Stat rhs, Stat lhs)
 		{
@@ -22,16 +22,17 @@ public class Unit : MonoBehaviour {
 			rhs.defense += lhs.defense;
 			rhs.speed += lhs.speed;
 			rhs.critcal += lhs.critcal;
-			rhs.goldBonus += lhs.goldBonus;
+			rhs.coinBonus += lhs.coinBonus;
 			rhs.expBonus += lhs.expBonus;
 			return rhs;
 		}
 	}
 
+	public int level;
     public List<Buff> buffs;
 	public Stat stats;
     // Use this for initialization
-    void Init () {
+    public virtual void Init () {
 		stats = new Stat ();
         buffs = new List<Buff>();
 	}

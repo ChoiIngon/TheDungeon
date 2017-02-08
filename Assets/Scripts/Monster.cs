@@ -2,16 +2,18 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
+using UnityEngine.Assertions;
+#endif
 
 public class Monster : Unit {
-
 	[System.Serializable]
 	public class Info
 	{
 		[System.Serializable]
 		public class Reward
 		{
-			public int gold;
+			public int coin;
 			public int exp;
 		}
 		public string id;
@@ -29,36 +31,33 @@ public class Monster : Unit {
 			reward = new Reward();
 		}
 	}
-	
-	public Info info;
-	public GameObject ui;
 
+	public Transform ui;
+	private new Text name;
+	public UIGaugeBar health;
+
+	public Info info;
 	public TrailRenderer trailPrefab;
 	public GameObject damagePrefab;
-	public Coin coinPrefab;
-	public BloodMark bloodMarkPrefab;
+
 
 	private Animator animator;
 	private new SpriteRenderer renderer;
-	private new Text name;
-	public GaugeBar health;
 
 	void Start () {
 		animator = transform.FindChild ("Sprite").GetComponent<Animator> ();
 		renderer = transform.FindChild ("Sprite").GetComponent<SpriteRenderer> ();
-		name = ui.transform.FindChild ("Name").GetComponent<Text> ();
-		health = ui.transform.FindChild ("Health").GetComponent<GaugeBar> ();
+		name = ui.FindChild ("Name").GetComponent<Text> ();
+		health = ui.FindChild ("Health").GetComponent<UIGaugeBar> ();
+
+		#if UNITY_EDITOR
+		Assert.AreNotEqual(null, animator);
+		Assert.AreNotEqual(null, renderer);
+		Assert.AreNotEqual(null, name);
+		Assert.AreNotEqual(null, health);
+		Assert.AreNotEqual(null, ui);
+		#endif
 		gameObject.SetActive (false);
-		/*
-		{
-			RectTransform rt = ui.transform.GetComponent<RectTransform> ();
-			rt.position = Camera.main.WorldToScreenPoint (new Vector3 (transform.position.x, transform.position.y - 0.5f, 0.0f));
-		}
-		{
-			RectTransform rt = name.gameObject.GetComponent<RectTransform> ();
-			name.fontSize = (int)(rt.rect.height - name.lineSpacing);
-		}
-		*/
 		ui.gameObject.SetActive (false);
 	}
 
@@ -70,9 +69,11 @@ public class Monster : Unit {
 		info = info_;
 		name.text = info.name;
 		renderer.sprite = info.sprite;
-
 		health.max = info.health;
 		health.current = health.max;
+
+		stats.defense = info.defense;
+		stats.attack = info.attack;
 	}
 
 	public void OnDisable()
@@ -80,18 +81,10 @@ public class Monster : Unit {
 		ui.gameObject.SetActive (false);
 	}
 	 
-	public void Attack()
+	public override void Attack(Unit defender)
 	{
-		iTween.CameraFadeFrom (0.1f, 0.1f);
-		iTween.ShakePosition (Camera.main.gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.2f);
 		animator.SetTrigger ("Attack");
-		BloodMark bloodMark = GameObject.Instantiate<BloodMark> (bloodMarkPrefab);
-		bloodMark.transform.SetParent (Player.Instance.damage.transform, false);
-		bloodMark.transform.position = new Vector3(
-			Random.Range(Screen.width/2 - Screen.width /2 * 0.85f, Screen.width/2 + Screen.width/2 * 0.9f), 
-			Random.Range(Screen.height/2 - Screen.height /2 * 0.85f, Screen.height/2 + Screen.height/2 * 0.9f),
-			0.0f
-		);
+		defender.Damage (0);
 	}
 
 	public override void Damage(int damage)
@@ -119,29 +112,5 @@ public class Monster : Unit {
 		text.text = "-" + damage.ToString ();
 		iTween.MoveTo(trail.gameObject, direction, 0.3f);
 		iTween.ShakePosition (gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.1f);
-	}
-
-	public void Dead()
-	{
-		int coinCount = info.reward.gold;
-		int amount = 1;
-		float scale = 1.0f;
-		while (0 < coinCount) {
-			int count = Random.Range (1, 10);
-			for (int i = 0; i < count; i++) {
-				Coin coin = GameObject.Instantiate<Coin> (coinPrefab);
-				coin.amount = Mathf.Min(amount, coinCount);
-				coin.transform.SetParent (DungeonMain.Instance.coins);
-				coin.transform.localScale = new Vector3 (scale, scale, 1.0f);
-				coin.transform.position = transform.position;
-				iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
-				coinCount -= amount;
-				if (0 >= coinCount) {
-					return;
-				}
-			}
-			amount *= 10;
-			scale += 0.1f;
-		}
 	}
 }

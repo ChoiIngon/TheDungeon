@@ -126,7 +126,7 @@ public class ItemManager {
 			item.icon = ResourceManager.Instance.Load<Sprite> ("item_ring_00" + (i % 3 +1).ToString());
 			item.part = EquipmentItem.Part.Ring;
 			item.mainStat = new ItemStat_Critical( (i+1)/100, "CRI : +" + (i + 1) + "%");
-			item.subStats.Add(new ItemStat_GoldBonus((i+1)/100, "gold bonus : +" + (i+1) +"%"));
+			item.subStats.Add(new ItemStat_CoinBonus((i+1)/100, "gold bonus : +" + (i+1) +"%"));
 			items.Add (item.id, item);
 		}
 	}
