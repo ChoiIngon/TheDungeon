@@ -50,7 +50,7 @@ public abstract class Item {
 	public int 		price;
 	public int		level;
 	public abstract Item CreateInstance();
-	public List<string> Actions() {
+	public virtual List<string> Actions() {
 		List<string> actions = new List<string> ();
 		actions.Add ("DROP");
 		return actions;
@@ -61,8 +61,6 @@ public abstract class Item {
 		Player.Instance.inventory.Put (this);
 	}
 }
-	
-
 	
 public class ItemManager {
 	private Dictionary<string, Item> items;

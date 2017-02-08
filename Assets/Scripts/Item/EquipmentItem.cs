@@ -31,6 +31,10 @@ public class EquipmentItem : Item {
 		}
 		return result;
 	}
+
+	public virtual void Equip(int index)
+	{
+	}
 	public override Item CreateInstance()
 	{
 		EquipmentItem item = new EquipmentItem ();

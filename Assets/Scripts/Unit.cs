@@ -43,4 +43,7 @@ public class Unit : MonoBehaviour {
 	public virtual void Damage (int damage)
 	{
 	}
+	public virtual void Health(int health)
+	{
+	}
 }
