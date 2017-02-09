@@ -11,5 +11,6 @@ public abstract class PotionItem : Item {
 	}
 	public virtual void Use(Unit target)
 	{
+        target.Health(target.stats.maxHealth);
 	}
 }

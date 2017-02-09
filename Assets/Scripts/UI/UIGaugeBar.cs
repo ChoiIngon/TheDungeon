@@ -65,30 +65,38 @@ public class UIGaugeBar : MonoBehaviour {
 		_deferredChangeAmount = 0.0f;
 	}
 
-	private void GaugeScale(float value)
-	{
-		if(0.0f > value)
-		{
-			value = 0.0f;
-		}
+    public IEnumerator DeferredValue(float value, float time)
+    {
+        if (null != _coroutine)
+        {
+            StopCoroutine(_coroutine);
+        }
+        _coroutine = StartCoroutine(_DeferredValue(value, time));
+        yield return _coroutine;
+    }
+    public IEnumerator _DeferredValue(float value, float time)
+    {
+        _current = value;
+        float curr = max * gauge.localScale.x;
+        float amount = _current - curr;
+        float delta = 0.0f;
+        while (Mathf.Abs(delta) < Mathf.Abs(amount))
+        {
+            float scale = gauge.localScale.x + amount * (Time.deltaTime / time) / max;
+            scale = Mathf.Max(0.0f, scale);
+            scale = Mathf.Min(1.0f, scale);
 
-		float scale = 1.0f;
-		if (0 >= max) {
-			scale = 0.0f;
-		} else {
-			scale = value / max;
-			if (1.0f < scale) {
-				scale = 1.0f;
-			}
-		}
+            gauge.localScale = new Vector3(scale, gauge.localScale.y, gauge.localScale.z);
+            text.text = ((int)(max * gauge.localScale.x)).ToString() + "/" + max.ToString();
+            delta += amount * (Time.deltaTime / time);
+            yield return null;
+        }
+        current = _current;
+    }
 
-		gauge.localScale = new Vector3(scale, gauge.localScale.y, gauge.localScale.z);
-		text.text = ((int)value).ToString() + "/" + max.ToString();
-	}
-
-	public Transform gauge;
+    public Transform gauge;
 	public Text text;
-	public float fillPerSecond;
+	
     float _current;
 	float _deferredChangeAmount;
 	Coroutine _coroutine;

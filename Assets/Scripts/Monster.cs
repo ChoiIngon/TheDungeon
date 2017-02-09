@@ -89,7 +89,7 @@ public class Monster : Unit {
 
 	public override void Damage(int damage)
 	{
-		StartCoroutine(health.DeferredChange(-damage, 0.2f));
+        Health((int)health.current - damage);
 
         TrailRenderer trail = GameObject.Instantiate<TrailRenderer> (trailPrefab);
 		trail.sortingLayerName = "Effect";
@@ -113,4 +113,9 @@ public class Monster : Unit {
 		iTween.MoveTo(trail.gameObject, direction, 0.3f);
 		iTween.ShakePosition (gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.1f);
 	}
+
+    public override void Health(int health)
+    {
+        StartCoroutine(this.health.DeferredValue((float)health, 0.2f));
+    }
 }

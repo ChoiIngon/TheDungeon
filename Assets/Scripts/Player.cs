@@ -128,14 +128,14 @@ public class Player : Unit {
 		int incExp = amount + (int)exp.current;
 		exp.current = 0;
 		while (exp.max < incExp) {
-			yield return StartCoroutine(exp.DeferredChange(exp.max, 0.25f));
+			yield return StartCoroutine(exp.DeferredValue(exp.max, 0.25f));
 			incExp -= (int)exp.max;
 			level += 1;
 			exp.max = level;
 			exp.current = 0;
 			// levelup effect
 		}
-		yield return StartCoroutine(exp.DeferredChange (incExp, 0.1f));
+		yield return StartCoroutine(exp.DeferredValue(incExp, 0.1f));
 	}
 
 	public override void Attack(Unit defender)
@@ -179,4 +179,9 @@ public class Player : Unit {
 			0.0f
 		);
 	}
+
+    public override void Health(int health)
+    {
+        StartCoroutine(this.health.DeferredValue((float)health, 0.2f));
+    }
 }
