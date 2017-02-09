@@ -6,47 +6,40 @@ using System.Collections.Generic;
 
 public class UIEquipmentSlot : UISlot {
 	public EquipmentItem.Part part;
+	public int index;
 	public Image arrow;
-	public EquipmentItem item;
-	new void Start( )
+
+	public override void Start( )
 	{
 		base.Start ();
 		arrow = transform.FindChild ("Arrow").GetComponent<Image> ();
 	}
 
-	public void Equip(EquipmentItem item)
-	{
-		this.item = item;
-		if (null == item) {
-			return;
-		}
-		Activate (true);
-	}
-
-	public void Unequip()
-	{
-		Activate (false);
-		item = null;
-	}
-
 	public override void OnSelect()
 	{
-		if (null == item) {
+		if (null == data) {
+			return;
+		}
+		if (null == data.item) {
 			return;
 		}
 		for (int i = 0; i < inventory.equipmentSlots.Length; i++) {
 			UIEquipmentSlot other = inventory.equipmentSlots [i];
+			EquipmentItem item = (EquipmentItem)data.item;
 			if (item.part == other.part && this != other) {
 				other.arrow.gameObject.SetActive (true);
 			} else {
 				other.arrow.gameObject.SetActive (false);
 			}
 		}
-		inventory.itemInfo.item = item;
+		inventory.itemInfo.slot = this;
 	}
 
 	public override void OnDrop() {
-		if (null == item) {
+		if (null == data) {
+			return;
+		}
+		if (null == data.item) {
 			return;
 		}
 		for (int i = 0; i < inventory.equipmentSlots.Length; i++) {
@@ -54,6 +47,7 @@ public class UIEquipmentSlot : UISlot {
 			if (this == other) {
 				continue;
 			}
+			EquipmentItem item = (EquipmentItem)data.item;
 			if (item.part != other.part) {
 				continue;
 			}
@@ -69,14 +63,21 @@ public class UIEquipmentSlot : UISlot {
 				inventory.equipmentSlots [j].arrow.gameObject.SetActive(false);
 			}
 
-			EquipmentItem curr = Player.Instance.UnequipItem (item.part, index);
-			this.Unequip ();
+			Inventory.Slot curr = data;
+			Player.Instance.UnequipItem (part, index);
+			this.Init (null);
 
-			EquipmentItem prev = Player.Instance.EquipItem (curr, other.index);
-			other.Equip(curr);
+			EquipmentItem prev = Player.Instance.EquipItem (item, other.index);
+			other.Init(curr);
 
 			Player.Instance.EquipItem (prev, index);
-			this.Equip(prev);
+			if (null != prev) {
+				Inventory.Slot slot = new Inventory.Slot ();
+				slot.index = index;
+				slot.count = 1;
+				slot.item = prev;
+				this.Init (slot);
+			}
 
 			this.outline.outline = false;
 			return;
@@ -93,12 +94,12 @@ public class UIEquipmentSlot : UISlot {
 				continue;
 			}
 
-			if (false == Player.Instance.inventory.Put (item)) {
+			if (false == Player.Instance.inventory.Put (data.item)) {
 				return;
 			}
 
-			Player.Instance.UnequipItem (item.part, index);
-			Unequip ();
+			Player.Instance.UnequipItem (part, index);
+			Init (null);
 
 			this.outline.outline = false;
 			for (int j = 0; j < inventory.equipmentSlots.Length; j++) {
@@ -107,12 +108,5 @@ public class UIEquipmentSlot : UISlot {
 			return;
 		}
 	}
-	public override void Activate(bool flag)
-	{
-		base.Activate (flag && null != item);
-		if (true == flag && null != item) {
-			icon.sprite = item.icon;
-			grade.color = UISlot.GetGradeColor (item.grade);
-		}
-	}
+
 }

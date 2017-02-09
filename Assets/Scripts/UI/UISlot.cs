@@ -13,10 +13,10 @@ public class UISlot : MonoBehaviour {
 	public Image clone;
 	public RectTransform rectTransform;
 
-	public int index;
 	public UIInventory inventory;
+	public Inventory.Slot data;
 
-	public void Start()
+	public virtual void Start()
 	{
 		EventTrigger trigger = GetComponent<EventTrigger>( );
 		{
@@ -48,7 +48,20 @@ public class UISlot : MonoBehaviour {
 		outline = transform.FindChild ("ItemIcon").GetComponent<ImageOutline> ();
 		grade = transform.FindChild ("ItemGrade").GetComponent<Image> ();
 		outline.outline = false;
-		Activate (false);
+		Init (null);
+	}
+
+	public virtual void Init(Inventory.Slot data)
+	{
+		this.data = data;
+		icon.gameObject.SetActive (false);
+		grade.gameObject.SetActive (false);
+		if (null != data) {
+			icon.gameObject.SetActive (true);
+			grade.gameObject.SetActive (true);
+			icon.sprite = data.item.icon;
+			grade.color = GetGradeColor (data.item.grade);
+		}
 	}
 
 	public void OnPointerDown( PointerEventData evt )
@@ -81,19 +94,10 @@ public class UISlot : MonoBehaviour {
 		clone = null;
 	}
 
-	public virtual void OnSelect()
-	{
-	}
-	public virtual void OnDrop()
-	{
-	}
-	public virtual void Activate(bool flag)
-	{
-		icon.gameObject.SetActive (flag);
-		grade.gameObject.SetActive (flag);
-	}
+	public virtual void OnSelect() {}
+	public virtual void OnDrop() {}
 
-	public static Color GetGradeColor(EquipmentItem.Grade grade)
+	public static Color GetGradeColor(Item.Grade grade)
 	{
 		Color color = Color.white;
 		switch (grade) {
@@ -118,10 +122,4 @@ public class UISlot : MonoBehaviour {
 		}
 		return color;
 	}
-	void onDrawGizmos()
-	{
-		//Gizmos.color = Color.blue;
-		//Gizmos.DrawWireCube(transform.position,new Vector3(rectTransform.rect.x, rectTransform.rect.y, 0.0f));
-	}
-
 }

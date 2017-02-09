@@ -17,6 +17,13 @@ public class EquipmentItem : Item {
 	public List<ItemStat> subStats = new List<ItemStat> ();
 	public ItemEnchantmemt enchantment;
 
+	public EquipmentItem() : base(Item.Type.Equipment){}
+	public virtual List<string> Actions() {
+		List<string> actions = base.Actions ();
+		actions.Add ("EQUIP");
+		return actions;
+	}
+
 	public Player.Stat GetStat(Player.Stat stat)
 	{
 		Player.Stat result = new Player.Stat ();
@@ -41,7 +48,6 @@ public class EquipmentItem : Item {
 		item.id = id;
 		item.name = name;
 		item.icon = icon;
-		item.type = type;
 		item.price = price;
 		item.grade = grade;
 		item.part = part;

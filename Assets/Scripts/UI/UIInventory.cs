@@ -36,9 +36,12 @@ public class UIInventory : MonoBehaviour {
 		close.onClick.AddListener (() => {
 			gameObject.SetActive(false);
 
-			Player.Instance.inventory.Put (ItemManager.Instance.CreateItem("ITEM_WEAPON_" + Random.Range(0, 10).ToString()));
-			Player.Instance.inventory.Put(ItemManager.Instance.CreateItem("ITEM_ARMOR_" + Random.Range(0, 10).ToString()));
-			Player.Instance.inventory.Put(ItemManager.Instance.CreateItem("ITEM_RING_" + Random.Range(0, 10).ToString()));
+			ItemManager.Instance.CreateItem("ITEM_WEAPON_" + Random.Range(0, 10).ToString()).Pickup();
+			ItemManager.Instance.CreateItem("ITEM_ARMOR_" + Random.Range(0, 10).ToString()).Pickup();
+			ItemManager.Instance.CreateItem("ITEM_RING_" + Random.Range(0, 10).ToString()).Pickup();
+			ItemManager.Instance.CreateItem("ITEM_SHIELD_" + Random.Range(0, 10).ToString()).Pickup();
+			ItemManager.Instance.CreateItem("ITEM_POTION_HEALING").Pickup();
+			ItemManager.Instance.CreateItem("ITEM_POTION_POISON").Pickup();
 		});
 	}
 
@@ -64,20 +67,12 @@ public class UIInventory : MonoBehaviour {
 			}
 		}
 	}
-	public void ActivateInventorySlot(int index, bool flag)
+	public void Put(Inventory.Slot data)
 	{
-		UIInventorySlot slot = inventorySlots [index];
-		slot.Activate (flag);
+		inventorySlots [data.index].Init (data);
 	}
-
-	public void ActivateEquipmentSlot(EquipmentItem.Part part, int index, bool flag)
+	public void Pull(int index)
 	{
-		for (int i = 0; i < 7; i++) {
-			UIEquipmentSlot slot = equipmentSlots [i];
-			if (slot.part == part && slot.index == index) {
-				slot.Activate (flag);
-				break;
-			}
-		}
+		inventorySlots [index].Init (null);
 	}
 }

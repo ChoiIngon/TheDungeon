@@ -25,6 +25,7 @@ public class Inventory
 		}
 		ui.Init ();
 	}
+
 	public bool Put(Item data)
 	{
 		if (null == data) {
@@ -58,7 +59,7 @@ public class Inventory
 			{
 				slot.item = data;
 				slot.count = 1;
-				ui.ActivateInventorySlot (slot.index, true);
+				ui.Put (slot);
 				return true;
 			}
 		}
@@ -75,8 +76,16 @@ public class Inventory
 		Item item = slot.item;
 		if (0 == slot.count) {
 			slot.item = null;
-			ui.ActivateInventorySlot (slot.index, false);
+			ui.Pull (slot.index);
 		}
 		return item;
+	}
+	public T GetItem<T>(int index) where T : Item {
+		Slot slot = slots [index];
+		if (null == slot.item) {
+			throw new System.Exception("no item");
+		}
+
+		return slot.item as T;
 	}
 }

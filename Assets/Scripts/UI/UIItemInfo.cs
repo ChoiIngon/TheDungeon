@@ -3,32 +3,64 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class UIItemInfo : MonoBehaviour {
-	public Text itemName;
-	public Image itemIcon;
-	public Image itemGrade;
-	public Text itemMainStat;
-	public Text itemSubStat;
-	public Item item {
+	public enum Action
+	{
+		Use, Throw, Drop, Max
+	}
+	public new Text name;
+	public Image icon;
+	public Image grade;
+	public Text description;
+	public Text stats;
+	public Button[] buttons;
+	public UISlot slot {
 		set {
-			itemName.text = value.name;
-			itemIcon.sprite = value.icon;
-			itemGrade.color = UISlot.GetGradeColor (value.grade);
-			switch(value.type)
+			if (null == value) {
+				return;
+			}
+			gameObject.SetActive (true);
+			Item item = value.data.item;
+			name.text = item.name;
+			icon.sprite = item.icon;
+			grade.color = UISlot.GetGradeColor (item.grade);
+
+			for (int i = 0; i < (int)Action.Max; i++) {
+				buttons [i].gameObject.SetActive (false);
+				buttons [i].onClick.RemoveAllListeners ();
+			}
+
+			switch(item.type)
 			{
 			case Item.Type.Equipment:
-				EquipmentItem equipment = (EquipmentItem)value;
-				itemMainStat.text = equipment.mainStat.description;
-				itemSubStat.text = "";
+				EquipmentItem equipment = (EquipmentItem)item;;
+				description.text = equipment.description;
+				stats.text = equipment.mainStat.description + "\n";
 				for (int i = 0; i < equipment.subStats.Count; i++) {
-					itemSubStat.text += equipment.subStats [i].description + "\n";
+					stats.text += equipment.subStats [i].description + "\n";
 				}
+				break;
+			case Item.Type.Potion:
+				PotionItem potion = (PotionItem)item;
+				description.text = potion.description;
+				stats.text = "";
+				buttons [(int)Action.Use].gameObject.SetActive (true);
+				buttons [(int)Action.Use].onClick.AddListener (() => {
+					potion.Use(Player.Instance);
+					Player.Instance.inventory.Pull(value.data.index);
+					gameObject.SetActive(false);
+				});
+				buttons [(int)Action.Drop].gameObject.SetActive (true);
+				buttons [(int)Action.Drop].onClick.AddListener (() => {
+					Player.Instance.inventory.Pull(value.data.index);
+					gameObject.SetActive(false);
+				});
 				break;
 			default :
 				break;
 			}
+
+
 			gameObject.SetActive (true);
 		}
 	}
-
-
 }

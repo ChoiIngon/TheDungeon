@@ -6,15 +6,6 @@ using System.Collections.Generic;
 
 [System.Serializable]
 public class UIInventorySlot : UISlot {
-	public Inventory.Slot data;
-	public override void Activate(bool flag)
-	{
-		base.Activate (flag);
-		if (true == flag) {
-			icon.sprite = data.item.icon;
-			grade.color = UISlot.GetGradeColor (data.item.grade);
-		}
-	}
 	public override void OnSelect()
 	{
 		if (null == data) {
@@ -28,7 +19,6 @@ public class UIInventorySlot : UISlot {
 			EquipmentItem equipment = (EquipmentItem)data.item;
 			for (int i = 0; i < inventory.equipmentSlots.Length; i++) {
 				UIEquipmentSlot other = inventory.equipmentSlots [i];
-			
 				if (equipment.part == other.part) {
 					other.arrow.gameObject.SetActive (true);
 				} else {
@@ -36,7 +26,7 @@ public class UIInventorySlot : UISlot {
 				}
 			}
 		}
-		inventory.itemInfo.item = data.item;
+		inventory.itemInfo.slot = this;
 	}
 	public override void OnDrop() {
 		if (null == data) {
@@ -49,23 +39,26 @@ public class UIInventorySlot : UISlot {
 			EquipmentItem equipment = (EquipmentItem)data.item;
 
 			for (int i = 0; i < inventory.equipmentSlots.Length; i++) {
-				UIEquipmentSlot other = inventory.equipmentSlots [i];
-				if (equipment.part != other.part) {
+				UIEquipmentSlot equipmentSlot = inventory.equipmentSlots [i];
+				if (equipment.part != equipmentSlot.part) {
 					continue;
 				}
 				Rect rhs = clone.rectTransform.rect;
-				Rect lhs = other.rectTransform.rect;
+				Rect lhs = equipmentSlot.rectTransform.rect;
 				rhs.position = (Vector2)clone.transform.position;
-				lhs.position = (Vector2)other.transform.position;
+				lhs.position = (Vector2)equipmentSlot.transform.position;
 				if (false == rhs.Overlaps (lhs)) {
 					continue;
 				}
 
 				Player.Instance.inventory.Pull (data.index);
-				EquipmentItem prev = Player.Instance.EquipItem (equipment, other.index);
+				EquipmentItem prev = Player.Instance.EquipItem (equipment, equipmentSlot.index);
+				Inventory.Slot slot = new Inventory.Slot ();
+				slot.index = equipmentSlot.index;
+				slot.count = 1;
+				slot.item = equipment;
+				equipmentSlot.Init (slot);
 				Player.Instance.inventory.Put (prev);
-				other.item = equipment;
-				other.Activate (true);
 				this.outline.outline = false;
 				for (int j = 0; j < inventory.equipmentSlots.Length; j++) {
 					inventory.equipmentSlots [j].arrow.gameObject.SetActive (false);

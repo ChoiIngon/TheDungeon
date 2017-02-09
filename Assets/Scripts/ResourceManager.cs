@@ -55,6 +55,9 @@ public class ResourceManager : MonoBehaviour {
 		resource.Add ("item_sword_001", Resources.Load<Sprite> ("Sprites/Item/item_sword_001"));
 		resource.Add ("item_sword_002", Resources.Load<Sprite> ("Sprites/Item/item_sword_002"));
 		resource.Add ("item_sword_003", Resources.Load<Sprite> ("Sprites/Item/item_sword_003"));
+		resource.Add ("item_potion_001", Resources.Load<Sprite> ("Sprites/Item/item_potion_001"));
+		resource.Add ("item_potion_002", Resources.Load<Sprite> ("Sprites/Item/item_potion_002"));
+		resource.Add ("item_potion_003", Resources.Load<Sprite> ("Sprites/Item/item_potion_003"));
 		//#endif
 	}
 

@@ -39,17 +39,20 @@ public class Player : Unit {
     public override void Init() {
 		base.Init ();
 
-		exp = ui.FindChild("Exp").GetComponent<UIGaugeBar>();
-		exp.max = 1;
-		exp.current = 0;
-	
-        health = ui.FindChild("Health").GetComponent<UIGaugeBar>();
-        health.max = 1000;
-        health.current = health.max;
-
+		level = 1;
+		stats.maxHealth = 1000;
+		stats.curHealth = 100;
 		stats.speed = 170;
 		stats.attack = 30;
 		stats.defense = 100;
+
+		exp = ui.FindChild("Exp").GetComponent<UIGaugeBar>();
+		exp.max = level;
+		exp.current = 0;
+	
+        health = ui.FindChild("Health").GetComponent<UIGaugeBar>();
+		health.max = stats.maxHealth;
+		health.current = stats.curHealth;
 
 		coin.count = 0;
 		#if UNITY_EDITOR
