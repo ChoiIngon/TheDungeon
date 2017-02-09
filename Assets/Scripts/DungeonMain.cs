@@ -310,12 +310,12 @@ public class DungeonMain : MonoBehaviour {
 			yield return new WaitForSeconds (0.7f);
 		}
 
-		Dungeon.Instance.current.monster = null;
-		GameObject.Instantiate<GameObject> (monster.damagePrefab);
+		GameObject.Instantiate<GameObject> (monster.dieEffectPrefab);
 		monster.gameObject.SetActive (false);
 		
 		yield return StartCoroutine (Win (monster.info));
         yield return StartCoroutine(miniMap.Show(0.5f));
+		Dungeon.Instance.current.monster = null;
     }
 	IEnumerator Win(Monster.Info info)
 	{

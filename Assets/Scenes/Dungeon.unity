@@ -160,7 +160,9 @@ MonoBehaviour:
       exp: 0
   trailPrefab: {fileID: 96000013284185960, guid: cf4698763e84f45fc9837dfe4764fedd,
     type: 2}
-  damagePrefab: {fileID: 1000010443484688, guid: 4192e31438ad0442ab6918127eb55789,
+  damageEffectPrefab: {fileID: 1000010443484688, guid: 4192e31438ad0442ab6918127eb55789,
+    type: 2}
+  dieEffectPrefab: {fileID: 1902953873025848, guid: e16460ebd233f40a192d2fa2dc3bcf3a,
     type: 2}
 --- !u!114 &2598114
 MonoBehaviour:

@@ -38,8 +38,8 @@ public class Monster : Unit {
 
 	public Info info;
 	public TrailRenderer trailPrefab;
-	public GameObject damagePrefab;
-
+	public GameObject damageEffectPrefab;
+	public GameObject dieEffectPrefab;
 
 	private Animator animator;
 	private new SpriteRenderer renderer;
@@ -103,7 +103,7 @@ public class Monster : Unit {
 		start.y += 0.5f;
 		direction.y += 0.5f;
 		trail.transform.localPosition = start;
-		GameObject effect = GameObject.Instantiate<GameObject> (damagePrefab);
+		GameObject effect = GameObject.Instantiate<GameObject> (damageEffectPrefab);
 		effect.transform.position = Vector3.Lerp(start, direction, Random.Range(0.4f, 0.6f));
 		MeshRenderer renderer = effect.transform.Find ("Text").GetComponent<MeshRenderer> ();
 		renderer.sortingLayerName = "Effect";
