@@ -86,7 +86,7 @@ public class DungeonMain : MonoBehaviour {
 	private Vector3 touchPoint = Vector3.zero;
 	void Start () {
         Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
-
+        StartCoroutine(NetworkManager.Instance.CreateItem(1));
 		coins = transform.FindChild ("Coins");
 		rooms = transform.FindChild ("Rooms");
 		current = rooms.FindChild ("Current").GetComponent<Room> ();
@@ -104,7 +104,7 @@ public class DungeonMain : MonoBehaviour {
 		}
 		RectTransform uiMain = transform.FindChild ("UI/Main").GetComponent<RectTransform>();
 		uiMain.position = Camera.main.WorldToScreenPoint(monster.transform.position);
-
+     
 		ResourceManager.Instance.Init ();
 		ItemManager.Instance.Init ();
 		QuestManager.Instance.Init ();

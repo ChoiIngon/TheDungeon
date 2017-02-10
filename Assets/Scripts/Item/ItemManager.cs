@@ -51,8 +51,8 @@ public class ItemManager {
 			item.grade = (EquipmentItem.Grade)Random.Range ((int)EquipmentItem.Grade.Low, (int)EquipmentItem.Grade.Max);
 			item.icon = ResourceManager.Instance.Load<Sprite> ("item_ring_00" + (i % 3 +1).ToString());
 			item.part = EquipmentItem.Part.Ring;
-			item.mainStat = new ItemStat_Critical( (i+1)/100, "CRI : +" + (i + 1) + "%");
-			item.subStats.Add(new ItemStat_CoinBonus((i+1)/100, "gold bonus : +" + (i+1) +"%"));
+			item.mainStat = new EquipmentItemStat_Critical( (i+1)/100, "CRI : +" + (i + 1) + "%");
+			item.subStats.Add(new EquipmentItemStat_CoinBonus((i+1)/100, "gold bonus : +" + (i+1) +"%"));
 			items.Add (item.id, item);
 		}
 	}
@@ -68,7 +68,7 @@ public class ItemManager {
 			item.grade = (EquipmentItem.Grade)Random.Range ((int)EquipmentItem.Grade.Low, (int)EquipmentItem.Grade.Max);
 			item.icon = ResourceManager.Instance.Load<Sprite> ("item_shirt_00" + (i % 3 +1).ToString());
 			item.part = EquipmentItem.Part.Armor;
-			item.mainStat = new ItemStat_Defense ( i + 1, "DEF : +" + (i + 1));
+			item.mainStat = new EquipmentItemStat_Defense ( i + 1, "DEF : +" + (i + 1));
 			items.Add (item.id, item);
 		}
 	}
@@ -84,7 +84,7 @@ public class ItemManager {
 			item.grade = (EquipmentItem.Grade)Random.Range ((int)EquipmentItem.Grade.Low, (int)EquipmentItem.Grade.Max);
 			item.icon = ResourceManager.Instance.Load<Sprite> ("item_sword_00" + (i % 3 +1).ToString());
 			item.part = EquipmentItem.Part.Hand;
-			item.mainStat = new ItemStat_Attack(i+1, "ATK : +" + (i + 1));
+			item.mainStat = new EquipmentItemStat_Attack(i+1, "ATK : +" + (i + 1));
 			items.Add (item.id, item);
 		}
 		for(int i=0; i<10; i++)
@@ -96,7 +96,7 @@ public class ItemManager {
 			item.grade = (EquipmentItem.Grade)Random.Range ((int)EquipmentItem.Grade.Low, (int)EquipmentItem.Grade.Max);
 			item.icon = ResourceManager.Instance.Load<Sprite> ("item_shield_00" + (i % 3 +1).ToString());
 			item.part = EquipmentItem.Part.Hand;
-			item.mainStat = new ItemStat_Defense(i+1, "DEF : +" + (i + 1));
+			item.mainStat = new EquipmentItemStat_Defense(i+1, "DEF : +" + (i + 1));
 			items.Add (item.id, item);
 		}
 	}

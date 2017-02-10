@@ -13,12 +13,12 @@ public class EquipmentItem : Item {
 	}
 
 	public Part		part;
-	public ItemStat mainStat;
-	public List<ItemStat> subStats = new List<ItemStat> ();
+	public EquipmentItemStat mainStat;
+	public List<EquipmentItemStat> subStats = new List<EquipmentItemStat> ();
 	public ItemEnchantmemt enchantment;
 
 	public EquipmentItem() : base(Item.Type.Equipment){}
-	public virtual List<string> Actions() {
+	public override List<string> Actions() {
 		List<string> actions = base.Actions ();
 		actions.Add ("EQUIP");
 		return actions;
@@ -52,7 +52,7 @@ public class EquipmentItem : Item {
 		item.grade = grade;
 		item.part = part;
 		item.mainStat = mainStat;
-		List<ItemStat> tmp = new List<ItemStat> (subStats); 
+		List<EquipmentItemStat> tmp = new List<EquipmentItemStat> (subStats); 
 		for (int i = 0; i < ((int)grade - (int)Grade.Normal); i++) {
 			if (0 == tmp.Count) {
 				break;

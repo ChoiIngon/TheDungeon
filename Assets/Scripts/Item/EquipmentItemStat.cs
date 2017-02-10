@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ItemStat
+public abstract class EquipmentItemStat
 {
 	public string description;
 	//public ItemStatTrigger trigger;
 	public abstract Player.Stat GetStat (Player.Stat stat);
 }
 
-public class ItemStat_MaxHealth : ItemStat
+public class EquipmentItemStat_MaxHealth : EquipmentItemStat
 {
 	float percent;
-	public ItemStat_MaxHealth(float percent, string description)
+	public EquipmentItemStat_MaxHealth(float percent, string description)
 	{
 		this.percent = percent;
 		this.description = description;
@@ -26,10 +26,10 @@ public class ItemStat_MaxHealth : ItemStat
 	}
 }
 
-public class ItemStat_Attack : ItemStat
+public class EquipmentItemStat_Attack : EquipmentItemStat
 {
 	float value;
-	public ItemStat_Attack(float value, string description)
+	public EquipmentItemStat_Attack(float value, string description)
 	{
 		this.value = value;
 		this.description = description;
@@ -43,10 +43,10 @@ public class ItemStat_Attack : ItemStat
 	}
 }
 
-public class ItemStat_Defense : ItemStat
+public class EquipmentItemStat_Defense : EquipmentItemStat
 {
 	float value;
-	public ItemStat_Defense(float value, string description)
+	public EquipmentItemStat_Defense(float value, string description)
 	{
 		this.value = value;
 		this.description = description;
@@ -60,10 +60,10 @@ public class ItemStat_Defense : ItemStat
 	}
 }
 
-public class ItemStat_Speed : ItemStat
+public class EquipmentItemStat_Speed : EquipmentItemStat
 {
 	public float value;
-	public ItemStat_Speed(float value, string description)
+	public EquipmentItemStat_Speed(float value, string description)
 	{
 		this.value = value;
 		this.description = description;
@@ -77,10 +77,10 @@ public class ItemStat_Speed : ItemStat
 	}
 }
 
-public class ItemStat_Critical : ItemStat
+public class EquipmentItemStat_Critical : EquipmentItemStat
 {
 	public float percent;
-	public ItemStat_Critical(float percent, string description)
+	public EquipmentItemStat_Critical(float percent, string description)
 	{
 		this.percent = percent;
 		this.description = description;
@@ -94,9 +94,9 @@ public class ItemStat_Critical : ItemStat
 	}
 }
 
-public class ItemStat_CoinBonus : ItemStat {
+public class EquipmentItemStat_CoinBonus : EquipmentItemStat {
 	public float percent;
-	public ItemStat_CoinBonus( float percent, string description)
+	public EquipmentItemStat_CoinBonus( float percent, string description)
 	{
 		this.percent = percent;
 		this.description = description;
