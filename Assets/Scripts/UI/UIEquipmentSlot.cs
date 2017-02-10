@@ -93,6 +93,7 @@ public class UIEquipmentSlot : UISlot {
 				this.Init (slot);
 			}
 
+			inventory.itemInfo.slot = other;
 			this.outline.outline = false;
 			return;
 		}

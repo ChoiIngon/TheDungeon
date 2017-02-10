@@ -93,6 +93,7 @@ public class UIInventorySlot : UISlot {
 					inventory.equipmentSlots [j].arrow.gameObject.SetActive (false);
 				}
 
+				inventory.itemInfo.slot = equipmentSlot;
 				return;
 			}
 		}
