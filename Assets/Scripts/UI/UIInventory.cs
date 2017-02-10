@@ -51,6 +51,14 @@ public class UIInventory : MonoBehaviour {
 		//ItemManager.Instance.CreateItem("ITEM_SHIELD_" + Random.Range(0, 10).ToString()).Pickup();
 		//ItemManager.Instance.CreateItem("ITEM_POTION_HEALING").Pickup();
 		//ItemManager.Instance.CreateItem("ITEM_POTION_POISON").Pickup();
+		TurnEquipGuideArrowOff ();
+		for (int i = 0; i < inventorySlots.Length; i++) {
+			inventorySlots [i].outline.outline = false;
+		}
+		for (int i = 0; i < 7; i++) {
+			equipmentSlots [i].outline.outline = false;
+		}
+
 		DungeonMain.Instance.enableInput = true;
 	}
 	public UISlot selected {
