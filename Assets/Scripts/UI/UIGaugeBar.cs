@@ -3,7 +3,17 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class UIGaugeBar : MonoBehaviour {
-	public float max;
+	public float max {
+		set {
+			_max = value;
+			_current = (int)(_max * gauge.localScale.x);
+			//gauge.localScale = new Vector3(scale, gauge.localScale.y, gauge.localScale.z);
+			text.text = ((int)_current).ToString() + "/" + max.ToString();
+		}
+		get {
+			return _max;
+		}
+	}
 	public float current
 	{
 		set
@@ -32,37 +42,6 @@ public class UIGaugeBar : MonoBehaviour {
         {
             return _current;
         }
-	}
-
-	public IEnumerator DeferredChange(float amount, float time)
-	{
-		if (null != _coroutine) {
-			StopCoroutine (_coroutine);
-		}
-		_deferredChangeAmount += amount;
-		_coroutine = StartCoroutine(_DeferredChange (time)); 
-		yield return _coroutine;
-	}
-
-	public IEnumerator _DeferredChange(float time)
-	{
-		float curr = max * gauge.localScale.x;
-		float dest = _current + _deferredChangeAmount;
-		float amount = dest - curr;
-
-		float delta = 0.0f;
-		while (Mathf.Abs(delta) < Mathf.Abs (amount)) {
-			float scale = gauge.localScale.x + amount * (Time.deltaTime/time)/max;
-			scale = Mathf.Max (0.0f, scale);
-			scale = Mathf.Min (1.0f, scale);
-
-			gauge.localScale = new Vector3(scale, gauge.localScale.y, gauge.localScale.z);
-			text.text = ((int)(max*gauge.localScale.x)).ToString() + "/" + max.ToString();
-			delta += amount * (Time.deltaTime / time);
-			yield return null;
-		}
-		current += _deferredChangeAmount;
-		_deferredChangeAmount = 0.0f;
 	}
 
     public IEnumerator DeferredValue(float value, float time)
@@ -98,7 +77,7 @@ public class UIGaugeBar : MonoBehaviour {
 	public Text text;
 	
     float _current;
-	float _deferredChangeAmount;
+	float _max;
 	Coroutine _coroutine;
 	// Use this for initialization
 	void Start () {

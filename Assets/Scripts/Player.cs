@@ -40,19 +40,20 @@ public class Player : Unit {
 		base.Init ();
 
 		level = 1;
-		stats.maxHealth = 1000;
-		stats.curHealth = 100;
-		stats.speed = 170;
-		stats.attack = 30;
-		stats.defense = 100;
+		stats.health = 100;
+		stats.attack = 10;
+		stats.defense = 10;
+		stats.speed = 1.0f;
+		stats.critcal = 0.0f;
+		stats.coinBonus = 0.0f;
+		stats.expBonus = 0.0f;
 
 		exp = ui.FindChild("Exp").GetComponent<UIGaugeBar>();
 		exp.max = level;
 		exp.current = 0;
 	
         health = ui.FindChild("Health").GetComponent<UIGaugeBar>();
-		health.max = stats.maxHealth;
-		health.current = stats.curHealth;
+		health.current = health.max = stats.health;
 
 		coin.count = 0;
 		#if UNITY_EDITOR
@@ -93,12 +94,14 @@ public class Player : Unit {
 
 		EquipmentItem prev = equipments [new Tuple<EquipmentItem.Part, int> (item.part, index)];
 		equipments [new Tuple<EquipmentItem.Part, int> (item.part, index)] = item;
+		health.max = GetStat ().health;
 		return prev;
 	}
 
 	public EquipmentItem UnequipItem(EquipmentItem.Part category, int index) {
 		EquipmentItem item = equipments [new Tuple<EquipmentItem.Part, int> (category, index)];
 		equipments [new Tuple<EquipmentItem.Part, int> (category, index)] = null;
+		health.max = GetStat ().health;
 		return item;
 	}
 
@@ -143,33 +146,25 @@ public class Player : Unit {
 
 	public override void Attack(Unit defender)
 	{
-		Stat stat = new Stat ();
-		foreach (var itr in equipments) {
-			EquipmentItem item = itr.Value;
-			if (null != item) {
-				stat += item.GetStat (stats);
-			}
-		}
-		stat += stats;
-
+		Stat stat = GetStat ();
 		int attack = (int)Mathf.Max(1, stat.attack + Random.Range(0, stat.attack * 0.1f) - defender.stats.defense);
 		if (stat.critcal >= Random.Range (0.0f, 1.0f)) {
 			attack *= 3;
 			// critical effect
 		} 
 
-		defender.Damage (attack);
 		for (int i = 0; i < 2; i++) {
 			EquipmentItem weapon = equipments [new Tuple<EquipmentItem.Part, int> (EquipmentItem.Part.Hand, i)];
 			if (null != weapon && null != weapon.enchantment) {
 				weapon.enchantment.Enchant (defender);
 			}
 		}
+		defender.Damage (attack);
 	}
 	public override void Damage(int damage)
 	{
 		// proc damage
-		StartCoroutine(health.DeferredChange(-damage, 0.2f));
+		StartCoroutine(health.DeferredValue(health.current-damage, 0.2f));
 		// damage prefab
 		iTween.CameraFadeFrom (0.1f, 0.1f);
 		iTween.ShakePosition (Camera.main.gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.2f);
@@ -187,4 +182,16 @@ public class Player : Unit {
     {
         StartCoroutine(this.health.DeferredValue((float)health, 0.2f));
     }
+
+	public override Stat GetStat ()
+	{
+		Stat stat = new Stat ();
+		foreach (var equipment in equipments) {
+			if (null == equipment.Value) {
+				continue;
+			}
+			stat += equipment.Value.GetStat (stats);
+		}
+		return stats + stat;
+	}
 }

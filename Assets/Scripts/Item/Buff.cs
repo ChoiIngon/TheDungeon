@@ -58,7 +58,7 @@ public class Buff_GrimReaper : Buff
 
     public override void OnBuff()
     {
-		target.Damage(target.stats.maxHealth);
+		target.Damage(target.stats.health);
         target.buffs.Remove(this);
     }
 }

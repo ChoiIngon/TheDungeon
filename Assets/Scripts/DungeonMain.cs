@@ -281,8 +281,9 @@ public class DungeonMain : MonoBehaviour {
 	IEnumerator Battle()
 	{
         yield return StartCoroutine(miniMap.Hide(1.0f));
+
 		// attack per second
-		float playerAPS = Player.Instance.stats.speed/monster.info.speed; 
+		float playerAPS = Player.Instance.GetStat().speed/monster.info.speed; 
 		float monsterAPS = 1.0f;
 		float playerTurn = playerAPS;
 		float monsterTurn = monsterAPS;

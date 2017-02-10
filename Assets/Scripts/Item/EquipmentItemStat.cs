@@ -19,16 +19,16 @@ public abstract class EquipmentItemStat
 
 public class EquipmentItemStat_MaxHealth : EquipmentItemStat
 {
-	public EquipmentItemStat_MaxHealth(float percent, string description)
+	public EquipmentItemStat_MaxHealth(float value, string description)
 	{
-		this.value = percent;
+		this.value = value;
 		this.description = description;
 	}
 
 	public override Player.Stat GetStat (Player.Stat stat)
 	{
 		Player.Stat result = new Player.Stat();
-		result.maxHealth = (int)(stat.maxHealth * value);
+		result.health = (int)value;
 		return result;
 	}
 }

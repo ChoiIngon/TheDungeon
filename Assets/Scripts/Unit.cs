@@ -6,8 +6,7 @@ public class Unit : MonoBehaviour {
 	[System.Serializable]
 	public struct Stat
 	{
-		public int curHealth;
-		public int maxHealth;
+		public int health;
 		public float attack;
 		public float defense;
 		public float speed;
@@ -16,8 +15,7 @@ public class Unit : MonoBehaviour {
 		public float expBonus;
 		static public Stat operator + (Stat rhs, Stat lhs)
 		{
-			rhs.curHealth += lhs.curHealth;
-			rhs.maxHealth += lhs.maxHealth;
+			rhs.health += lhs.health;
 			rhs.attack += lhs.attack;
 			rhs.defense += lhs.defense;
 			rhs.speed += lhs.speed;
@@ -45,5 +43,9 @@ public class Unit : MonoBehaviour {
 	}
 	public virtual void Health(int health)
 	{
+	}
+	public virtual Stat GetStat()
+	{
+		return stats;
 	}
 }
