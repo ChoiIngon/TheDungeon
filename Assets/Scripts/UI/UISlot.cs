@@ -48,7 +48,7 @@ public class UISlot : MonoBehaviour {
 		outline = transform.FindChild ("ItemIcon").GetComponent<ImageOutline> ();
 		grade = transform.FindChild ("ItemGrade").GetComponent<Image> ();
 		outline.outline = false;
-		Init (null);
+		Init (data);
 	}
 
 	public virtual void Init(Inventory.Slot data)
@@ -56,7 +56,7 @@ public class UISlot : MonoBehaviour {
 		this.data = data;
 		icon.gameObject.SetActive (false);
 		grade.gameObject.SetActive (false);
-		if (null != data) {
+		if (null != data && null != data.item) {
 			icon.gameObject.SetActive (true);
 			grade.gameObject.SetActive (true);
 			icon.sprite = data.item.icon;
@@ -97,7 +97,7 @@ public class UISlot : MonoBehaviour {
 	public virtual void OnSelect() {}
 	public virtual void OnDrop() {}
 
-	public static Color GetGradeColor(Item.Grade grade)
+	public static Color GetGradeColor(EquipmentItem.Grade grade)
 	{
 		Color color = Color.white;
 		switch (grade) {

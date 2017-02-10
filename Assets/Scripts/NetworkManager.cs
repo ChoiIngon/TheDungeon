@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿	using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,10 +11,12 @@ public class NetworkManager : Singleton<NetworkManager>
         host = server.text;
     }
 
-    public IEnumerator CreateItem(int level)
-    {
-        WWW www = new WWW(host + "/equipment_item.php?level=1");
-        yield return www;
-        Debug.Log(www.text);
-    }
+	public IEnumerator HttpRequest(string path, System.Action<string> callback = null)
+	{
+		WWW www = new WWW(host + "/" + path);
+		yield return www;
+		if (null != callback) {
+			callback (www.text);
+		}
+	}
 }

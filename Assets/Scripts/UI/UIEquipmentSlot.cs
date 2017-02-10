@@ -23,16 +23,30 @@ public class UIEquipmentSlot : UISlot {
 		if (null == data.item) {
 			return;
 		}
+
+		EquipmentItem item = (EquipmentItem)data.item;
 		for (int i = 0; i < inventory.equipmentSlots.Length; i++) {
 			UIEquipmentSlot other = inventory.equipmentSlots [i];
-			EquipmentItem item = (EquipmentItem)data.item;
 			if (item.part == other.part && this != other) {
 				other.arrow.gameObject.SetActive (true);
 			} else {
 				other.arrow.gameObject.SetActive (false);
 			}
 		}
+
 		inventory.itemInfo.slot = this;
+
+		inventory.itemInfo.grade.color = UISlot.GetGradeColor (item.grade);
+		inventory.itemInfo.stats.text = "+" + item.mainStat.value + " " + item.mainStat.description + "\n";
+		for (int i = 0; i < item.subStats.Count; i++) {
+			inventory.itemInfo.stats.text += "+" + item.subStats[i].value + " " + item.subStats [i].description + "\n";
+		}
+		inventory.itemInfo.buttons [(int)UIItemInfo.Action.Drop].gameObject.SetActive (true);
+		inventory.itemInfo.buttons [(int)UIItemInfo.Action.Drop].onClick.AddListener (() => {
+			Player.Instance.UnequipItem(part, index);
+			Init(null);
+			inventory.itemInfo.gameObject.SetActive(false);
+		});
 	}
 
 	public override void OnDrop() {

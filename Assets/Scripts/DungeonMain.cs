@@ -74,19 +74,19 @@ public class DungeonMain : MonoBehaviour {
 	public UICoin 			coin;
 	public UIMiniMap		miniMap;
 
-	public Monster monster;
-
 	private Color cameraFadeColor;
 	public Transform coins;
 	private Transform rooms;
 	private Room current;
 	private Room[] next = new Room[Dungeon.Max];
+	public Monster monster;
 
-	private TouchInput input;
 	private Vector3 touchPoint = Vector3.zero;
+	private TouchInput input;
+
 	void Start () {
         Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
-        StartCoroutine(NetworkManager.Instance.CreateItem(1));
+
 		coins = transform.FindChild ("Coins");
 		rooms = transform.FindChild ("Rooms");
 		current = rooms.FindChild ("Current").GetComponent<Room> ();
@@ -105,17 +105,10 @@ public class DungeonMain : MonoBehaviour {
 		RectTransform uiMain = transform.FindChild ("UI/Main").GetComponent<RectTransform>();
 		uiMain.position = Camera.main.WorldToScreenPoint(monster.transform.position);
      
-		ResourceManager.Instance.Init ();
-		ItemManager.Instance.Init ();
-		QuestManager.Instance.Init ();
-		MonsterManager.Instance.Init ();
-		Player.Instance.Init ();
-		Dungeon.Instance.Init ();
-		iTween.CameraFadeAdd ();
-
 		SetCameraFadeColor (Color.white);
 
 		input = GetComponent<TouchInput> ();
+		enableInput = false;
 		input.onTouchDown += (Vector3 position) => {
 			touchPoint = position;
 		};
@@ -161,6 +154,7 @@ public class DungeonMain : MonoBehaviour {
 
 			touchPoint = Vector3.zero;
 		};
+
 		QuestManager.Instance.onComplete += (QuestData quest) =>
 		{
 			StartCoroutine(textBox.Write(
@@ -169,11 +163,22 @@ public class DungeonMain : MonoBehaviour {
 			));
 		};
 
-		enableInput = true;
+		StartCoroutine (Init ());
+	}
 
+	IEnumerator Init() {
+		NetworkManager.Instance.Init ();
+		ResourceManager.Instance.Init ();
+		yield return StartCoroutine(ItemManager.Instance.Init ());
+		QuestManager.Instance.Init ();
+		MonsterManager.Instance.Init ();
+		Player.Instance.Init ();
+		Dungeon.Instance.Init ();
+		iTween.CameraFadeAdd ();
 		InitRooms ();
 		miniMap.Init ();
 		miniMap.CurrentPosition (Dungeon.Instance.current.id);
+		enableInput = true;
 	}
 	void InitRooms()
 	{
@@ -319,6 +324,9 @@ public class DungeonMain : MonoBehaviour {
     }
 	IEnumerator Win(Monster.Info info)
 	{
+		Item item = ItemManager.Instance.CreateRandomItem (Player.Instance.level);
+		item.Pickup ();
+		//StartCoroutine (ItemManager.Instance.CreateRandomItem (Player.Instance.level));
 		Player.Instance.AddCoin (info.reward.coin + (int)Random.Range(0, info.reward.coin * 0.1f));
 		int level = Player.Instance.level;
 		yield return StartCoroutine(Player.Instance.AddExp(info.reward.exp + (int)Random.Range(0, info.reward.exp * 0.1f)));
@@ -365,9 +373,7 @@ public class DungeonMain : MonoBehaviour {
 	void SetCameraFadeColor(Color color)
 	{
 		Texture2D colorTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-		// set the pixel values
 		colorTexture.SetPixel(0, 0, color);
-		// Apply all SetPixel calls
 		colorTexture.Apply();
 		iTween.CameraFadeSwap (colorTexture);
 	}

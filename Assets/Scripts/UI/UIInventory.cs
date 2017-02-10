@@ -18,7 +18,6 @@ public class UIInventory : MonoBehaviour {
 			for (int i = 0; i < Inventory.MAX_SLOT_COUNT; i++) {
 				UIInventorySlot slot = tr.GetChild (i).GetComponent<UIInventorySlot> ();
 				slot.inventory = this;
-				slot.data = Player.Instance.inventory.slots [i];
 				inventorySlots [i] = slot;
 			}
 		}
@@ -35,14 +34,8 @@ public class UIInventory : MonoBehaviour {
 		close = transform.FindChild ("Close").GetComponent<Button> ();
 		close.onClick.AddListener (() => {
 			gameObject.SetActive(false);
-
-			ItemManager.Instance.CreateItem("ITEM_WEAPON_" + Random.Range(0, 10).ToString()).Pickup();
-			ItemManager.Instance.CreateItem("ITEM_ARMOR_" + Random.Range(0, 10).ToString()).Pickup();
-			ItemManager.Instance.CreateItem("ITEM_RING_" + Random.Range(0, 10).ToString()).Pickup();
-			ItemManager.Instance.CreateItem("ITEM_SHIELD_" + Random.Range(0, 10).ToString()).Pickup();
-			ItemManager.Instance.CreateItem("ITEM_POTION_HEALING").Pickup();
-			ItemManager.Instance.CreateItem("ITEM_POTION_POISON").Pickup();
 		});
+		gameObject.SetActive (false);
 	}
 
 	public void OnEnable()
@@ -52,6 +45,13 @@ public class UIInventory : MonoBehaviour {
 	}
 	public void OnDisable()
 	{
+		//ItemManager.Instance.CreateItem("ITEM_WEAPON_" + Random.Range(0, 10).ToString()).Pickup();
+		//ItemManager.Instance.CreateItem("ITEM_ARMOR_" + Random.Range(0, 10).ToString()).Pickup();
+		//ItemManager.Instance.CreateItem("ITEM_RING_" + Random.Range(0, 10).ToString()).Pickup();
+		//ItemManager.Instance.CreateItem("ITEM_SHIELD_" + Random.Range(0, 10).ToString()).Pickup();
+		//ItemManager.Instance.CreateItem("ITEM_POTION_HEALING").Pickup();
+		//ItemManager.Instance.CreateItem("ITEM_POTION_POISON").Pickup();
+		ItemManager.Instance.CreateRandomItem(1).Pickup();
 		DungeonMain.Instance.enableInput = true;
 	}
 	public UISlot selected {

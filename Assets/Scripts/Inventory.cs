@@ -10,6 +10,9 @@ public class Inventory
 		public int index;
 		public int count;
 		public Item item;
+		public void Drop()
+		{
+		}
 	}
 	public const int MAX_SLOT_COUNT = 15;
 	public int gold;
@@ -69,7 +72,7 @@ public class Inventory
 	{
 		Slot slot = slots [index];
 		if (null == slot.item) {
-			throw new System.Exception("no item");
+			return null;
 		}
 
 		slot.count -= 1;

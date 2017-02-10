@@ -19,15 +19,19 @@ public class HealingPotionItem : PotionItem {
 	{
 		target.Health (target.stats.maxHealth);
 	}
-	public override Item CreateInstance()
+	public new class Info : PotionItem.Info
 	{
-		HealingPotionItem item = new HealingPotionItem ();
-		item.id = id;
-		item.name = name;
-		item.icon = icon;
-		item.price = price;
-		item.grade = grade;
-		return item;	
+		public override Item CreateInstance()
+		{
+			HealingPotionItem item = new HealingPotionItem ();
+			item.id = id;
+			item.name = name;
+			item.icon = ResourceManager.Instance.Load<Sprite> (icon);
+			item.price = price;
+			item.grade = Item.Grade.Normal;
+			item.description = description;
+			return item;	
+		}
 	}
 }
 
@@ -36,14 +40,18 @@ public class PoisonPotionItem : PotionItem {
 	{
 		target.buffs.Add (new Buff_Venom (target));
 	}
-	public override Item CreateInstance()
+	public new class Info : PotionItem.Info
 	{
-		PoisonPotionItem item = new PoisonPotionItem ();
-		item.id = id;
-		item.name = name;
-		item.icon = icon;
-		item.price = price;
-		item.grade = grade;
-		return item;	
+		public override Item CreateInstance()
+		{
+			PoisonPotionItem item = new PoisonPotionItem ();
+			item.id = id;
+			item.name = name;
+			item.icon = ResourceManager.Instance.Load<Sprite> (icon);
+			item.price = price;
+			item.grade = Item.Grade.Normal;
+			item.description = description;
+			return item;	
+		}
 	}
 }

@@ -2,123 +2,121 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemManager {
-	private Dictionary<string, Item> items;
-	private static ItemManager _instance;  
-	public static ItemManager Instance  
-	{  
-		get  
-		{  
-			if (null == _instance) 
-			{  
-				_instance = new ItemManager ();    
-			}  
-			return _instance;  
-		}  
-	}
-	public EquipmentItem CreateRandomItem(EquipmentItem.Grade grade)
-	{
-		return null;
-	}
-	public Item CreateItem(string id) {
-		return FindInfo<Item> (id).CreateInstance ();
-	}
+public class ItemManager : Singleton<ItemManager> {
+	private Dictionary<string, Item.Info> infos;
+	private int totalWeight;
 
-	public T FindInfo<T>(string id) where T:Item
+	[System.Serializable]
+	public class GradeWeight
 	{
-		if (false == items.ContainsKey (id)) {
-			throw new System.Exception ("can't find item info(id:" + id + ")");
-		}
-		return items[id] as T;
+		public int grade;
+		public int weight;
 	}
+	[System.Serializable]
+	public class EquipmentItemConfig
+	{
+		public GradeWeight[] grade_weight;
+		public EquipmentItemStat.Info[] item_stats;
+		public EquipmentItem.Info[] items;
+	}
+	EquipmentItemConfig config;
+	public IEnumerator Init() {
+		infos = new Dictionary<string, Item.Info> ();
+		yield return NetworkManager.Instance.HttpRequest ("info_equipment_item.php", (string json) => {
+			config = JsonUtility.FromJson<EquipmentItemConfig>(json);
+			foreach(GradeWeight itr in config.grade_weight)
+			{
+				totalWeight += itr.weight;
+			}
+			foreach(EquipmentItem.Info info in config.items)
+			{
+				infos.Add(info.id, info);
+			}
+		});
 
-	public void Init() {
-		items = new Dictionary<string, Item> ();
-		InitWeaponItemInfo ();
-		InitArmorItemInfo ();
-		InitRingItemInfo ();
 		InitPotionItemInfo ();
 	}
 
-	private void InitRingItemInfo()
-	{
-		for(int i=0; i<10; i++)
+	EquipmentItem.Grade GetRandomGrade() {
+		int weight = Random.Range(0, totalWeight);
+		foreach(var itr in config.grade_weight)
 		{
-			EquipmentItem item = new EquipmentItem ();
-			item.id = "ITEM_RING_" + i.ToString ();
-			item.name = "Ring" + i.ToString ();
-			item.price = 100;
-			item.grade = (EquipmentItem.Grade)Random.Range ((int)EquipmentItem.Grade.Low, (int)EquipmentItem.Grade.Max);
-			item.icon = ResourceManager.Instance.Load<Sprite> ("item_ring_00" + (i % 3 +1).ToString());
-			item.part = EquipmentItem.Part.Ring;
-			item.mainStat = new EquipmentItemStat_Critical( (i+1)/100, "CRI : +" + (i + 1) + "%");
-			item.subStats.Add(new EquipmentItemStat_CoinBonus((i+1)/100, "gold bonus : +" + (i+1) +"%"));
-			items.Add (item.id, item);
+			weight -= itr.weight;
+			if(0 >= weight)
+			{
+				return (EquipmentItem.Grade)itr.grade;
+			}
 		}
+
+		return EquipmentItem.Grade.Low;
 	}
 
-	private void InitArmorItemInfo()
+	public Item CreateRandomItem(int level)
 	{
-		for(int i=0; i<10; i++)
-		{
-			EquipmentItem item = new EquipmentItem ();
-			item.id = "ITEM_ARMOR_" + i.ToString ();
-			item.name = "Armor_" + i.ToString ();
-			item.price = 100;
-			item.grade = (EquipmentItem.Grade)Random.Range ((int)EquipmentItem.Grade.Low, (int)EquipmentItem.Grade.Max);
-			item.icon = ResourceManager.Instance.Load<Sprite> ("item_shirt_00" + (i % 3 +1).ToString());
-			item.part = EquipmentItem.Part.Armor;
-			item.mainStat = new EquipmentItemStat_Defense ( i + 1, "DEF : +" + (i + 1));
-			items.Add (item.id, item);
+		EquipmentItem.Grade grade = GetRandomGrade ();
+		EquipmentItem.Info info = config.items [Random.Range (0, config.items.Length)];
+		EquipmentItem item = info.CreateInstance () as EquipmentItem;
+		item.grade = (EquipmentItem.Grade)grade;
+		item.level = level;
+		item.mainStat = CreateStat(level, info.main_stat);
+		for (int i = 0; i < (int)item.grade - (int)EquipmentItem.Grade.Normal; i++) {
+			item.subStats.Add (CreateStat(level, config.item_stats [Random.Range (0, config.item_stats.Length)]));
 		}
+		return item;
+	}
+			
+	public T FindInfo<T>(string id) where T:Item
+	{
+		if (false == infos.ContainsKey (id)) {
+			throw new System.Exception ("can't find item info(id:" + id + ")");
+		}
+		return infos[id] as T;
 	}
 
-	private void InitWeaponItemInfo()
-	{
-		for(int i=0; i<10; i++)
-		{
-			EquipmentItem item = new EquipmentItem ();
-			item.id = "ITEM_WEAPON_" + i.ToString ();
-			item.name = "Weapon_" + i.ToString ();
-			item.price = 100;
-			item.grade = (EquipmentItem.Grade)Random.Range ((int)EquipmentItem.Grade.Low, (int)EquipmentItem.Grade.Max);
-			item.icon = ResourceManager.Instance.Load<Sprite> ("item_sword_00" + (i % 3 +1).ToString());
-			item.part = EquipmentItem.Part.Hand;
-			item.mainStat = new EquipmentItemStat_Attack(i+1, "ATK : +" + (i + 1));
-			items.Add (item.id, item);
-		}
-		for(int i=0; i<10; i++)
-		{
-			EquipmentItem item = new EquipmentItem ();
-			item.id = "ITEM_SHIELD_" + i.ToString ();
-			item.name = "Shield " + i.ToString ();
-			item.price = 100;
-			item.grade = (EquipmentItem.Grade)Random.Range ((int)EquipmentItem.Grade.Low, (int)EquipmentItem.Grade.Max);
-			item.icon = ResourceManager.Instance.Load<Sprite> ("item_shield_00" + (i % 3 +1).ToString());
-			item.part = EquipmentItem.Part.Hand;
-			item.mainStat = new EquipmentItemStat_Defense(i+1, "DEF : +" + (i + 1));
-			items.Add (item.id, item);
-		}
-	}
 	private void InitPotionItemInfo()
 	{
 		{
-			HealingPotionItem item = new HealingPotionItem ();
-			item.id = "ITEM_POTION_HEALING";
-			item.name = "Healing Potion";
-			item.price = 100;
-			item.grade = Item.Grade.Normal;
-			item.icon = ResourceManager.Instance.Load<Sprite> ("item_potion_002");
-			items.Add (item.id, item);
+			HealingPotionItem.Info info = new HealingPotionItem.Info ();
+			info.id = "ITEM_POTION_HEALING";
+			info.name = "Healing Potion";
+			info.price = 100;
+			info.icon = "item_potion_002";
+			infos.Add (info.id, info);
 		}
 		{
-			PoisonPotionItem item = new PoisonPotionItem ();
-			item.id = "ITEM_POTION_POISON";
-			item.name = "Poison Potion";
-			item.price = 100;
-			item.grade = Item.Grade.Normal;
-			item.icon = ResourceManager.Instance.Load<Sprite> ("item_potion_003");
-			items.Add (item.id, item);
+			PoisonPotionItem.Info info = new PoisonPotionItem.Info ();
+			info.id = "ITEM_POTION_POISON";
+			info.name = "Poison Potion";
+			info.price = 100;
+			info.icon = "item_potion_003";
+			infos.Add (info.id, info);
 		}
+	}
+
+	EquipmentItemStat CreateStat(int level, EquipmentItemStat.Info info)
+	{
+		float value = info.base_value;
+		for (int i = 0; i < level; i++) {
+			value += Random.Range (0, info.random_value);
+		}
+		value = Mathf.Round (value * 100) / 100.0f;
+		if ("MAX_HEALTH" == info.type) {
+			return new EquipmentItemStat_MaxHealth (value, info.description);
+		} else if ("ATTACK" == info.type) {
+			return new EquipmentItemStat_Attack (value, info.description);
+		} else if ("DEFENSE" == info.type) {
+			return new EquipmentItemStat_Defense (value, info.description);
+		} else if ("SPEED" == info.type) {
+			return new EquipmentItemStat_Speed (value, info.description);
+		} else if ("CRITICAL" == info.type) {
+			return new EquipmentItemStat_Critical (value, info.description);
+		} else if ("COIN_BONUS" == info.type) {
+			return new EquipmentItemStat_CoinBonus (value, info.description);
+		} else if ("EXP_BONUS" == info.type) {
+			return new EquipmentItemStat_ExpBonus (value, info.description);
+		} else if ("STEALTH" == info.type) {
+			return new EquipmentItemStat_Stealth (value, info.description);
+		}
+		return null;
 	}
 }

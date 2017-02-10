@@ -4,31 +4,37 @@ using UnityEngine;
 
 public abstract class EquipmentItemStat
 {
+	[System.Serializable]
+	public class Info
+	{
+		public string type;
+		public string description;
+		public float base_value;
+		public float random_value;
+	}
+	public float value;
 	public string description;
-	//public ItemStatTrigger trigger;
 	public abstract Player.Stat GetStat (Player.Stat stat);
 }
 
 public class EquipmentItemStat_MaxHealth : EquipmentItemStat
 {
-	float percent;
 	public EquipmentItemStat_MaxHealth(float percent, string description)
 	{
-		this.percent = percent;
+		this.value = percent;
 		this.description = description;
 	}
 
 	public override Player.Stat GetStat (Player.Stat stat)
 	{
 		Player.Stat result = new Player.Stat();
-		result.maxHealth = (int)(stat.maxHealth * percent);
+		result.maxHealth = (int)(stat.maxHealth * value);
 		return result;
 	}
 }
 
 public class EquipmentItemStat_Attack : EquipmentItemStat
 {
-	float value;
 	public EquipmentItemStat_Attack(float value, string description)
 	{
 		this.value = value;
@@ -45,7 +51,6 @@ public class EquipmentItemStat_Attack : EquipmentItemStat
 
 public class EquipmentItemStat_Defense : EquipmentItemStat
 {
-	float value;
 	public EquipmentItemStat_Defense(float value, string description)
 	{
 		this.value = value;
@@ -62,7 +67,6 @@ public class EquipmentItemStat_Defense : EquipmentItemStat
 
 public class EquipmentItemStat_Speed : EquipmentItemStat
 {
-	public float value;
 	public EquipmentItemStat_Speed(float value, string description)
 	{
 		this.value = value;
@@ -79,33 +83,62 @@ public class EquipmentItemStat_Speed : EquipmentItemStat
 
 public class EquipmentItemStat_Critical : EquipmentItemStat
 {
-	public float percent;
 	public EquipmentItemStat_Critical(float percent, string description)
 	{
-		this.percent = percent;
+		this.value = percent;
 		this.description = description;
 	}
 
 	public override Player.Stat GetStat (Player.Stat stat)
 	{
 		Player.Stat result = new Player.Stat();
-		result.critcal = percent;
+		result.critcal = value;
 		return result;
 	}
 }
 
 public class EquipmentItemStat_CoinBonus : EquipmentItemStat {
-	public float percent;
+	
 	public EquipmentItemStat_CoinBonus( float percent, string description)
 	{
-		this.percent = percent;
+		this.value = percent;
 		this.description = description;
 	}
 
 	public override Player.Stat GetStat (Player.Stat stat)
 	{
 		Player.Stat result = new Player.Stat();
-		result.coinBonus = percent;
+		result.coinBonus = value;
+		return result;
+	}
+}
+
+public class EquipmentItemStat_ExpBonus : EquipmentItemStat {
+	public EquipmentItemStat_ExpBonus( float percent, string description)
+	{
+		this.value = percent;
+		this.description = description;
+	}
+
+	public override Player.Stat GetStat (Player.Stat stat)
+	{
+		Player.Stat result = new Player.Stat();
+		result.coinBonus = value;
+		return result;
+	}
+}
+
+public class EquipmentItemStat_Stealth : EquipmentItemStat {
+	public EquipmentItemStat_Stealth( float percent, string description)
+	{
+		this.value = percent;
+		this.description = description;
+	}
+
+	public override Player.Stat GetStat (Player.Stat stat)
+	{
+		Player.Stat result = new Player.Stat();
+		result.coinBonus = value;
 		return result;
 	}
 }
