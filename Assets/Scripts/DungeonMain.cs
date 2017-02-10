@@ -33,7 +33,7 @@ public class DungeonMain : MonoBehaviour {
 				if (null == mainButtons [i].button) {
 					continue;
 				}
-				mainButtons [i].button.enabled = true;
+				mainButtons [i].button.enabled = value;
 			}
 		}
 	}

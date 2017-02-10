@@ -18,9 +18,15 @@ public class Inventory
 	public int gold;
 	public Slot[] slots;
 	public UIInventory ui;
-
+	public int count {
+		get {
+			return _count;
+		}
+	}
+	private int _count;
 	public void Init()
 	{
+		_count = 0;
 		slots = new Slot[MAX_SLOT_COUNT];
 		for (int i = 0; i < MAX_SLOT_COUNT; i++) {
 			slots [i] = new Slot ();
@@ -29,10 +35,10 @@ public class Inventory
 		ui.Init ();
 	}
 
-	public bool Put(Item data)
+	public Slot Put(Item data)
 	{
 		if (null == data) {
-			return true;
+			return null;
 		}
 		/*
 		switch (data.info.category) {
@@ -63,10 +69,11 @@ public class Inventory
 				slot.item = data;
 				slot.count = 1;
 				ui.Put (slot);
-				return true;
+				_count += 1;
+				return slot;
 			}
 		}
-		return false;
+		return null;
 	}
 	public Item Pull(int index)
 	{
@@ -80,6 +87,7 @@ public class Inventory
 		if (0 == slot.count) {
 			slot.item = null;
 			ui.Pull (slot.index);
+			_count -= 1;
 		}
 		return item;
 	}

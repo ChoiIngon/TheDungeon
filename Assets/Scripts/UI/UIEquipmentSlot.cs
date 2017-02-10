@@ -25,17 +25,8 @@ public class UIEquipmentSlot : UISlot {
 		}
 
 		EquipmentItem item = (EquipmentItem)data.item;
-		for (int i = 0; i < inventory.equipmentSlots.Length; i++) {
-			UIEquipmentSlot other = inventory.equipmentSlots [i];
-			if (item.part == other.part && this != other) {
-				other.arrow.gameObject.SetActive (true);
-			} else {
-				other.arrow.gameObject.SetActive (false);
-			}
-		}
-
+		inventory.TurnEquipGuideArrowOn (part, index);
 		inventory.itemInfo.slot = this;
-
 		inventory.itemInfo.grade.color = UISlot.GetGradeColor (item.grade);
 		inventory.itemInfo.stats.text = "+" + item.mainStat.value + " " + item.mainStat.description + "\n";
 		for (int i = 0; i < item.subStats.Count; i++) {
@@ -45,6 +36,7 @@ public class UIEquipmentSlot : UISlot {
 		inventory.itemInfo.buttons [(int)UIItemInfo.Action.Drop].onClick.AddListener (() => {
 			Player.Instance.UnequipItem(part, index);
 			Init(null);
+			inventory.TurnEquipGuideArrowOff();
 			inventory.itemInfo.gameObject.SetActive(false);
 		});
 	}
@@ -56,12 +48,13 @@ public class UIEquipmentSlot : UISlot {
 		if (null == data.item) {
 			return;
 		}
+
+		EquipmentItem item = (EquipmentItem)data.item;
 		for (int i = 0; i < inventory.equipmentSlots.Length; i++) {
 			UIEquipmentSlot other = inventory.equipmentSlots [i];
 			if (this == other) {
 				continue;
 			}
-			EquipmentItem item = (EquipmentItem)data.item;
 			if (item.part != other.part) {
 				continue;
 			}
@@ -72,20 +65,14 @@ public class UIEquipmentSlot : UISlot {
 			if (false == rhs.Overlaps(lhs)) {
 				continue;
 			}
-				
-			for (int j = 0; j < inventory.equipmentSlots.Length; j++) {
-				inventory.equipmentSlots [j].arrow.gameObject.SetActive(false);
-			}
 
-			Inventory.Slot curr = data;
 			Player.Instance.UnequipItem (part, index);
-			this.Init (null);
-
 			EquipmentItem prev = Player.Instance.EquipItem (item, other.index);
-			other.Init(curr);
+			other.Init(data);
+			Init (null);
 
-			Player.Instance.EquipItem (prev, index);
 			if (null != prev) {
+				Player.Instance.EquipItem (prev, index);
 				Inventory.Slot slot = new Inventory.Slot ();
 				slot.index = index;
 				slot.count = 1;
@@ -93,14 +80,20 @@ public class UIEquipmentSlot : UISlot {
 				this.Init (slot);
 			}
 
-			inventory.itemInfo.slot = other;
-			this.outline.outline = false;
+			other.OnSelect ();
+			inventory.TurnEquipGuideArrowOff ();
+			outline.outline = false;
+			return;
+		}
+			
+		if (Inventory.MAX_SLOT_COUNT <= Player.Instance.inventory.count) {
+			inventory.TurnEquipGuideArrowOff ();
+			outline.outline = false;
 			return;
 		}
 
 		for (int i = 0; i < inventory.inventorySlots.Length; i++) {
 			UIInventorySlot other = inventory.inventorySlots [i];
-
 			Rect rhs = clone.rectTransform.rect;
 			Rect lhs = other.rectTransform.rect;
 			rhs.position = (Vector2)clone.transform.position;
@@ -109,17 +102,18 @@ public class UIEquipmentSlot : UISlot {
 				continue;
 			}
 
-			if (false == Player.Instance.inventory.Put (data.item)) {
+			Inventory.Slot slot = Player.Instance.inventory.Put (data.item);
+			if (null == slot) {
 				return;
 			}
 
 			Player.Instance.UnequipItem (part, index);
 			Init (null);
 
-			this.outline.outline = false;
-			for (int j = 0; j < inventory.equipmentSlots.Length; j++) {
-				inventory.equipmentSlots [j].arrow.gameObject.SetActive(false);
-			}
+			other = inventory.inventorySlots [slot.index];
+			other.OnSelect ();
+			inventory.TurnEquipGuideArrowOff ();
+			outline.outline = false;
 			return;
 		}
 	}

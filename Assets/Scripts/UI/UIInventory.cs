@@ -74,4 +74,21 @@ public class UIInventory : MonoBehaviour {
 	{
 		inventorySlots [index].Init (null);
 	}
+	public void TurnEquipGuideArrowOn(EquipmentItem.Part part, int index = -1)
+	{
+		for (int i = 0; i < equipmentSlots.Length; i++) {
+			UIEquipmentSlot other = equipmentSlots [i];
+			if (part == other.part && index != other.index) {
+				other.arrow.gameObject.SetActive (true);
+			} else {
+				other.arrow.gameObject.SetActive (false);
+			}
+		}
+	}
+	public void TurnEquipGuideArrowOff()
+	{
+		for (int i = 0; i < equipmentSlots.Length; i++) {
+			equipmentSlots [i].arrow.gameObject.SetActive (false);
+		}
+	}
 }
