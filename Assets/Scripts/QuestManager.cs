@@ -129,6 +129,7 @@ public class QuestManager : Singleton<QuestManager> {
     //private delegate QuestCompleteCondition CreateCompleteConditionInstance (JSONNode attr);
     public void Init() {
 		completes = new Dictionary<string, CompleteQuest>();
+		onComplete = null;
         quests = new Dictionary<string, QuestData> {
             { "QUEST_001",  new QuestData() {
                 id = "QUEST_001", name = "First Blood", state = QuestData.State.AccecptWait,

@@ -66,8 +66,13 @@ public class ItemManager : Singleton<ItemManager> {
 		}
 		return item;
 	}
+
+	public Item CreateItem(string id)
+	{
+		return FindInfo<Item.Info> (id).CreateInstance ();
+	}
 			
-	public T FindInfo<T>(string id) where T:Item
+	public T FindInfo<T>(string id) where T:Item.Info
 	{
 		if (false == infos.ContainsKey (id)) {
 			throw new System.Exception ("can't find item info(id:" + id + ")");

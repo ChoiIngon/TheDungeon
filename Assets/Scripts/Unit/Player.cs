@@ -42,7 +42,7 @@ public class Player : Unit {
 		level = 1;
 		stats.health = 100;
 		stats.attack = 10;
-		stats.defense = 10;
+		stats.defense = 5;
 		stats.speed = 1.0f;
 		stats.critcal = 0.0f;
 		stats.coinBonus = 0.0f;

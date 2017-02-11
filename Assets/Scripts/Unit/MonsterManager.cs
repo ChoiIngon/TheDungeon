@@ -16,6 +16,7 @@ public class MonsterManager : Singleton<MonsterManager> {
 			info.name = row ["MONSTER_NAME"];
 			info.level = int.Parse (row ["MONSTER_LEVEL"]);
 			info.health = int.Parse (row ["HEALTH"]);
+			info.attack = float.Parse (row ["ATTACK"]);
 			info.defense = float.Parse (row ["DEFENSE"]);
 			info.speed = float.Parse (row ["SPEED"]);
 			info.sprite = ResourceManager.Instance.Load<Sprite>(row ["SPRITE_PATH"]);
@@ -38,7 +39,6 @@ public class MonsterManager : Singleton<MonsterManager> {
 
 	public Monster.Info GetRandomMonster(int level) {
 		Monster.Info info = infoList[Random.Range(0, infoList.Count)];
-		Debug.Log ("MonsterManager.GetRandomMonster(moster_id:" + info.id + ")");
 		return info;
 	}
 }

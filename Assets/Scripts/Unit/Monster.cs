@@ -69,11 +69,17 @@ public class Monster : Unit {
 		info = info_;
 		name.text = info.name;
 		renderer.sprite = info.sprite;
+
+		stats.health = info.health;
+		stats.attack = info.attack;
+		stats.defense = info.defense;
+		stats.speed = info.speed;
+		stats.coinBonus = 0.0f;
+		stats.critcal = 0.0f; //ToDo
+		stats.expBonus = 0.0f;
+
 		health.max = info.health;
 		health.current = health.max;
-
-		stats.defense = info.defense;
-		stats.attack = info.attack;
 	}
 
 	public void OnDisable()
@@ -84,7 +90,9 @@ public class Monster : Unit {
 	public override void Attack(Unit defender)
 	{
 		animator.SetTrigger ("Attack");
-		defender.Damage (0);
+		Stat stat = GetStat ();
+		int attack = (int)Mathf.Max(1, stat.attack + Random.Range(0, stat.attack * 0.1f) - defender.stats.defense);
+		defender.Damage (attack);
 	}
 
 	public override void Damage(int damage)

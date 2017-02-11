@@ -3,6 +3,7 @@ using UnityEngine.Analytics;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class DungeonMain : MonoBehaviour {
 	private static DungeonMain _instance;  
@@ -73,6 +74,8 @@ public class DungeonMain : MonoBehaviour {
 	public UIDialogBox		dialogBox;
 	public UICoin 			coin;
 	public UIMiniMap		miniMap;
+	public Text				dungeonLevel;
+	private int level;
 
 	private Color cameraFadeColor;
 	public Transform coins;
@@ -163,6 +166,8 @@ public class DungeonMain : MonoBehaviour {
 			));
 		};
 
+		level = 1;
+		dungeonLevel.text = "B " + level.ToString ();
 		StartCoroutine (Init ());
 	}
 
@@ -320,18 +325,28 @@ public class DungeonMain : MonoBehaviour {
 			yield return new WaitForSeconds (0.7f);
 		}
 
-		GameObject.Instantiate<GameObject> (monster.dieEffectPrefab);
-		monster.gameObject.SetActive (false);
+		if (0.0f < monster.health.current) {
+			yield return StartCoroutine (Lose ());
+		}
+		if (0.0f < Player.Instance.health.current) {
+			GameObject.Instantiate<GameObject> (monster.dieEffectPrefab);
+			monster.gameObject.SetActive (false);
 		
-		yield return StartCoroutine (Win (monster.info));
-        yield return StartCoroutine(miniMap.Show(0.5f));
-		Dungeon.Instance.current.monster = null;
+			yield return StartCoroutine (Win (monster.info));
+			yield return StartCoroutine (miniMap.Show (0.5f));
+			Dungeon.Instance.current.monster = null;
+		}
     }
 	IEnumerator Win(Monster.Info info)
 	{
-		Item item = ItemManager.Instance.CreateRandomItem (Player.Instance.level);
-		item.Pickup ();
-		//StartCoroutine (ItemManager.Instance.CreateRandomItem (Player.Instance.level));
+		{
+			Item item = ItemManager.Instance.CreateRandomItem (Player.Instance.level);
+			item.Pickup ();
+		}
+		{
+			Item item = ItemManager.Instance.CreateItem ("ITEM_POTION_HEALING");
+			item.Pickup ();
+		}
 		Player.Instance.AddCoin (info.reward.coin + (int)Random.Range(0, info.reward.coin * 0.1f));
 		int level = Player.Instance.level;
 		yield return StartCoroutine(Player.Instance.AddExp(info.reward.exp + (int)Random.Range(0, info.reward.exp * 0.1f)));
@@ -350,6 +365,14 @@ public class DungeonMain : MonoBehaviour {
             {"monster_id", info.id }
         });
     }
+	IEnumerator Lose()
+	{
+		yield return StartCoroutine(textBox.Write("You died.\n" +
+			"Your body will be carried to village.\n" +
+			"See you soon.."
+		));
+		SceneManager.LoadScene("Village");
+	}
 	bool isComplete = false;
 	IEnumerator GoDown()
 	{
@@ -368,6 +391,8 @@ public class DungeonMain : MonoBehaviour {
 		while (false == isComplete) {
 			yield return null;
 		}
+		level += 1;
+		dungeonLevel.text = "B " + level.ToString ();
 		isComplete = false;
 		Camera.main.transform.position = position;
 	}
