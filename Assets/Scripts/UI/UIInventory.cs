@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 
 public class UIInventory : MonoBehaviour {
+	public UIPlayerInfo playerInfo;
 	public UIItemInfo itemInfo;
 	public UIInventorySlot[] inventorySlots;
 	public UIEquipmentSlot[] equipmentSlots;

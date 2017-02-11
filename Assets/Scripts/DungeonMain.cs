@@ -117,7 +117,7 @@ public class DungeonMain : MonoBehaviour {
 		};
 		input.onTouchUp += (Vector3 position) => {
 			float distance = Vector3.Distance(touchPoint, position);
-			if(0.01f > distance)
+			if(0.05f > distance)
 			{
 				return;
 			}

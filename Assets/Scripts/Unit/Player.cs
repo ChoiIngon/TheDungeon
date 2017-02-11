@@ -41,7 +41,7 @@ public class Player : Unit {
 
 		level = 1;
 		stats.health = 100;
-		stats.attack = 10;
+		stats.attack = 13;
 		stats.defense = 5;
 		stats.speed = 1.0f;
 		stats.critcal = 0.0f;
@@ -86,7 +86,6 @@ public class Player : Unit {
         }
 		return equipments [new Tuple<EquipmentItem.Part, int> (category, index)];
 	}
-
 	public EquipmentItem EquipItem(EquipmentItem item, int index) {
 		if (null == item) {
 			return null;
@@ -95,13 +94,14 @@ public class Player : Unit {
 		EquipmentItem prev = equipments [new Tuple<EquipmentItem.Part, int> (item.part, index)];
 		equipments [new Tuple<EquipmentItem.Part, int> (item.part, index)] = item;
 		health.max = GetStat ().health;
+		inventory.ui.playerInfo.Init ();
 		return prev;
 	}
-
 	public EquipmentItem UnequipItem(EquipmentItem.Part category, int index) {
 		EquipmentItem item = equipments [new Tuple<EquipmentItem.Part, int> (category, index)];
 		equipments [new Tuple<EquipmentItem.Part, int> (category, index)] = null;
 		health.max = GetStat ().health;
+		inventory.ui.playerInfo.Init ();
 		return item;
 	}
 
@@ -128,7 +128,6 @@ public class Player : Unit {
 			scale += 0.1f;
 		}
 	}
-
 	public IEnumerator AddExp(int amount)
 	{
 		int incExp = amount + (int)exp.current;
@@ -177,12 +176,10 @@ public class Player : Unit {
 			0.0f
 		);
 	}
-
     public override void Health(int health)
     {
         StartCoroutine(this.health.DeferredValue((float)health, 0.2f));
     }
-
 	public override Stat GetStat ()
 	{
 		Stat stat = new Stat ();
