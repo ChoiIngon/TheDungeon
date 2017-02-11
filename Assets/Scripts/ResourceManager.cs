@@ -17,6 +17,7 @@ public class ResourceManager : MonoBehaviour {
 					GameObject container = new GameObject();  
 					container.name = "ResourceManager";  
 					_instance = container.AddComponent<ResourceManager>();  
+					DontDestroyOnLoad (container);
 				}  
 			}  
 
@@ -49,9 +50,9 @@ public class ResourceManager : MonoBehaviour {
 		resource.Add ("item_shield_001", Resources.Load<Sprite> ("Sprites/Item/item_shield_001"));
 		resource.Add ("item_shield_002", Resources.Load<Sprite> ("Sprites/Item/item_shield_002"));
 		resource.Add ("item_shield_003", Resources.Load<Sprite> ("Sprites/Item/item_shield_003"));
-		resource.Add ("item_shirt_001", Resources.Load<Sprite> ("Sprites/Item/item_shirt_001"));
-		resource.Add ("item_shirt_002", Resources.Load<Sprite> ("Sprites/Item/item_shirt_002"));
-		resource.Add ("item_shirt_003", Resources.Load<Sprite> ("Sprites/Item/item_shirt_003"));
+		resource.Add ("item_armor_001", Resources.Load<Sprite> ("Sprites/Item/item_armor_001"));
+		resource.Add ("item_armor_002", Resources.Load<Sprite> ("Sprites/Item/item_armor_002"));
+		resource.Add ("item_armor_003", Resources.Load<Sprite> ("Sprites/Item/item_armor_003"));
 		resource.Add ("item_sword_001", Resources.Load<Sprite> ("Sprites/Item/item_sword_001"));
 		resource.Add ("item_sword_002", Resources.Load<Sprite> ("Sprites/Item/item_sword_002"));
 		resource.Add ("item_sword_003", Resources.Load<Sprite> ("Sprites/Item/item_sword_003"));

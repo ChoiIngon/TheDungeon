@@ -167,11 +167,14 @@ public class DungeonMain : MonoBehaviour {
 	}
 
 	IEnumerator Init() {
+		#if UNITY_EDITOR
 		NetworkManager.Instance.Init ();
 		ResourceManager.Instance.Init ();
 		yield return StartCoroutine(ItemManager.Instance.Init ());
-		QuestManager.Instance.Init ();
 		MonsterManager.Instance.Init ();
+		QuestManager.Instance.Init ();
+		#endif
+
 		Player.Instance.Init ();
 		Dungeon.Instance.Init ();
 		iTween.CameraFadeAdd ();
@@ -179,6 +182,7 @@ public class DungeonMain : MonoBehaviour {
 		miniMap.Init ();
 		miniMap.CurrentPosition (Dungeon.Instance.current.id);
 		enableInput = true;
+		yield break;
 	}
 	void InitRooms()
 	{

@@ -142,3 +142,18 @@ public class EquipmentItemStat_Stealth : EquipmentItemStat {
 		return result;
 	}
 }
+
+public class EquipmentItemStat_Viability : EquipmentItemStat {
+	public EquipmentItemStat_Viability( float percent, string description)
+	{
+		this.value = percent;
+		this.description = description;
+	}
+
+	public override Player.Stat GetStat (Player.Stat stat)
+	{
+		Player.Stat result = new Player.Stat();
+		result.coinBonus = value;
+		return result;
+	}
+}

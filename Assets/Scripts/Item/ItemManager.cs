@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+#if UNITY_EDITOR
+using UnityEngine.Assertions;
+#endif
 public class ItemManager : Singleton<ItemManager> {
 	private Dictionary<string, Item.Info> infos;
 	private int totalWeight;
@@ -116,7 +118,12 @@ public class ItemManager : Singleton<ItemManager> {
 			return new EquipmentItemStat_ExpBonus (value, info.description);
 		} else if ("STEALTH" == info.type) {
 			return new EquipmentItemStat_Stealth (value, info.description);
+		} else if ("VIABILITY" == info.type) {
+			return new EquipmentItemStat_Viability (value, info.description);
 		}
+		#if UNITY_EDITOR
+		throw new System.Exception("unhandled equipment item stat("+ info.type+")");
+		#endif
 		return null;
 	}
 }
