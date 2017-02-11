@@ -17,7 +17,7 @@ public abstract class PotionItem : Item {
 public class HealingPotionItem : PotionItem {
 	public override void Use(Unit target)
 	{
-		target.Health (target.stats.health);
+		target.Health (target.GetStat().health);
 	}
 	public new class Info : PotionItem.Info
 	{
