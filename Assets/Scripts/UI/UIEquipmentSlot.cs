@@ -27,7 +27,6 @@ public class UIEquipmentSlot : UISlot {
 		EquipmentItem item = (EquipmentItem)data.item;
 		inventory.TurnEquipGuideArrowOn (part, index);
 		inventory.itemInfo.slot = this;
-		inventory.itemInfo.grade.color = UISlot.GetGradeColor (item.grade);
 		inventory.itemInfo.stats.text = "+" + item.mainStat.value + " " + item.mainStat.description + "\n";
 		for (int i = 0; i < item.subStats.Count; i++) {
 			inventory.itemInfo.stats.text += "+" + item.subStats[i].value + " " + item.subStats [i].description + "\n";

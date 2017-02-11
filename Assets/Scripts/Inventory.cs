@@ -91,6 +91,28 @@ public class Inventory
 		}
 		return item;
 	}
+	public void Swap(int from, int to)
+	{
+		Item a = Pull (from);
+		Item b = Pull (to);
+		if (null == a) {
+			return;
+		}
+		{
+			Slot slot = slots [to];
+			slot.item = a;
+			slot.count = 1;
+			ui.Put (slot);
+			_count += 1;
+		}
+		if(null != b) {
+			Slot slot = slots [from];
+			slot.item = b;
+			slot.count = 1;
+			ui.Put (slot);
+			_count += 1;
+		}
+	}
 	public T GetItem<T>(int index) where T : Item {
 		Slot slot = slots [index];
 		if (null == slot.item) {

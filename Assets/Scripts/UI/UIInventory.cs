@@ -18,6 +18,7 @@ public class UIInventory : MonoBehaviour {
 			for (int i = 0; i < Inventory.MAX_SLOT_COUNT; i++) {
 				UIInventorySlot slot = tr.GetChild (i).GetComponent<UIInventorySlot> ();
 				slot.inventory = this;
+				slot.index = i;
 				inventorySlots [i] = slot;
 			}
 		}

@@ -21,6 +21,7 @@ public class UIItemInfo : MonoBehaviour {
 			gameObject.SetActive (true);
 			Item item = value.data.item;
 			name.text = item.name;
+			grade.color = UISlot.GetGradeColor(item.grade);
 			description.text = item.description;
 			icon.sprite = item.icon;
 			stats.text = "";

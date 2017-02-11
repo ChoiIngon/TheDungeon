@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 [System.Serializable]
 public class UIInventorySlot : UISlot {
+	public int index;
 	public override void OnSelect()
 	{
 		if (null == data) {
@@ -23,7 +24,6 @@ public class UIInventorySlot : UISlot {
 			{
 				EquipmentItem item = (EquipmentItem)data.item;
 				inventory.TurnEquipGuideArrowOn (item.part);
-				inventory.itemInfo.grade.color = UISlot.GetGradeColor (item.grade);
 				inventory.itemInfo.stats.text = "+" + item.mainStat.value + " " + item.mainStat.description + "\n";
 				for (int i = 0; i < item.subStats.Count; i++) {
 					inventory.itemInfo.stats.text += "+" + item.subStats [i].value + " " + item.subStats [i].description + "\n";
@@ -55,6 +55,28 @@ public class UIInventorySlot : UISlot {
 			return;
 		}
 		if (null == data.item) {
+			return;
+		}
+
+		for (int i = 0; i < inventory.inventorySlots.Length; i++) {
+			UIInventorySlot other = inventory.inventorySlots [i];
+			if (index == other.index) {
+				continue;
+			}
+
+			Rect rhs = clone.rectTransform.rect;
+			Rect lhs = other.rectTransform.rect;
+			rhs.position = (Vector2)clone.transform.position;
+			lhs.position = (Vector2)other.transform.position;
+			if (false == rhs.Overlaps(lhs)) {
+				continue;
+			}
+
+			Player.Instance.inventory.Swap (index, other.index);
+
+			other.OnSelect ();
+			other.outline.outline = true;
+			outline.outline = false;
 			return;
 		}
 		if (Item.Type.Equipment == data.item.type) {
