@@ -146,8 +146,8 @@ public class Player : Unit {
 	public override void Attack(Unit defender)
 	{
 		Stat stat = GetStat ();
-		int attack = (int)Mathf.Max(1, stat.attack + Random.Range(0, stat.attack * 0.1f) - defender.stats.defense);
-		if (stat.critcal >= Random.Range (0.0f, 1.0f)) {
+		int attack = (int)Mathf.Max(1, stat.attack + Random.Range(-stat.attack * 0.1f, stat.attack * 0.1f) - defender.stats.defense);
+		if (stat.critcal/100.0f >= Random.Range (0.0f, 1.0f)) {
 			attack *= 3;
 			// critical effect
 		} 

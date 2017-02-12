@@ -158,14 +158,6 @@ public class DungeonMain : MonoBehaviour {
 			touchPoint = Vector3.zero;
 		};
 
-		QuestManager.Instance.onComplete += (QuestData quest) =>
-		{
-			StartCoroutine(textBox.Write(
-				quest.name + " is completed!!\n" +
-				"strangth : +1"
-			));
-		};
-
 		level = 1;
 		dungeonLevel.text = "B " + level.ToString ();
 		StartCoroutine (Init ());
@@ -177,15 +169,19 @@ public class DungeonMain : MonoBehaviour {
 		ResourceManager.Instance.Init ();
 		yield return StartCoroutine(ItemManager.Instance.Init ());
 		MonsterManager.Instance.Init ();
-		QuestManager.Instance.Init ();
 		#endif
-
-		Player.Instance.Init ();
-		Dungeon.Instance.Init ();
+		QuestManager.Instance.Init ();
+		QuestManager.Instance.onComplete += (QuestData quest) =>
+		{
+			StartCoroutine(textBox.Write(
+				quest.name + " is completed!!\n" +
+				"strangth : +1"
+			));
+		};
 		iTween.CameraFadeAdd ();
-		InitRooms ();
-		miniMap.Init ();
-		miniMap.CurrentPosition (Dungeon.Instance.current.id);
+		Player.Instance.Init ();
+
+		InitDungeon ();
 		enableInput = true;
 		yield break;
 	}
@@ -199,6 +195,20 @@ public class DungeonMain : MonoBehaviour {
 				next [i].Init (room);
 			}
 		}
+	}
+	void InitDungeon() {
+		Dungeon.Instance.Init ();
+		InitRooms ();
+		miniMap.Init ();
+		miniMap.CurrentPosition (Dungeon.Instance.current.id);
+		iTween.CameraFadeTo(0.0f, 1.0f);
+		Analytics.CustomEvent("InitDungeon", new Dictionary<string, object>
+		{
+			{"dungeon_level", level },
+			{"player_level", Player.Instance.level},
+			{"player_exp", Player.Instance.exp.current },
+			{"player_gold", Player.Instance.coin.count }
+		});
 	}
 	IEnumerator Move(int direction)
 	{
@@ -276,11 +286,7 @@ public class DungeonMain : MonoBehaviour {
 			yield return StartCoroutine(dialogBox.Write("Do you want to go down the stair?"));
 			if (true == goDown) {
 				yield return StartCoroutine (GoDown ());
-				Dungeon.Instance.Init ();
-				InitRooms ();
-				miniMap.Init ();
-				miniMap.CurrentPosition (Dungeon.Instance.current.id);
-				iTween.CameraFadeTo(0.0f, 1.0f);
+				InitDungeon ();
 				yield return new WaitForSeconds (1.0f);
 				SetCameraFadeColor (Color.white);
 			}
@@ -347,26 +353,33 @@ public class DungeonMain : MonoBehaviour {
 			Item item = ItemManager.Instance.CreateItem ("ITEM_POTION_HEALING");
 			item.Pickup ();
 		}
-		Player.Instance.AddCoin (info.reward.coin + (int)Random.Range(0, info.reward.coin * 0.1f));
+
+		int gainCoins = info.reward.coin + (int)Random.Range (-info.reward.coin * 0.1f, info.reward.coin * 0.1f);
+		int gainExp = info.reward.exp + (int)Random.Range (-info.reward.exp * 0.1f, info.reward.exp * 0.1f);
 		int level = Player.Instance.level;
-		yield return StartCoroutine(Player.Instance.AddExp(info.reward.exp + (int)Random.Range(0, info.reward.exp * 0.1f)));
+
+		Player.Instance.AddCoin (gainCoins);
+		yield return StartCoroutine(Player.Instance.AddExp(gainExp));
 		yield return new WaitForSeconds (0.5f);
-		yield return StartCoroutine(textBox.Write("You defeated \'" + info.name +"\'\n" +
-			"Coins : +" + monster.info.reward.coin + "\n" +
-			"Exp : +" + monster.info.reward.exp + "\n" +
-			"Level : " + level + " -> " + Player.Instance.level + "\n" +
-			"-str : +1\n" +
-			"-spd : +1\n" +
-			"-cri : +0.03\n"
+		yield return StartCoroutine(textBox.Write(
+			"You defeated \'" + info.name +"\'\n" +
+			"Coins : +" + gainCoins + "\n" +
+			"Exp : +" + gainExp + "\n" +
+			"Level : " + level + " -> " + Player.Instance.level + "\n"
 		));
 		QuestManager.Instance.Update ("KillMonster", info.id);
-        Analytics.CustomEvent("KillMonster", new Dictionary<string, object>
+        Analytics.CustomEvent("Win", new Dictionary<string, object>
         {
             {"monster_id", info.id }
         });
     }
 	IEnumerator Lose()
 	{
+		Analytics.CustomEvent("Lose", new Dictionary<string, object>
+		{
+			{"dungeon_leve", level },
+			{"player_level", Player.Instance.level}
+		});
 		yield return StartCoroutine(textBox.Write("You died.\n" +
 			"Your body will be carried to village.\n" +
 			"See you soon.."

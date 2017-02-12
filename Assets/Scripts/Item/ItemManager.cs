@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
+
 #if UNITY_EDITOR
 using UnityEngine.Assertions;
 #endif
@@ -64,12 +66,29 @@ public class ItemManager : Singleton<ItemManager> {
 		for (int i = 0; i < (int)item.grade - (int)EquipmentItem.Grade.Normal; i++) {
 			item.subStats.Add (CreateStat(level, config.item_stats [Random.Range (0, config.item_stats.Length)]));
 		}
+
+		Analytics.CustomEvent("CreateItem", new Dictionary<string, object>
+		{
+			{"id", item.id },
+			{"type", item.type.ToString()},
+			{"name", item.name },
+			{"grade", item.grade.ToString()},
+			{"level", item.level}
+		});
 		return item;
 	}
 
 	public Item CreateItem(string id)
 	{
-		return FindInfo<Item.Info> (id).CreateInstance ();
+		Item item = FindInfo<Item.Info> (id).CreateInstance ();
+		Analytics.CustomEvent("CreateItem", new Dictionary<string, object>
+		{
+			{"id", item.id },
+			{"type", item.type.ToString()},
+			{"name", item.name },
+			{"grade", item.grade.ToString()}
+		});
+		return item;
 	}
 			
 	public T FindInfo<T>(string id) where T:Item.Info

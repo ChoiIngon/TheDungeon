@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Analytics;
 #if UNITY_EDITOR
 using UnityEngine.Assertions;
 #endif
@@ -167,6 +168,11 @@ public class QuestManager : Singleton<QuestManager> {
 		foreach (var itr in quests) {
 			QuestData quest = itr.Value;
 			if (true == quest.IsComplete ()) {
+				Analytics.CustomEvent("CompleteQuest", new Dictionary<string, object>
+				{
+					{"id", quest.id },
+					{"name", quest.name }
+				});
 				if (null != onComplete) {
 					onComplete (quest);
 				}

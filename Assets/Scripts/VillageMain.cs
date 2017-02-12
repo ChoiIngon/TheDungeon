@@ -33,10 +33,6 @@ public class VillageMain : MonoBehaviour {
 		MonsterManager.Instance.Init ();
 		yield return new WaitForSeconds (0.5f);
 		log.text += "complete\n";
-		log.text += "load quest configuration..";
-		QuestManager.Instance.Init ();
-		yield return new WaitForSeconds (0.5f);
-		log.text += "complete\n";
 
 		start.gameObject.SetActive (true);
 		start.onClick.AddListener(() => {
