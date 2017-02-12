@@ -102,22 +102,22 @@ public class UISlot : MonoBehaviour {
 		Color color = Color.white;
 		switch (grade) {
 		case EquipmentItem.Grade.Low:
-			color = Color.grey;
+			color = new Color (0x80, 0x80, 0x80); // gray
 			break;
 		case EquipmentItem.Grade.Normal:
 			color = Color.white;
 			break;
 		case EquipmentItem.Grade.High:
-			color = Color.green;
+			color = new Color (0x00, 0x80, 0x00); // green
 			break;
 		case EquipmentItem.Grade.Magic:
-			color = Color.blue;
+			color = new Color (0x00, 0x00, 0xA0); // dark blue
 			break;
 		case EquipmentItem.Grade.Rare:
-			color = new Color (0xFF, 0x8C, 0x00);
+			color = new Color (0x80, 0x00, 0x80); // purple
 			break;
 		case EquipmentItem.Grade.Legendary:
-			color = Color.red;
+			color = new Color (0xFF, 0xA5, 0x00); // orange
 			break;
 		}
 		return color;

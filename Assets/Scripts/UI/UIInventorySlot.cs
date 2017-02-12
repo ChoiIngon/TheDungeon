@@ -68,7 +68,7 @@ public class UIInventorySlot : UISlot {
 			Rect lhs = other.rectTransform.rect;
 			rhs.position = (Vector2)clone.transform.position;
 			lhs.position = (Vector2)other.transform.position;
-			if (false == rhs.Overlaps(lhs)) {
+			if (false == rhs.Contains(lhs.center)) {
 				continue;
 			}
 

@@ -88,6 +88,8 @@ public class ItemManager : Singleton<ItemManager> {
 			info.name = "Healing Potion";
 			info.price = 100;
 			info.icon = "item_potion_002";
+			info.grade = (int)Item.Grade.Normal;
+			info.description = "An elixir that will instantly return you to full health and cure poison.";
 			infos.Add (info.id, info);
 		}
 		{
@@ -96,6 +98,7 @@ public class ItemManager : Singleton<ItemManager> {
 			info.name = "Poison Potion";
 			info.price = 100;
 			info.icon = "item_potion_003";
+			info.grade = (int)Item.Grade.Normal;
 			infos.Add (info.id, info);
 		}
 	}

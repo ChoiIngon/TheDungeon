@@ -82,8 +82,10 @@ public class UITextBox : MonoBehaviour {
 
 		state = State.Complete;
 		while (State.Fall != state) {
+			scrollRect.verticalNormalizedPosition = 0.0f;
 			yield return null;
 		}
+
 		while (0 < transform.position.y) {
 			Vector3 position = transform.position;
 			position.y -= height * Time.deltaTime * 2.0f;

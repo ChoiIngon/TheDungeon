@@ -7529,7 +7529,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   lineCount: 7
-  charPerSecond: 20
+  charPerSecond: 40
   moveSpeed: 0
   audioSource: {fileID: 0}
 --- !u!1001 &1799939635
