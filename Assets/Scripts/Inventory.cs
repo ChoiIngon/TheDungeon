@@ -34,7 +34,6 @@ public class Inventory
 		}
 		ui.Init ();
 	}
-
 	public Slot Put(Item data)
 	{
 		if (null == data) {
@@ -116,9 +115,23 @@ public class Inventory
 	public T GetItem<T>(int index) where T : Item {
 		Slot slot = slots [index];
 		if (null == slot.item) {
-			throw new System.Exception("no item");
+			return null;
 		}
-
 		return slot.item as T;
+	}
+	public List<T> GetItems<T>() where T : Item {
+		List<T> items = new List<T> ();
+		for (int i = 0; i < MAX_SLOT_COUNT; i++) {
+			Slot slot = slots [i];
+			if (null == slot.item) {
+				continue;
+			}
+			T item = slot.item as T;
+			if (null == item) {
+				continue;
+			}
+			items.Add (item);
+		}
+		return items;
 	}
 }

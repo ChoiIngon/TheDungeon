@@ -24,52 +24,52 @@ public class DungeonMain : MonoBehaviour {
 			return _instance;  
 		}  
 	}
-	public const float DISTANCE = 7.2f; // 이지 사이즈가 1130 * 640 이라서...
-	public const float MOVETIME = 0.3f;
+	public const float DISTANCE = 7.2f;
+	public const float MOVETIME = 0.4f;
 
-	public bool enableInput {
-		set {
-			input.enabled = value;
-			for (int i = 0; i < mainButtons.Length; i++) {
-				if (null == mainButtons [i].button) {
-					continue;
-				}
-				mainButtons [i].button.enabled = value;
-			}
-		}
-	}
-
-	[System.Serializable]
-	public class UIMainButton
+	public enum State
 	{
-		public string name;
-		public Sprite sprite;
-		public GameObject target;
-		public Button button;
-
-		public void Init()
-		{
-			if (null == button) {
-				return;
-			}
-			button.transform.FindChild ("Text").GetComponent<Text> ().text = name;
-			button.GetComponent<Image> ().sprite = sprite;
-			button.onClick.AddListener (OnClick);
-			if (null == target) {
-				button.gameObject.SetActive (false);
-			}
-		}
-		public void OnClick() {
-			DungeonMain.Instance.enableInput = false;
-			if(null == target)
-			{
-				return;
-			}
-			target.SetActive(true);
-		}
+		Invalid, Idle, Move, Battle, Popup, Max
 	}
 
-	public UIMainButton[] 	mainButtons;
+	public State state {
+		set {
+			switch (value) {
+			case State.Invalid:
+				input.enabled = false;
+				mainButtonGroup.gameObject.SetActive (false);
+				battleButtonGroup.gameObject.SetActive (false);
+				break;
+			case State.Idle:
+				input.enabled = true;
+				mainButtonGroup.gameObject.SetActive (true);
+				battleButtonGroup.gameObject.SetActive (false);
+				break;
+			case State.Move:
+				input.enabled = false;
+				mainButtonGroup.gameObject.SetActive (true);
+				mainButtonGroup.Enable (false);
+				battleButtonGroup.gameObject.SetActive (false);
+				break;
+			case State.Battle:
+				input.enabled = false;
+				mainButtonGroup.gameObject.SetActive (false);
+				battleButtonGroup.gameObject.SetActive (true);
+				break;
+			case State.Popup:
+				input.enabled = false;
+				mainButtonGroup.gameObject.SetActive (false);
+				battleButtonGroup.gameObject.SetActive (false);
+				break;
+			default :
+				throw new System.Exception ("undefined state : " + value.ToString ());
+				break;
+			}
+		}
+	}
+		
+	public UIButtonGroup 	mainButtonGroup;
+	public UIButtonGroup	battleButtonGroup;
 	public UITextBox 		textBox;
 	public UIDialogBox		dialogBox;
 	public UICoin 			coin;
@@ -88,7 +88,7 @@ public class DungeonMain : MonoBehaviour {
 	private TouchInput input;
 
 	void Start () {
-        Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
+		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
 
 		coins = transform.FindChild ("Coins");
 		rooms = transform.FindChild ("Rooms");
@@ -101,69 +101,68 @@ public class DungeonMain : MonoBehaviour {
 		next [Dungeon.South].transform.position = new Vector3 (0.0f, 0.0f, -DISTANCE);
 		next [Dungeon.West] =  rooms.FindChild ("West").GetComponent<Room> ();
 		next [Dungeon.West].transform.position = new Vector3 (-DISTANCE, 0.0f, 0.0f);
-		for (int i = 0; i < mainButtons.Length; i++) {
-			UIMainButton mainButton = mainButtons [i];
-			mainButton.Init ();
-		}
 		RectTransform uiMain = transform.FindChild ("UI/Main").GetComponent<RectTransform>();
 		uiMain.position = Camera.main.WorldToScreenPoint(monster.transform.position);
      
-		SetCameraFadeColor (Color.white);
+		mainButtonGroup.Init ();
+		mainButtonGroup.gameObject.SetActive (false);
+		mainButtonGroup.actions [0] += () => {
+			Player.Instance.inventory.ui.gameObject.SetActive(true);
+		};
+		battleButtonGroup.Init ();
+		battleButtonGroup.gameObject.SetActive (false);
+		battleButtonGroup.actions [0] += () => {
+			for(int i=0; i<Inventory.MAX_SLOT_COUNT; i++)
+			{
+				HealingPotionItem item = Player.Instance.inventory.GetItem<HealingPotionItem>(i);
+				if(null != item)
+				{
+					item.Use(Player.Instance);
+					Player.Instance.inventory.Pull(i);
+				}
+			}
+		};
 
+		iTween.CameraFadeAdd ();
+		SetCameraFadeColor (Color.black);
+		iTween.CameraFadeTo (1.0f, 0.0f);
 		input = GetComponent<TouchInput> ();
-		enableInput = false;
 		input.onTouchDown += (Vector3 position) => {
 			touchPoint = position;
 		};
 		input.onTouchUp += (Vector3 position) => {
 			float distance = Vector3.Distance(touchPoint, position);
-			if(0.05f > distance)
-			{
+			if(0.05f > distance) {
 				return;
 			}
 			Vector3 delta = position - touchPoint;
 
-			if(Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
-			{
-				if(0.0f == delta.x)
-				{
-					return;
-				}
-				if(0.0f > delta.x)
-				{
+			if(Mathf.Abs(delta.x) > Mathf.Abs(delta.y))	{
+				if(0.0f > delta.x) {
 					StartCoroutine(Move(Dungeon.East));
 				}
-				else
-				{
+				else {
 					StartCoroutine(Move(Dungeon.West));
 				}
 			}
-			else
-			{
-				if(0.0f == delta.y)
-				{
-					return;
-				}
-
-				if(0.0f > delta.y)
-				{
+			else {
+				if(0.0f > delta.y) {
 					StartCoroutine(Move(Dungeon.North));
 				}
-				else
-				{
+				else {
 					StartCoroutine(Move(Dungeon.South));
 				}
 			}
-
 			touchPoint = Vector3.zero;
 		};
 
-		level = 1;
-		dungeonLevel.text = "B " + level.ToString ();
 		StartCoroutine (Init ());
 	}
 
 	IEnumerator Init() {
+		state = State.Invalid;
+		level = 1;
+		dungeonLevel.text = "B " + level.ToString ();
 		#if UNITY_EDITOR
 		NetworkManager.Instance.Init ();
 		ResourceManager.Instance.Init ();
@@ -171,20 +170,31 @@ public class DungeonMain : MonoBehaviour {
 		MonsterManager.Instance.Init ();
 		#endif
 		QuestManager.Instance.Init ();
-		QuestManager.Instance.onComplete += (QuestData quest) =>
-		{
+		QuestManager.Instance.onComplete += (QuestData quest) => {
 			StartCoroutine(textBox.Write(
-				quest.name + " is completed!!\n" +
-				"strangth : +1"
+				quest.name + " is completed!!"
 			));
 		};
-		iTween.CameraFadeAdd ();
 		Player.Instance.Init ();
 
 		InitDungeon ();
-		enableInput = true;
+		state = State.Idle;
 		yield break;
 	}
+	void InitDungeon() {
+		Dungeon.Instance.Init ();
+		miniMap.Init ();
+		InitRooms ();
+		miniMap.CurrentPosition (Dungeon.Instance.current.id);
+		iTween.CameraFadeTo(0.0f, 1.0f);
+		Analytics.CustomEvent("InitDungeon", new Dictionary<string, object>	{
+			{"dungeon_level", level },
+			{"player_level", Player.Instance.level},
+			{"player_exp", Player.Instance.exp.current },
+			{"player_gold", Player.Instance.coin.count }
+		});
+	}
+
 	void InitRooms()
 	{
 		rooms.transform.position = Vector3.zero;
@@ -196,23 +206,9 @@ public class DungeonMain : MonoBehaviour {
 			}
 		}
 	}
-	void InitDungeon() {
-		Dungeon.Instance.Init ();
-		InitRooms ();
-		miniMap.Init ();
-		miniMap.CurrentPosition (Dungeon.Instance.current.id);
-		iTween.CameraFadeTo(0.0f, 1.0f);
-		Analytics.CustomEvent("InitDungeon", new Dictionary<string, object>
-		{
-			{"dungeon_level", level },
-			{"player_level", Player.Instance.level},
-			{"player_exp", Player.Instance.exp.current },
-			{"player_gold", Player.Instance.coin.count }
-		});
-	}
 	IEnumerator Move(int direction)
 	{
-		enableInput = false;
+		state = State.Move;
 		Dungeon.Room room = Dungeon.Instance.current;
 		Dungeon.Room next = room.GetNext (direction);
 		if (null == next) {
@@ -232,7 +228,7 @@ public class DungeonMain : MonoBehaviour {
 			default :
 				break;
 			}
-			enableInput = true;
+			state = State.Idle;
 			yield break;
 		} 
 
@@ -273,12 +269,12 @@ public class DungeonMain : MonoBehaviour {
 
 		InitRooms ();
 		miniMap.CurrentPosition (Dungeon.Instance.current.id);
+
 		if (null != Dungeon.Instance.current.monster) {
 			monster.Init (Dungeon.Instance.current.monster);
 			yield return StartCoroutine (Battle ());
 		} 
-
-		if (Dungeon.Room.Type.Exit == Dungeon.Instance.current.type) {
+		else if (Dungeon.Room.Type.Exit == Dungeon.Instance.current.type) {
 			bool goDown = false;
 			dialogBox.onSubmit += () =>  {
 				goDown = true;
@@ -291,11 +287,13 @@ public class DungeonMain : MonoBehaviour {
 				SetCameraFadeColor (Color.white);
 			}
 		}
-		enableInput = true;
+		state = State.Idle;
 	}
 	IEnumerator Battle()
 	{
-        yield return StartCoroutine(miniMap.Hide(1.0f));
+		state = State.Battle;
+		battleButtonGroup.names [0].text = "Heal(" + Player.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
+		yield return StartCoroutine(miniMap.Hide(1.0f));
 
 		// attack per second
 		float playerAPS = Player.Instance.GetStat().speed/monster.info.speed; 
@@ -332,9 +330,10 @@ public class DungeonMain : MonoBehaviour {
 		}
 
 		if (0.0f < monster.health.current) {
+			state = State.Invalid;
 			yield return StartCoroutine (Lose ());
 		}
-		if (0.0f < Player.Instance.health.current) {
+		else {
 			GameObject.Instantiate<GameObject> (monster.dieEffectPrefab);
 			monster.gameObject.SetActive (false);
 		
@@ -342,6 +341,7 @@ public class DungeonMain : MonoBehaviour {
 			yield return StartCoroutine (miniMap.Show (0.5f));
 			Dungeon.Instance.current.monster = null;
 		}
+		state = State.Idle;
     }
 	IEnumerator Win(Monster.Info info)
 	{

@@ -52,7 +52,7 @@ public class UIMiniMap : MonoBehaviour
 			}
 		}
 		current = Dungeon.Instance.current.id;
-		rooms [current].color = activateColor;
+		//rooms [current].color = activateColor;
 	}
 
 	public void CurrentPosition (int id)

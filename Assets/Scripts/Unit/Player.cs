@@ -18,6 +18,7 @@ public class Player : Unit {
 					GameObject container = new GameObject();  
 					container.name = "Player";  
 					_instance = container.AddComponent<Player>();  
+					_instance.Init ();
 				}  
 			}  
 			return _instance;  

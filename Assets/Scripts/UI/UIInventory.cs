@@ -11,9 +11,7 @@ public class UIInventory : MonoBehaviour {
 	public UIInventorySlot[] inventorySlots;
 	public UIEquipmentSlot[] equipmentSlots;
 	public Button close;
-	public Text gold;
 	public void Init() {
-		itemInfo.Init ();
 		{
 			inventorySlots = new UIInventorySlot[Inventory.MAX_SLOT_COUNT];
 			Transform tr = transform.FindChild ("InventorySlots");
@@ -35,11 +33,6 @@ public class UIInventory : MonoBehaviour {
 		}
 
 		close = transform.FindChild ("Close").GetComponent<Button> ();
-		/*
-		close.onClick.AddListener (() => {
-			gameObject.SetActive(false);
-		});
-		*/
 		EventTrigger trigger = close.gameObject.AddComponent<EventTrigger>();
 		var entry = new EventTrigger.Entry();
 		entry.eventID = EventTriggerType.PointerUp;
@@ -47,13 +40,15 @@ public class UIInventory : MonoBehaviour {
 			gameObject.SetActive(false);
 		});
 		trigger.triggers.Add (entry);
+
+		itemInfo.Init ();
+		playerInfo.Init ();
 		gameObject.SetActive (false);
 	}
-
 	public void OnEnable()
 	{
+		DungeonMain.Instance.state = DungeonMain.State.Popup;
 		itemInfo.gameObject.SetActive (false);
-		DungeonMain.Instance.enableInput = false;
 	}
 	public void OnDisable()
 	{
@@ -64,21 +59,7 @@ public class UIInventory : MonoBehaviour {
 		for (int i = 0; i < 7; i++) {
 			equipmentSlots [i].outline.outline = false;
 		}
-
-		DungeonMain.Instance.enableInput = true;
-	}
-	public UISlot selected {
-		set {
-			for (int i = 0; i < inventorySlots.Length; i++) {
-				inventorySlots [i].outline.outline = false;
-			}
-			for (int i = 0; i < 7; i++) {
-				equipmentSlots [i].outline.outline = false;
-			}
-			if (null != value) {
-				value.outline.outline = true;
-			}
-		}
+		DungeonMain.Instance.state = DungeonMain.State.Idle;
 	}
 	public void Put(Inventory.Slot data)
 	{
@@ -103,6 +84,19 @@ public class UIInventory : MonoBehaviour {
 	{
 		for (int i = 0; i < equipmentSlots.Length; i++) {
 			equipmentSlots [i].arrow.gameObject.SetActive (false);
+		}
+	}
+	public UISlot selected {
+		set {
+			for (int i = 0; i < inventorySlots.Length; i++) {
+				inventorySlots [i].outline.outline = false;
+			}
+			for (int i = 0; i < 7; i++) {
+				equipmentSlots [i].outline.outline = false;
+			}
+			if (null != value) {
+				value.outline.outline = true;
+			}
 		}
 	}
 }
