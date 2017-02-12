@@ -63,7 +63,6 @@ public class DungeonMain : MonoBehaviour {
 				break;
 			default :
 				throw new System.Exception ("undefined state : " + value.ToString ());
-				break;
 			}
 		}
 	}
@@ -119,6 +118,8 @@ public class DungeonMain : MonoBehaviour {
 				{
 					item.Use(Player.Instance);
 					Player.Instance.inventory.Pull(i);
+					battleButtonGroup.names [0].text = "Heal(" + Player.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
+					break;
 				}
 			}
 		};

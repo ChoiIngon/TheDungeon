@@ -18,7 +18,7 @@ public class UIButtonGroup : MonoBehaviour {
 
 		for (int i = 0; i < buttons.Length; i++) {
 			int index = i;
-			buttons [i].enabled = false;
+			//buttons [i].enabled = false;
 			images [i] = buttons [i].GetComponent<Image> ();
 			names [i] = buttons [i].transform.FindChild ("Text").GetComponent<Text> ();
 
@@ -41,6 +41,7 @@ public class UIButtonGroup : MonoBehaviour {
 			buttons [i].enabled = flag;
 		}
 	}
+	/*
 	public void Show(float time)
 	{
 		for (int i = 0; i < buttons.Length; i++) {
@@ -56,4 +57,5 @@ public class UIButtonGroup : MonoBehaviour {
 			iTween.ColorTo (images[i].gameObject, new Color(1.0f, 1.0f, 1.0f, 0.0f), time);
 		}
 	}
+	*/
 }

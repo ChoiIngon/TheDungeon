@@ -150,7 +150,8 @@ public class ItemManager : Singleton<ItemManager> {
 		}
 		#if UNITY_EDITOR
 		throw new System.Exception("unhandled equipment item stat("+ info.type+")");
-		#endif
+		#else
 		return null;
+		#endif
 	}
 }
