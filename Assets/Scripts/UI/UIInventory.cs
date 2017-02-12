@@ -13,6 +13,7 @@ public class UIInventory : MonoBehaviour {
 	public Button close;
 	public Text gold;
 	public void Init() {
+		itemInfo.Init ();
 		{
 			inventorySlots = new UIInventorySlot[Inventory.MAX_SLOT_COUNT];
 			Transform tr = transform.FindChild ("InventorySlots");
@@ -34,9 +35,18 @@ public class UIInventory : MonoBehaviour {
 		}
 
 		close = transform.FindChild ("Close").GetComponent<Button> ();
+		/*
 		close.onClick.AddListener (() => {
 			gameObject.SetActive(false);
 		});
+		*/
+		EventTrigger trigger = close.gameObject.AddComponent<EventTrigger>();
+		var entry = new EventTrigger.Entry();
+		entry.eventID = EventTriggerType.PointerUp;
+		entry.callback.AddListener (( data) => {
+			gameObject.SetActive(false);
+		});
+		trigger.triggers.Add (entry);
 		gameObject.SetActive (false);
 	}
 
@@ -47,12 +57,6 @@ public class UIInventory : MonoBehaviour {
 	}
 	public void OnDisable()
 	{
-		//ItemManager.Instance.CreateItem("ITEM_WEAPON_" + Random.Range(0, 10).ToString()).Pickup();
-		//ItemManager.Instance.CreateItem("ITEM_ARMOR_" + Random.Range(0, 10).ToString()).Pickup();
-		//ItemManager.Instance.CreateItem("ITEM_RING_" + Random.Range(0, 10).ToString()).Pickup();
-		//ItemManager.Instance.CreateItem("ITEM_SHIELD_" + Random.Range(0, 10).ToString()).Pickup();
-		//ItemManager.Instance.CreateItem("ITEM_POTION_HEALING").Pickup();
-		//ItemManager.Instance.CreateItem("ITEM_POTION_POISON").Pickup();
 		TurnEquipGuideArrowOff ();
 		for (int i = 0; i < inventorySlots.Length; i++) {
 			inventorySlots [i].outline.outline = false;

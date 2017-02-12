@@ -34,21 +34,21 @@ public class UIInventorySlot : UISlot {
 			{
 				PotionItem item = (PotionItem)data.item;
 				inventory.itemInfo.buttons [(int)UIItemInfo.Action.Use].gameObject.SetActive (true);
-				inventory.itemInfo.buttons [(int)UIItemInfo.Action.Use].onClick.AddListener (() => {
+				inventory.itemInfo.actions[(int)UIItemInfo.Action.Use] += () => {
 					item.Use (Player.Instance);
 					Player.Instance.inventory.Pull (data.index);
 					inventory.itemInfo.gameObject.SetActive (false);
-				});
+				};
 			}
 			break;
 		}
 
 		inventory.itemInfo.buttons [(int)UIItemInfo.Action.Drop].gameObject.SetActive (true);
-		inventory.itemInfo.buttons [(int)UIItemInfo.Action.Drop].onClick.AddListener (() => {
-			Player.Instance.inventory.Pull(data.index);
+		inventory.itemInfo.actions[(int)UIItemInfo.Action.Drop] += () => {
+			Player.Instance.inventory.Pull (data.index);
 			inventory.TurnEquipGuideArrowOff();
-			inventory.itemInfo.gameObject.SetActive(false);
-		});
+			inventory.itemInfo.gameObject.SetActive (false);
+		};
 	}
 	public override void OnDrop() {
 		if (null == data) {

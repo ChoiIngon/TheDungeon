@@ -32,12 +32,12 @@ public class UIEquipmentSlot : UISlot {
 			inventory.itemInfo.stats.text += "+" + item.subStats[i].value + " " + item.subStats [i].description + "\n";
 		}
 		inventory.itemInfo.buttons [(int)UIItemInfo.Action.Drop].gameObject.SetActive (true);
-		inventory.itemInfo.buttons [(int)UIItemInfo.Action.Drop].onClick.AddListener (() => {
+		inventory.itemInfo.actions[(int)UIItemInfo.Action.Drop] += () => {
 			Player.Instance.UnequipItem(part, index);
 			Init(null);
 			inventory.TurnEquipGuideArrowOff();
 			inventory.itemInfo.gameObject.SetActive(false);
-		});
+		};
 	}
 
 	public override void OnDrop() {
