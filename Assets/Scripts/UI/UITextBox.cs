@@ -54,7 +54,7 @@ public class UITextBox : MonoBehaviour {
 		contents.text = "";
 		while (height >= rt.anchoredPosition.y) {
 			Vector2 position = rt.anchoredPosition;
-			position.y += height * Time.deltaTime * 2.0f;
+			position.y += height * Time.deltaTime * moveSpeed;
 			rt.anchoredPosition = position;
 			yield return null;
 		}
@@ -88,7 +88,7 @@ public class UITextBox : MonoBehaviour {
 
 		while (0 < transform.position.y) {
 			Vector3 position = transform.position;
-			position.y -= height * Time.deltaTime * 2.0f;
+			position.y -= height * Time.deltaTime * moveSpeed;
 			transform.position = position;
 			yield return null;
 		}

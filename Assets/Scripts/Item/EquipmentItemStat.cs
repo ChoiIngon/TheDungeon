@@ -123,7 +123,7 @@ public class EquipmentItemStat_ExpBonus : EquipmentItemStat {
 	public override Player.Stat GetStat (Player.Stat stat)
 	{
 		Player.Stat result = new Player.Stat();
-		result.coinBonus = value;
+		result.expBonus = value;
 		return result;
 	}
 }

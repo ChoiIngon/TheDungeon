@@ -381,14 +381,17 @@ public class DungeonMain : MonoBehaviour {
 
 		text += "Coins : +" + gainCoins;
 		if (0 < coinBonus) {
-			text += "(" + (int)(gainCoins * stat.coinBonus) + " bonus)";
+			text += "(" + coinBonus + " bonus)";
 		}	
 		text += "\n";
 		text += "Exp : +" + gainExp;
 		if (0 < expBonus) {
-			text += "(" + (int)(gainExp * stat.expBonus) + " bonus)";
+			text += "(" + expBonus + " bonus)";
 		}
 		text += "\n";
+
+		Player.Instance.AddCoin (gainCoins + coinBonus);
+		yield return StartCoroutine(Player.Instance.AddExp(gainExp + expBonus));
 		text += "Level : " + playerLevel + " -> " + Player.Instance.level + "\n";
 		if(dungeonLevelInfo.items.chance >= Random.Range(0.0f, 1.0f)) 
 		{
@@ -402,9 +405,6 @@ public class DungeonMain : MonoBehaviour {
 			item.Pickup ();
 			text += "You got a " + item.name;
 		}
-		Player.Instance.AddCoin (gainCoins + coinBonus);
-		yield return StartCoroutine(Player.Instance.AddExp(gainExp + expBonus));
-		//yield return new WaitForSeconds (0.5f);
 		yield return StartCoroutine(textBox.Write(text));
 
 		QuestManager.Instance.Update ("KillMonster", info.id);
