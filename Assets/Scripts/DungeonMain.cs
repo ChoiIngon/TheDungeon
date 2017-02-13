@@ -97,6 +97,9 @@ public class DungeonMain : MonoBehaviour {
 
 	void Start () {
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
+		iTween.CameraFadeAdd ();
+		SetCameraFadeColor (Color.black);
+		iTween.CameraFadeTo (1.0f, 0.0f);
 
 		coins = transform.FindChild ("Coins");
 		rooms = transform.FindChild ("Rooms");
@@ -133,9 +136,6 @@ public class DungeonMain : MonoBehaviour {
 			}
 		};
 
-		iTween.CameraFadeAdd ();
-		SetCameraFadeColor (Color.black);
-		iTween.CameraFadeTo (1.0f, 0.0f);
 		input = GetComponent<TouchInput> ();
 		input.onTouchDown += (Vector3 position) => {
 			touchPoint = position;
@@ -170,9 +170,9 @@ public class DungeonMain : MonoBehaviour {
 	}
 
 	IEnumerator Init() {
+		rooms.gameObject.SetActive (false);
 		state = State.Invalid;
 		level = 1;
-		dungeonLevel.text = "<size=" + (dungeonLevel.fontSize*0.8f) + ">B</size> " + level.ToString ();
 		#if UNITY_EDITOR
 		NetworkManager.Instance.Init ();
 		ResourceManager.Instance.Init ();
@@ -195,6 +195,7 @@ public class DungeonMain : MonoBehaviour {
 		Player.Instance.Init ();
 
 		InitDungeon ();
+		rooms.gameObject.SetActive (true);
 		state = State.Idle;
 		yield break;
 	}
@@ -260,31 +261,35 @@ public class DungeonMain : MonoBehaviour {
 			}
 			yield return new WaitForSeconds (0.1f);
 		}
-
-		float movement = 0.0f;
-		float speed = DISTANCE / MOVETIME;
-		while (DISTANCE > movement) {
-			movement += Time.deltaTime * speed;
-			Vector3 position = rooms.position;
-			switch (direction) {
-			case Dungeon.North :
-				position = new Vector3 (position.x, position.y, position.z - Time.deltaTime * speed);
-				break;
-			case Dungeon.East :
-				position = new Vector3 (position.x - Time.deltaTime * speed, position.y, position.z);
-				break;
-			case Dungeon.South :
-				position = new Vector3 (position.x, position.y, position.z + Time.deltaTime * speed);
-				break;
-			case Dungeon.West:
-				position = new Vector3 (position.x + Time.deltaTime * speed, position.y, position.z);
-				break;
-			default :
-				break;
-			}
-			rooms.position = position;
+			
+		Vector3 position = Vector3.zero;
+		switch (direction) {
+		case Dungeon.North:
+			position = new Vector3 (rooms.position.x, rooms.position.y, rooms.position.z - DISTANCE);
+			break;
+		case Dungeon.East :
+			position = new Vector3 (rooms.position.x - DISTANCE, rooms.position.y, rooms.position.z);
+			break;
+		case Dungeon.South :
+			position = new Vector3 (rooms.position.x, rooms.position.y, rooms.position.z + DISTANCE);
+			break;
+		case Dungeon.West:
+			position = new Vector3 (rooms.position.x + DISTANCE, rooms.position.y, rooms.position.z);
+			break;
+		default :
+			break;
+		}
+		iTween.MoveTo (rooms.gameObject, 
+			iTween.Hash (
+				"position", position, "time", 0.5f, 
+				"easetype", iTween.EaseType.easeOutQuint, 
+				"oncompletetarget", gameObject, "oncomplete", "OnComplete"
+			)
+		);
+		while (false == isComplete) {
 			yield return null;
 		}
+		isComplete = false;
 		Dungeon.Instance.Move (direction);
 
 		InitRooms ();
@@ -364,34 +369,50 @@ public class DungeonMain : MonoBehaviour {
     }
 	IEnumerator Win(Monster.Info info)
 	{
+		string text = "";
+		text += "You defeated \'" + info.name + "\'\n";
+
+		Unit.Stat stat = Player.Instance.GetStat ();
+		int gainCoins = info.reward.coin + (int)Random.Range (-info.reward.coin * 0.1f, info.reward.coin * 0.1f);
+		int coinBonus = (int)(gainCoins * stat.coinBonus);
+		int gainExp = info.reward.exp + (int)Random.Range (-info.reward.exp * 0.1f, info.reward.exp * 0.1f);
+		int expBonus = (int)(gainExp * stat.expBonus);
+		int playerLevel = Player.Instance.level;
+
+		text += "Coins : +" + gainCoins;
+		if (0 < coinBonus) {
+			text += "(" + (int)(gainCoins * stat.coinBonus) + " bonus)";
+		}	
+		text += "\n";
+		text += "Exp : +" + gainExp;
+		if (0 < expBonus) {
+			text += "(" + (int)(gainExp * stat.expBonus) + " bonus)";
+		}
+		text += "\n";
+		text += "Level : " + playerLevel + " -> " + Player.Instance.level + "\n";
 		if(dungeonLevelInfo.items.chance >= Random.Range(0.0f, 1.0f)) 
 		{
 			Item item = ItemManager.Instance.CreateRandomItem (this.level);
 			item.Pickup ();
+			text += "You got a " + item.name + "\n";
 		}
 
 		if(10 >= Random.Range(0, 100)) {
 			Item item = ItemManager.Instance.CreateItem ("ITEM_POTION_HEALING");
 			item.Pickup ();
+			text += "You got a " + item.name;
 		}
+		Player.Instance.AddCoin (gainCoins + coinBonus);
+		yield return StartCoroutine(Player.Instance.AddExp(gainExp + expBonus));
+		//yield return new WaitForSeconds (0.5f);
+		yield return StartCoroutine(textBox.Write(text));
 
-		int gainCoins = info.reward.coin + (int)Random.Range (-info.reward.coin * 0.1f, info.reward.coin * 0.1f);
-		int gainExp = info.reward.exp + (int)Random.Range (-info.reward.exp * 0.1f, info.reward.exp * 0.1f);
-		int level = Player.Instance.level;
-
-		Player.Instance.AddCoin (gainCoins);
-		yield return StartCoroutine(Player.Instance.AddExp(gainExp));
-		yield return new WaitForSeconds (0.5f);
-		yield return StartCoroutine(textBox.Write(
-			"You defeated \'" + info.name +"\'\n" +
-			"Coins : +" + gainCoins + "\n" +
-			"Exp : +" + gainExp + "\n" +
-			"Level : " + level + " -> " + Player.Instance.level + "\n"
-		));
 		QuestManager.Instance.Update ("KillMonster", info.id);
         Analytics.CustomEvent("Win", new Dictionary<string, object>
         {
-            {"monster_id", info.id }
+			{"dungeon_level", level},
+            {"monster_id", info.id },
+			{"player_level", playerLevel}
         });
     }
 	IEnumerator Lose()
@@ -401,7 +422,8 @@ public class DungeonMain : MonoBehaviour {
 			{"dungeon_leve", level },
 			{"player_level", Player.Instance.level}
 		});
-		yield return StartCoroutine(textBox.Write("You died.\n" +
+		yield return StartCoroutine(textBox.Write(
+			"You died.\n" +
 			"Your body will be carried to village.\n" +
 			"See you soon.."
 		));
