@@ -69,7 +69,6 @@ public class Monster : Unit {
 		info = info_;
 		name.text = info.name;
 		renderer.sprite = info.sprite;
-
 		stats.health = info.health;
 		stats.attack = info.attack;
 		stats.defense = info.defense;

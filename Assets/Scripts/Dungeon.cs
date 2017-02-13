@@ -27,6 +27,18 @@ public class Dungeon : MonoBehaviour {
 		}  
 	}
 
+	[System.Serializable]
+	public class LevelInfo {
+		[System.Serializable]
+		public class Item {
+			public float chance;
+			public ItemManager.GradeWeight[] grade_weight;
+		}
+
+		public int level;
+		public string[] monsters;
+		public Item items;
+	}
 	public class Room
 	{
 		public enum Type {
@@ -64,15 +76,9 @@ public class Dungeon : MonoBehaviour {
 		}
 	}
 	public Room current = null;
-	public int exit;
-	public int move;
 	public Room[] rooms = new Room[WIDTH * HEIGHT];
-
 	// Use this for initialization
-	public void Init() {
-		exit = 0;
-		move = 0;
-
+	public void Init(LevelInfo info) {
 		for(int i=0; i<WIDTH*HEIGHT; i++) {
 			Room room = new Room ();
 			room.id = i;
@@ -138,10 +144,10 @@ public class Dungeon : MonoBehaviour {
 		current = candidates [start];
 		candidates.RemoveAt (start);
 
-		int monsterCount = Random.Range (8, 10);
+		int monsterCount = Random.Range (6, 10);
 		for (int i = 0; i < monsterCount; i++) {
 			int index = Random.Range (0, candidates.Count);
-			candidates [index].monster = MonsterManager.Instance.GetRandomMonster(0);
+			candidates [index].monster = MonsterManager.Instance.FindInfo(info.monsters[Random.Range(0, info.monsters.Length)]);
 			candidates.RemoveAt (index);
 		}
 

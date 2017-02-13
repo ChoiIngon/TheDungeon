@@ -41,10 +41,10 @@ public class Player : Unit {
 		base.Init ();
 
 		level = 1;
-		stats.health = 100;
-		stats.attack = 13;
-		stats.defense = 5;
-		stats.speed = 1.0f;
+		stats.health = 1000;
+		stats.attack = 100;
+		stats.defense = 100;
+		stats.speed = 100;
 		stats.critcal = 0.0f;
 		stats.coinBonus = 0.0f;
 		stats.expBonus = 0.0f;
@@ -133,12 +133,13 @@ public class Player : Unit {
 	{
 		int incExp = amount + (int)exp.current;
 		exp.current = 0;
-		while (exp.max < incExp) {
+		while (exp.max <= incExp) {
 			yield return StartCoroutine(exp.DeferredValue(exp.max, 0.25f));
 			incExp -= (int)exp.max;
 			level += 1;
 			exp.max = level;
 			exp.current = 0;
+			health.current = health.max;
 			// levelup effect
 		}
 		yield return StartCoroutine(exp.DeferredValue(incExp, 0.1f));

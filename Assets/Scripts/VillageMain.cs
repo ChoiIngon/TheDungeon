@@ -7,12 +7,13 @@ using UnityEngine.SceneManagement;
 public class VillageMain : MonoBehaviour {
 	public Button start;
     public Text log;
-    public WWW www;
+	public Button test;
 	// Use this for initialization
 	void Start () {
 		start.gameObject.SetActive (false);
 		StartCoroutine (Init ());
-        
+		Image image = test.GetComponent<Image> ();
+		iTween.ColorTo (image.gameObject, new Color (1.0f, 1.0f, 1.0f, 1.0f), 3.0f);
     }
 
 	IEnumerator Init()
@@ -27,11 +28,9 @@ public class VillageMain : MonoBehaviour {
 		log.text += "complete\n";
 		log.text += "load item configuration..";
 		yield return StartCoroutine(ItemManager.Instance.Init ());
-		yield return new WaitForSeconds (0.5f);
 		log.text += "complete\n";
 		log.text += "load monster configuration..";
-		MonsterManager.Instance.Init ();
-		yield return new WaitForSeconds (0.5f);
+		yield return StartCoroutine(MonsterManager.Instance.Init ());
 		log.text += "complete\n";
 
 		start.gameObject.SetActive (true);

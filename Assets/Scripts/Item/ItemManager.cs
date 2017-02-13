@@ -8,6 +8,7 @@ using UnityEngine.Assertions;
 #endif
 public class ItemManager : Singleton<ItemManager> {
 	private Dictionary<string, Item.Info> infos;
+	private Dungeon.LevelInfo dungeonLevelInfo;
 	private int totalWeight;
 
 	[System.Serializable]
@@ -41,9 +42,19 @@ public class ItemManager : Singleton<ItemManager> {
 		InitPotionItemInfo ();
 	}
 
+	public void InitDungeonLevel(Dungeon.LevelInfo info)
+	{
+		dungeonLevelInfo = info;
+		totalWeight = 0;
+		foreach(GradeWeight itr in info.items.grade_weight)
+		{
+			totalWeight += itr.weight;
+		}
+	}
+
 	EquipmentItem.Grade GetRandomGrade() {
 		int weight = Random.Range(0, totalWeight);
-		foreach(var itr in config.grade_weight)
+		foreach(var itr in dungeonLevelInfo.items.grade_weight)
 		{
 			weight -= itr.weight;
 			if(0 >= weight)

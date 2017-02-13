@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.UI;
+using UnityEngine.Assertions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
@@ -26,6 +27,12 @@ public class DungeonMain : MonoBehaviour {
 	}
 	public const float DISTANCE = 7.2f;
 	public const float MOVETIME = 0.4f;
+
+	[System.Serializable]
+	public class Config
+	{
+		public Dungeon.LevelInfo[] level_infos;
+	}
 
 	public enum State
 	{
@@ -83,6 +90,8 @@ public class DungeonMain : MonoBehaviour {
 	private Room[] next = new Room[Dungeon.Max];
 	public Monster monster;
 
+	private Config config;
+	private Dungeon.LevelInfo dungeonLevelInfo;
 	private Vector3 touchPoint = Vector3.zero;
 	private TouchInput input;
 
@@ -163,13 +172,20 @@ public class DungeonMain : MonoBehaviour {
 	IEnumerator Init() {
 		state = State.Invalid;
 		level = 1;
-		dungeonLevel.text = "B " + level.ToString ();
+		dungeonLevel.text = "<size=" + (dungeonLevel.fontSize*0.8f) + ">B</size> " + level.ToString ();
 		#if UNITY_EDITOR
 		NetworkManager.Instance.Init ();
 		ResourceManager.Instance.Init ();
 		yield return StartCoroutine(ItemManager.Instance.Init ());
-		MonsterManager.Instance.Init ();
+		yield return StartCoroutine(MonsterManager.Instance.Init ());
 		#endif
+		yield return NetworkManager.Instance.HttpRequest ("info_dungeon.php", (string json) => {
+			config = JsonUtility.FromJson<Config>(json);
+		});
+		#if UNITY_EDITOR
+		Assert.AreNotEqual(0, config.level_infos.Length);
+		#endif
+
 		QuestManager.Instance.Init ();
 		QuestManager.Instance.onComplete += (QuestData quest) => {
 			StartCoroutine(textBox.Write(
@@ -183,10 +199,12 @@ public class DungeonMain : MonoBehaviour {
 		yield break;
 	}
 	void InitDungeon() {
-		Dungeon.Instance.Init ();
+		dungeonLevelInfo = config.level_infos [level % config.level_infos.Length - 1];
+		ItemManager.Instance.InitDungeonLevel (dungeonLevelInfo);
+		Dungeon.Instance.Init (dungeonLevelInfo);
 		miniMap.Init ();
 		InitRooms ();
-		miniMap.CurrentPosition (Dungeon.Instance.current.id);
+		dungeonLevel.text = "<size=" + (dungeonLevel.fontSize * 0.8f) + ">B</size> " + level.ToString ();
 		iTween.CameraFadeTo(0.0f, 1.0f);
 		Analytics.CustomEvent("InitDungeon", new Dictionary<string, object>	{
 			{"dungeon_level", level },
@@ -206,6 +224,7 @@ public class DungeonMain : MonoBehaviour {
 				next [i].Init (room);
 			}
 		}
+		miniMap.CurrentPosition (Dungeon.Instance.current.id);
 	}
 	IEnumerator Move(int direction)
 	{
@@ -269,7 +288,6 @@ public class DungeonMain : MonoBehaviour {
 		Dungeon.Instance.Move (direction);
 
 		InitRooms ();
-		miniMap.CurrentPosition (Dungeon.Instance.current.id);
 
 		if (null != Dungeon.Instance.current.monster) {
 			monster.Init (Dungeon.Instance.current.monster);
@@ -292,6 +310,7 @@ public class DungeonMain : MonoBehaviour {
 	}
 	IEnumerator Battle()
 	{
+		SetCameraFadeColor (Color.white);
 		state = State.Battle;
 		battleButtonGroup.names [0].text = "Heal(" + Player.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
 		yield return StartCoroutine(miniMap.Hide(1.0f));
@@ -304,7 +323,7 @@ public class DungeonMain : MonoBehaviour {
 		while (0.0f < monster.health.current && 0.0f < Player.Instance.health.current) {
 			float waitTime = 0.0f;
 
-			if (monsterTurn + Random.Range(0, monsterAPS * 0.3f) < playerTurn + Random.Range(0, playerAPS * 0.3f) ) {
+			if (monsterTurn < playerTurn) {
 				int attackCount = 1;
 
 				if (0 == Random.Range (0, 3)) {
@@ -320,18 +339,17 @@ public class DungeonMain : MonoBehaviour {
 					Player.Instance.Attack(monster);
 					yield return new WaitForSeconds (waitTime);
 				}
-				monsterTurn += monsterAPS;
+				monsterTurn += monsterAPS + Random.Range(0, monsterAPS * 0.1f);
 			}
 			else 
 			{
 				monster.Attack (Player.Instance);
-				playerTurn += playerAPS;
+				playerTurn += playerAPS + Random.Range(0, playerAPS * 0.1f);
 			}
 			yield return new WaitForSeconds (0.7f);
 		}
-
+		state = State.Invalid;
 		if (0.0f < monster.health.current) {
-			state = State.Invalid;
 			yield return StartCoroutine (Lose ());
 		}
 		else {
@@ -346,11 +364,13 @@ public class DungeonMain : MonoBehaviour {
     }
 	IEnumerator Win(Monster.Info info)
 	{
+		if(dungeonLevelInfo.items.chance >= Random.Range(0.0f, 1.0f)) 
 		{
-			Item item = ItemManager.Instance.CreateRandomItem (Player.Instance.level);
+			Item item = ItemManager.Instance.CreateRandomItem (this.level);
 			item.Pickup ();
 		}
-		{
+
+		if(10 >= Random.Range(0, 100)) {
 			Item item = ItemManager.Instance.CreateItem ("ITEM_POTION_HEALING");
 			item.Pickup ();
 		}
@@ -406,7 +426,7 @@ public class DungeonMain : MonoBehaviour {
 			yield return null;
 		}
 		level += 1;
-		dungeonLevel.text = "B " + level.ToString ();
+
 		isComplete = false;
 		Camera.main.transform.position = position;
 	}
