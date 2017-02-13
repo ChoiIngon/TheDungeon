@@ -199,7 +199,7 @@ public class DungeonMain : MonoBehaviour {
 		yield break;
 	}
 	void InitDungeon() {
-		dungeonLevelInfo = config.level_infos [level % config.level_infos.Length - 1];
+		dungeonLevelInfo = config.level_infos [(level - 1) % config.level_infos.Length];
 		ItemManager.Instance.InitDungeonLevel (dungeonLevelInfo);
 		Dungeon.Instance.Init (dungeonLevelInfo);
 		miniMap.Init ();
