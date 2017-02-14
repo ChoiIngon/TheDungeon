@@ -175,7 +175,7 @@ public class DungeonMain : MonoBehaviour {
 		level = 1;
 		#if UNITY_EDITOR
 		NetworkManager.Instance.Init ();
-		ResourceManager.Instance.Init ();
+		yield return StartCoroutine(ResourceManager.Instance.Init ());
 		yield return StartCoroutine(ItemManager.Instance.Init ());
 		yield return StartCoroutine(MonsterManager.Instance.Init ());
 		#endif

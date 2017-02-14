@@ -145,7 +145,7 @@ namespace AssetBundles
 
 		public static void SetSourceAssetBundleURL(string absolutePath)
 		{
-			BaseDownloadingURL = absolutePath + Utility.GetPlatformName() + "/";
+			BaseDownloadingURL = absolutePath + "/" + Utility.GetPlatformName() + "/";
 		}
 
 		public static void SetDevelopmentAssetBundleServer()
@@ -262,9 +262,9 @@ namespace AssetBundles
 			// Check if the assetBundle has already been processed.
 			bool isAlreadyProcessed = LoadAssetBundleInternal(assetBundleName, isLoadingAssetBundleManifest);
 
-			// Load dependencies.
-			if (!isAlreadyProcessed && !isLoadingAssetBundleManifest)
-				LoadDependencies(assetBundleName);
+            // Load dependencies.
+            if (!isAlreadyProcessed && !isLoadingAssetBundleManifest)
+                LoadDependencies(assetBundleName);
 		}
 
 		// Remaps the asset bundle name to the best fitting asset bundle variant.

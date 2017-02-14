@@ -24,7 +24,7 @@ public class ResourceManager : MonoBehaviour {
 			return _instance;  
 		}  
 	}
-	public void Init()
+	public IEnumerator Init()
 	{
 		resource = new Dictionary<string, Object> ();	
 
@@ -41,9 +41,9 @@ public class ResourceManager : MonoBehaviour {
 		}
 		#else
 		*/
-		resource.Add ("monster_daemon", Resources.Load <Sprite> ("Sprites/monster_daemon"));
-		resource.Add ("monster_skeleton", Resources.Load <Sprite> ("Sprites/monster_skeleton"));
-		resource.Add ("monster_succubus", Resources.Load <Sprite> ("Sprites/monster_succubus"));
+		//resource.Add ("monster_daemon", Resources.Load <Sprite> ("Sprites/Monsters/monster_daemon"));
+        //resource.Add ("monster_skeleton", Resources.Load <Sprite> ("Sprites/monster/monster_skeleton"));
+        resource.Add ("monster_succubus", Resources.Load <Sprite> ("Sprites/Monsters/monster_succubus"));
 		resource.Add ("item_ring_001", Resources.Load<Sprite> ("Sprites/Item/item_ring_001"));
 		resource.Add ("item_ring_002", Resources.Load<Sprite> ("Sprites/Item/item_ring_002"));
 		resource.Add ("item_ring_003", Resources.Load<Sprite> ("Sprites/Item/item_ring_003"));
@@ -59,10 +59,41 @@ public class ResourceManager : MonoBehaviour {
 		resource.Add ("item_potion_001", Resources.Load<Sprite> ("Sprites/Item/item_potion_001"));
 		resource.Add ("item_potion_002", Resources.Load<Sprite> ("Sprites/Item/item_potion_002"));
 		resource.Add ("item_potion_003", Resources.Load<Sprite> ("Sprites/Item/item_potion_003"));
-		//#endif
-	}
+        //#endif
 
-	Dictionary<string, Object> resource;
+        AssetBundles.AssetBundleManager.SetSourceAssetBundleURL(NetworkManager.Instance.host + "/AssetBundles/");
+        yield return AssetBundles.AssetBundleManager.Initialize();
+        /*
+        string [] bundles = AssetBundles.AssetBundleManager.AssetBundleManifestObject.GetAllAssetBundles();
+        foreach(string bundle in bundles)
+        {
+            AssetBundles.AssetBundleManager.LoadAssetBundle(bundle);
+        }
+        */
+        {
+            AssetBundles.AssetBundleLoadAssetOperation request = AssetBundles.AssetBundleManager.LoadAssetAsync("monster", "monster_skeleton", typeof(Sprite));
+            if (request == null)
+                yield break;
+            yield return StartCoroutine(request);
+            Sprite sprite = request.GetAsset<Sprite>();
+            resource.Add("monster_skeleton", sprite);
+        }
+        {
+            AssetBundles.AssetBundleLoadAssetOperation request = AssetBundles.AssetBundleManager.LoadAssetAsync("monster", "monster_daemon", typeof(Sprite));
+            if (request == null)
+                yield break;
+            yield return StartCoroutine(request);
+            Sprite sprite = request.GetAsset<Sprite>();
+            resource.Add("monster_daemon", sprite);
+        }
+        /*
+        // Get the asset.
+        Sprite sprite = request.GetAsset<Sprite>();
+        resource.Add("monster_skeleton", sprite);
+        */
+    }
+
+    Dictionary<string, Object> resource;
 
 	Sprite LoadSpite(string filePath) {
 

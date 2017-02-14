@@ -23,8 +23,7 @@ public class VillageMain : MonoBehaviour {
 		yield return new WaitForSeconds (0.5f);
 		log.text += "complete\n";
 		log.text += "load images..";
-		ResourceManager.Instance.Init ();
-		yield return new WaitForSeconds (0.5f);
+        yield return StartCoroutine(ResourceManager.Instance.Init());
 		log.text += "complete\n";
 		log.text += "load item configuration..";
 		yield return StartCoroutine(ItemManager.Instance.Init ());
