@@ -500,7 +500,7 @@ namespace AssetBundles
 				}
 
 				// @TODO: Now we only get the main object from the first asset. Should consider type also.
-				Object target = AssetDatabase.LoadMainAssetAtPath(assetPaths[0]);
+				Object target = AssetDatabase.LoadAssetAtPath(assetPaths[0], type);
 				operation = new AssetBundleLoadAssetOperationSimulation (target);
 			}
 			else
