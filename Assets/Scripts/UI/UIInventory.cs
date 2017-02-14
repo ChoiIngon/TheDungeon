@@ -75,14 +75,19 @@ public class UIInventory : MonoBehaviour {
 			UIEquipmentSlot other = equipmentSlots [i];
 			if (part == other.part && index != other.index) {
 				other.arrow.gameObject.SetActive (true);
+				iTween.MoveBy(other.arrow.gameObject, 
+					iTween.Hash("y", 10, "easeType", "linear", "loopType", "pingPong", "delay", 0.0f, "time", 0.5f)
+				);
 			} else {
 				other.arrow.gameObject.SetActive (false);
+				iTween.Stop (other.arrow.gameObject);
 			}
 		}
 	}
 	public void TurnEquipGuideArrowOff()
 	{
 		for (int i = 0; i < equipmentSlots.Length; i++) {
+			iTween.Stop (equipmentSlots [i].arrow.gameObject);
 			equipmentSlots [i].arrow.gameObject.SetActive (false);
 		}
 	}

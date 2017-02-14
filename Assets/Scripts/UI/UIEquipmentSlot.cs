@@ -27,9 +27,9 @@ public class UIEquipmentSlot : UISlot {
 		EquipmentItem item = (EquipmentItem)data.item;
 		inventory.TurnEquipGuideArrowOn (part, index);
 		inventory.itemInfo.slot = this;
-		inventory.itemInfo.stats.text = "+" + item.mainStat.value + " " + item.mainStat.description + "\n";
+		inventory.itemInfo.stats.text = item.mainStat.value + " " + item.mainStat.description + "\n";
 		for (int i = 0; i < item.subStats.Count; i++) {
-			inventory.itemInfo.stats.text += "+" + item.subStats[i].value + " " + item.subStats [i].description + "\n";
+			inventory.itemInfo.stats.text += "<color=green> +" + item.subStats[i].value + " " + item.subStats [i].description + "</color>\n";
 		}
 		inventory.itemInfo.buttons [(int)UIItemInfo.Action.Drop].gameObject.SetActive (true);
 		inventory.itemInfo.actions[(int)UIItemInfo.Action.Drop] += () => {

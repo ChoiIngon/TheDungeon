@@ -24,9 +24,9 @@ public class UIInventorySlot : UISlot {
 			{
 				EquipmentItem item = (EquipmentItem)data.item;
 				inventory.TurnEquipGuideArrowOn (item.part);
-				inventory.itemInfo.stats.text = "+" + item.mainStat.value + " " + item.mainStat.description + "\n";
+				inventory.itemInfo.stats.text = item.mainStat.value + " " + item.mainStat.description + "\n";
 				for (int i = 0; i < item.subStats.Count; i++) {
-					inventory.itemInfo.stats.text += "+" + item.subStats [i].value + " " + item.subStats [i].description + "\n";
+					inventory.itemInfo.stats.text += "<color=green> +" + item.subStats[i].value + " " + item.subStats [i].description + "</color>\n";
 				}
 			}
 			break;

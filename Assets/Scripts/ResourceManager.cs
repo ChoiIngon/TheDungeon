@@ -44,21 +44,21 @@ public class ResourceManager : MonoBehaviour {
 		//resource.Add ("monster_daemon", Resources.Load <Sprite> ("Sprites/Monsters/monster_daemon"));
         //resource.Add ("monster_skeleton", Resources.Load <Sprite> ("Sprites/monster/monster_skeleton"));
         resource.Add ("monster_succubus", Resources.Load <Sprite> ("Sprites/Monsters/monster_succubus"));
-		resource.Add ("item_ring_001", Resources.Load<Sprite> ("Sprites/Item/item_ring_001"));
-		resource.Add ("item_ring_002", Resources.Load<Sprite> ("Sprites/Item/item_ring_002"));
-		resource.Add ("item_ring_003", Resources.Load<Sprite> ("Sprites/Item/item_ring_003"));
-		resource.Add ("item_shield_001", Resources.Load<Sprite> ("Sprites/Item/item_shield_001"));
-		resource.Add ("item_shield_002", Resources.Load<Sprite> ("Sprites/Item/item_shield_002"));
-		resource.Add ("item_shield_003", Resources.Load<Sprite> ("Sprites/Item/item_shield_003"));
-		resource.Add ("item_armor_001", Resources.Load<Sprite> ("Sprites/Item/item_armor_001"));
-		resource.Add ("item_armor_002", Resources.Load<Sprite> ("Sprites/Item/item_armor_002"));
-		resource.Add ("item_armor_003", Resources.Load<Sprite> ("Sprites/Item/item_armor_003"));
-		resource.Add ("item_sword_001", Resources.Load<Sprite> ("Sprites/Item/item_sword_001"));
-		resource.Add ("item_sword_002", Resources.Load<Sprite> ("Sprites/Item/item_sword_002"));
-		resource.Add ("item_sword_003", Resources.Load<Sprite> ("Sprites/Item/item_sword_003"));
-		resource.Add ("item_potion_001", Resources.Load<Sprite> ("Sprites/Item/item_potion_001"));
-		resource.Add ("item_potion_002", Resources.Load<Sprite> ("Sprites/Item/item_potion_002"));
-		resource.Add ("item_potion_003", Resources.Load<Sprite> ("Sprites/Item/item_potion_003"));
+		resource.Add ("item_ring_001", Resources.Load<Sprite> ("Sprites/Items/item_ring_001"));
+		resource.Add ("item_ring_002", Resources.Load<Sprite> ("Sprites/Items/item_ring_002"));
+		resource.Add ("item_ring_003", Resources.Load<Sprite> ("Sprites/Items/item_ring_003"));
+		resource.Add ("item_shield_001", Resources.Load<Sprite> ("Sprites/Items/item_shield_001"));
+		resource.Add ("item_shield_002", Resources.Load<Sprite> ("Sprites/Items/item_shield_002"));
+		resource.Add ("item_shield_003", Resources.Load<Sprite> ("Sprites/Items/item_shield_003"));
+		resource.Add ("item_armor_001", Resources.Load<Sprite> ("Sprites/Items/item_armor_001"));
+		resource.Add ("item_armor_002", Resources.Load<Sprite> ("Sprites/Items/item_armor_002"));
+		resource.Add ("item_armor_003", Resources.Load<Sprite> ("Sprites/Items/item_armor_003"));
+		resource.Add ("item_sword_001", Resources.Load<Sprite> ("Sprites/Items/item_sword_001"));
+		resource.Add ("item_sword_002", Resources.Load<Sprite> ("Sprites/Items/item_sword_002"));
+		resource.Add ("item_sword_003", Resources.Load<Sprite> ("Sprites/Items/item_sword_003"));
+		resource.Add ("item_potion_001", Resources.Load<Sprite> ("Sprites/Items/item_potion_001"));
+		resource.Add ("item_potion_002", Resources.Load<Sprite> ("Sprites/Items/item_potion_002"));
+		resource.Add ("item_potion_003", Resources.Load<Sprite> ("Sprites/Items/item_potion_003"));
         //#endif
 
         AssetBundles.AssetBundleManager.SetSourceAssetBundleURL(NetworkManager.Instance.host + "/AssetBundles/");

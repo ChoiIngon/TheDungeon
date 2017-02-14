@@ -375,9 +375,9 @@ public class DungeonMain : MonoBehaviour {
 
 		Unit.Stat stat = Player.Instance.GetStat ();
 		int gainCoins = info.reward.coin + (int)Random.Range (-info.reward.coin * 0.1f, info.reward.coin * 0.1f);
-		int coinBonus = (int)(gainCoins * stat.coinBonus);
+		int coinBonus = (int)(gainCoins * stat.coinBonus/100.0f);
 		int gainExp = info.reward.exp + (int)Random.Range (-info.reward.exp * 0.1f, info.reward.exp * 0.1f);
-		int expBonus = (int)(gainExp * stat.expBonus);
+		int expBonus = (int)(gainExp * stat.expBonus/100.0f);
 		int playerLevel = Player.Instance.level;
 
 		text += "Coins : +" + gainCoins;

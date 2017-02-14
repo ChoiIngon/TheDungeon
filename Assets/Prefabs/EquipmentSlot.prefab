@@ -140,9 +140,12 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
-  index: 0
   inventory: {fileID: 0}
-  category: 4
+  data:
+    index: 0
+    count: 0
+  part: 0
+  index: 0
   arrow: {fileID: 0}
 --- !u!114 &114466141695600544
 MonoBehaviour:
@@ -294,7 +297,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 166, y: -634}
+  m_AnchoredPosition: {x: 162, y: -325}
   m_SizeDelta: {x: 70, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224192726757167986
@@ -346,8 +349,8 @@ RectTransform:
   m_Father: {fileID: 224089633412601012}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0}
