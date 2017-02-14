@@ -65,9 +65,9 @@ public class DungeonMain : MonoBehaviour {
 				break;
 			case State.Popup:
 				input.enabled = false;
-				mainButtonGroup.gameObject.SetActive (false);
-				battleButtonGroup.gameObject.SetActive (false);
-				break;
+                mainButtonGroup.enabled = false; 
+                battleButtonGroup.enabled = false;
+                break;
 			default :
 				throw new System.Exception ("undefined state : " + value.ToString ());
 			}
@@ -254,12 +254,14 @@ public class DungeonMain : MonoBehaviour {
 		} 
 
 		if(0 < coins.childCount) {
+            for(int i=0; i<coins.childCount; i++)
+            {
+                Coin coin = coins.GetChild(i).GetComponent<Coin>();
+                coin.Stop();
+            }
 			while (0 < coins.childCount) {
-				Coin coin = coins.GetChild (0).GetComponent<Coin>();
-				coin.transform.SetParent (null);
-				coin.Stop ();
+                yield return null;
 			}
-			yield return new WaitForSeconds (0.1f);
 		}
 			
 		Vector3 position = Vector3.zero;
@@ -295,11 +297,13 @@ public class DungeonMain : MonoBehaviour {
 		InitRooms ();
 
 		if (null != Dungeon.Instance.current.monster) {
-			monster.Init (Dungeon.Instance.current.monster);
+            state = State.Battle;
+            monster.Init (Dungeon.Instance.current.monster);
 			yield return StartCoroutine (Battle ());
 		} 
 		else if (Dungeon.Room.Type.Exit == Dungeon.Instance.current.type) {
-			bool goDown = false;
+            state = State.Popup;
+            bool goDown = false;
 			dialogBox.onSubmit += () =>  {
 				goDown = true;
 			};
@@ -308,7 +312,6 @@ public class DungeonMain : MonoBehaviour {
 				yield return StartCoroutine (GoDown ());
 				InitDungeon ();
 				yield return new WaitForSeconds (1.0f);
-				SetCameraFadeColor (Color.white);
 			}
 		}
 		state = State.Idle;
@@ -316,7 +319,6 @@ public class DungeonMain : MonoBehaviour {
 	IEnumerator Battle()
 	{
 		SetCameraFadeColor (Color.white);
-		state = State.Battle;
 		battleButtonGroup.names [0].text = "Heal(" + Player.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
 		yield return StartCoroutine(miniMap.Hide(1.0f));
 
@@ -353,7 +355,7 @@ public class DungeonMain : MonoBehaviour {
 			}
 			yield return new WaitForSeconds (0.7f);
 		}
-		state = State.Invalid;
+		
 		if (0.0f < monster.health.current) {
 			yield return StartCoroutine (Lose ());
 		}
@@ -365,7 +367,6 @@ public class DungeonMain : MonoBehaviour {
 			yield return StartCoroutine (miniMap.Show (0.5f));
 			Dungeon.Instance.current.monster = null;
 		}
-		state = State.Idle;
     }
 	IEnumerator Win(Monster.Info info)
 	{
@@ -419,7 +420,7 @@ public class DungeonMain : MonoBehaviour {
 	{
 		Analytics.CustomEvent("Lose", new Dictionary<string, object>
 		{
-			{"dungeon_leve", level },
+			{"dungeon_level", level },
 			{"player_level", Player.Instance.level}
 		});
 		yield return StartCoroutine(textBox.Write(
@@ -443,7 +444,6 @@ public class DungeonMain : MonoBehaviour {
 			"oncomplete", "OnComplete",
 			"oncompletetarget", gameObject
 		));
-		yield return new WaitForSeconds (1.0f);
 		while (false == isComplete) {
 			yield return null;
 		}
