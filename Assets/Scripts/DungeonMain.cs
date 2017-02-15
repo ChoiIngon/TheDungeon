@@ -19,6 +19,7 @@ public class DungeonMain : MonoBehaviour {
     public float battleSpeed;
     public AudioSource audioWalk;
     public AudioSource audioBG;
+    public AudioSource audioMonsterDie;
     private int level;
 
     private Color cameraFadeColor;
@@ -376,7 +377,8 @@ public class DungeonMain : MonoBehaviour {
     }
 	IEnumerator Win(Monster.Info info)
 	{
-		string text = "";
+        audioMonsterDie.Play();
+        string text = "";
 		text += "You defeated \'" + info.name + "\'\n";
 
 		Unit.Stat stat = Player.Instance.GetStat ();
