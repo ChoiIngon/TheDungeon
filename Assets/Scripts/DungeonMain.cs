@@ -7,7 +7,33 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
 public class DungeonMain : MonoBehaviour {
-	private static DungeonMain _instance;  
+    public UIButtonGroup mainButtonGroup;
+    public UIButtonGroup battleButtonGroup;
+    public UITextBox textBox;
+    public UIDialogBox dialogBox;
+    public UICoin coin;
+    public UIMiniMap miniMap;
+    public Text dungeonLevel;
+    public float walkDistance;
+    public float walkSpeed;
+    public float battleSpeed;
+    public AudioSource audioWalk;
+    public AudioSource audioBG;
+    private int level;
+
+    private Color cameraFadeColor;
+    public Transform coins;
+    private Transform rooms;
+    private Room current;
+    private Room[] next = new Room[Dungeon.Max];
+    public Monster monster;
+
+    private Config config;
+    private Dungeon.LevelInfo dungeonLevelInfo;
+    private Vector3 touchPoint = Vector3.zero;
+    private TouchInput input;
+
+    private static DungeonMain _instance;  
 	public static DungeonMain Instance  
 	{  
 		get  
@@ -25,8 +51,8 @@ public class DungeonMain : MonoBehaviour {
 			return _instance;  
 		}  
 	}
-	public const float DISTANCE = 7.2f;
-	public const float MOVETIME = 0.4f;
+	//public const float DISTANCE = 7.2f;
+	//public const float MOVETIME = 0.4f;
 
 	[System.Serializable]
 	public class Config
@@ -74,27 +100,6 @@ public class DungeonMain : MonoBehaviour {
 		}
 	}
 		
-	public UIButtonGroup 	mainButtonGroup;
-	public UIButtonGroup	battleButtonGroup;
-	public UITextBox 		textBox;
-	public UIDialogBox		dialogBox;
-	public UICoin 			coin;
-	public UIMiniMap		miniMap;
-	public Text				dungeonLevel;
-	private int level;
-
-	private Color cameraFadeColor;
-	public Transform coins;
-	private Transform rooms;
-	private Room current;
-	private Room[] next = new Room[Dungeon.Max];
-	public Monster monster;
-
-	private Config config;
-	private Dungeon.LevelInfo dungeonLevelInfo;
-	private Vector3 touchPoint = Vector3.zero;
-	private TouchInput input;
-
 	void Start () {
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
 		iTween.CameraFadeAdd ();
@@ -105,13 +110,13 @@ public class DungeonMain : MonoBehaviour {
 		rooms = transform.FindChild ("Rooms");
 		current = rooms.FindChild ("Current").GetComponent<Room> ();
 		next [Dungeon.North] = rooms.FindChild ("North").GetComponent<Room> ();
-		next [Dungeon.North].transform.position = new Vector3 (0.0f, 0.0f, DISTANCE);
+		next [Dungeon.North].transform.position = new Vector3 (0.0f, 0.0f, walkDistance);
 		next [Dungeon.East] =  rooms.FindChild ("East").GetComponent<Room> ();
-		next [Dungeon.East].transform.position = new Vector3 (DISTANCE, 0.0f, 0.0f);
+		next [Dungeon.East].transform.position = new Vector3 (walkDistance, 0.0f, 0.0f);
 		next [Dungeon.South] =  rooms.FindChild ("South").GetComponent<Room> ();
-		next [Dungeon.South].transform.position = new Vector3 (0.0f, 0.0f, -DISTANCE);
+		next [Dungeon.South].transform.position = new Vector3 (0.0f, 0.0f, -walkDistance);
 		next [Dungeon.West] =  rooms.FindChild ("West").GetComponent<Room> ();
-		next [Dungeon.West].transform.position = new Vector3 (-DISTANCE, 0.0f, 0.0f);
+		next [Dungeon.West].transform.position = new Vector3 (-walkDistance, 0.0f, 0.0f);
 		RectTransform uiMain = transform.FindChild ("UI/Main").GetComponent<RectTransform>();
 		uiMain.position = Camera.main.WorldToScreenPoint(monster.transform.position);
      
@@ -136,7 +141,7 @@ public class DungeonMain : MonoBehaviour {
 			}
 		};
 
-		input = GetComponent<TouchInput> ();
+        input = GetComponent<TouchInput> ();
 		input.onTouchDown += (Vector3 position) => {
 			touchPoint = position;
 		};
@@ -267,23 +272,24 @@ public class DungeonMain : MonoBehaviour {
 		Vector3 position = Vector3.zero;
 		switch (direction) {
 		case Dungeon.North:
-			position = new Vector3 (rooms.position.x, rooms.position.y, rooms.position.z - DISTANCE);
+			position = new Vector3 (rooms.position.x, rooms.position.y, rooms.position.z - walkDistance);
 			break;
 		case Dungeon.East :
-			position = new Vector3 (rooms.position.x - DISTANCE, rooms.position.y, rooms.position.z);
+			position = new Vector3 (rooms.position.x - walkDistance, rooms.position.y, rooms.position.z);
 			break;
 		case Dungeon.South :
-			position = new Vector3 (rooms.position.x, rooms.position.y, rooms.position.z + DISTANCE);
+			position = new Vector3 (rooms.position.x, rooms.position.y, rooms.position.z + walkDistance);
 			break;
 		case Dungeon.West:
-			position = new Vector3 (rooms.position.x + DISTANCE, rooms.position.y, rooms.position.z);
+			position = new Vector3 (rooms.position.x + walkDistance, rooms.position.y, rooms.position.z);
 			break;
 		default :
 			break;
 		}
+        audioWalk.Play();
 		iTween.MoveTo (rooms.gameObject, 
 			iTween.Hash (
-				"position", position, "time", 0.5f, 
+				"position", position, "time", walkDistance/walkSpeed, 
 				"easetype", iTween.EaseType.easeOutQuint, 
 				"oncompletetarget", gameObject, "oncomplete", "OnComplete"
 			)
@@ -293,8 +299,8 @@ public class DungeonMain : MonoBehaviour {
 		}
 		isComplete = false;
 		Dungeon.Instance.Move (direction);
-
-		InitRooms ();
+        audioWalk.Stop();
+        InitRooms ();
 
 		if (null != Dungeon.Instance.current.monster) {
             state = State.Battle;
@@ -333,14 +339,14 @@ public class DungeonMain : MonoBehaviour {
 			if (monsterTurn < playerTurn) {
 				int attackCount = 1;
 
-				if (0 == Random.Range (0, 3)) {
-					attackCount += 1;
-					waitTime = 0.5f;
-				}
 				if (0 == Random.Range (0, 5)) {
 					attackCount += 1;
-					waitTime = 0.2f;
+					waitTime = 1.0f / battleSpeed / 2;
 				}
+				if (0 == Random.Range (0, 10)) {
+					attackCount += 1;
+					waitTime = 1.0f / battleSpeed / 3;
+                }
 
 				for (int i = 0; i < attackCount; i++) {
 					Player.Instance.Attack(monster);
@@ -353,7 +359,7 @@ public class DungeonMain : MonoBehaviour {
 				monster.Attack (Player.Instance);
 				playerTurn += playerAPS + Random.Range(0, playerAPS * 0.1f);
 			}
-			yield return new WaitForSeconds (0.7f);
+			yield return new WaitForSeconds (1.0f/battleSpeed);
 		}
 		
 		if (0.0f < monster.health.current) {

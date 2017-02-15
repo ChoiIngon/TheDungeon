@@ -28,7 +28,7 @@ public class UITextBox : MonoBehaviour {
 		button.gameObject.SetActive (false);
 		contents = transform.FindChild ("ScrollView/Viewport/Contents").GetComponent<Text> ();
 		audioSource = GetComponent<AudioSource> ();
-
+        
 		scrollRect = transform.FindChild ("ScrollView").GetComponent<ScrollRect> ();
 		{
 			RectTransform rt = scrollRect.GetComponent<RectTransform> ();
@@ -65,9 +65,9 @@ public class UITextBox : MonoBehaviour {
 		button.onClick.AddListener (WriteAll);
 		button.gameObject.SetActive (true);
 
-		foreach (char c in text)
+        audioSource.Play();
+        foreach (char c in text)
 		{
-			audioSource.Play();
 			contents.text += c;
 			if(null != scrollRect)
 			{
@@ -79,7 +79,7 @@ public class UITextBox : MonoBehaviour {
 				break;
 			}
 		}
-
+        audioSource.Stop();
 		state = State.Complete;
 		while (State.Fall != state) {
 			scrollRect.verticalNormalizedPosition = 0.0f;
