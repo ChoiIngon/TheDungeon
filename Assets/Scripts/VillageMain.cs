@@ -8,6 +8,7 @@ public class VillageMain : MonoBehaviour {
 	public Button start;
     public Text log;
 	public Button test;
+    public GameObject particle;
 	// Use this for initialization
 	void Start () {
 		start.gameObject.SetActive (false);
@@ -36,5 +37,14 @@ public class VillageMain : MonoBehaviour {
 		start.onClick.AddListener(() => {
 			SceneManager.LoadScene("Dungeon");
 		});
+
+        while(true)
+        {
+            GameObject go = GameObject.Instantiate<GameObject>(particle);
+            go.transform.position = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), 0.0f);
+            Destroy(go, 5.0f);
+            yield return new WaitForSeconds(1.0f);
+        }
 	}
+
 }
