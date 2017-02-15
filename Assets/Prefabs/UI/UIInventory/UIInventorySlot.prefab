@@ -74,7 +74,7 @@ GameObject:
   - component: {fileID: 114474648194610092}
   - component: {fileID: 114190613842663390}
   m_Layer: 5
-  m_Name: InventorySlot
+  m_Name: UIInventorySlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -136,11 +136,11 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
-  index: 0
   inventory: {fileID: 0}
   data:
     index: 0
     count: 0
+  index: 0
 --- !u!114 &114650121684754740
 MonoBehaviour:
   m_ObjectHideFlags: 1

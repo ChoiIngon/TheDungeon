@@ -61,14 +61,6 @@ public class TouchInput : MonoBehaviour {
 			}
 			pressed = true;
 		}
-		if(Input.GetMouseButtonUp(0))
-		{
-			if (null != onTouchUp)
-			{
-				onTouchUp(lastPressPosition);
-			}
-			pressed = false;
-		}
 		if (true == pressed) 
 		{
 			Vector3 currentPressPosition = Camera.main.ScreenToWorldPoint (
@@ -79,6 +71,15 @@ public class TouchInput : MonoBehaviour {
 				onTouchDrag(currentPressPosition);
 			}
 			lastPressPosition = currentPressPosition;
+
+			if(Input.GetMouseButtonUp(0))
+			{
+				if (null != onTouchUp)
+				{
+					onTouchUp(lastPressPosition);
+				}
+				pressed = false;
+			}
 		}
 	}
 }

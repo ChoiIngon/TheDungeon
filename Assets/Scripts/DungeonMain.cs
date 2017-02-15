@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
-public class DungeonMain : MonoBehaviour {
+public class DungeonMain : SceneMain {
     public UIButtonGroup mainButtonGroup;
     public UIButtonGroup battleButtonGroup;
     public UITextBox textBox;
@@ -22,7 +22,6 @@ public class DungeonMain : MonoBehaviour {
     public AudioSource audioMonsterDie;
     private int level;
 
-    private Color cameraFadeColor;
     public Transform coins;
     private Transform rooms;
     private Room current;
@@ -100,12 +99,10 @@ public class DungeonMain : MonoBehaviour {
 			}
 		}
 	}
-		
-	void Start () {
+
+	public override IEnumerator Run () {
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
-		iTween.CameraFadeAdd ();
-		SetCameraFadeColor (Color.black);
-		iTween.CameraFadeTo (1.0f, 0.0f);
+		yield return StartCoroutine(CameraFadeFrom (Color.black, iTween.Hash("amount", 1.0f, "time", 1.0f)));
 
 		coins = transform.FindChild ("Coins");
 		rooms = transform.FindChild ("Rooms");
@@ -212,7 +209,7 @@ public class DungeonMain : MonoBehaviour {
 		miniMap.Init ();
 		InitRooms ();
 		dungeonLevel.text = "<size=" + (dungeonLevel.fontSize * 0.8f) + ">B</size> " + level.ToString ();
-		iTween.CameraFadeTo(0.0f, 1.0f);
+		StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 0.0f, "time", 1.0f)));
 		Analytics.CustomEvent("InitDungeon", new Dictionary<string, object>	{
 			{"dungeon_level", level },
 			{"player_level", Player.Instance.level},
@@ -288,17 +285,8 @@ public class DungeonMain : MonoBehaviour {
 			break;
 		}
         audioWalk.Play();
-		iTween.MoveTo (rooms.gameObject, 
-			iTween.Hash (
-				"position", position, "time", walkDistance/walkSpeed, 
-				"easetype", iTween.EaseType.easeOutQuint, 
-				"oncompletetarget", gameObject, "oncomplete", "OnComplete"
-			)
-		);
-		while (false == isComplete) {
-			yield return null;
-		}
-		isComplete = false;
+		yield return StartCoroutine(MoveTo(rooms.gameObject, iTween.Hash ("position", position, "time", walkDistance/walkSpeed, "easetype", iTween.EaseType.easeOutQuint), true));
+			
 		Dungeon.Instance.Move (direction);
         audioWalk.Stop();
         InitRooms ();
@@ -325,7 +313,6 @@ public class DungeonMain : MonoBehaviour {
 	}
 	IEnumerator Battle()
 	{
-		SetCameraFadeColor (Color.white);
 		battleButtonGroup.names [0].text = "Heal(" + Player.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
 		yield return StartCoroutine(miniMap.Hide(1.0f));
 
@@ -431,44 +418,28 @@ public class DungeonMain : MonoBehaviour {
 			{"dungeon_level", level },
 			{"player_level", Player.Instance.level}
 		});
+		
 		yield return StartCoroutine(textBox.Write(
 			"You died.\n" +
 			"Your body will be carried to village.\n" +
 			"See you soon.."
 		));
+		yield return StartCoroutine (CameraFadeTo (Color.black, iTween.Hash ("amount", 1.0f, "time", 1.0f), true));
 		SceneManager.LoadScene("Village");
 	}
-	bool isComplete = false;
+
 	IEnumerator GoDown()
 	{
-		SetCameraFadeColor (Color.black);
 		Vector3 position = Camera.main.transform.position;
-		iTween.CameraFadeTo(1.0f, 1.0f);
-		iTween.MoveTo (Camera.main.gameObject, iTween.Hash(
+		StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 1.0f, "time", 1.0f)));
+		yield return StartCoroutine(MoveTo (Camera.main.gameObject, iTween.Hash(
 			"x", current.stair.transform.position.x,
 			"y", current.stair.transform.position.y,
 			"z", current.stair.transform.position.z-0.5f,
-			"time", 1.0f,
-			"oncomplete", "OnComplete",
-			"oncompletetarget", gameObject
-		));
-		while (false == isComplete) {
-			yield return null;
-		}
+			"time", 1.0f
+		), true));
 		level += 1;
 
-		isComplete = false;
 		Camera.main.transform.position = position;
-	}
-	void OnComplete()
-	{
-		isComplete = true;	
-	}
-	void SetCameraFadeColor(Color color)
-	{
-		Texture2D colorTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-		colorTexture.SetPixel(0, 0, color);
-		colorTexture.Apply();
-		iTween.CameraFadeSwap (colorTexture);
 	}
 }
