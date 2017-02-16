@@ -1,0 +1,43 @@
+ManifestFileVersion: 0
+CRC: 1233597305
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: be4b1d491652cc5674efcb8549bc21e9
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 4d24bf54f46935ed9e6cf78ac481bb9d
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/Sprites/coin.png
+- Assets/Sprites/blood_splatter_002.png
+- Assets/Sprites/dungeon.png
+- Assets/Sprites/blood_mark_003.png
+- Assets/Sprites/village.jpeg
+- Assets/Sprites/blood_mark_005.png
+- Assets/Sprites/blood_splatter_004.png
+- Assets/Sprites/icon_arrow.png
+- Assets/Sprites/gauge_bar.png
+- Assets/Sprites/inventory.png
+- Assets/Sprites/inventory_slot_border.png
+- Assets/Sprites/shadow.png
+- Assets/Sprites/inventory_slot_grade.png
+- Assets/Sprites/blood_mark_002.png
+- Assets/Sprites/minimap_stair.png
+- Assets/Sprites/gradation_circle.png
+- Assets/Sprites/icon_quest.png
+- Assets/Sprites/blood_mark_001.png
+- Assets/Sprites/blood_mark_004.png
+- Assets/Sprites/minimap_room.png
+- Assets/Sprites/blood_splatter_003.png
+- Assets/Sprites/blood_splatter_005.png
+- Assets/Sprites/gradation.png
+- Assets/Sprites/icon_inventory.png
+- Assets/Sprites/border.png
+- Assets/Sprites/blood_splatter_001.png
+Dependencies: []

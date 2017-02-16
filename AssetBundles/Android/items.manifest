@@ -1,0 +1,33 @@
+ManifestFileVersion: 0
+CRC: 2485334850
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 8af4e59a58bee1760f0cf2f0ddc57fdb
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 4d24bf54f46935ed9e6cf78ac481bb9d
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/Sprites/Items/item_shield_002.png
+- Assets/Sprites/Items/item_shield_003.png
+- Assets/Sprites/Items/item_armor_001.png
+- Assets/Sprites/Items/item_potion_001.png
+- Assets/Sprites/Items/item_potion_003.png
+- Assets/Sprites/Items/item_armor_002.png
+- Assets/Sprites/Items/item_ring_001.png
+- Assets/Sprites/Items/item_armor_003.png
+- Assets/Sprites/Items/item_sword_003.png
+- Assets/Sprites/Items/item_ring_002.png
+- Assets/Sprites/Items/item_whetstone.png
+- Assets/Sprites/Items/item_potion_002.png
+- Assets/Sprites/Items/item_ring_003.png
+- Assets/Sprites/Items/item_sword_001.png
+- Assets/Sprites/Items/item_sword_002.png
+- Assets/Sprites/Items/item_shield_001.png
+Dependencies: []

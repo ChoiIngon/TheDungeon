@@ -1,0 +1,63 @@
+ManifestFileVersion: 0
+CRC: 1994876072
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: c3db318e80604a6ceb12d6a05be4e085
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 4d24bf54f46935ed9e6cf78ac481bb9d
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/Sprites/Monsters/MS_Monster_Mini_Castle_Golem.png
+- Assets/Sprites/Monsters/MS_Monster_Pointy_Imp.png
+- Assets/Sprites/Monsters/300px-MS_Monster_Vellum.png
+- Assets/Sprites/Monsters/MS_Monster_Elite_Skeletrooper.png
+- Assets/Sprites/Monsters/MS_Monster_Power_Specter.png
+- Assets/Sprites/Monsters/MS_Monster_Elite_Skeletrooper (1).png
+- Assets/Sprites/Monsters/MS_Monster_Chief_Qualm_Guardian.png
+- Assets/Sprites/Monsters/MS_Monster_Bloodfang.png
+- Assets/Sprites/Monsters/MS_Monster_Chief_Memory_Guardian.png
+- Assets/Sprites/Monsters/MS_Monster_Oblivion_Guardian.png
+- Assets/Sprites/Monsters/MS_Monster_Red_Crocky.png
+- Assets/Sprites/Monsters/MS_Monster_Memory_Monk_Trainee.png
+- Assets/Sprites/Monsters/MS_Monster_Elite_Bloodfang.png
+- Assets/Sprites/Monsters/MS_Monster_Chief_Oblivion_Guardian.png
+- Assets/Sprites/Monsters/MS_Monster_Swollen_Stump.png
+- Assets/Sprites/Monsters/MS_Monster_Qualm_Monk.png
+- Assets/Sprites/Monsters/MS_Monster_Guerrilla_Specter.png
+- Assets/Sprites/Monsters/MS_Monster_Shinsoo.png
+- Assets/Sprites/Monsters/MS_Monster_Demon_Gargoyle.png
+- Assets/Sprites/Monsters/maggot_carrier_Feast.png
+- Assets/Sprites/Monsters/monster_succubus.png
+- Assets/Sprites/Monsters/MS_Monster_Oblivion_Monk_Trainee.png
+- Assets/Sprites/Monsters/MS_Monster_Magnus.png
+- Assets/Sprites/Monsters/MS_Monster_Prison_Guard_Rhino.png
+- Assets/Sprites/Monsters/MS_Monster_Grey_Vulture.png
+- Assets/Sprites/Monsters/MS_Monster_Memory_Monk.png
+- Assets/Sprites/Monsters/MS_Monster_Magician_Specter.png
+- Assets/Sprites/Monsters/MS_Monster_Bearwolf.png
+- Assets/Sprites/Monsters/MS_Monster_Prison_Guard_Boar.png
+- Assets/Sprites/Monsters/MS_Monster_Spearman_Skeleknight (1).png
+- Assets/Sprites/Monsters/MS_Monster_Skeletrooper.png
+- Assets/Sprites/Monsters/MS_Monster_Memory_Guardian.png
+- Assets/Sprites/Monsters/monster_skeleton.png
+- Assets/Sprites/Monsters/MS_Monster_Qualm_Guardian.png
+- Assets/Sprites/Monsters/monster_daemon.png
+- Assets/Sprites/Monsters/MS_Monster_Blood_Reindeer.png
+- Assets/Sprites/Monsters/MS_Monster_Warrior_Specter.png
+- Assets/Sprites/Monsters/MS_Monster_Netherworld_Monk.png
+- Assets/Sprites/Monsters/MS_Monster_Azwan_Ghost.png
+- Assets/Sprites/Monsters/MS_Monster_Pointy_Imp (1).png
+- Assets/Sprites/Monsters/MS_Monster_Qualm_Monk_Trainee.png
+- Assets/Sprites/Monsters/MS_Monster_Spearman_Skeleknight.png
+- Assets/Sprites/Monsters/MS_Monster_Specter_Engineer.png
+- Assets/Sprites/Monsters/MS_Monster_Reaper_Specter.png
+- Assets/Sprites/Monsters/MS_Monster_Elite_Spearman_Skeleknight.png
+- Assets/Sprites/Monsters/MS_Monster_Oblivion_Monk.png
+Dependencies: []

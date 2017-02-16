@@ -15,8 +15,31 @@ namespace AssetBundles
 	
 		public static void BuildAssetBundles()
 		{
-			// Choose the output path according to the build target.
-			string outputPath = Path.Combine(Utility.AssetBundlesOutputPath,  Utility.GetPlatformName());
+            /*
+            string assetBundlePath = Assets/AssetBundles";
+            if (!Directory.Exists(assetBundlePath))
+            {
+                throw new System.Exception("no AssetBundle directory");
+            }
+            
+            string[] files = Directory.GetFiles(assetBundlePath, "*.*", SearchOption.AllDirectories);
+            foreach (string file in files)
+            {
+                if(file.EndsWith(".meta") || file.EndsWith(".cs"))
+                {
+                    continue;
+                }
+                
+                AssetImporter importer = AssetImporter.GetAtPath(file);
+                importer.assetBundleName = Path.GetDirectoryName(file).Substring("Assets/".Length);
+            }
+            */
+            // @TODO: Now we only get the main object from the first asset. Should consider type also.
+            //
+            //operation = new AssetBundleLoadAssetOperationSimulation(target);
+
+            // Choose the output path according to the build target.
+            string outputPath = Path.Combine(Utility.AssetBundlesOutputPath,  Utility.GetPlatformName());
 			if (!Directory.Exists(outputPath) )
 				Directory.CreateDirectory (outputPath);
 	
