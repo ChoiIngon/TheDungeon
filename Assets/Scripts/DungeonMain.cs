@@ -312,7 +312,7 @@ public class DungeonMain : SceneMain {
 	{
 		battleButtonGroup.names [0].text = "Heal(" + Player.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
 		StartCoroutine(miniMap.Hide(1.0f));
-		yield return StartCoroutine(monster.Show(1.5f));
+		yield return StartCoroutine(monster.Show(1.0f));
 
 		// attack per second
 		float playerAPS = Player.Instance.GetStat().speed/monster.info.speed; 
