@@ -2337,8 +2337,8 @@ MonoBehaviour:
   miniMap: {fileID: 1389233273}
   dungeonLevel: {fileID: 1751527905}
   walkDistance: 7.2
-  walkSpeed: 8
-  battleSpeed: 3
+  walkSpeed: 12
+  battleSpeed: 2.7
   audioWalk: {fileID: 129844982}
   audioBG: {fileID: 477938924}
   audioMonsterDie: {fileID: 98061966}
@@ -4037,7 +4037,7 @@ Prefab:
     - target: {fileID: 224138725726622380, guid: ebb5f2e7f2d604940a83e114f23452cb,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 512
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ebb5f2e7f2d604940a83e114f23452cb, type: 2}

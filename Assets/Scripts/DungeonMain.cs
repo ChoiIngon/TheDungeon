@@ -51,8 +51,6 @@ public class DungeonMain : SceneMain {
 			return _instance;  
 		}  
 	}
-	//public const float DISTANCE = 7.2f;
-	//public const float MOVETIME = 0.4f;
 
 	[System.Serializable]
 	public class Config
@@ -285,11 +283,10 @@ public class DungeonMain : SceneMain {
 			break;
 		}
         audioWalk.Play();
-		yield return StartCoroutine(MoveTo(rooms.gameObject, iTween.Hash ("position", position, "time", walkDistance/walkSpeed, "easetype", iTween.EaseType.easeOutQuint), true));
-			
+		yield return StartCoroutine(MoveTo(rooms.gameObject, iTween.Hash ("position", position, "time", walkDistance/walkSpeed, "easetype", iTween.EaseType.easeInQuad), true));
 		Dungeon.Instance.Move (direction);
+		InitRooms ();
         audioWalk.Stop();
-        InitRooms ();
 
 		if (null != Dungeon.Instance.current.monster) {
             state = State.Battle;
