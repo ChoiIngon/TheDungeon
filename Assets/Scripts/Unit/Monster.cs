@@ -69,6 +69,7 @@ public class Monster : Unit {
 		info = info_;
 		name.text = info.name;
 		renderer.sprite = info.sprite;
+		renderer.color = Color.black;
 		stats.health = info.health;
 		stats.attack = info.attack;
 		stats.defense = info.defense;
@@ -125,4 +126,16 @@ public class Monster : Unit {
     {
         StartCoroutine(this.health.DeferredValue((float)health, 0.2f));
     }
+
+	public IEnumerator Show(float time)
+	{
+		float color = 0.0f;
+		yield return new WaitForSeconds (time / 3.0f);
+		while (1.0f > color) {
+			renderer.color = new Color (color, color, color, 1.0f);
+			color += Time.deltaTime / (time - time/3);
+			yield return null;
+		}
+		renderer.color = Color.white;
+	}
 }

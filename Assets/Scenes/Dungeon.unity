@@ -2338,7 +2338,7 @@ MonoBehaviour:
   dungeonLevel: {fileID: 1751527905}
   walkDistance: 7.2
   walkSpeed: 12
-  battleSpeed: 2.7
+  battleSpeed: 2.2
   audioWalk: {fileID: 129844982}
   audioBG: {fileID: 477938924}
   audioMonsterDie: {fileID: 98061966}
@@ -3582,7 +3582,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 326259081
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 2cc4e26116b0f4a05ad277caafbe8176, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1eaf54a9de6f29340afb4cdb15095ac0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
