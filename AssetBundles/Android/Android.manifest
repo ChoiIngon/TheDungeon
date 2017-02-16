@@ -1,13 +1,13 @@
 ManifestFileVersion: 0
-CRC: 3328595609
+CRC: 3355453840
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
       Name: sprite
       Dependencies: {}
     Info_1:
-      Name: items
+      Name: monsters
       Dependencies: {}
     Info_2:
-      Name: monsters
+      Name: items
       Dependencies: {}

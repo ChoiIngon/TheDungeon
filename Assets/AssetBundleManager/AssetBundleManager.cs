@@ -59,10 +59,8 @@ namespace AssetBundles
 
 		public static OnLoadingAssetBundle onLoadingAssetBundle;
 
-        public delegate void OnDownloadProgress(string bundleName, float progress, int NowIndex, int TotalCount);
+        public delegate void OnDownloadProgress(string bundleName, float progress, int cur, int TotalCount);
         public static OnDownloadProgress onDownloadProgress;
-
-
 
         private static Dictionary<string, string> m_DownloadBundles = new Dictionary<string,string>();
 		public static LogMode logMode
@@ -88,7 +86,6 @@ namespace AssetBundles
 		// AssetBundleManifest object which can be used to load the dependecies and check suitable assetBundle variants.
 		public static AssetBundleManifest AssetBundleManifestObject
 		{
-
 			get { return m_AssetBundleManifest; }
 			set {m_AssetBundleManifest = value; }
 		}
@@ -421,8 +418,7 @@ namespace AssetBundles
 
 		void Update()
 		{
-            int nowIndex = 0;
-			// Collect all the finished WWWs.
+            // Collect all the finished WWWs.
 			var keysToRemove = new List<string>();
 			foreach (var keyValue in m_DownloadingWWWs)
 			{
@@ -434,6 +430,10 @@ namespace AssetBundles
                     m_DownloadingErrors.Add(keyValue.Key, string.Format("Failed downloading bundle {0} from {1}: {2}", keyValue.Key, download.url, download.error));
 					keysToRemove.Add(keyValue.Key);
 					continue;
+				}
+
+				if (null != onDownloadProgress && null != m_AssetBundleManifest) {
+					onDownloadProgress (keyValue.Key, download.progress, m_DownloadBundles.Count + 1, m_AssetBundleManifest.GetAllAssetBundles().Length);
 				}
 
 				// If downloading succeeds.
@@ -461,12 +461,8 @@ namespace AssetBundles
 				}
 
 
-                if (null != onDownloadProgress && m_DownloadBundles.ContainsKey(keyValue.Key))
-                    onDownloadProgress(keyValue.Key, download.progress, nowIndex + 1, m_DownloadBundles.Count);
-
-                nowIndex++;
-            }
-
+			}
+		
             // Remove the finished WWWs.
             foreach ( var key in keysToRemove)
 			{

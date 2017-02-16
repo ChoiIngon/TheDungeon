@@ -5,7 +5,14 @@ using System.IO;
 
 public class ResourceManager : MonoBehaviour {
     Dictionary<string, Object> resource;
-
+	public AssetBundles.AssetBundleManager.OnDownloadProgress onDowonloadProgress {
+		set {
+			AssetBundles.AssetBundleManager.onDownloadProgress += value;
+		}
+		get {
+			return AssetBundles.AssetBundleManager.onDownloadProgress;
+		}
+	}
     private static ResourceManager _instance;  
 	public static ResourceManager Instance  
 	{  
@@ -56,14 +63,12 @@ public class ResourceManager : MonoBehaviour {
                 foreach (string assetName in assetNames)
                 {
                     AssetBundles.AssetBundleLoadAssetOperation operation = AssetBundles.AssetBundleManager.LoadAssetAsync(assetBundleName, assetName, typeof(Object));
-                    if (null == operation)
-                        yield break;
+					if (null == operation) {
+						yield break;
+					}
                     yield return StartCoroutine(operation);
                     Object obj = operation.GetAsset<Object>();
-                    if (!resource.ContainsKey(obj.name))
-                    {
-                        resource.Add(obj.name, obj);
-                    }
+                    resource.Add(obj.name, obj);
                 }
             }
         }
