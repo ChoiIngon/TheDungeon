@@ -6,8 +6,10 @@ using UnityEngine.SceneManagement;
 
 public class VillageMain : SceneMain {
     public Text log;
+    public Image imgNpc;
 	public GameObject dungeon;
 	public UIDialogBox dialogBox;
+    public UITextBox textBox;
     public UIGaugeBar downloadProgress;
 	// Use this for initialization
 	public override IEnumerator Run () {
@@ -51,7 +53,10 @@ public class VillageMain : SceneMain {
 		log.color = new Color (1.0f, 1.0f, 1.0f, 0.0f);
         downloadProgress.gameObject.SetActive(false);
 		dungeon.SetActive (true);
-	}
+
+        iTween.MoveBy(imgNpc.gameObject, iTween.Hash("x", 700, "easeType", "easeInOutExpo", "loopType", "pingPong", "delay", .1));
+        StartCoroutine(textBox.Write("test test test test test test 1234566969"));
+    }
 
 	IEnumerator ChangeScene(string scene, GameObject target)
 	{
