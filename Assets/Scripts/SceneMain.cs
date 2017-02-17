@@ -1,11 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public abstract class SceneMain : MonoBehaviour {
 	public bool isComplete = false;
-	// Use this for initialization
+	public static float widthScale = 1.0f;
+	public static float heightScale = 1.0f;
 	void Start () {
+		CanvasScaler canvasScaler = Object.FindObjectOfType<CanvasScaler> ();
+		SceneMain.widthScale = Screen.width/canvasScaler.referenceResolution.x;
+		SceneMain.heightScale = Screen.height/canvasScaler.referenceResolution.y;
+		Debug.Log ("ui scale:{x:" + widthScale + ", y:" + heightScale + ")");
 		iTween.CameraFadeAdd ();
 		StartCoroutine (Run ());
 	}

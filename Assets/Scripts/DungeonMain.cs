@@ -13,6 +13,7 @@ public class DungeonMain : SceneMain {
     public UIDialogBox dialogBox;
     public UICoin coin;
     public UIMiniMap miniMap;
+	public RectTransform uiMain;
     public Text dungeonLevel;
     public float walkDistance;
     public float walkSpeed;
@@ -102,7 +103,6 @@ public class DungeonMain : SceneMain {
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
 		yield return StartCoroutine(CameraFadeFrom (Color.black, iTween.Hash("amount", 1.0f, "time", 1.0f)));
 
-		coins = transform.FindChild ("Coins");
 		rooms = transform.FindChild ("Rooms");
 		current = rooms.FindChild ("Current").GetComponent<Room> ();
 		next [Dungeon.North] = rooms.FindChild ("North").GetComponent<Room> ();
@@ -113,7 +113,6 @@ public class DungeonMain : SceneMain {
 		next [Dungeon.South].transform.position = new Vector3 (0.0f, 0.0f, -walkDistance);
 		next [Dungeon.West] =  rooms.FindChild ("West").GetComponent<Room> ();
 		next [Dungeon.West].transform.position = new Vector3 (-walkDistance, 0.0f, 0.0f);
-		RectTransform uiMain = transform.FindChild ("UI/Main").GetComponent<RectTransform>();
 		uiMain.position = Camera.main.WorldToScreenPoint(monster.transform.position);
      
 		mainButtonGroup.Init ();
@@ -188,10 +187,8 @@ public class DungeonMain : SceneMain {
 		#endif
 
 		QuestManager.Instance.Init ();
-		QuestManager.Instance.onComplete += (QuestData quest) => {
-			StartCoroutine(textBox.Write(
-				quest.name + " is completed!!"
-			));
+		QuestManager.Instance.onComplete += (QuestData data) => {
+			StartCoroutine(OnCompleteQuest(data));
 		};
 		Player.Instance.Init ();
 
@@ -300,6 +297,7 @@ public class DungeonMain : SceneMain {
 				goDown = true;
 			};
 			yield return StartCoroutine(dialogBox.Write("Do you want to go down the stair?"));
+			yield return StartCoroutine (textBox.Hide ());
 			if (true == goDown) {
 				yield return StartCoroutine (GoDown ());
 				InitDungeon ();
@@ -400,6 +398,7 @@ public class DungeonMain : SceneMain {
 			text += "You got a " + item.name;
 		}
 		yield return StartCoroutine(textBox.Write(text));
+		yield return StartCoroutine (textBox.Hide ());
 
 		QuestManager.Instance.Update ("KillMonster", info.id);
         Analytics.CustomEvent("Win", new Dictionary<string, object>
@@ -422,6 +421,7 @@ public class DungeonMain : SceneMain {
 			"Your body will be carried to village.\n" +
 			"See you soon.."
 		));
+		yield return StartCoroutine (textBox.Hide ());
 		yield return StartCoroutine (CameraFadeTo (Color.black, iTween.Hash ("amount", 1.0f, "time", 1.0f), true));
 		SceneManager.LoadScene("Village");
 	}
@@ -439,5 +439,13 @@ public class DungeonMain : SceneMain {
 		level += 1;
 
 		Camera.main.transform.position = position;
+	}
+
+	IEnumerator OnCompleteQuest(QuestData quest)
+	{
+		yield return StartCoroutine(textBox.Write(
+			quest.name + " is completed!!"
+		));
+		yield return StartCoroutine(textBox.Hide());
 	}
 }

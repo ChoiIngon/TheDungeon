@@ -6,7 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class VillageMain : SceneMain {
     public Text log;
-    public Image imgNpc;
+    public Npc npc;
+	public Button npcTest;
 	public GameObject dungeon;
 	public UIDialogBox dialogBox;
     public UITextBox textBox;
@@ -17,9 +18,10 @@ public class VillageMain : SceneMain {
 		yield return StartCoroutine (Init ());
 		dungeon.transform.FindChild("TouchInput").GetComponent<TouchInput> ().onTouchDown += (Vector3 position) => {
 			iTween.ScaleTo(dungeon, iTween.Hash("scale", new Vector3(1.2f, 1.2f, 1.0f), "time", 0.1f, "easetype", iTween.EaseType.easeInOutBack));
-            iTween.ScaleTo(dungeon, iTween.Hash("scale", new Vector3(1.0f, 1.0f, 1.0f), "time", 0.1f, "delay", 0.1f, "easetype", iTween.EaseType.easeInOutBack));
+            
         };
 		dungeon.transform.FindChild("TouchInput").GetComponent<TouchInput> ().onTouchUp += (Vector3 position) => {
+			iTween.ScaleTo(dungeon, iTween.Hash("scale", new Vector3(1.0f, 1.0f, 1.0f), "time", 0.1f, "easetype", iTween.EaseType.easeInOutBack));
 			StartCoroutine(ChangeScene("Dungeon", dungeon));
 		};	
     }
@@ -54,8 +56,19 @@ public class VillageMain : SceneMain {
         downloadProgress.gameObject.SetActive(false);
 		dungeon.SetActive (true);
 
-        iTween.MoveBy(imgNpc.gameObject, iTween.Hash("x", 700, "easeType", "easeInOutExpo", "loopType", "pingPong", "delay", .1));
-        StartCoroutine(textBox.Write("test test test test test test 1234566969"));
+		npcTest.onClick.AddListener (() => {
+			StartCoroutine(npc.Talk(
+				"sample test1\n" +
+				"sample test2\n" +
+				"sample test3\n" +
+				"sample test4\n" +
+				"sample test5\n" +
+				"sample test6\n" +
+				"sample test7\n" +
+				"sample test8\n" +
+				"sample test9\n"
+			));
+		});
     }
 
 	IEnumerator ChangeScene(string scene, GameObject target)

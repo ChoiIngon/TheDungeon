@@ -29,57 +29,36 @@ public class TouchInput : MonoBehaviour {
 
 	private BoxCollider2D touchCollider;
 	private Vector3 lastPressPosition;
-	private bool pressed;
 
     void Start()
     {
 		lastPressPosition = Input.mousePosition;
 		touchCollider = GetComponent<BoxCollider2D> ();
-		pressed = false;
 	}
 
-	void Update()
-	{
-		if (Input.GetMouseButtonDown(0)) 
+	void OnMouseDown() {
+		lastPressPosition = Camera.main.ScreenToWorldPoint (
+			new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane)
+		);
+		if (null != onTouchDown)
 		{
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			RaycastHit2D hit = Physics2D.Raycast (ray.origin, ray.direction);
-			if (null == hit.collider) {
-				return;
-			}
-
-			if (touchCollider != hit.collider) {
-				return;
-			}
-
-			lastPressPosition = Camera.main.ScreenToWorldPoint (
-				new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane)
-			);
-			if (null != onTouchDown)
-			{
-				onTouchDown(lastPressPosition);
-			}
-			pressed = true;
+			onTouchDown(lastPressPosition);
 		}
-		if (true == pressed) 
+	}
+	void OnMouseDrag() {
+		Vector3 currentPressPosition = Camera.main.ScreenToWorldPoint (
+			new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane)
+		);
+		if(null != onTouchDrag && currentPressPosition != lastPressPosition)
 		{
-			Vector3 currentPressPosition = Camera.main.ScreenToWorldPoint (
-				new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane)
-			);
-			if(null != onTouchDrag && currentPressPosition != lastPressPosition)
-			{
-				onTouchDrag(currentPressPosition);
-			}
-			lastPressPosition = currentPressPosition;
-
-			if(Input.GetMouseButtonUp(0))
-			{
-				if (null != onTouchUp)
-				{
-					onTouchUp(lastPressPosition);
-				}
-				pressed = false;
-			}
+			onTouchDrag(currentPressPosition);
+		}
+		lastPressPosition = currentPressPosition;
+	}
+	void OnMouseUp() {
+		if (null != onTouchUp)
+		{
+			onTouchUp(lastPressPosition);
 		}
 	}
 }

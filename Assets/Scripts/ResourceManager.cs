@@ -68,6 +68,7 @@ public class ResourceManager : MonoBehaviour {
 					}
                     yield return StartCoroutine(operation);
                     Object obj = operation.GetAsset<Object>();
+					Debug.Log ("asset name : " + obj.name);
                     resource.Add(obj.name, obj);
                 }
             }
