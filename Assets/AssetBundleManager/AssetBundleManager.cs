@@ -55,11 +55,7 @@ namespace AssetBundles
 		static List<AssetBundleLoadOperation> m_InProgressOperations = new List<AssetBundleLoadOperation> ();
 		static Dictionary<string, string[]> m_Dependencies = new Dictionary<string, string[]> ();
 
-		public delegate void OnLoadingAssetBundle(string bundleName, float progress);
-
-		public static OnLoadingAssetBundle onLoadingAssetBundle;
-
-        public delegate void OnDownloadProgress(string bundleName, float progress, int currentCount, int totalCount);
+		public delegate void OnDownloadProgress(string bundleName, float progress, int currentCount, int totalCount);
         public static OnDownloadProgress onDownloadProgress;
 
         private static Dictionary<string, string> m_DownloadBundles = new Dictionary<string,string>();
@@ -432,8 +428,8 @@ namespace AssetBundles
 					continue;
 				}
 
-				if (null != onDownloadProgress && null != m_AssetBundleManifest) {
-					onDownloadProgress (keyValue.Key, download.progress, m_DownloadBundles.Count, m_AssetBundleManifest.GetAllAssetBundles().Length);
+				if (null != onDownloadProgress && null != m_AssetBundleManifest && 0.0f < download.progress) {
+					onDownloadProgress (keyValue.Key, download.progress, m_LoadedAssetBundles.Count, m_AssetBundleManifest.GetAllAssetBundles().Length);
 				}
 
 				// If downloading succeeds.
@@ -450,17 +446,9 @@ namespace AssetBundles
 					//Debug.Log("Downloading " + keyValue.Key + " is done at frame " + Time.frameCount);
 					m_LoadedAssetBundles.Add(keyValue.Key, new LoadedAssetBundle(download.assetBundle) );
 					keysToRemove.Add(keyValue.Key);
+                    break;
                 }
-
-                if (null != onLoadingAssetBundle)
-				{
-					if (m_DownloadBundles.ContainsKey(keyValue.Key))
-					{
-						onLoadingAssetBundle(keyValue.Key, download.progress);
-					}
-				}
-
-
+                break;
 			}
 		
             // Remove the finished WWWs.
