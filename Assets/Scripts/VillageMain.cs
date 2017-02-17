@@ -8,15 +8,16 @@ public class VillageMain : SceneMain {
     public Text log;
 	public GameObject dungeon;
 	public UIDialogBox dialogBox;
+    public UIGaugeBar downloadProgress;
 	// Use this for initialization
 	public override IEnumerator Run () {
 		dungeon.SetActive (false);
 		yield return StartCoroutine (Init ());
 		dungeon.transform.FindChild("TouchInput").GetComponent<TouchInput> ().onTouchDown += (Vector3 position) => {
 			iTween.ScaleTo(dungeon, iTween.Hash("scale", new Vector3(1.2f, 1.2f, 1.0f), "time", 0.1f, "easetype", iTween.EaseType.easeInOutBack));
-		};
+            iTween.ScaleTo(dungeon, iTween.Hash("scale", new Vector3(1.0f, 1.0f, 1.0f), "time", 0.1f, "delay", 0.1f, "easetype", iTween.EaseType.easeInOutBack));
+        };
 		dungeon.transform.FindChild("TouchInput").GetComponent<TouchInput> ().onTouchUp += (Vector3 position) => {
-			iTween.ScaleTo(dungeon, iTween.Hash("scale", new Vector3(1.0f, 1.0f, 1.0f), "time", 0.1f, "easetype", iTween.EaseType.easeInOutBack));
 			StartCoroutine(ChangeScene("Dungeon", dungeon));
 		};	
     }
@@ -28,7 +29,9 @@ public class VillageMain : SceneMain {
 		log.text += "complete\n";
 		log.text += "load images..";
 		ResourceManager.Instance.onDowonloadProgress += (string bundleName, float progress, int currentCount, int totalCount) => {
-			Debug.Log(bundleName + " " + (progress * 100) + "%, " + currentCount + "/" + totalCount);
+            downloadProgress.max = 1.0f;
+            downloadProgress.current = progress;
+            downloadProgress.text.text = "Downloading.." + bundleName + " " + (progress * 100) + " %(" + downloadProgress.text.text + ")";
 		};
         yield return StartCoroutine(ResourceManager.Instance.Init());
 		log.text += "complete\n";
@@ -46,6 +49,7 @@ public class VillageMain : SceneMain {
 			yield return null;
 		}
 		log.color = new Color (1.0f, 1.0f, 1.0f, 0.0f);
+        downloadProgress.gameObject.SetActive(false);
 		dungeon.SetActive (true);
 	}
 
