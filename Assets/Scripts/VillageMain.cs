@@ -27,8 +27,8 @@ public class VillageMain : SceneMain {
 		NetworkManager.Instance.Init ();
 		log.text += "complete\n";
 		log.text += "load images..";
-		ResourceManager.Instance.onDowonloadProgress += (string bundleName, float progress, int curIndex, int totalCount) => {
-			Debug.Log(bundleName + " " + (progress * 100) + "%, " + curIndex + "/" + totalCount);
+		ResourceManager.Instance.onDowonloadProgress += (string bundleName, float progress, int currentCount, int totalCount) => {
+			Debug.Log(bundleName + " " + (progress * 100) + "%, " + currentCount + "/" + totalCount);
 		};
         yield return StartCoroutine(ResourceManager.Instance.Init());
 		log.text += "complete\n";

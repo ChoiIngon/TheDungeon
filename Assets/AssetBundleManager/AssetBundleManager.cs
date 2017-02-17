@@ -59,7 +59,7 @@ namespace AssetBundles
 
 		public static OnLoadingAssetBundle onLoadingAssetBundle;
 
-        public delegate void OnDownloadProgress(string bundleName, float progress, int cur, int TotalCount);
+        public delegate void OnDownloadProgress(string bundleName, float progress, int currentCount, int totalCount);
         public static OnDownloadProgress onDownloadProgress;
 
         private static Dictionary<string, string> m_DownloadBundles = new Dictionary<string,string>();
@@ -433,7 +433,7 @@ namespace AssetBundles
 				}
 
 				if (null != onDownloadProgress && null != m_AssetBundleManifest) {
-					onDownloadProgress (keyValue.Key, download.progress, m_DownloadBundles.Count + 1, m_AssetBundleManifest.GetAllAssetBundles().Length);
+					onDownloadProgress (keyValue.Key, download.progress, m_DownloadBundles.Count, m_AssetBundleManifest.GetAllAssetBundles().Length);
 				}
 
 				// If downloading succeeds.
