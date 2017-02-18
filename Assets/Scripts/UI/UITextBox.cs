@@ -44,7 +44,7 @@ public class UITextBox : MonoBehaviour {
 			StartCoroutine(Hide (time));
 		});
 
-		audioSource = GetComponent<AudioSource> ();
+		audioSource = GameObject.Instantiate<AudioSource> (audioSource);
 		rectTransform = GetComponent<RectTransform> ();
         height = rectTransform.rect.height;
 		state = State.Hide;

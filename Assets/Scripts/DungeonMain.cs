@@ -185,6 +185,9 @@ public class DungeonMain : SceneMain {
 		#if UNITY_EDITOR
 		Assert.AreNotEqual(0, config.level_infos.Length);
 		#endif
+		audioWalk = GameObject.Instantiate<AudioSource>(audioWalk);
+		audioBG = GameObject.Instantiate<AudioSource>(audioBG);
+		audioMonsterDie = GameObject.Instantiate<AudioSource>(audioMonsterDie);
 
 		QuestManager.Instance.Init ();
 		QuestManager.Instance.onComplete += (QuestData data) => {
