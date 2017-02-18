@@ -24,27 +24,26 @@ public class UITextBox : MonoBehaviour {
 
 	private string copied;
 	private float height;
-	private Vector3 closePosition;
 	private RectTransform rectTransform;
 	private int paragraph;
 	// Use this for initialization
 	void Start () {
 		fast.gameObject.SetActive (false);
-		fast.onClick.AddListener (FastForward);
 		fast.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, SceneMain.canvasHeight);
-		//fast.GetComponent<RectTransform> ().rect.height = SceneMain.canvasHeight + fast.GetComponent<RectTransform> ().rect.height;
+		fast.onClick.AddListener (FastForward);
+
 		next.gameObject.SetActive (false);
+		next.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, SceneMain.canvasHeight);
 		next.onClick.AddListener (() => {
 			state = State.Hide;
-			paragraph = Mathf.Max(0, paragraph-1);
 		});
-		next.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, SceneMain.canvasHeight);
+
 		close.gameObject.SetActive (false);
+		close.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, SceneMain.canvasHeight);
 		close.onClick.AddListener (() => {
 			StartCoroutine(Hide (time));
 		});
-		close.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, SceneMain.canvasHeight);
-		closePosition = close.transform.localPosition;
+
 		audioSource = GetComponent<AudioSource> ();
 		rectTransform = GetComponent<RectTransform> ();
         height = rectTransform.rect.height;
@@ -73,7 +72,7 @@ public class UITextBox : MonoBehaviour {
 		state = State.Typing;
 		fast.gameObject.SetActive (true);
 		next.gameObject.SetActive (false);
-		//close.gameObject.SetActive (false);
+		close.gameObject.SetActive (false);
 
 		audioSource.Play();
 		foreach (char c in text)
@@ -100,13 +99,13 @@ public class UITextBox : MonoBehaviour {
 		paragraph = texts.Length - 1;
 		foreach (string text in texts) {
 			yield return StartCoroutine (Write (text));
+			paragraph = Mathf.Max(0, paragraph-1);
 		}
 	}
 	public IEnumerator Hide(float t = 0.0f)
 	{
 		close.gameObject.SetActive (false);
 		//iTween.Stop (close.gameObject);
-		close.transform.localPosition = closePosition;
 		state = State.Hide;
 		if (0.0f == t) {
 			t = time;

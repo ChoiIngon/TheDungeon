@@ -5,6 +5,8 @@ using System.IO;
 
 public class ResourceManager : MonoBehaviour {
     Dictionary<string, Object> resource;
+	public delegate void OnLoadProgress(string bundleName, string assetName);
+	public OnLoadProgress onLoadProgress;
 	public AssetBundles.AssetBundleManager.OnDownloadProgress onDowonloadProgress {
 		set {
 			AssetBundles.AssetBundleManager.onDownloadProgress += value;
@@ -13,6 +15,7 @@ public class ResourceManager : MonoBehaviour {
 			return AssetBundles.AssetBundleManager.onDownloadProgress;
 		}
 	}
+
     private static ResourceManager _instance;  
 	public static ResourceManager Instance  
 	{  
@@ -48,15 +51,17 @@ public class ResourceManager : MonoBehaviour {
             yield return StartCoroutine(request);
 
             string[] assetBundleNames = AssetBundles.AssetBundleManager.AssetBundleManifestObject.GetAllAssetBundles();
-            foreach(string assetBundleName in assetBundleNames) {
-                var assetLoadOperation = AssetBundles.AssetBundleManager.LoadAssetAsync(assetBundleName, "null", typeof(Object));
-                if(null == assetLoadOperation)
-                {
-                    yield break;
-                }
+			foreach (string assetBundleName in assetBundleNames) {
+				var assetLoadOperation = AssetBundles.AssetBundleManager.LoadAssetAsync (assetBundleName, "null", typeof(Object));
+				if (null == assetLoadOperation) {
+					yield break;
+				}
 
-                yield return StartCoroutine(assetLoadOperation);
-                string error;
+				yield return StartCoroutine (assetLoadOperation);
+			}
+
+			foreach(string assetBundleName in assetBundleNames) {
+				string error;
 
                 AssetBundles.LoadedAssetBundle loadedAssetBundle = AssetBundles.AssetBundleManager.GetLoadedAssetBundle(assetBundleName, out error);
                 string[] assetNames = loadedAssetBundle.m_AssetBundle.GetAllAssetNames();
@@ -68,8 +73,10 @@ public class ResourceManager : MonoBehaviour {
 					}
                     yield return StartCoroutine(operation);
                     Object obj = operation.GetAsset<Object>();
-					Debug.Log ("asset name : " + obj.name);
                     resource.Add(obj.name, obj);
+					if (null != onLoadProgress) {
+						onLoadProgress (assetBundleName, assetName);
+					}
                 }
             }
         }
