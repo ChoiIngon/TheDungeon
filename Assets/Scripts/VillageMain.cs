@@ -72,6 +72,11 @@ public class VillageMain : SceneMain {
 		yield return StartCoroutine(MonsterManager.Instance.Init ());
 		log.text += "complete\n";
 
+		QuestManager.Instance.Init ();
+		QuestManager.Instance.onComplete += (QuestData data) => {
+			StartCoroutine(OnCompleteQuest(data));
+		};
+
 		while (0.0f < log.color.a) {
 			Color color = log.color;
 			color.a -= Time.deltaTime;
@@ -111,7 +116,13 @@ public class VillageMain : SceneMain {
 
 	IEnumerator CheckQuest()
 	{
-		//QuestData quest = QuestManager.Instance.GetAvailableQuest ();
+		QuestData quest = QuestManager.Instance.GetAvailableQuest ();
+		if (null != quest && null != quest.startDialouge) {
+			state = State.Popup;
+			yield return StartCoroutine(npc.Talk(quest.startDialouge.dialouge));
+			state = State.Idle;
+		}
+		/*
 		string[] texts = new string[] {
 			"Many heroes of all kinds ventured into the Dungeon before you.\n",
 			"Some of them have returned with treasures and magical artifacts, most have never been heard of ever since.\n",
@@ -131,8 +142,16 @@ public class VillageMain : SceneMain {
 			"Very few adventurers ever descended this far..."
 		};
 
-		state = State.Popup;
-		yield return StartCoroutine(npc.Talk(texts));
-		state = State.Idle;
+		//state = State.Popup;
+		//yield return StartCoroutine(npc.Talk(texts));
+		//state = State.Idle;
+		*/
+	}
+	IEnumerator OnCompleteQuest(QuestData quest)
+	{
+		yield return StartCoroutine(textBox.Write(
+			quest.name + " is completed!!"
+		));
+		yield return StartCoroutine(textBox.Hide());
 	}
 }

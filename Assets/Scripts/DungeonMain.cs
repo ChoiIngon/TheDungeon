@@ -182,6 +182,11 @@ public class DungeonMain : SceneMain {
 		yield return NetworkManager.Instance.HttpRequest ("info_dungeon.php", (string json) => {
 			config = JsonUtility.FromJson<Config>(json);
 		});
+		QuestManager.Instance.Init ();
+		QuestManager.Instance.onComplete += (QuestData data) => {
+			StartCoroutine(OnCompleteQuest(data));
+		};
+
 		#if UNITY_EDITOR
 		Assert.AreNotEqual(0, config.level_infos.Length);
 		#endif
@@ -189,10 +194,7 @@ public class DungeonMain : SceneMain {
 		audioBG = GameObject.Instantiate<AudioSource>(audioBG);
 		audioMonsterDie = GameObject.Instantiate<AudioSource>(audioMonsterDie);
 
-		QuestManager.Instance.Init ();
-		QuestManager.Instance.onComplete += (QuestData data) => {
-			StartCoroutine(OnCompleteQuest(data));
-		};
+
 		Player.Instance.Init ();
 
 		InitDungeon ();
@@ -449,6 +451,5 @@ public class DungeonMain : SceneMain {
 		yield return StartCoroutine(textBox.Write(
 			quest.name + " is completed!!"
 		));
-		yield return StartCoroutine(textBox.Hide());
 	}
 }
