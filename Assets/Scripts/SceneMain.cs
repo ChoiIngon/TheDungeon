@@ -7,11 +7,19 @@ public abstract class SceneMain : MonoBehaviour {
 	public bool isComplete = false;
 	public static float widthScale = 1.0f;
 	public static float heightScale = 1.0f;
+	public static float canvasWidth = 1.0f;
+	public static float canvasHeight = 1.0f;
 	void Start () {
 		CanvasScaler canvasScaler = Object.FindObjectOfType<CanvasScaler> ();
+		canvasWidth = canvasScaler.referenceResolution.x;
+		canvasHeight = canvasScaler.referenceResolution.y;
 		SceneMain.widthScale = Screen.width/canvasScaler.referenceResolution.x;
 		SceneMain.heightScale = Screen.height/canvasScaler.referenceResolution.y;
-		Debug.Log ("ui scale:{x:" + widthScale + ", y:" + heightScale + ")");
+		Debug.Log (
+			"canvas:{x" + canvasWidth + ", y:" + canvasHeight + "}, " +
+			"screen:{x:" + Screen.width + ", y:" + Screen.height + "}," +
+			"scale:{x:" + widthScale + ", y:" + heightScale + "}"
+		);
 		iTween.CameraFadeAdd ();
 		StartCoroutine (Run ());
 	}

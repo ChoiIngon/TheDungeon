@@ -37,6 +37,9 @@ public class TouchInput : MonoBehaviour {
 	}
 
 	void OnMouseDown() {
+		if (!enabled) 
+			return;
+		
 		lastPressPosition = Camera.main.ScreenToWorldPoint (
 			new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane)
 		);
@@ -46,6 +49,9 @@ public class TouchInput : MonoBehaviour {
 		}
 	}
 	void OnMouseDrag() {
+		if (!enabled) 
+			return;
+		
 		Vector3 currentPressPosition = Camera.main.ScreenToWorldPoint (
 			new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane)
 		);
@@ -56,6 +62,9 @@ public class TouchInput : MonoBehaviour {
 		lastPressPosition = currentPressPosition;
 	}
 	void OnMouseUp() {
+		if (!enabled) 
+			return;
+		
 		if (null != onTouchUp)
 		{
 			onTouchUp(lastPressPosition);

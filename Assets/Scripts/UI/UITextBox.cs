@@ -31,15 +31,19 @@ public class UITextBox : MonoBehaviour {
 	void Start () {
 		fast.gameObject.SetActive (false);
 		fast.onClick.AddListener (FastForward);
+		fast.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, SceneMain.canvasHeight);
+		//fast.GetComponent<RectTransform> ().rect.height = SceneMain.canvasHeight + fast.GetComponent<RectTransform> ().rect.height;
 		next.gameObject.SetActive (false);
 		next.onClick.AddListener (() => {
 			state = State.Hide;
 			paragraph = Mathf.Max(0, paragraph-1);
 		});
+		next.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, SceneMain.canvasHeight);
 		close.gameObject.SetActive (false);
 		close.onClick.AddListener (() => {
 			StartCoroutine(Hide (time));
 		});
+		close.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, SceneMain.canvasHeight);
 		closePosition = close.transform.localPosition;
 		audioSource = GetComponent<AudioSource> ();
 		rectTransform = GetComponent<RectTransform> ();

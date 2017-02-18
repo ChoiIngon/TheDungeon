@@ -2337,7 +2337,7 @@ MonoBehaviour:
   uiMain: {fileID: 886684694}
   dungeonLevel: {fileID: 1751527905}
   walkDistance: 7.2
-  walkSpeed: 14
+  walkSpeed: 16
   battleSpeed: 2.2
   audioWalk: {fileID: 129844982}
   audioBG: {fileID: 477938924}
@@ -4034,11 +4034,6 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 224138725726622380, guid: ebb5f2e7f2d604940a83e114f23452cb,
-        type: 2}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 224344760188703416, guid: ebb5f2e7f2d604940a83e114f23452cb,
         type: 2}
       propertyPath: m_AnchorMax.x
@@ -4051,11 +4046,6 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 224141083924629154, guid: ebb5f2e7f2d604940a83e114f23452cb,
         type: 2}
-      propertyPath: m_AnchorMin.y
-      value: 0.9241078
-      objectReference: {fileID: 0}
-    - target: {fileID: 224141083924629154, guid: ebb5f2e7f2d604940a83e114f23452cb,
-        type: 2}
       propertyPath: m_AnchorMax.x
       value: 1
       objectReference: {fileID: 0}
@@ -4063,11 +4053,6 @@ Prefab:
         type: 2}
       propertyPath: m_AnchorMax.y
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 224660283911366242, guid: ebb5f2e7f2d604940a83e114f23452cb,
-        type: 2}
-      propertyPath: m_AnchoredPosition.y
-      value: -0.00012068043
       objectReference: {fileID: 0}
     - target: {fileID: 224660283911366242, guid: ebb5f2e7f2d604940a83e114f23452cb,
         type: 2}
@@ -4098,11 +4083,6 @@ Prefab:
         type: 2}
       propertyPath: m_SizeDelta.y
       value: -17
-      objectReference: {fileID: 0}
-    - target: {fileID: 224344760188703416, guid: ebb5f2e7f2d604940a83e114f23452cb,
-        type: 2}
-      propertyPath: m_AnchorMin.x
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ebb5f2e7f2d604940a83e114f23452cb, type: 2}
