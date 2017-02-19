@@ -178,14 +178,17 @@ public class DungeonMain : SceneMain {
 		yield return StartCoroutine(ResourceManager.Instance.Init ());
 		yield return StartCoroutine(ItemManager.Instance.Init ());
 		yield return StartCoroutine(MonsterManager.Instance.Init ());
-		#endif
-		yield return NetworkManager.Instance.HttpRequest ("info_dungeon.php", (string json) => {
-			config = JsonUtility.FromJson<Config>(json);
-		});
 		QuestManager.Instance.Init ();
 		QuestManager.Instance.onComplete += (QuestData data) => {
 			completeQuests.Add(data);
 		};
+		QuestManager.Instance.Find("QUEST_EXAMPLE").state = QuestData.State.AccecptWait;
+		QuestManager.Instance.Find("QUEST_EXAMPLE").Start();
+		#endif
+		yield return NetworkManager.Instance.HttpRequest ("info_dungeon.php", (string json) => {
+			config = JsonUtility.FromJson<Config>(json);
+		});
+
 
 		#if UNITY_EDITOR
 		Assert.AreNotEqual(0, config.level_infos.Length);
@@ -197,12 +200,15 @@ public class DungeonMain : SceneMain {
 
 		Player.Instance.Init ();
 
-		yield return StartCoroutine(InitDungeon ());
+		QuestManager.Instance.Update (QuestEvent.EnterDungeon, "");
+		yield return CheckCompleteQuest ();
+
+		InitDungeon ();
 		rooms.gameObject.SetActive (true);
 		state = State.Idle;
 		yield break;
 	}
-	IEnumerator InitDungeon() {
+	void InitDungeon() {
 		dungeonLevelInfo = config.level_infos [(level - 1) % config.level_infos.Length];
 		ItemManager.Instance.InitDungeonLevel (dungeonLevelInfo);
 		Dungeon.Instance.Init (dungeonLevelInfo);
@@ -211,8 +217,7 @@ public class DungeonMain : SceneMain {
 		dungeonLevel.text = "<size=" + (dungeonLevel.fontSize * 0.8f) + ">B</size> " + level.ToString ();
 		StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 0.0f, "time", 1.0f)));
 
-		QuestManager.Instance.Update ("EnterDungeon", "");
-		yield return CheckCompleteQuest ();
+
 		Analytics.CustomEvent("InitDungeon", new Dictionary<string, object>	{
 			{"dungeon_level", level },
 			{"player_level", Player.Instance.level},
@@ -309,7 +314,7 @@ public class DungeonMain : SceneMain {
 			yield return StartCoroutine (textBox.Hide ());
 			if (true == goDown) {
 				yield return StartCoroutine (GoDown ());
-				yield return StartCoroutine(InitDungeon ());
+				InitDungeon ();
 				yield return new WaitForSeconds (1.0f);
 			}
 		}

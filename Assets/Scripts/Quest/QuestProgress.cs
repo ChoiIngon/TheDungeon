@@ -5,12 +5,25 @@ using UnityEngine;
 using UnityEngine.Assertions;
 #endif
 
+public static class QuestEvent {
+	public const string KillMonster = "KillMonster";
+	public const string EnterDungeon = "EnterDungeon";
+	public const string CollectItem = "CollectItem";
+
+}
 public class QuestProgress
 {
 	public string type;
 	public string key;
 	public int goal;
 	public int progress;
+	public QuestProgress(string type, string key, int goal)
+	{
+		this.type = type;
+		this.key = key;
+		this.goal = goal;
+		this.progress = 0;
+	}
 	public virtual void Start()
 	{
 		#if UNITY_EDITOR

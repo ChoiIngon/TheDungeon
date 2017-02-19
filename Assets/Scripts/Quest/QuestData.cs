@@ -15,8 +15,13 @@ public class QuestData {
 	public class Dialouge {
 		public string speacker;
 		public string[] dialouge;
-	};
+	}
 
+	public class Reward
+	{
+		public int coin;
+		public int exp;
+	}
 	public string id;
 	public string name;
 	public State state = State.Invalid;

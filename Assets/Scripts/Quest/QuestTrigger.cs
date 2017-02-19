@@ -7,24 +7,9 @@ public abstract class QuestTrigger
 	public abstract bool IsAvailable();
 }
 
-/*
-public class QuestStartCondition_MeetNpc : QuestTrigger {
-	public string npcID;
-	public override bool IsAvailable() {
-		Object target = Player.Instance.target;
-		if (null != target && Object.Category.NPC == target.category) {
-			Npc npc = (Npc)target;
-			if(npc.id == npcID)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-}
-
-public class QuestStartCondition_Level : QuestStartCondition
+public class QuestTrigger_LessLevel : QuestTrigger
 {
+	public const string id = "LessLevel";
 	public int level;
 	public override bool IsAvailable() {
 		if (level <= Player.Instance.level) {
@@ -34,8 +19,28 @@ public class QuestStartCondition_Level : QuestStartCondition
 	}
 }
 
-public class QuestStartCondition_Complete : QuestStartCondition {
+public class QuestTrigger_LessCompleteQuestCount : QuestTrigger {
+	public const string id = "LessCompleteQuestCount";
+	public int count;
+	public QuestTrigger_LessCompleteQuestCount(int count)
+	{
+		this.count = count;
+	}
+	public override bool IsAvailable() {
+		if (count <= QuestManager.Instance.completes.Count) {
+			return true;
+		}
+		return false;
+	}
+}
+	
+public class QuestTrigger_CompleteQuestID : QuestTrigger {
+	public const string id = "CompleteQuestID";
 	public string questID;
+	public QuestTrigger_CompleteQuestID(string questID)
+	{
+		this.questID = questID;
+	}
 	public override bool IsAvailable() {
 		if (false == QuestManager.Instance.completes.ContainsKey (questID)) {
 			return false;
@@ -43,14 +48,3 @@ public class QuestStartCondition_Complete : QuestStartCondition {
 		return true;
 	}
 }
-
-public class QuestStartCondition_Incomplete : QuestStartCondition {
-	public string questID;
-	public override bool IsAvailable() {
-		if (true == QuestManager.Instance.completes.ContainsKey (questID)) {
-			return false;
-		}
-		return true;
-	}
-}
-*/

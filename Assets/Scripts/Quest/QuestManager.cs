@@ -15,7 +15,7 @@ public class CompleteQuest {
 public class QuestManager : Singleton<QuestManager> {
 	public delegate void UpdateDelegate(string key);
 	public delegate void CompleteDelegate(QuestData quests);
-    public Dictionary<string, UpdateDelegate> updates = new Dictionary<string, UpdateDelegate>();
+    public Dictionary<string, UpdateDelegate> updates;
 	public Dictionary<string, CompleteQuest> completes;
 	public Dictionary<string, QuestData> quests;
 
@@ -26,26 +26,35 @@ public class QuestManager : Singleton<QuestManager> {
 		if (null != quests) {
 			return;
 		}
+		updates = new Dictionary<string, UpdateDelegate>();
 		quests = new Dictionary<string, QuestData> {
             { "QUEST_001",  new QuestData() {
                 id = "QUEST_001", name = "First Blood", state = QuestData.State.AccecptWait,
                 progresses = new List<QuestProgress> {
-                    new QuestProgress() { type = "KillMonster", key = "", goal = 1, progress = 0 }
+					new QuestProgress(QuestEvent.KillMonster, "", 1)
                 }
             } },
             { "QUEST_002",  new QuestData() {
                 id = "QUEST_002", name = "Daemon Hunter", state = QuestData.State.AccecptWait,
                 progresses = new List<QuestProgress> {
-                    new QuestProgress() { type = "KillMonster", key = "DAEMON_001", goal = 3, progress = 0 }
+					new QuestProgress(QuestEvent.KillMonster, "DAEMON_001", 3)
                 }
             } },
-            { "QUEST_003", new QuestData() {
-                id = "QUEST_003", name = "Cutting it close", state = QuestData.State.AccecptWait,
-                progresses = new List<QuestProgress>
-                {
-                    new QuestProgress() { type = "Heal", key = "", goal = 1, progress = 0 }
-                }
-            } }
+			{ "QUEST_004", new QuestData() {
+				id = "QUEST_004", name = "Get Item", state = QuestData.State.Invalid,
+				triggers = new List<QuestTrigger> {
+					new QuestTrigger_CompleteQuestID("QUEST_EXAMPLE")
+				},
+				progresses = new List<QuestProgress> {
+					new QuestProgress(QuestEvent.CollectItem, "QUEST_ITEM", 1)
+				},
+				startDialouge = new QuestData.Dialouge() {
+					speacker = "npc",
+					dialouge = new string[] {
+						"you got quest collect item"
+					}
+				}
+			}}
         };
         foreach(var itr in quests)
         {
@@ -53,7 +62,6 @@ public class QuestManager : Singleton<QuestManager> {
             quest.Start();
         }
 		quests["QUEST_EXAMPLE"] = new Quest_Example();
-
 		completes = new Dictionary<string, CompleteQuest>();
 	}
 

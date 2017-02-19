@@ -3,25 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Quest_Example : QuestData {
-	public class QuestTrigger_Example : QuestTrigger
-	{
-		public override bool IsAvailable()
-		{
-			if (0 == QuestManager.Instance.completes.Count) {
-				return true;
-			}
-			return false;
-		}
-	}
 	public Quest_Example()
 	{
 		this.id = "QUEST_EXAMPLE";
 		this.name = "Example Quest";
 		this.state = QuestData.State.Invalid;
-		this.triggers.Add (new QuestTrigger_Example ());
-		this.progresses = new List<QuestProgress> {
-			new QuestProgress () { type = "EnterDungeon", key = "", goal = 1, progress = 0 }
-		};
+		this.triggers.Add (new QuestTrigger_LessCompleteQuestCount (0));
+		this.progresses.Add (new QuestProgress (QuestEvent.EnterDungeon, "", 1));
 		startDialouge = new Dialouge ();
 		startDialouge.speacker = "Far Seer";
 		startDialouge.dialouge = new string[] {
