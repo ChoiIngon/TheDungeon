@@ -20,15 +20,13 @@ public class Quest_Example : QuestData {
 		this.state = QuestData.State.Invalid;
 		this.triggers.Add (new QuestTrigger_Example ());
 		this.progresses = new List<QuestProgress> {
-			new QuestProgress () { type = "KillMonster", key = "", goal = 1, progress = 0 }
+			new QuestProgress () { type = "EnterDungeon", key = "", goal = 1, progress = 0 }
 		};
 		startDialouge = new Dialouge ();
 		startDialouge.speacker = "Far Seer";
 		startDialouge.dialouge = new string[] {
-			"Quest dialouge 1, Quest dialouge 1, Quest dialouge 1, Quest dialouge 1",
-			"Quest dialouge 2, Quest dialouge 1, Quest dialouge 1, Quest dialouge 2",
-			"Quest dialouge 3, Quest dialouge 1, Quest dialouge 1, Quest dialouge 3",
-			"Quest dialouge 4, Quest dialouge 1, Quest dialouge 1, Quest dialouge 4",
+			"Welcome to \'Last Village\'\nYour first quest is go to the dungeon and reach the last level\n",
+			"Touch enter button"
 		};
 	}
 }

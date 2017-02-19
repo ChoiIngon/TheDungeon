@@ -197,12 +197,12 @@ public class DungeonMain : SceneMain {
 
 		Player.Instance.Init ();
 
-		InitDungeon ();
+		yield return StartCoroutine(InitDungeon ());
 		rooms.gameObject.SetActive (true);
 		state = State.Idle;
 		yield break;
 	}
-	void InitDungeon() {
+	IEnumerator InitDungeon() {
 		dungeonLevelInfo = config.level_infos [(level - 1) % config.level_infos.Length];
 		ItemManager.Instance.InitDungeonLevel (dungeonLevelInfo);
 		Dungeon.Instance.Init (dungeonLevelInfo);
@@ -210,6 +210,9 @@ public class DungeonMain : SceneMain {
 		InitRooms ();
 		dungeonLevel.text = "<size=" + (dungeonLevel.fontSize * 0.8f) + ">B</size> " + level.ToString ();
 		StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 0.0f, "time", 1.0f)));
+
+		QuestManager.Instance.Update ("EnterDungeon", "");
+		yield return CheckCompleteQuest ();
 		Analytics.CustomEvent("InitDungeon", new Dictionary<string, object>	{
 			{"dungeon_level", level },
 			{"player_level", Player.Instance.level},
@@ -295,16 +298,7 @@ public class DungeonMain : SceneMain {
             monster.Init (Dungeon.Instance.current.monster);
 			yield return StartCoroutine (Battle ());
 		} 
-
-
-		foreach(QuestData quest in completeQuests)
-		{
-			yield return StartCoroutine(textBox.Write(
-				quest.name + " is completed!!"
-			));	
-		}
-		completeQuests.Clear ();
-
+	
 		if (Dungeon.Room.Type.Exit == Dungeon.Instance.current.type) {
             state = State.Popup;
             bool goDown = false;
@@ -315,7 +309,7 @@ public class DungeonMain : SceneMain {
 			yield return StartCoroutine (textBox.Hide ());
 			if (true == goDown) {
 				yield return StartCoroutine (GoDown ());
-				InitDungeon ();
+				yield return StartCoroutine(InitDungeon ());
 				yield return new WaitForSeconds (1.0f);
 			}
 		}
@@ -418,6 +412,9 @@ public class DungeonMain : SceneMain {
 		yield return StartCoroutine (textBox.Hide ());
 
 		QuestManager.Instance.Update ("KillMonster", info.id);
+		QuestManager.Instance.Update ("EnterDungeon", "");
+		yield return CheckCompleteQuest ();
+
         Analytics.CustomEvent("Win", new Dictionary<string, object>
         {
 			{"dungeon_level", level},
@@ -456,5 +453,17 @@ public class DungeonMain : SceneMain {
 		level += 1;
 
 		Camera.main.transform.position = position;
+	}
+	IEnumerator CheckCompleteQuest()
+	{
+		state = State.Popup;
+		foreach(QuestData quest in completeQuests)
+		{
+			yield return StartCoroutine(textBox.Write(
+				quest.name + " is completed!!"
+			));	
+		}
+		completeQuests.Clear ();
+		state = State.Idle;
 	}
 }

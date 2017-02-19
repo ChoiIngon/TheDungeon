@@ -82,11 +82,6 @@ public class Monster : Unit {
 		health.current = health.max;
 	}
 
-	public void OnDisable()
-	{
-		ui.gameObject.SetActive (false);
-	}
-	 
 	public override void Attack(Unit defender)
 	{
 		animator.SetTrigger ("Attack");
