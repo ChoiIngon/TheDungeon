@@ -26,6 +26,7 @@ public class UITextBox : MonoBehaviour {
 	private float height;
 	private RectTransform rectTransform;
 	private int paragraph;
+	private Coroutine hideCoroutine;
 	// Use this for initialization
 	void Start () {
 		fast.gameObject.SetActive (false);
@@ -41,7 +42,7 @@ public class UITextBox : MonoBehaviour {
 		close.gameObject.SetActive (false);
 		close.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, SceneMain.canvasHeight);
 		close.onClick.AddListener (() => {
-			StartCoroutine(Hide (time));
+			hideCoroutine = StartCoroutine(Hide (time));
 		});
 
 		audioSource = GameObject.Instantiate<AudioSource> (audioSource);
@@ -65,6 +66,9 @@ public class UITextBox : MonoBehaviour {
 
 	public IEnumerator Write(string text)
 	{
+		if (null != hideCoroutine) {
+			StopCoroutine (hideCoroutine);
+		}
 		if (State.Hide == state) {
 			yield return StartCoroutine (Show (time));
 		}

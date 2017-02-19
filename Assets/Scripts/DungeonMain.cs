@@ -33,7 +33,7 @@ public class DungeonMain : SceneMain {
     private Dungeon.LevelInfo dungeonLevelInfo;
     private Vector3 touchPoint = Vector3.zero;
     private TouchInput input;
-
+	private List<QuestData> completeQuests;
     private static DungeonMain _instance;  
 	public static DungeonMain Instance  
 	{  
@@ -165,7 +165,7 @@ public class DungeonMain : SceneMain {
 			}
 			touchPoint = Vector3.zero;
 		};
-
+		completeQuests = new List<QuestData> ();
 		StartCoroutine (Init ());
 	}
 
@@ -184,7 +184,7 @@ public class DungeonMain : SceneMain {
 		});
 		QuestManager.Instance.Init ();
 		QuestManager.Instance.onComplete += (QuestData data) => {
-			StartCoroutine(OnCompleteQuest(data));
+			completeQuests.Add(data);
 		};
 
 		#if UNITY_EDITOR
@@ -295,7 +295,17 @@ public class DungeonMain : SceneMain {
             monster.Init (Dungeon.Instance.current.monster);
 			yield return StartCoroutine (Battle ());
 		} 
-		else if (Dungeon.Room.Type.Exit == Dungeon.Instance.current.type) {
+
+
+		foreach(QuestData quest in completeQuests)
+		{
+			yield return StartCoroutine(textBox.Write(
+				quest.name + " is completed!!"
+			));	
+		}
+		completeQuests.Clear ();
+
+		if (Dungeon.Room.Type.Exit == Dungeon.Instance.current.type) {
             state = State.Popup;
             bool goDown = false;
 			dialogBox.onSubmit += () =>  {
@@ -309,6 +319,7 @@ public class DungeonMain : SceneMain {
 				yield return new WaitForSeconds (1.0f);
 			}
 		}
+
 		state = State.Idle;
 	}
 	IEnumerator Battle()
@@ -350,7 +361,7 @@ public class DungeonMain : SceneMain {
 			}
 			yield return new WaitForSeconds (1.0f/battleSpeed);
 		}
-		
+		monster.ui.gameObject.SetActive (false);
 		if (0.0f < monster.health.current) {
 			yield return StartCoroutine (Lose ());
 		}
@@ -366,6 +377,7 @@ public class DungeonMain : SceneMain {
 	IEnumerator Win(Monster.Info info)
 	{
         audioMonsterDie.Play();
+
         string text = "";
 		text += "You defeated \'" + info.name + "\'\n";
 
@@ -444,12 +456,5 @@ public class DungeonMain : SceneMain {
 		level += 1;
 
 		Camera.main.transform.position = position;
-	}
-
-	IEnumerator OnCompleteQuest(QuestData quest)
-	{
-		yield return StartCoroutine(textBox.Write(
-			quest.name + " is completed!!"
-		));
 	}
 }
