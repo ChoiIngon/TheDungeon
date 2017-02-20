@@ -321,6 +321,7 @@ GameObject:
   m_Component:
   - component: {fileID: 613228449}
   - component: {fileID: 613228450}
+  - component: {fileID: 613228451}
   m_Layer: 0
   m_Name: VillageMain
   m_TagString: Untagged
@@ -361,6 +362,17 @@ MonoBehaviour:
   dialogBox: {fileID: 294295864}
   textBox: {fileID: 1905356158}
   downloadProgress: {fileID: 674374440}
+--- !u!114 &613228451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 613228448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87a0a932526301e4daf1ca4275c4b4ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &674374439 stripped
 RectTransform:
   m_PrefabParentObject: {fileID: 224153935741433628, guid: c1d5e83b825a145c68dc80df4c2c50e3,

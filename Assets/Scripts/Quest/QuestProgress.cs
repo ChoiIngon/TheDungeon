@@ -8,9 +8,10 @@ using UnityEngine.Assertions;
 public static class QuestEvent {
 	public const string KillMonster = "KillMonster";
 	public const string EnterDungeon = "EnterDungeon";
+    public const string EngerVillage = "EnterVillage";
 	public const string CollectItem = "CollectItem";
-
 }
+
 public class QuestProgress
 {
 	public string type;
