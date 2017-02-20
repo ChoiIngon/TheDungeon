@@ -373,6 +373,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87a0a932526301e4daf1ca4275c4b4ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameId: 1305819
+  enableTestMode: 1
 --- !u!224 &674374439 stripped
 RectTransform:
   m_PrefabParentObject: {fileID: 224153935741433628, guid: c1d5e83b825a145c68dc80df4c2c50e3,

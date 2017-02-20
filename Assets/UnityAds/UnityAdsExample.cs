@@ -4,18 +4,18 @@ using UnityEngine;
 using UnityEngine.Advertisements;
 
 public class UnityAdsExample : MonoBehaviour {
-#if !UNITY_ADS // If the Ads service is not enabled...
+//#if !UNITY_ADS // If the Ads service is not enabled...
     public string gameId; // Set this value from the inspector.
     public bool enableTestMode = true;
-#endif
+//#endif
 
     IEnumerator Start()
     {
-#if !UNITY_ADS // If the Ads service is not enabled...
+//#if !UNITY_ADS // If the Ads service is not enabled...
         if (Advertisement.isSupported) { // If runtime platform is supported...
             Advertisement.Initialize(gameId, enableTestMode); // ...initialize.
         }
-#endif
+//#endif
 
         // Wait until Unity Ads is initialized,
         //  and the default ad placement is ready.

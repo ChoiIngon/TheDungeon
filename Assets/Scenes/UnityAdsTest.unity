@@ -205,6 +205,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87a0a932526301e4daf1ca4275c4b4ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameId: 1305819
+  enableTestMode: 1
 --- !u!4 &2133939497
 Transform:
   m_ObjectHideFlags: 0
