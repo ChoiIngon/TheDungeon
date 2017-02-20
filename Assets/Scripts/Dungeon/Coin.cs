@@ -30,7 +30,7 @@ public class Coin : MonoBehaviour {
 	public void Stop()
 	{
 		StopCoroutine (coroutine);
-		iTween.MoveTo (gameObject, DungeonMain.Instance.coin.position, 0.1f);
+		iTween.MoveTo (gameObject, UICoin.Instance.position, 0.1f);
 		DestroyObject (gameObject, 0.1f);
 	}
 
@@ -56,14 +56,14 @@ public class Coin : MonoBehaviour {
 		}
 
 		float t = Random.Range (0.5f, 0.8f);
-		iTween.MoveTo (gameObject, DungeonMain.Instance.coin.position, t);
+		iTween.MoveTo (gameObject, UICoin.Instance.position, t);
 		DestroyObject (gameObject, t);
 	}
 
 	public void OnDisable()
 	{
 		if (true == Application.isPlaying) {
-			DungeonMain.Instance.coin.ChangeAmount (amount);
+			UICoin.Instance.ChangeAmount (amount);
 		}
 	}
 }

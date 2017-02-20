@@ -29,7 +29,7 @@ public class Player : Unit {
 	public Transform 	ui;
     public UIGaugeBar 	health;
 	public UIGaugeBar 	exp;
-	public UICoin 		coin;
+
 	public Transform 	bloodMarkPanel;
 
 	public BloodMark bloodMarkPrefab;
@@ -57,11 +57,11 @@ public class Player : Unit {
         health = ui.FindChild("Health").GetComponent<UIGaugeBar>();
 		health.current = health.max = stats.health;
 
-		coin.count = 0;
+		UICoin.Instance.count = 0;
 		#if UNITY_EDITOR
 		Assert.AreNotEqual(null, exp);
 		Assert.AreNotEqual(null, health);
-		Assert.AreNotEqual(null, coin);
+		Assert.AreNotEqual(null, UICoin.Instance);
 		Assert.AreNotEqual(null, bloodMarkPanel);
 		Assert.AreNotEqual(null, bloodMarkPrefab);
 		Assert.AreNotEqual(null, coinPrefab);

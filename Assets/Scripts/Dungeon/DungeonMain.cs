@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 public class DungeonMain : SceneMain {
     public UIButtonGroup mainButtonGroup;
     public UIButtonGroup battleButtonGroup;
-    public UICoin coin;
+    
     public UIMiniMap miniMap;
 	public RectTransform uiMain;
     public Text dungeonLevel;
@@ -220,7 +220,7 @@ public class DungeonMain : SceneMain {
 			{"dungeon_level", level },
 			{"player_level", Player.Instance.level},
 			{"player_exp", Player.Instance.exp.current },
-			{"player_gold", Player.Instance.coin.count }
+			{"player_gold", UICoin.Instance.count }
 		});
 	}
 

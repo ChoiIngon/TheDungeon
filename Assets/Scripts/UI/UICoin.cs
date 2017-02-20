@@ -9,8 +9,28 @@ public class UICoin : MonoBehaviour {
 	public Text text;
 	public Image image;
 	public Vector3 position;
-	// Use this for initialization
-	void Start () {
+	private static UICoin _instance;  
+	public static UICoin Instance  
+	{  
+		get  
+		{  
+			if (!_instance) 
+			{  
+				_instance = (UICoin)GameObject.FindObjectOfType(typeof(UICoin));  
+				if (!_instance)  
+				{  
+					GameObject container = new GameObject();  
+					container.name = "UICoin";  
+					_instance = container.AddComponent<UICoin>();  
+				}  
+				_instance.Init ();
+				DontDestroyOnLoad (_instance);
+			}  
+
+			return _instance;  
+		}  
+	}	
+	void Init () {
 		text = transform.FindChild ("Amount").GetComponent<Text> ();
 		image = transform.FindChild ("Image").GetComponent<Image> ();
     	text.text = count.ToString (); 
