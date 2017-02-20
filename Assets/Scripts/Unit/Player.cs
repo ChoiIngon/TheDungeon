@@ -19,6 +19,7 @@ public class Player : Unit {
 					container.name = "Player";  
 					_instance = container.AddComponent<Player>();  
 					_instance.Init ();
+					DontDestroyOnLoad (container);
 				}  
 			}  
 			return _instance;  
@@ -105,7 +106,6 @@ public class Player : Unit {
 		inventory.ui.playerInfo.Init ();
 		return item;
 	}
-
 	public void AddCoin(int amount)
 	{
 		int total = amount;
@@ -144,7 +144,6 @@ public class Player : Unit {
 		}
 		yield return StartCoroutine(exp.DeferredValue(incExp, 0.1f));
 	}
-
 	public override void Attack(Unit defender)
 	{
 		Stat stat = GetStat ();

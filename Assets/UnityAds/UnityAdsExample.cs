@@ -16,10 +16,7 @@ public class UnityAdsExample : MonoBehaviour {
             Advertisement.Initialize(gameId, enableTestMode); // ...initialize.
         }
 //#endif
-
-        // Wait until Unity Ads is initialized,
-        //  and the default ad placement is ready.
-        while (!Advertisement.isInitialized || !Advertisement.IsReady())
+		while (!Advertisement.isInitialized || !Advertisement.IsReady())
         {
             Debug.Log("initailize:" + Advertisement.isInitialized + ", ready:" + Advertisement.IsReady().ToString());
             yield return new WaitForSeconds(0.5f);

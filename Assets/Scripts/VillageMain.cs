@@ -6,10 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class VillageMain : SceneMain {
     public Text log;
-    public Npc npc;
 	public TouchInput dungeon;
-	public UIDialogBox dialogBox;
-    public UITextBox textBox;
     public UIGaugeBar downloadProgress;
 
 	public enum State
@@ -93,10 +90,10 @@ public class VillageMain : SceneMain {
 	{
 		state = State.Popup;
 		bool isSubmit = false;
-		dialogBox.onSubmit += () =>  {
+		UIDialogBox.Instance.onSubmit += () =>  {
 			isSubmit = true;
 		};
-		yield return StartCoroutine(dialogBox.Write("Do you want to go into the dungeon?"));
+		yield return StartCoroutine(UIDialogBox.Instance.Write("Do you want to go into the dungeon?"));
 		if(true == isSubmit)
 		{
 			StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 1.0f, "time", 2.0f)));
@@ -119,7 +116,7 @@ public class VillageMain : SceneMain {
 		QuestData quest = QuestManager.Instance.GetAvailableQuest ();
 		if (null != quest && null != quest.startDialouge) {
 			state = State.Popup;
-			yield return StartCoroutine(npc.Talk(quest.startDialouge.dialouge));
+			yield return StartCoroutine(UINpc.Instance.Talk(quest.startDialouge.dialouge));
 			state = State.Idle;
 		}
 		/*
@@ -149,9 +146,8 @@ public class VillageMain : SceneMain {
 	}
 	IEnumerator OnCompleteQuest(QuestData quest)
 	{
-		yield return StartCoroutine(textBox.Write(
+		yield return StartCoroutine(UITextBox.Instance.Write(
 			quest.name + " is completed!!"
 		));
-		yield return StartCoroutine(textBox.Hide());
 	}
 }

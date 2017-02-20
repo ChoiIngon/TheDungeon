@@ -27,20 +27,40 @@ public class UITextBox : MonoBehaviour {
 	private RectTransform rectTransform;
 	private int paragraph;
 	private Coroutine hideCoroutine;
-	// Use this for initialization
-	void Start () {
+	private static UITextBox _instance;  
+	public static UITextBox Instance  
+	{  
+		get  
+		{  
+			if (!_instance) 
+			{  
+				_instance = (UITextBox)GameObject.FindObjectOfType(typeof(UITextBox));  
+				if (!_instance)  
+				{  
+					GameObject container = new GameObject();  
+					container.name = "UITextBox";  
+					_instance = container.AddComponent<UITextBox>();  
+				}  
+				_instance.Init ();
+				DontDestroyOnLoad (_instance.gameObject);
+			}  
+
+			return _instance;  
+		}  
+	}
+	void Init () {
 		fast.gameObject.SetActive (false);
-		fast.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, SceneMain.canvasHeight);
+		fast.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, Screen.height);
 		fast.onClick.AddListener (FastForward);
 
 		next.gameObject.SetActive (false);
-		next.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, SceneMain.canvasHeight);
+		next.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, Screen.height);
 		next.onClick.AddListener (() => {
 			state = State.Hide;
 		});
 
 		close.gameObject.SetActive (false);
-		close.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, SceneMain.canvasHeight);
+		close.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, Screen.height);
 		close.onClick.AddListener (() => {
 			hideCoroutine = StartCoroutine(Hide (time));
 		});

@@ -9,8 +9,6 @@ using UnityEngine.SceneManagement;
 public class DungeonMain : SceneMain {
     public UIButtonGroup mainButtonGroup;
     public UIButtonGroup battleButtonGroup;
-    public UITextBox textBox;
-    public UIDialogBox dialogBox;
     public UICoin coin;
     public UIMiniMap miniMap;
 	public RectTransform uiMain;
@@ -307,11 +305,10 @@ public class DungeonMain : SceneMain {
 		if (Dungeon.Room.Type.Exit == Dungeon.Instance.current.type) {
             state = State.Popup;
             bool goDown = false;
-			dialogBox.onSubmit += () =>  {
+			UIDialogBox.Instance.onSubmit += () =>  {
 				goDown = true;
 			};
-			yield return StartCoroutine(dialogBox.Write("Do you want to go down the stair?"));
-			yield return StartCoroutine (textBox.Hide ());
+			yield return StartCoroutine(UIDialogBox.Instance.Write("Do you want to go down the stair?"));
 			if (true == goDown) {
 				yield return StartCoroutine (GoDown ());
 				InitDungeon ();
@@ -413,8 +410,7 @@ public class DungeonMain : SceneMain {
 			item.Pickup ();
 			text += "You got a " + item.name;
 		}
-		yield return StartCoroutine(textBox.Write(text));
-		yield return StartCoroutine (textBox.Hide ());
+		yield return StartCoroutine(UITextBox.Instance.Write(text));
 
 		QuestManager.Instance.Update ("KillMonster", info.id);
 		QuestManager.Instance.Update ("EnterDungeon", "");
@@ -435,12 +431,11 @@ public class DungeonMain : SceneMain {
 			{"player_level", Player.Instance.level}
 		});
 		
-		yield return StartCoroutine(textBox.Write(
+		yield return StartCoroutine(UITextBox.Instance.Write(
 			"You died.\n" +
 			"Your body will be carried to village.\n" +
 			"See you soon.."
 		));
-		yield return StartCoroutine (textBox.Hide ());
 		yield return StartCoroutine (CameraFadeTo (Color.black, iTween.Hash ("amount", 1.0f, "time", 1.0f), true));
 		SceneManager.LoadScene("Village");
 	}
@@ -464,7 +459,7 @@ public class DungeonMain : SceneMain {
 		state = State.Popup;
 		foreach(QuestData quest in completeQuests)
 		{
-			yield return StartCoroutine(textBox.Write(
+			yield return StartCoroutine(UITextBox.Instance.Write(
 				quest.name + " is completed!!"
 			));	
 		}
