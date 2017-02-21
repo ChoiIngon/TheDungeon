@@ -67,6 +67,9 @@ public class QuestManager : Singleton<QuestManager> {
 
 	public void Update(string type, string key)
 	{
+		if (false == updates.ContainsKey (type)) {
+			return;
+		}
 		if (null == updates [type]) {
 			return;
 		}

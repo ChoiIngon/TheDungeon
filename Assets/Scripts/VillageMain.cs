@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class VillageMain : SceneMain {
-    public Text log;
 	public TouchInput dungeon;
     public UIGaugeBar downloadProgress;
 
@@ -47,40 +46,30 @@ public class VillageMain : SceneMain {
 
 	IEnumerator Init()
 	{
-		log.text = "connect to server..";
 		NetworkManager.Instance.Init ();
-		log.text += "complete\n";
-
+		UILog.Instance.Write ("connect to server complete");;
 		ResourceManager.Instance.onDowonloadProgress += (string bundleName, float progress, int currentCount, int totalCount) => {
             downloadProgress.max = 1.0f;
             downloadProgress.current = progress;
 			downloadProgress.text.text = "download.." + bundleName + " " + (int)(progress * 100) + " %";
 		};
 		ResourceManager.Instance.onLoadProgress += (string bundleName, string assetName) => {
-			log.text += "load " + assetName + "\n";
+			UILog.Instance.Write (assetName);
 		};
-
         yield return StartCoroutine(ResourceManager.Instance.Init());
 
-		log.text += "load item configuration..";
 		yield return StartCoroutine(ItemManager.Instance.Init ());
-		log.text += "complete\n";
-		log.text += "load monster configuration..";
-		yield return StartCoroutine(MonsterManager.Instance.Init ());
-		log.text += "complete\n";
+		UILog.Instance.Write("load item complete");
 
+		yield return StartCoroutine(MonsterManager.Instance.Init ());
+		UILog.Instance.Write ("load monster complete");
 		QuestManager.Instance.Init ();
 		QuestManager.Instance.onComplete += (QuestData data) => {
 			StartCoroutine(OnCompleteQuest(data));
 		};
-
-		while (0.0f < log.color.a) {
-			Color color = log.color;
-			color.a -= Time.deltaTime;
-			log.color = color;
-			yield return null;
-		}
-		log.color = new Color (1.0f, 1.0f, 1.0f, 0.0f);
+		UILog.Instance.Write ("load quest complete");
+		Player.Instance.Init ();
+		yield return StartCoroutine (UILog.Instance.Hide (1.0f));
         downloadProgress.gameObject.SetActive(false);
 		dungeon.gameObject.SetActive (true);
 		state = State.Idle;

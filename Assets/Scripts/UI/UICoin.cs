@@ -33,7 +33,8 @@ public class UICoin : MonoBehaviour {
 	void Init () {
 		text = transform.FindChild ("Amount").GetComponent<Text> ();
 		image = transform.FindChild ("Image").GetComponent<Image> ();
-    	text.text = count.ToString (); 
+    	text.text = count.ToString ();
+		position = image.rectTransform.position;
 	}
 
 	public void ChangeAmount(int amount)

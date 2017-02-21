@@ -18,26 +18,28 @@ public class Player : Unit {
 					GameObject container = new GameObject();  
 					container.name = "Player";  
 					_instance = container.AddComponent<Player>();  
-					_instance.Init ();
-					DontDestroyOnLoad (container);
+
 				}  
+				DontDestroyOnLoad (_instance.gameObject);
 			}  
 			return _instance;  
 		}  
 	}
 
-	public Transform 	ui;
-    public UIGaugeBar 	health;
-	public UIGaugeBar 	exp;
+	//public Transform 	ui;
+    //public UIGaugeBar 	health;
+	//public UIGaugeBar 	exp;
 
-	public Transform 	bloodMarkPanel;
+	//public Transform 	bloodMarkPanel;
 
-	public BloodMark bloodMarkPrefab;
-	public Coin coinPrefab;
+	//public BloodMark bloodMarkPrefab;
+	//public Coin coinPrefab;
 
     public Inventory inventory;
 	public Dictionary<Tuple<EquipmentItem.Part, int>, EquipmentItem> equipments;
-
+	public int curExp;
+	public int maxExp;
+	public int curHealth;
     public override void Init() {
 		base.Init ();
 
@@ -50,21 +52,27 @@ public class Player : Unit {
 		stats.coinBonus = 0.0f;
 		stats.expBonus = 0.0f;
 
+		curHealth = stats.health;
+		curExp = 0;
+		maxExp = level;
+		/*
 		exp = ui.FindChild("Exp").GetComponent<UIGaugeBar>();
 		exp.max = level;
 		exp.current = 0;
 	
         health = ui.FindChild("Health").GetComponent<UIGaugeBar>();
 		health.current = health.max = stats.health;
-
+		*/
 		UICoin.Instance.count = 0;
 		#if UNITY_EDITOR
+		/*
 		Assert.AreNotEqual(null, exp);
 		Assert.AreNotEqual(null, health);
 		Assert.AreNotEqual(null, UICoin.Instance);
 		Assert.AreNotEqual(null, bloodMarkPanel);
 		Assert.AreNotEqual(null, bloodMarkPrefab);
 		Assert.AreNotEqual(null, coinPrefab);
+		*/
 		#endif
 
         // init equipments
@@ -78,7 +86,9 @@ public class Player : Unit {
 		equipments.Add (new Tuple<EquipmentItem.Part, int> (EquipmentItem.Part.Shoes, 0), null);
 
         // init inventory
+		inventory = new Inventory();
 		inventory.Init ();
+		Debug.Log ("Player.Init");
     }
 
 	public EquipmentItem GetEquipement(EquipmentItem.Part category, int index) {
@@ -95,15 +105,15 @@ public class Player : Unit {
 
 		EquipmentItem prev = equipments [new Tuple<EquipmentItem.Part, int> (item.part, index)];
 		equipments [new Tuple<EquipmentItem.Part, int> (item.part, index)] = item;
-		health.max = GetStat ().health;
-		inventory.ui.playerInfo.Init ();
+		//health.max = GetStat ().health;
+		//inventory.ui.playerInfo.Init ();
 		return prev;
 	}
 	public EquipmentItem UnequipItem(EquipmentItem.Part category, int index) {
 		EquipmentItem item = equipments [new Tuple<EquipmentItem.Part, int> (category, index)];
 		equipments [new Tuple<EquipmentItem.Part, int> (category, index)] = null;
-		health.max = GetStat ().health;
-		inventory.ui.playerInfo.Init ();
+		//health.max = GetStat ().health;
+		//inventory.ui.playerInfo.Init ();
 		return item;
 	}
 	public void AddCoin(int amount)
@@ -111,6 +121,7 @@ public class Player : Unit {
 		int total = amount;
 		int multiply = 1;
 		float scale = 1.0f;
+		/*
 		while (0 < total) {
 			int countCount = Random.Range (1, 10);
 			for (int i = 0; i < countCount; i++) {
@@ -124,13 +135,16 @@ public class Player : Unit {
 				if (0 >= total) {
 					return;
 				}
+
 			}
 			multiply *= 10;
 			scale += 0.1f;
 		}
+		*/
 	}
 	public IEnumerator AddExp(int amount)
 	{
+		/*
 		int incExp = amount + (int)exp.current;
 		exp.current = 0;
 		while (exp.max <= incExp) {
@@ -143,6 +157,8 @@ public class Player : Unit {
 			// levelup effect
 		}
 		yield return StartCoroutine(exp.DeferredValue(incExp, 0.1f));
+		*/
+		yield break;
 	}
 	public override void Attack(Unit defender)
 	{
@@ -163,6 +179,7 @@ public class Player : Unit {
 	}
 	public override void Damage(int damage)
 	{
+		/*
 		// proc damage
 		StartCoroutine(health.DeferredValue(health.current-damage, 0.2f));
 		// damage prefab
@@ -176,10 +193,11 @@ public class Player : Unit {
 			Random.Range (Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
 			0.0f
 		);
+		*/
 	}
     public override void Health(int health)
     {
-        StartCoroutine(this.health.DeferredValue((float)health, 0.2f));
+        //StartCoroutine(this.health.DeferredValue((float)health, 0.2f));
     }
 	public override Stat GetStat ()
 	{

@@ -15,9 +15,8 @@ public class Inventory
 		}
 	}
 	public const int MAX_SLOT_COUNT = 15;
-	public int gold;
 	public Slot[] slots;
-	public UIInventory ui;
+	//public UIInventory ui;
 	public int count {
 		get {
 			return _count;
@@ -32,7 +31,7 @@ public class Inventory
 			slots [i] = new Slot ();
 			slots [i].index = i;
 		}
-		ui.Init ();
+		//ui.Init ();
 	}
 	public Slot Put(Item data)
 	{
@@ -67,7 +66,7 @@ public class Inventory
 			{
 				slot.item = data;
 				slot.count = 1;
-				ui.Put (slot);
+				//ui.Put (slot);
 				_count += 1;
 				return slot;
 			}
@@ -85,7 +84,7 @@ public class Inventory
 		Item item = slot.item;
 		if (0 == slot.count) {
 			slot.item = null;
-			ui.Pull (slot.index);
+			//ui.Pull (slot.index);
 			_count -= 1;
 		}
 		return item;
@@ -101,14 +100,14 @@ public class Inventory
 			Slot slot = slots [to];
 			slot.item = a;
 			slot.count = 1;
-			ui.Put (slot);
+			//ui.Put (slot);
 			_count += 1;
 		}
 		if(null != b) {
 			Slot slot = slots [from];
 			slot.item = b;
 			slot.count = 1;
-			ui.Put (slot);
+			//ui.Put (slot);
 			_count += 1;
 		}
 	}

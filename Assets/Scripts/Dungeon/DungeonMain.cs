@@ -99,8 +99,7 @@ public class DungeonMain : SceneMain {
 
 	public override IEnumerator Run () {
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
-		yield return StartCoroutine(CameraFadeFrom (Color.black, iTween.Hash("amount", 1.0f, "time", 1.0f)));
-
+		yield return StartCoroutine(CameraFadeFrom (Color.black, iTween.Hash("amount", 1.0f, "time", 1.0f), true));
 		rooms = transform.FindChild ("Rooms");
 		current = rooms.FindChild ("Current").GetComponent<Room> ();
 		next [Dungeon.North] = rooms.FindChild ("North").GetComponent<Room> ();
@@ -116,7 +115,7 @@ public class DungeonMain : SceneMain {
 		mainButtonGroup.Init ();
 		mainButtonGroup.gameObject.SetActive (false);
 		mainButtonGroup.actions [0] += () => {
-			Player.Instance.inventory.ui.gameObject.SetActive(true);
+			//Player.Instance.inventory.ui.gameObject.SetActive(true);
 		};
 		battleButtonGroup.Init ();
 		battleButtonGroup.gameObject.SetActive (false);
@@ -140,7 +139,8 @@ public class DungeonMain : SceneMain {
 		};
 		input.onTouchUp += (Vector3 position) => {
 			float distance = Vector3.Distance(touchPoint, position);
-			if(0.05f > distance) {
+			if(0.02f > distance) {
+				Debug.Log("not enough drag distance(" + distance + ")");
 				return;
 			}
 			Vector3 delta = position - touchPoint;
@@ -176,10 +176,13 @@ public class DungeonMain : SceneMain {
 		yield return StartCoroutine(ResourceManager.Instance.Init ());
 		yield return StartCoroutine(ItemManager.Instance.Init ());
 		yield return StartCoroutine(MonsterManager.Instance.Init ());
+		#endif
+
 		QuestManager.Instance.Init ();
 		QuestManager.Instance.onComplete += (QuestData data) => {
 			completeQuests.Add(data);
 		};
+		#if UNITY_EDITOR
 		QuestManager.Instance.Find("QUEST_EXAMPLE").state = QuestData.State.AccecptWait;
 		QuestManager.Instance.Find("QUEST_EXAMPLE").Start();
 		#endif
@@ -195,12 +198,9 @@ public class DungeonMain : SceneMain {
 		audioBG = GameObject.Instantiate<AudioSource>(audioBG);
 		audioMonsterDie = GameObject.Instantiate<AudioSource>(audioMonsterDie);
 
-
 		Player.Instance.Init ();
-
 		QuestManager.Instance.Update (QuestEvent.EnterDungeon, "");
-		yield return CheckCompleteQuest ();
-
+		yield return StartCoroutine(CheckCompleteQuest ());
 		InitDungeon ();
 		rooms.gameObject.SetActive (true);
 		state = State.Idle;
@@ -215,11 +215,10 @@ public class DungeonMain : SceneMain {
 		dungeonLevel.text = "<size=" + (dungeonLevel.fontSize * 0.8f) + ">B</size> " + level.ToString ();
 		StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 0.0f, "time", 1.0f)));
 
-
 		Analytics.CustomEvent("InitDungeon", new Dictionary<string, object>	{
 			{"dungeon_level", level },
 			{"player_level", Player.Instance.level},
-			{"player_exp", Player.Instance.exp.current },
+			{"player_exp", 0 /*Player.Instance.exp.current*/ },
 			{"player_gold", UICoin.Instance.count }
 		});
 	}
@@ -329,6 +328,7 @@ public class DungeonMain : SceneMain {
 		float monsterAPS = 1.0f;
 		float playerTurn = playerAPS;
 		float monsterTurn = monsterAPS;
+		/*
 		while (0.0f < monster.health.current && 0.0f < Player.Instance.health.current) {
 			float waitTime = 0.0f;
 
@@ -357,6 +357,8 @@ public class DungeonMain : SceneMain {
 			}
 			yield return new WaitForSeconds (1.0f/battleSpeed);
 		}
+		*/
+		monster.health.current = 0;
 		monster.ui.gameObject.SetActive (false);
 		if (0.0f < monster.health.current) {
 			yield return StartCoroutine (Lose ());
@@ -413,8 +415,7 @@ public class DungeonMain : SceneMain {
 		yield return StartCoroutine(UITextBox.Instance.Write(text));
 
 		QuestManager.Instance.Update ("KillMonster", info.id);
-		QuestManager.Instance.Update ("EnterDungeon", "");
-		yield return CheckCompleteQuest ();
+		yield return StartCoroutine(CheckCompleteQuest ());
 
         Analytics.CustomEvent("Win", new Dictionary<string, object>
         {
