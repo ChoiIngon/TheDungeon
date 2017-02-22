@@ -14,7 +14,7 @@ public abstract class EquipmentItemStat
 	}
 	public float value;
 	public string description;
-	public abstract Player.Stat GetStat (Player.Stat stat);
+	public abstract Unit.Stat GetStat (Unit.Stat stat);
 }
 
 public class EquipmentItemStat_MaxHealth : EquipmentItemStat
@@ -25,9 +25,9 @@ public class EquipmentItemStat_MaxHealth : EquipmentItemStat
 		this.description = description;
 	}
 
-	public override Player.Stat GetStat (Player.Stat stat)
+	public override Unit.Stat GetStat (Unit.Stat stat)
 	{
-		Player.Stat result = new Player.Stat();
+        Unit.Stat result = new Unit.Stat();
 		result.health = (int)value;
 		return result;
 	}
@@ -41,9 +41,9 @@ public class EquipmentItemStat_Attack : EquipmentItemStat
 		this.description = description;
 	}
 
-	public override Player.Stat GetStat (Player.Stat stat)
+	public override Unit.Stat GetStat (Unit.Stat stat)
 	{
-		Player.Stat result  = new Player.Stat();
+        Unit.Stat result  = new Unit.Stat();
 		result.attack = value;
 		return result;
 	}
@@ -57,9 +57,9 @@ public class EquipmentItemStat_Defense : EquipmentItemStat
 		this.description = description;
 	}
 
-	public override Player.Stat GetStat (Player.Stat stat)
+	public override Unit.Stat GetStat (Unit.Stat stat)
 	{
-		Player.Stat result = new Player.Stat();
+        Unit.Stat result = new Unit.Stat();
 		result.defense = value;
 		return result;
 	}
@@ -73,9 +73,9 @@ public class EquipmentItemStat_Speed : EquipmentItemStat
 		this.description = description;
 	}
 
-	public override Player.Stat GetStat (Player.Stat stat)
+	public override Unit.Stat GetStat (Unit.Stat stat)
 	{
-		Player.Stat result = new Player.Stat();
+        Unit.Stat result = new Unit.Stat();
 		result.speed = value;
 		return result;
 	}
@@ -89,9 +89,9 @@ public class EquipmentItemStat_Critical : EquipmentItemStat
 		this.description = description;
 	}
 
-	public override Player.Stat GetStat (Player.Stat stat)
+	public override Unit.Stat GetStat (Unit.Stat stat)
 	{
-		Player.Stat result = new Player.Stat();
+        Unit.Stat result = new Unit.Stat();
 		result.critcal = value;
 		return result;
 	}
@@ -105,9 +105,9 @@ public class EquipmentItemStat_CoinBonus : EquipmentItemStat {
 		this.description = description;
 	}
 
-	public override Player.Stat GetStat (Player.Stat stat)
+	public override Unit.Stat GetStat (Unit.Stat stat)
 	{
-		Player.Stat result = new Player.Stat();
+        Unit.Stat result = new Unit.Stat();
 		result.coinBonus = value;
 		return result;
 	}
@@ -120,9 +120,9 @@ public class EquipmentItemStat_ExpBonus : EquipmentItemStat {
 		this.description = description;
 	}
 
-	public override Player.Stat GetStat (Player.Stat stat)
+	public override Unit.Stat GetStat (Unit.Stat stat)
 	{
-		Player.Stat result = new Player.Stat();
+        Unit.Stat result = new Unit.Stat();
 		result.expBonus = value;
 		return result;
 	}
@@ -135,9 +135,9 @@ public class EquipmentItemStat_Stealth : EquipmentItemStat {
 		this.description = description;
 	}
 
-	public override Player.Stat GetStat (Player.Stat stat)
+	public override Unit.Stat GetStat (Unit.Stat stat)
 	{
-		Player.Stat result = new Player.Stat();
+        Unit.Stat result = new Unit.Stat();
 		result.coinBonus = value;
 		return result;
 	}
@@ -150,9 +150,9 @@ public class EquipmentItemStat_Viability : EquipmentItemStat {
 		this.description = description;
 	}
 
-	public override Player.Stat GetStat (Player.Stat stat)
+	public override Unit.Stat GetStat (Unit.Stat stat)
 	{
-		Player.Stat result = new Player.Stat();
+        Unit.Stat result = new Unit.Stat();
 		result.coinBonus = value;
 		return result;
 	}

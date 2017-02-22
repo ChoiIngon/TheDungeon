@@ -19,9 +19,15 @@ public class DungeonMain : SceneMain {
     public AudioSource audioWalk;
     public AudioSource audioBG;
     public AudioSource audioMonsterDie;
+
+    public Transform 	bloodMarkPanel;
+    public BloodMark    bloodMarkPrefab;
+    public Coin         coinPrefab;
+    public Transform    coins;
+    public UIDungeonPlayer player;
     private int level;
 
-    public Transform coins;
+    
     private Transform rooms;
     private Room current;
     private Room[] next = new Room[Dungeon.Max];
@@ -99,7 +105,7 @@ public class DungeonMain : SceneMain {
 
 	public override IEnumerator Run () {
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
-		yield return StartCoroutine(CameraFadeFrom (Color.black, iTween.Hash("amount", 1.0f, "time", 1.0f), true));
+		
 		rooms = transform.FindChild ("Rooms");
 		current = rooms.FindChild ("Current").GetComponent<Room> ();
 		next [Dungeon.North] = rooms.FindChild ("North").GetComponent<Room> ();
@@ -115,7 +121,7 @@ public class DungeonMain : SceneMain {
 		mainButtonGroup.Init ();
 		mainButtonGroup.gameObject.SetActive (false);
 		mainButtonGroup.actions [0] += () => {
-			//Player.Instance.inventory.ui.gameObject.SetActive(true);
+			player.inventory.gameObject.SetActive(true);
 		};
 		battleButtonGroup.Init ();
 		battleButtonGroup.gameObject.SetActive (false);
@@ -125,7 +131,7 @@ public class DungeonMain : SceneMain {
 				HealingPotionItem item = Player.Instance.inventory.GetItem<HealingPotionItem>(i);
 				if(null != item)
 				{
-					item.Use(Player.Instance);
+					item.Use(player);
 					Player.Instance.inventory.Pull(i);
 					battleButtonGroup.names [0].text = "Heal(" + Player.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
 					break;
@@ -165,6 +171,7 @@ public class DungeonMain : SceneMain {
 		};
 		completeQuests = new List<QuestData> ();
 		StartCoroutine (Init ());
+        yield break;
 	}
 
 	IEnumerator Init() {
@@ -185,26 +192,26 @@ public class DungeonMain : SceneMain {
 		#if UNITY_EDITOR
 		QuestManager.Instance.Find("QUEST_EXAMPLE").state = QuestData.State.AccecptWait;
 		QuestManager.Instance.Find("QUEST_EXAMPLE").Start();
-		#endif
-		yield return NetworkManager.Instance.HttpRequest ("info_dungeon.php", (string json) => {
+        Player.Instance.Init();
+        #endif
+        yield return NetworkManager.Instance.HttpRequest ("info_dungeon.php", (string json) => {
 			config = JsonUtility.FromJson<Config>(json);
 		});
-
-
+        
 		#if UNITY_EDITOR
 		Assert.AreNotEqual(0, config.level_infos.Length);
 		#endif
 		audioWalk = GameObject.Instantiate<AudioSource>(audioWalk);
 		audioBG = GameObject.Instantiate<AudioSource>(audioBG);
 		audioMonsterDie = GameObject.Instantiate<AudioSource>(audioMonsterDie);
-
-		Player.Instance.Init ();
+		
 		QuestManager.Instance.Update (QuestEvent.EnterDungeon, "");
 		yield return StartCoroutine(CheckCompleteQuest ());
+
+        player.Init();
 		InitDungeon ();
 		rooms.gameObject.SetActive (true);
 		state = State.Idle;
-		yield break;
 	}
 	void InitDungeon() {
 		dungeonLevelInfo = config.level_infos [(level - 1) % config.level_infos.Length];
@@ -328,8 +335,8 @@ public class DungeonMain : SceneMain {
 		float monsterAPS = 1.0f;
 		float playerTurn = playerAPS;
 		float monsterTurn = monsterAPS;
-		/*
-		while (0.0f < monster.health.current && 0.0f < Player.Instance.health.current) {
+		
+		while (0.0f < monster.health.current && 0.0f < player.health.current) {
 			float waitTime = 0.0f;
 
 			if (monsterTurn < playerTurn) {
@@ -345,20 +352,29 @@ public class DungeonMain : SceneMain {
                 }
 
 				for (int i = 0; i < attackCount; i++) {
-					Player.Instance.Attack(monster);
+					player.Attack(monster);
 					yield return new WaitForSeconds (waitTime);
 				}
 				monsterTurn += monsterAPS + Random.Range(0, monsterAPS * 0.1f);
 			}
 			else 
 			{
-				monster.Attack (Player.Instance);
-				playerTurn += playerAPS + Random.Range(0, playerAPS * 0.1f);
+				monster.Attack (player);
+                StartCoroutine(CameraFadeFrom(Color.white, iTween.Hash("amount", 0.1f, "time", 0.1f)));
+                iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
+
+                BloodMark bloodMark = GameObject.Instantiate<BloodMark>(bloodMarkPrefab);
+                bloodMark.transform.SetParent(bloodMarkPanel.transform, false);
+                bloodMark.transform.position = new Vector3(
+                    Random.Range(Screen.width / 2 - Screen.width / 2 * 0.85f, Screen.width / 2 + Screen.width / 2 * 0.9f),
+                    Random.Range(Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
+                    0.0f
+                );
+                playerTurn += playerAPS + Random.Range(0, playerAPS * 0.1f);
 			}
 			yield return new WaitForSeconds (1.0f/battleSpeed);
 		}
-		*/
-		monster.health.current = 0;
+		
 		monster.ui.gameObject.SetActive (false);
 		if (0.0f < monster.health.current) {
 			yield return StartCoroutine (Lose ());
@@ -366,7 +382,6 @@ public class DungeonMain : SceneMain {
 		else {
 			GameObject.Instantiate<GameObject> (monster.dieEffectPrefab);
 			monster.gameObject.SetActive (false);
-		
 			yield return StartCoroutine (Win (monster.info));
 			yield return StartCoroutine (miniMap.Show (0.5f));
 			Dungeon.Instance.current.monster = null;
@@ -379,27 +394,20 @@ public class DungeonMain : SceneMain {
         string text = "";
 		text += "You defeated \'" + info.name + "\'\n";
 
-		Unit.Stat stat = Player.Instance.GetStat ();
+		Unit.Stat stat = player.GetStat ();
 		int gainCoins = info.reward.coin + (int)Random.Range (-info.reward.coin * 0.1f, info.reward.coin * 0.1f);
 		int coinBonus = (int)(gainCoins * stat.coinBonus/100.0f);
 		int gainExp = info.reward.exp + (int)Random.Range (-info.reward.exp * 0.1f, info.reward.exp * 0.1f);
 		int expBonus = (int)(gainExp * stat.expBonus/100.0f);
-		int playerLevel = Player.Instance.level;
+		text += "Coins : +" + gainCoins + (0 < coinBonus ? "(" + coinBonus + " bonus)" : "") + "\n";
+		text += "Exp : +" + gainExp + (0 < expBonus ? "(" + expBonus + " bonus)" : "") + "\n";
 
-		text += "Coins : +" + gainCoins;
-		if (0 < coinBonus) {
-			text += "(" + coinBonus + " bonus)";
-		}	
-		text += "\n";
-		text += "Exp : +" + gainExp;
-		if (0 < expBonus) {
-			text += "(" + expBonus + " bonus)";
-		}
-		text += "\n";
+        CreateCoins(gainCoins + coinBonus);
 
-		Player.Instance.AddCoin (gainCoins + coinBonus);
-		yield return StartCoroutine(Player.Instance.AddExp(gainExp + expBonus));
+        int playerLevel = Player.Instance.level;
+        yield return StartCoroutine(player.AddExp(gainExp + expBonus));
 		text += "Level : " + playerLevel + " -> " + Player.Instance.level + "\n";
+
 		if(dungeonLevelInfo.items.chance >= Random.Range(0.0f, 1.0f)) 
 		{
 			Item item = ItemManager.Instance.CreateRandomItem (this.level);
@@ -467,4 +475,29 @@ public class DungeonMain : SceneMain {
 		completeQuests.Clear ();
 		state = State.Idle;
 	}
+
+    void CreateCoins(int amount)
+    {
+        int total = amount;
+        int multiply = 1;
+        float scale = 1.0f;
+        
+		while (0 < total) {
+			int countCount = Random.Range (1, 10);
+			for (int i = 0; i < countCount; i++) {
+				Coin coin = GameObject.Instantiate<Coin> (coinPrefab);
+				coin.amount = Mathf.Min(total, multiply);
+				coin.transform.SetParent (coins, false);
+				coin.transform.localScale = new Vector3 (scale, scale, 1.0f);
+				coin.transform.localPosition = Vector3.zero;
+				iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
+				total -= coin.amount;
+				if (0 >= total) {
+					return;
+				}
+			}
+			multiply *= 10;
+			scale += 0.1f;
+		}
+    }
 }

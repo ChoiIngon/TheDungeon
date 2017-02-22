@@ -5,26 +5,30 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public abstract class SceneMain : MonoBehaviour {
-	public bool isComplete = false;
+	[ReadOnly] public bool isComplete = false;
+    [ReadOnly] public Texture2D fadeColorTexture;
 	IEnumerator Start () {
-		AsyncOperation operation = SceneManager.LoadSceneAsync("Common", LoadSceneMode.Additive);	
-		while (false == operation.isDone) {
-			// loading progress
-			yield return null;
-		}
-		UIDialogBox.Instance.gameObject.SetActive (false);
 		iTween.CameraFadeAdd ();
-		StartCoroutine (Run ());
+        fadeColorTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+
+        StartCoroutine(CameraFadeFrom(Color.black, iTween.Hash("amount", 1.0f, "time", 1.0f)));
+        AsyncOperation operation = SceneManager.LoadSceneAsync("Common", LoadSceneMode.Additive);
+        while (false == operation.isDone)
+        {
+            // loading progress
+            yield return null;
+        }
+        UIDialogBox.Instance.gameObject.SetActive(false);
+        StartCoroutine(Run ());
 	}
 
 	public abstract IEnumerator Run ();
 
 	void SetCameraFadeColor(Color color)
 	{
-		Texture2D colorTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-		colorTexture.SetPixel(0, 0, color);
-		colorTexture.Apply();
-		iTween.CameraFadeSwap (colorTexture);
+		fadeColorTexture.SetPixel(0, 0, color);
+        fadeColorTexture.Apply();
+		iTween.CameraFadeSwap (fadeColorTexture);
 	}
 
 	protected IEnumerator CameraFadeTo (Color color, Hashtable hashTable, bool wait = false) {

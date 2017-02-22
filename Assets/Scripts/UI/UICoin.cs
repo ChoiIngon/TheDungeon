@@ -34,8 +34,10 @@ public class UICoin : MonoBehaviour {
 		text = transform.FindChild ("Amount").GetComponent<Text> ();
 		image = transform.FindChild ("Image").GetComponent<Image> ();
     	text.text = count.ToString ();
-		position = image.rectTransform.position;
-	}
+        position = Camera.main.ScreenToWorldPoint(
+            new Vector3(image.rectTransform.position.x + 25.0f, image.rectTransform.position.y, DungeonMain.Instance.walkDistance)
+        );
+    }
 
 	public void ChangeAmount(int amount)
 	{

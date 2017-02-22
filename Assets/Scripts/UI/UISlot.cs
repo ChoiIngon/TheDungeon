@@ -13,9 +13,10 @@ public class UISlot : MonoBehaviour {
 	public Image clone;
 	public RectTransform rectTransform;
 
-	public UIInventory inventory;
+    public Unit player;
+    public UIInventory inventory;
 	public Inventory.Slot data;
-
+    
 	public virtual void Start()
 	{
 		EventTrigger trigger = GetComponent<EventTrigger>( );

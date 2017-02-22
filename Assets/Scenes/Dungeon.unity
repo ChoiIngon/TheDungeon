@@ -248,6 +248,7 @@ RectTransform:
   - {fileID: 1751527904}
   - {fileID: 1389233272}
   - {fileID: 602499273}
+  - {fileID: 2045860430}
   - {fileID: 886684694}
   - {fileID: 1437952179}
   m_Father: {fileID: 0}
@@ -1045,13 +1046,37 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 2045860430}
+  - component: {fileID: 722617017}
   m_Layer: 5
-  m_Name: UIPlayer
+  m_Name: UIDungonPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &722617017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 722617016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4dfe4f96431bb842a8bf886e7f3934b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  level: 0
+  stats:
+    health: 0
+    attack: 0
+    defense: 0
+    speed: 0
+    critcal: 0
+    coinBonus: 0
+    expBonus: 0
+  health: {fileID: 801323553}
+  exp: {fileID: 123663920}
+  inventory: {fileID: 1280628223}
 --- !u!1001 &761882443
 Prefab:
   m_ObjectHideFlags: 0
@@ -1417,7 +1442,7 @@ Transform:
   - {fileID: 1799939636}
   - {fileID: 787643944}
   m_Father: {fileID: 853562127}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &799889951
 GameObject:
@@ -1778,7 +1803,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 853562127}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &853562126
 GameObject:
@@ -1809,7 +1834,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2598112}
-  - {fileID: 1081049933}
   - {fileID: 841955330}
   - {fileID: 796858572}
   m_Father: {fileID: 0}
@@ -1864,7 +1888,13 @@ MonoBehaviour:
   audioBG: {fileID: 82524775893640066, guid: 77ad360b0cfcd48a68596a25add69034, type: 2}
   audioMonsterDie: {fileID: 82689637618696996, guid: 50482f4e8c6ed455598f5f335c4b628a,
     type: 2}
+  bloodMarkPanel: {fileID: 602499273}
+  bloodMarkPrefab: {fileID: 114000012513297828, guid: 4bbc7d42488f6404c9f216602db9ff42,
+    type: 2}
+  coinPrefab: {fileID: 114000013134874174, guid: b36d7c4bfc2f94188b0ab2e9324cddc6,
+    type: 2}
   coins: {fileID: 841955330}
+  player: {fileID: 722617017}
   monster: {fileID: 2598113}
 --- !u!1 &886684693
 GameObject:
@@ -1894,9 +1924,8 @@ RectTransform:
   - {fileID: 997705904}
   - {fileID: 363559433}
   - {fileID: 681411171}
-  - {fileID: 2045860430}
   m_Father: {fileID: 3914113}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2446,67 +2475,6 @@ Transform:
   m_PrefabParentObject: {fileID: 4924378312240060, guid: 463e3afe06e0b48be90138d316741612,
     type: 2}
   m_PrefabInternal: {fileID: 1069402691}
---- !u!1 &1081049932
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1081049933}
-  - component: {fileID: 1081049934}
-  m_Layer: 0
-  m_Name: Player
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1081049933
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1081049932}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.7, z: -5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 853562127}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1081049934
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1081049932}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7474acb36ac0462cb0d28cfd42a2e56, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  level: 0
-  stats:
-    health: 0
-    attack: 0
-    defense: 0
-    speed: 0
-    critcal: 0
-    coinBonus: 0
-    expBonus: 0
-  ui: {fileID: 2045860430}
-  health: {fileID: 801323553}
-  exp: {fileID: 123663920}
-  bloodMarkPanel: {fileID: 602499273}
-  bloodMarkPrefab: {fileID: 114000012513297828, guid: 4bbc7d42488f6404c9f216602db9ff42,
-    type: 2}
-  coinPrefab: {fileID: 114000013134874174, guid: b36d7c4bfc2f94188b0ab2e9324cddc6,
-    type: 2}
-  inventory:
-    gold: 0
-    slots: []
-    ui: {fileID: 1437952182}
 --- !u!1001 &1091496751
 Prefab:
   m_ObjectHideFlags: 0
@@ -2758,6 +2726,12 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1208939962}
+--- !u!114 &1280628223 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114973059305236666, guid: e37b42987b6a64ec6ac111c77f2267b8,
+    type: 2}
+  m_PrefabInternal: {fileID: 1798227493}
+  m_Script: {fileID: 11500000, guid: 52eb0955544e24ddba1930e106e8b3fc, type: 3}
 --- !u!1 &1389233271
 GameObject:
   m_ObjectHideFlags: 0
@@ -2813,12 +2787,6 @@ RectTransform:
   m_PrefabParentObject: {fileID: 224024696130393464, guid: e37b42987b6a64ec6ac111c77f2267b8,
     type: 2}
   m_PrefabInternal: {fileID: 1798227493}
---- !u!114 &1437952182 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114973059305236666, guid: e37b42987b6a64ec6ac111c77f2267b8,
-    type: 2}
-  m_PrefabInternal: {fileID: 1798227493}
-  m_Script: {fileID: 11500000, guid: 52eb0955544e24ddba1930e106e8b3fc, type: 3}
 --- !u!1 &1484042808
 GameObject:
   m_ObjectHideFlags: 0
@@ -3583,7 +3551,7 @@ Prefab:
     - target: {fileID: 224024696130393464, guid: e37b42987b6a64ec6ac111c77f2267b8,
         type: 2}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 224024696130393464, guid: e37b42987b6a64ec6ac111c77f2267b8,
         type: 2}
@@ -4241,12 +4209,12 @@ RectTransform:
   m_Children:
   - {fileID: 801323552}
   - {fileID: 802850227}
-  m_Father: {fileID: 886684694}
+  m_Father: {fileID: 3914113}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -180}
+  m_AnchoredPosition: {x: 0, y: -748.8889}
   m_SizeDelta: {x: 520, y: 100}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1001 &2083566024

@@ -26,9 +26,9 @@ public class EquipmentItem : Item {
 		return actions;
 	}
 
-	public Player.Stat GetStat(Player.Stat stat)
+	public Unit.Stat GetStat(Unit.Stat stat)
 	{
-		Player.Stat result = new Player.Stat ();
+        Unit.Stat result = new Unit.Stat ();
 		result += mainStat.GetStat (stat);
 		for (int i = 0; i < subStats.Count; i++) {
 			result += subStats [i].GetStat (stat);
