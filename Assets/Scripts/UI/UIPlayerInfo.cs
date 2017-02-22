@@ -13,7 +13,7 @@ public class UIPlayerInfo : MonoBehaviour {
 
 	public void Init()
 	{
-		text.text = "Lv. " + Player.Instance.level + "\n";
+		text.text = "Lv. " + DungeonMain.Instance.player.level + "\n";
 		Unit.Stat stat = Player.Instance.GetStat ();
 		//text.text += "H.P:" + Player.Instance.health.current + "/" + stat.health + "\n";
 		text.text += "<b>ATK</b> : " + stat.attack + "\t"; text.text += "<b>DEF</b>:" + stat.defense + "\n";

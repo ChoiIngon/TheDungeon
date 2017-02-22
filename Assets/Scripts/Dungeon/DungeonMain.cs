@@ -27,7 +27,6 @@ public class DungeonMain : SceneMain {
     public Transform    coins;
     public UIDungeonPlayer player;
     private int level;
-
     
     private Transform rooms;
     private Room current;
@@ -227,7 +226,7 @@ public class DungeonMain : SceneMain {
 
 		Analytics.CustomEvent("InitDungeon", new Dictionary<string, object>	{
 			{"dungeon_level", level },
-			{"player_level", Player.Instance.level},
+			{"player_level", player.level},
 			{"player_exp", player.exp.current },
 			{"player_gold", Player.Instance.coins }
 		});
@@ -407,9 +406,9 @@ public class DungeonMain : SceneMain {
 
         CreateCoins(gainCoins + coinBonus);
 
-        int playerLevel = Player.Instance.level;
+        int playerLevel = player.level;
         yield return StartCoroutine(player.AddExp(gainExp + expBonus));
-		text += "Level : " + playerLevel + " -> " + Player.Instance.level + "\n";
+		text += "Level : " + playerLevel + " -> " + player.level + "\n";
 
 		if(dungeonLevelInfo.items.chance >= Random.Range(0.0f, 1.0f)) 
 		{
@@ -440,7 +439,7 @@ public class DungeonMain : SceneMain {
 		Analytics.CustomEvent("Lose", new Dictionary<string, object>
 		{
 			{"dungeon_level", level },
-			{"player_level", Player.Instance.level}
+			{"player_level", player.level}
 		});
 		
 		yield return StartCoroutine(UITextBox.Instance.Write(

@@ -41,6 +41,7 @@ public class UICoin : MonoBehaviour {
 	public void ChangeAmount(int amount)
 	{
 		Player.Instance.coins += amount;
+		Player.Instance.Save ();
 		StartCoroutine (DeferredChange (amount));
 	}
 

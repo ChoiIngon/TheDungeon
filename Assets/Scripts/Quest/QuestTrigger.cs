@@ -7,18 +7,6 @@ public abstract class QuestTrigger
 	public abstract bool IsAvailable();
 }
 
-public class QuestTrigger_LessLevel : QuestTrigger
-{
-	public const string id = "LessLevel";
-	public int level;
-	public override bool IsAvailable() {
-		if (level <= Player.Instance.level) {
-			return true;
-		}
-		return false;
-	}
-}
-
 public class QuestTrigger_LessCompleteQuestCount : QuestTrigger {
 	public const string id = "LessCompleteQuestCount";
 	public int count;

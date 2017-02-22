@@ -1,19 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+
 #if UNITY_EDITOR
 using UnityEngine.Assertions;
 #endif
 
 public class Player : Singleton<Player> {
-    public int level;
     public Unit.Stat stats;
     public int coins;
     public Inventory inventory;
 	public Dictionary<Tuple<EquipmentItem.Part, int>, EquipmentItem> equipments;
-    
+
     public void Init() {
-		level = 1;
         stats = new Unit.Stat();
 
 		stats.health = 1000;
@@ -25,6 +26,7 @@ public class Player : Singleton<Player> {
 		stats.expBonus = 0.0f;
 
         coins = 0;
+		Load ();
 
         // init equipments
 		equipments = new Dictionary<Tuple<EquipmentItem.Part, int>, EquipmentItem>();
@@ -73,4 +75,28 @@ public class Player : Singleton<Player> {
         }
         return stats + stat;
     }
+
+	public void Save()
+	{
+		BinaryFormatter bf = new BinaryFormatter ();
+		FileStream file = File.Create (Application.persistentDataPath + "/playerdata.dat");
+		string json = JsonUtility.ToJson (this);
+		Debug.Log ("save data:" + json);
+		bf.Serialize (file, json);
+		file.Close ();
+	}
+
+	public void Load()
+	{
+		Debug.Log (Application.persistentDataPath);
+		if (File.Exists (Application.persistentDataPath + "/playerdata.dat")) {
+			BinaryFormatter bf = new BinaryFormatter ();
+			FileStream file = File.Open (Application.persistentDataPath + "/playerdata.dat", FileMode.Open);
+			string json = (string)bf.Deserialize (file);
+			Player player = JsonUtility.FromJson<Player> (json);
+			coins = player.coins;
+			file.Close ();
+		} 
+	}
+
 }

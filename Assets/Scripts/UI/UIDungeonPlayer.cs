@@ -10,8 +10,8 @@ public class UIDungeonPlayer : Unit {
     public override void Init()
     {
         base.Init();
-
-        exp.max = Player.Instance.level;
+		level = 1;
+        exp.max = level;
         exp.current = 0;
         health.current = health.max = Player.Instance.GetStat().health;
         inventory.Init();
@@ -39,8 +39,8 @@ public class UIDungeonPlayer : Unit {
 		while (exp.max <= incExp) {
 			yield return StartCoroutine(exp.DeferredValue(exp.max, 0.25f));
 			incExp -= (int)exp.max;
-			Player.Instance.level += 1;
-			exp.max = Player.Instance.level;
+			level += 1;
+			exp.max += level;
 			exp.current = 0;
 			health.current = health.max;
 			// levelup effect
