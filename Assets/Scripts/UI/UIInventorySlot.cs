@@ -35,7 +35,7 @@ public class UIInventorySlot : UISlot {
 				PotionItem item = (PotionItem)data.item;
 				inventory.itemInfo.buttons [(int)UIItemInfo.Action.Use].gameObject.SetActive (true);
 				inventory.itemInfo.actions[(int)UIItemInfo.Action.Use] += () => {
-					//item.Use (Player.Instance);
+					item.Use (DungeonMain.Instance.player);
 					Player.Instance.inventory.Pull (data.index);
 					inventory.itemInfo.gameObject.SetActive (false);
 				};

@@ -233,7 +233,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!224 &3914113
 RectTransform:
@@ -1876,6 +1876,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isComplete: 0
+  fadeColorTexture: {fileID: 0}
   mainButtonGroup: {fileID: 363559435}
   battleButtonGroup: {fileID: 681411173}
   miniMap: {fileID: 1389233273}
