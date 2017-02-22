@@ -25,7 +25,7 @@ public class UIDialogBox : MonoBehaviour {
 					_instance = container.AddComponent<UIDialogBox>();  
 				}  
 				_instance.Init ();
-				DontDestroyOnLoad (_instance);
+				//DontDestroyOnLoad (_instance);
 			}  
 
 			return _instance;  
@@ -69,7 +69,6 @@ public class UIDialogBox : MonoBehaviour {
 		gameObject.SetActive(true);
 		content.text = text;
 		content.alignment = alinement;
-		Debug.Log ("UIDialogBox{content:{height:" + content.preferredHeight + "}}");
 		rectTransform.sizeDelta = new Vector2 (rectTransform.rect.width, content.preferredHeight+100);
 
 		while(active)

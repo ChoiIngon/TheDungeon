@@ -4,7 +4,6 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 
-
 public class UIInventory : MonoBehaviour {
 	public UIPlayerInfo playerInfo;
 	public UIItemInfo itemInfo;
@@ -31,8 +30,7 @@ public class UIInventory : MonoBehaviour {
 				equipmentSlots [i] = slot;
 			}
 		}
-
-		close = transform.FindChild ("Close").GetComponent<Button> ();
+			
 		EventTrigger trigger = close.gameObject.AddComponent<EventTrigger>();
 		var entry = new EventTrigger.Entry();
 		entry.eventID = EventTriggerType.PointerUp;
@@ -61,13 +59,24 @@ public class UIInventory : MonoBehaviour {
 		}
 		DungeonMain.Instance.state = DungeonMain.State.Idle;
 	}
-	public void Put(Inventory.Slot data)
+	public Inventory.Slot Put(Item item)
 	{
-		inventorySlots [data.index].Init (data);
+		Inventory.Slot slot = Player.Instance.inventory.Put (item);
+		if (null == slot)
+		{
+			return null;
+		}
+		inventorySlots [slot.index].Init (slot);
+		return slot;
 	}
-	public void Pull(int index)
+	public Item Pull(int index)
 	{
+		Item item = Player.Instance.inventory.Pull (index);
+		if (null == item) {
+			return null;
+		}
 		inventorySlots [index].Init (null);
+		return item;
 	}
 	public void TurnEquipGuideArrowOn(EquipmentItem.Part part, int index = -1)
 	{

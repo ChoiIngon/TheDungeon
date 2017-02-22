@@ -42,7 +42,7 @@ public class UITextBox : MonoBehaviour {
 					_instance = container.AddComponent<UITextBox>();  
 				}  
 				_instance.Init ();
-				DontDestroyOnLoad (_instance.gameObject);
+				//DontDestroyOnLoad (_instance.gameObject);
 			}  
 
 			return _instance;  

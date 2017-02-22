@@ -69,6 +69,7 @@ public class VillageMain : SceneMain {
 		};
 		UILog.Instance.Write ("load quest complete");
 		Player.Instance.Init ();
+		UICoin.Instance.Init ();
 		yield return StartCoroutine (UILog.Instance.Hide (1.0f));
         downloadProgress.gameObject.SetActive(false);
 		dungeon.gameObject.SetActive (true);

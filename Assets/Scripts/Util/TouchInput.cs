@@ -41,7 +41,6 @@ public class TouchInput : MonoBehaviour {
 		if (!enabled) 
 			return;
 		isButtonDown = true;
-		Debug.Log ("OnMouseDown:" + name);
 		lastPressPosition = Camera.main.ScreenToWorldPoint (
 			new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane)
 		);
@@ -53,7 +52,6 @@ public class TouchInput : MonoBehaviour {
 	void OnMouseDrag() {
 		if (!enabled || false == isButtonDown) 
 			return;
-		Debug.Log ("OnMouseDrag:" + name);
 		Vector3 currentPressPosition = Camera.main.ScreenToWorldPoint (
 			new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane)
 		);
@@ -67,7 +65,6 @@ public class TouchInput : MonoBehaviour {
 		if (!enabled || false == isButtonDown) 
 			return;
 		isButtonDown = false;
-		Debug.Log ("OnMouseUp:" + name);
 		if (null != onTouchUp)
 		{
 			onTouchUp(lastPressPosition);

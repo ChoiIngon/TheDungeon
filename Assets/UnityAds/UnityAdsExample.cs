@@ -18,7 +18,6 @@ public class UnityAdsExample : MonoBehaviour {
 //#endif
 		while (!Advertisement.isInitialized || !Advertisement.IsReady())
         {
-            Debug.Log("initailize:" + Advertisement.isInitialized + ", ready:" + Advertisement.IsReady().ToString());
             yield return new WaitForSeconds(0.5f);
         }
 

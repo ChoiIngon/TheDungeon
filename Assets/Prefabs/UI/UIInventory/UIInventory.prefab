@@ -2123,6 +2123,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -2173,6 +2174,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -2481,6 +2483,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -2515,6 +2518,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -2738,6 +2742,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -2866,6 +2871,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -3553,6 +3559,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -3661,6 +3668,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -3695,6 +3703,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -3848,6 +3857,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -3952,6 +3962,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -4201,6 +4212,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -4324,6 +4336,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -4433,6 +4446,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -4467,6 +4481,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -4757,6 +4772,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -4791,6 +4807,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -4812,6 +4829,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -4981,6 +4999,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -5002,6 +5021,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -5401,6 +5421,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -5778,7 +5799,7 @@ MonoBehaviour:
   itemInfo: {fileID: 114254248533081532}
   inventorySlots: []
   equipmentSlots: []
-  close: {fileID: 0}
+  close: {fileID: 114831789440602772}
 --- !u!114 &114985203771871214
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5795,6 +5816,7 @@ MonoBehaviour:
   outline: {fileID: 0}
   clone: {fileID: 0}
   rectTransform: {fileID: 0}
+  player: {fileID: 0}
   inventory: {fileID: 0}
   data:
     index: 0
@@ -7890,7 +7912,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 30, y: 30}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!224 &224678269753611684
 RectTransform:
@@ -7995,7 +8017,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 30, y: 30}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!224 &224732260618180684
 RectTransform:
@@ -8092,7 +8114,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 30, y: 30}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!224 &224774830968523980
 RectTransform:
@@ -8188,7 +8210,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 30, y: 30}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!224 &224802324290903366
 RectTransform:
@@ -8206,7 +8228,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 30, y: 30}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!224 &224802325206409574
 RectTransform:

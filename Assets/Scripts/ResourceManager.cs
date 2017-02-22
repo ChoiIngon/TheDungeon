@@ -1,4 +1,7 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -59,26 +62,6 @@ public class ResourceManager : MonoBehaviour {
 
 				yield return StartCoroutine (assetLoadOperation);
 			}
-
-			foreach(string assetBundleName in assetBundleNames) {
-				string error;
-
-                AssetBundles.LoadedAssetBundle loadedAssetBundle = AssetBundles.AssetBundleManager.GetLoadedAssetBundle(assetBundleName, out error);
-                string[] assetNames = loadedAssetBundle.m_AssetBundle.GetAllAssetNames();
-                foreach (string assetName in assetNames)
-                {
-                    AssetBundles.AssetBundleLoadAssetOperation operation = AssetBundles.AssetBundleManager.LoadAssetAsync(assetBundleName, assetName, typeof(Object));
-					if (null == operation) {
-						yield break;
-					}
-                    yield return StartCoroutine(operation);
-                    Object obj = operation.GetAsset<Object>();
-                    resource.Add(obj.name, obj);
-					if (null != onLoadProgress) {
-						onLoadProgress (assetBundleName, assetName);
-					}
-                }
-            }
         }
     }
 
@@ -86,6 +69,36 @@ public class ResourceManager : MonoBehaviour {
 		if (true == resource.ContainsKey (name)) {
 			return resource [name] as T;
 		}
-		return null;
+
+		T asset = null;
+		#if UNITY_EDITOR
+		if (true == AssetBundles.AssetBundleManager.SimulateAssetBundleInEditor) {
+			string[] assetBundleNames = AssetDatabase.GetAllAssetBundleNames();
+			foreach (string assetBundleName in assetBundleNames) {
+				string[] assetPaths = AssetDatabase.GetAssetPathsFromAssetBundleAndAssetName (assetBundleName, name);
+				if (assetPaths.Length == 0) {
+					continue;
+				}
+				asset = (T)AssetDatabase.LoadAssetAtPath (assetPaths [0], typeof(T));
+				break;
+			}
+		} else
+		#endif
+		{
+			string[] assetBundleNames = AssetBundles.AssetBundleManager.AssetBundleManifestObject.GetAllAssetBundles();
+			foreach (string assetBundleName in assetBundleNames) {
+				string error;
+				AssetBundles.LoadedAssetBundle loadedAssetBundle = AssetBundles.AssetBundleManager.GetLoadedAssetBundle (assetBundleName, out error);
+				asset = loadedAssetBundle.m_AssetBundle.LoadAsset<T> (name);
+				if (null != asset) {
+					break;
+				}
+			}
+		}
+		if (null != asset) {
+			resource.Add (name, asset);
+		}
+
+		return asset;
 	}
 }

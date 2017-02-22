@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UICoin : MonoBehaviour {
-	public int count;
-	public int currentCount;
 	public Text text;
 	public Image image;
 	public Vector3 position;
@@ -23,37 +21,37 @@ public class UICoin : MonoBehaviour {
 					container.name = "UICoin";  
 					_instance = container.AddComponent<UICoin>();  
 				}  
-				_instance.Init ();
-				DontDestroyOnLoad (_instance);
 			}  
 
 			return _instance;  
 		}  
 	}	
-	void Init () {
+	public void Init () {
 		text = transform.FindChild ("Amount").GetComponent<Text> ();
 		image = transform.FindChild ("Image").GetComponent<Image> ();
-    	text.text = count.ToString ();
+    	
         position = Camera.main.ScreenToWorldPoint(
-            new Vector3(image.rectTransform.position.x + 25.0f, image.rectTransform.position.y, DungeonMain.Instance.walkDistance)
+            new Vector3(image.rectTransform.position.x + 25.0f, image.rectTransform.position.y, 0.0f)
         );
+
+		text.text = Player.Instance.coins.ToString();
     }
 
 	public void ChangeAmount(int amount)
 	{
-		count += amount;
+		Player.Instance.coins += amount;
 		StartCoroutine (DeferredChange (amount));
 	}
 
 	IEnumerator DeferredChange(int amount)
 	{
-		currentCount = count - amount;
+		int currentCount = Player.Instance.coins - amount;
 		int increase = amount / 10;
-		while (0 < increase && currentCount < count) {
+		while (0 < increase && currentCount < Player.Instance.coins) {
 			currentCount += increase;
 			text.text = currentCount.ToString ();
 			yield return new WaitForSeconds (0.1f);
 		}
-		text.text = count.ToString ();
+		text.text = Player.Instance.coins.ToString ();
 	}
 }

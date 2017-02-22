@@ -101,12 +101,12 @@ public class UIEquipmentSlot : UISlot {
 				continue;
 			}
 
-			Inventory.Slot slot = Player.Instance.inventory.Put (data.item);
+			Inventory.Slot slot = DungeonMain.Instance.inventory.Put (data.item);
 			if (null == slot) {
 				return;
 			}
 
-			Player.Instance.UnequipItem (part, index);
+			DungeonMain.Instance.player.UnequipItem (part, index);
 			Init (null);
 
 			other = inventory.inventorySlots [slot.index];

@@ -19,7 +19,7 @@ public class UILog : MonoBehaviour {
 					_instance = container.AddComponent<UILog>();  
 				}  
 				_instance.Init ();
-				DontDestroyOnLoad (_instance.gameObject);
+				//DontDestroyOnLoad (_instance.gameObject);
 			}  
 
 			return _instance;  

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEngine.Assertions;
 #endif
+
 public class Player : Singleton<Player> {
     public int level;
     public Unit.Stat stats;

@@ -11,6 +11,7 @@ public class DungeonMain : SceneMain {
     public UIButtonGroup battleButtonGroup;
     
     public UIMiniMap miniMap;
+	public UIInventory inventory;
 	public RectTransform uiMain;
     public Text dungeonLevel;
     public float walkDistance;
@@ -105,7 +106,8 @@ public class DungeonMain : SceneMain {
 
 	public override IEnumerator Run () {
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
-		
+		GameObject commonUI = GameObject.Find ("CommonUI");
+		inventory.transform.SetParent (commonUI.transform);
 		rooms = transform.FindChild ("Rooms");
 		current = rooms.FindChild ("Current").GetComponent<Room> ();
 		next [Dungeon.North] = rooms.FindChild ("North").GetComponent<Room> ();
@@ -132,7 +134,7 @@ public class DungeonMain : SceneMain {
 				if(null != item)
 				{
 					item.Use(player);
-					Player.Instance.inventory.Pull(i);
+					inventory.Pull(i);
 					battleButtonGroup.names [0].text = "Heal(" + Player.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
 					break;
 				}
@@ -208,6 +210,7 @@ public class DungeonMain : SceneMain {
 		QuestManager.Instance.Update (QuestEvent.EnterDungeon, "");
 		yield return StartCoroutine(CheckCompleteQuest ());
 
+		UICoin.Instance.Init ();
         player.Init();
 		InitDungeon ();
 		rooms.gameObject.SetActive (true);
@@ -225,8 +228,8 @@ public class DungeonMain : SceneMain {
 		Analytics.CustomEvent("InitDungeon", new Dictionary<string, object>	{
 			{"dungeon_level", level },
 			{"player_level", Player.Instance.level},
-			{"player_exp", 0 /*Player.Instance.exp.current*/ },
-			{"player_gold", UICoin.Instance.count }
+			{"player_exp", player.exp.current },
+			{"player_gold", Player.Instance.coins }
 		});
 	}
 
@@ -411,13 +414,13 @@ public class DungeonMain : SceneMain {
 		if(dungeonLevelInfo.items.chance >= Random.Range(0.0f, 1.0f)) 
 		{
 			Item item = ItemManager.Instance.CreateRandomItem (this.level);
-			item.Pickup ();
+			inventory.Put (item);
 			text += "You got a " + item.name + "\n";
 		}
 
 		if(10 >= Random.Range(0, 100)) {
 			Item item = ItemManager.Instance.CreateItem ("ITEM_POTION_HEALING");
-			item.Pickup ();
+			inventory.Put (item);
 			text += "You got a " + item.name;
 		}
 		yield return StartCoroutine(UITextBox.Instance.Write(text));

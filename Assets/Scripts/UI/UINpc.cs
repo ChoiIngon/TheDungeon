@@ -25,7 +25,7 @@ public class UINpc : MonoBehaviour {
 					_instance = container.AddComponent<UINpc>();  
 				}  
 				_instance.Init ();
-				DontDestroyOnLoad (_instance);
+				//DontDestroyOnLoad (_instance);
 			}  
 
 			return _instance;  

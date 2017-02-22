@@ -48,10 +48,5 @@ public class Item {
 		actions.Add ("DROP");
 		return actions;
 	}
-
-	public void Pickup()
-	{
-		Player.Instance.inventory.Put (this);
-	}
 }
 	

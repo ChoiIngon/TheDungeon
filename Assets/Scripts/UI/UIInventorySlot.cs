@@ -36,7 +36,7 @@ public class UIInventorySlot : UISlot {
 				inventory.itemInfo.buttons [(int)UIItemInfo.Action.Use].gameObject.SetActive (true);
 				inventory.itemInfo.actions[(int)UIItemInfo.Action.Use] += () => {
 					item.Use (DungeonMain.Instance.player);
-					Player.Instance.inventory.Pull (data.index);
+					inventory.Pull (data.index);
 					inventory.itemInfo.gameObject.SetActive (false);
 				};
 			}
@@ -45,7 +45,7 @@ public class UIInventorySlot : UISlot {
 
 		inventory.itemInfo.buttons [(int)UIItemInfo.Action.Drop].gameObject.SetActive (true);
 		inventory.itemInfo.actions[(int)UIItemInfo.Action.Drop] += () => {
-			Player.Instance.inventory.Pull (data.index);
+			inventory.Pull (data.index);
 			inventory.TurnEquipGuideArrowOff();
 			inventory.itemInfo.gameObject.SetActive (false);
 		};
@@ -95,10 +95,10 @@ public class UIInventorySlot : UISlot {
 					continue;
 				}
 
-				Player.Instance.inventory.Pull (data.index);
-				EquipmentItem prev = Player.Instance.EquipItem (equipment, other.index);
+				inventory.Pull (data.index);
+				EquipmentItem prev = DungeonMain.Instance.player.EquipItem (equipment, other.index);
 
-				Player.Instance.inventory.Put (prev);
+				inventory.Put (prev);
 				Inventory.Slot slot = new Inventory.Slot ();
 				slot.index = other.index;
 				slot.count = 1;
