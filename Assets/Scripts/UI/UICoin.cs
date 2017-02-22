@@ -7,6 +7,7 @@ public class UICoin : MonoBehaviour {
 	public Text text;
 	public Image image;
 	public Vector3 position;
+	private int currentCount;
 	private static UICoin _instance;  
 	public static UICoin Instance  
 	{  
@@ -31,7 +32,7 @@ public class UICoin : MonoBehaviour {
 		image = transform.FindChild ("Image").GetComponent<Image> ();
     	
         position = Camera.main.ScreenToWorldPoint(
-            new Vector3(image.rectTransform.position.x + 25.0f, image.rectTransform.position.y, 0.0f)
+			new Vector3(image.rectTransform.position.x + 25.0f, image.rectTransform.position.y, Camera.main.transform.position.z * -1.0f)
         );
 
 		text.text = Player.Instance.coins.ToString();
@@ -45,7 +46,7 @@ public class UICoin : MonoBehaviour {
 
 	IEnumerator DeferredChange(int amount)
 	{
-		int currentCount = Player.Instance.coins - amount;
+		currentCount = Player.Instance.coins - amount;
 		int increase = amount / 10;
 		while (0 < increase && currentCount < Player.Instance.coins) {
 			currentCount += increase;
