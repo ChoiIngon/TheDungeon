@@ -32,7 +32,7 @@ public class EquipmentItemStat_MaxHealth : EquipmentItemStat
 		return result;
 	}
 }
-
+	
 public class EquipmentItemStat_Attack : EquipmentItemStat
 {
 	public EquipmentItemStat_Attack(float value, string description)
@@ -49,6 +49,20 @@ public class EquipmentItemStat_Attack : EquipmentItemStat
 	}
 }
 
+public class EquipmentItemState_MulAttack : EquipmentItemStat{
+	public EquipmentItemState_MulAttack(float value, string description)
+	{
+		this.value = value;
+		this.description = description;
+	}
+
+	public override Unit.Stat GetStat (Unit.Stat stat)
+	{
+		Unit.Stat result  = new Unit.Stat();
+		result.attack = stat.attack * value;
+		return result;
+	}
+}
 public class EquipmentItemStat_Defense : EquipmentItemStat
 {
 	public EquipmentItemStat_Defense(float value, string description)
