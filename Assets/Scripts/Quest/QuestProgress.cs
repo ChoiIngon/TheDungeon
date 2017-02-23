@@ -5,15 +5,18 @@ using UnityEngine;
 using UnityEngine.Assertions;
 #endif
 
-public static class QuestEvent {
-	public const string KillMonster = "KillMonster";
-	public const string EnterDungeon = "EnterDungeon";
-    public const string EngerVillage = "EnterVillage";
-	public const string CollectItem = "CollectItem";
-}
 
+[System.Serializable]
 public class QuestProgress
 {
+	public static class Type {
+		public const string KillMonster = "KillMonster";
+		public const string EnterDungeon = "EnterDungeon";
+		public const string EngerVillage = "EnterVillage";
+		public const string CollectItem = "CollectItem";
+		public const string CrrentLocation = "CurrentLocation";
+	}
+
 	public string type;
 	public string key;
 	public int goal;

@@ -41,6 +41,8 @@ public class VillageMain : SceneMain {
 			StartCoroutine(ChangeScene("Dungeon", dungeon.gameObject));
 		};
 		yield return StartCoroutine (Init ());
+
+		QuestManager.Instance.Update (QuestProgress.Type.CrrentLocation, "Village");
 		yield return StartCoroutine (CheckQuest ());
     }
 
@@ -63,7 +65,7 @@ public class VillageMain : SceneMain {
 
 		yield return StartCoroutine(MonsterManager.Instance.Init ());
 		UILog.Instance.Write ("load monster complete");
-		QuestManager.Instance.Init ();
+		yield return StartCoroutine(QuestManager.Instance.Init ());
 		QuestManager.Instance.onComplete += (QuestData data) => {
 			StartCoroutine(OnCompleteQuest(data));
 		};
@@ -103,11 +105,13 @@ public class VillageMain : SceneMain {
 
 	IEnumerator CheckQuest()
 	{
-		QuestData quest = QuestManager.Instance.GetAvailableQuest ();
-		if (null != quest && null != quest.startDialouge) {
-			state = State.Popup;
-			yield return StartCoroutine(UINpc.Instance.Talk(quest.startDialouge.dialouge));
-			state = State.Idle;
+		{
+			QuestData quest = QuestManager.Instance.GetAvailableQuest ();
+			if (null != quest && null != quest.startDialouge) {
+				state = State.Popup;
+				yield return StartCoroutine (UINpc.Instance.Talk (quest.startDialouge.speaker, quest.startDialouge.dialouge));
+				state = State.Idle;
+			}
 		}
 		/*
 		string[] texts = new string[] {
@@ -136,8 +140,21 @@ public class VillageMain : SceneMain {
 	}
 	IEnumerator OnCompleteQuest(QuestData quest)
 	{
-		yield return StartCoroutine(UITextBox.Instance.Write(
-			quest.name + " is completed!!"
-		));
+		//state = State.Popup;
+		//foreach(QuestData quest in completeQuests)
+		{
+			if (null == quest.completeDialouge) {
+				yield break;
+			}
+			if (null == quest.completeDialouge.dialouge) {
+				yield break;
+			}
+
+			state = State.Popup;
+			yield return StartCoroutine (UINpc.Instance.Talk (quest.completeDialouge.speaker, quest.completeDialouge.dialouge));
+			state = State.Idle;
+		}
+	//	completeQuests.Clear ();
+		//state = State.Idle;
 	}
 }

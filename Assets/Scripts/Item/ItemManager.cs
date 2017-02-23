@@ -144,6 +144,8 @@ public class ItemManager : Singleton<ItemManager> {
 			return new EquipmentItemStat_MaxHealth (value, info.description);
 		} else if ("ATTACK" == info.type) {
 			return new EquipmentItemStat_Attack (value, info.description);
+		} else if ("MUL_ATTACK" == info.type) {
+			return new EquipmentItemState_MulAttack (value, info.description);
 		} else if ("DEFENSE" == info.type) {
 			return new EquipmentItemStat_Defense (value, info.description);
 		} else if ("SPEED" == info.type) {

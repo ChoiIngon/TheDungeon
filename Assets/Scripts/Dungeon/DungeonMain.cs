@@ -186,14 +186,12 @@ public class DungeonMain : SceneMain {
 		yield return StartCoroutine(MonsterManager.Instance.Init ());
 		#endif
 
-		QuestManager.Instance.Init ();
+		yield return StartCoroutine(QuestManager.Instance.Init ());
 		QuestManager.Instance.onComplete += (QuestData data) => {
 			completeQuests.Add(data);
 		};
 		#if UNITY_EDITOR
-		QuestManager.Instance.Find("QUEST_EXAMPLE").state = QuestData.State.AccecptWait;
-		QuestManager.Instance.Find("QUEST_EXAMPLE").Start();
-        Player.Instance.Init();
+		Player.Instance.Init();
         #endif
         yield return NetworkManager.Instance.HttpRequest ("info_dungeon.php", (string json) => {
 			config = JsonUtility.FromJson<Config>(json);
@@ -206,7 +204,7 @@ public class DungeonMain : SceneMain {
 		audioBG = GameObject.Instantiate<AudioSource>(audioBG);
 		audioMonsterDie = GameObject.Instantiate<AudioSource>(audioMonsterDie);
 		
-		QuestManager.Instance.Update (QuestEvent.EnterDungeon, "");
+		QuestManager.Instance.Update (QuestProgress.Type.EnterDungeon, "");
 		yield return StartCoroutine(CheckCompleteQuest ());
 
 		UICoin.Instance.Init ();
@@ -470,9 +468,16 @@ public class DungeonMain : SceneMain {
 		state = State.Popup;
 		foreach(QuestData quest in completeQuests)
 		{
-			yield return StartCoroutine(UITextBox.Instance.Write(
-				quest.name + " is completed!!"
-			));	
+			if (null == quest.completeDialouge) {
+				continue;
+			}
+			if (null == quest.completeDialouge.dialouge) {
+				continue;
+			}
+
+			state = State.Popup;
+			yield return StartCoroutine (UINpc.Instance.Talk (quest.completeDialouge.speaker, quest.completeDialouge.dialouge));
+			state = State.Idle;
 		}
 		completeQuests.Clear ();
 		state = State.Idle;

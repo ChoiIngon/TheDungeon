@@ -15,53 +15,82 @@ public class CompleteQuest {
 public class QuestManager : Singleton<QuestManager> {
 	public delegate void UpdateDelegate(string key);
 	public delegate void CompleteDelegate(QuestData quests);
+	public delegate QuestTrigger CreateTriggerDelegate(string value);
+
+	private Dictionary<string, CreateTriggerDelegate> triggerFactory = new Dictionary<string, CreateTriggerDelegate>() {
+		{ "LessCompleteQuestCount",	(string value) => { return new QuestTrigger_LessCompleteQuestCount(int.Parse(value)); }},
+		{ "CompleteQuestID", 		(string value) => { return new QuestTrigger_CompleteQuestID(value); }}	
+	};
+
     public Dictionary<string, UpdateDelegate> updates;
 	public Dictionary<string, CompleteQuest> completes;
 	public Dictionary<string, QuestData> quests;
 
     public CompleteDelegate onComplete;
     
-	public void Init() {
+	[System.Serializable]
+	public class QuestConfig
+	{
+		[System.Serializable]
+		public class Trigger
+		{
+			public string type;
+			public string value;
+		}
+		[System.Serializable]
+		public class Progress
+		{	
+			public string type;
+			public string key;
+			public int goal;
+		}
+		public string id;
+		public string name;
+		public Trigger[] triggers;
+		public Progress[] progresses;
+		public QuestData.Dialouge start_dialouge;
+		public QuestData.Dialouge complete_dialouge;
+		public QuestData.Reward reward;
+	}
+
+	public class Config
+	{
+		public QuestConfig[] quests;
+	}
+	public IEnumerator Init() {
 		onComplete = null;
 		if (null != quests) {
-			return;
+			yield break;
 		}
 		updates = new Dictionary<string, UpdateDelegate>();
-		quests = new Dictionary<string, QuestData> {
-            { "QUEST_001",  new QuestData() {
-                id = "QUEST_001", name = "First Blood", state = QuestData.State.AccecptWait,
-                progresses = new List<QuestProgress> {
-					new QuestProgress(QuestEvent.KillMonster, "", 1)
-                }
-            } },
-            { "QUEST_002",  new QuestData() {
-                id = "QUEST_002", name = "Daemon Hunter", state = QuestData.State.AccecptWait,
-                progresses = new List<QuestProgress> {
-					new QuestProgress(QuestEvent.KillMonster, "DAEMON_001", 3)
-                }
-            } },
-			{ "QUEST_004", new QuestData() {
-				id = "QUEST_004", name = "Get Item", state = QuestData.State.Invalid,
-				triggers = new List<QuestTrigger> {
-					new QuestTrigger_CompleteQuestID("QUEST_EXAMPLE")
-				},
-				progresses = new List<QuestProgress> {
-					new QuestProgress(QuestEvent.CollectItem, "QUEST_ITEM", 1)
-				},
-				startDialouge = new QuestData.Dialouge() {
-					speacker = "npc",
-					dialouge = new string[] {
-						"you got quest collect item"
-					}
+		quests = new Dictionary<string, QuestData> ();
+			
+		yield return NetworkManager.Instance.HttpRequest ("info_quest.php", (string json) => {
+			Config config = JsonUtility.FromJson<Config>(json);
+			foreach(QuestConfig quest in config.quests)
+			{
+				QuestData data = new QuestData() {
+					id = quest.id, name = quest.name, state = QuestData.State.Invalid
+				};
+
+				foreach(QuestConfig.Trigger trigger in quest.triggers)
+				{
+					data.triggers.Add(triggerFactory[trigger.type](trigger.value));
 				}
-			}}
-        };
-        foreach(var itr in quests)
-        {
-            QuestData quest = itr.Value;
-            quest.Start();
-        }
-		quests["QUEST_EXAMPLE"] = new Quest_Example();
+
+				foreach(QuestConfig.Progress progress in quest.progresses)
+				{
+					data.progresses.Add(new QuestProgress(progress.type, progress.key, progress.goal));
+				}
+
+				data.startDialouge = quest.start_dialouge;
+				data.completeDialouge = quest.complete_dialouge;
+				data.reward = quest.reward;
+				quests.Add(data.id, data);
+			}
+		});
+
+		//quests["QUEST_EXAMPLE"] = new Quest_Example();
 		completes = new Dictionary<string, CompleteQuest>();
 	}
 
@@ -107,4 +136,14 @@ public class QuestManager : Singleton<QuestManager> {
 		}
 		return null;
 	}
+		
+	public void Save()
+	{
+	}
+
+	public void Load()
+	{
+	}
+		
+
 }

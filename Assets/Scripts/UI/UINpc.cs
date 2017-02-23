@@ -47,7 +47,7 @@ public class UINpc : MonoBehaviour {
 		iTween.MoveTo(image.gameObject, iTween.Hash("x", 0.0f, "easeType", "easeInOutExpo", "time", 0.5f));
 	}
 
-	public IEnumerator Talk(string[] text)
+	public IEnumerator Talk(string speaker, string[] text)
 	{
 		gameObject.SetActive (true);
 		iTween.MoveBy(image.gameObject, iTween.Hash("x", image.rectTransform.rect.width * widthScale, "easeType", "easeInOutExpo"));

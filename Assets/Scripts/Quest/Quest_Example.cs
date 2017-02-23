@@ -9,9 +9,9 @@ public class Quest_Example : QuestData {
 		this.name = "Example Quest";
 		this.state = QuestData.State.Invalid;
 		this.triggers.Add (new QuestTrigger_LessCompleteQuestCount (0));
-		this.progresses.Add (new QuestProgress (QuestEvent.EnterDungeon, "", 1));
+		this.progresses.Add (new QuestProgress (QuestProgress.Type.EnterDungeon, "", 1));
 		startDialouge = new Dialouge ();
-		startDialouge.speacker = "Far Seer";
+		startDialouge.speaker = "Far Seer";
 		startDialouge.dialouge = new string[] {
 			"Welcome to \'Last Village\'\nYour first quest is go to the dungeon and reach the last level\n",
 			"Touch enter button"

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class QuestData {
 	public enum State {
 		Invalid,
@@ -12,24 +13,25 @@ public class QuestData {
 		Max
 	};
 
+	[System.Serializable]
 	public class Dialouge {
-		public string speacker;
+		public string speaker;
 		public string[] dialouge;
 	}
 
+	[System.Serializable]
 	public class Reward
 	{
 		public int coin;
-		public int exp;
 	}
 	public string id;
 	public string name;
 	public State state = State.Invalid;
-	//public RewardInfo reward = new RewardInfo();
+	public Reward reward = new Reward();
 	public List<QuestTrigger> triggers = new List<QuestTrigger> ();
 	public List<QuestProgress> progresses = new List<QuestProgress> ();
 	public Dialouge startDialouge = new Dialouge();
-	//public List<Dialouge> completeDialouges = new List<Dialouge> ();
+	public Dialouge completeDialouge = new Dialouge();
 
 	public bool IsAvailable() {
 		if (State.Invalid != state) {
