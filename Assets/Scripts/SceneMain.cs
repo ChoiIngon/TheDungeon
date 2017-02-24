@@ -19,6 +19,7 @@ public abstract class SceneMain : MonoBehaviour {
             yield return null;
         }
         UIDialogBox.Instance.gameObject.SetActive(false);
+        UITicker.Instance.gameObject.SetActive(false);
         StartCoroutine(Run ());
 	}
 

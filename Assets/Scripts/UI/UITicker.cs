@@ -21,21 +21,11 @@ public class UITicker : MonoBehaviour {
                     container.name = "UITicker";
                     _instance = container.AddComponent<UITicker>();
                 }
-                _instance.Init();
             }
             return _instance;
         }
     }
 
-    void Start()
-    {
-        //gameObject.SetActive(false);
-    }
-    void Init()
-    {
-        //gameObject.SetActive(false);
-    }
-    
     public IEnumerator Write(string text)
     {
         gameObject.SetActive(true);
