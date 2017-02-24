@@ -40,6 +40,7 @@ public class QuestManager : Singleton<QuestManager> {
 		[System.Serializable]
 		public class Progress
 		{	
+			public string name;
 			public string type;
 			public string key;
 			public int goal;
@@ -80,7 +81,7 @@ public class QuestManager : Singleton<QuestManager> {
 
 				foreach(QuestConfig.Progress progress in quest.progresses)
 				{
-					data.progresses.Add(new QuestProgress(progress.type, progress.key, progress.goal));
+					data.progresses.Add(new QuestProgress(progress.name, progress.type, progress.key, progress.goal));
 				}
 
 				data.startDialouge = quest.start_dialouge;

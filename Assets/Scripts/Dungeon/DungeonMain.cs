@@ -204,7 +204,7 @@ public class DungeonMain : SceneMain {
 		audioBG = GameObject.Instantiate<AudioSource>(audioBG);
 		audioMonsterDie = GameObject.Instantiate<AudioSource>(audioMonsterDie);
 		
-		QuestManager.Instance.Update (QuestProgress.Type.EnterDungeon, "");
+		QuestManager.Instance.Update (QuestProgress.Type.CrrentLocation, "Dungeon");
 		yield return StartCoroutine(CheckCompleteQuest ());
 
 		UICoin.Instance.Init ();

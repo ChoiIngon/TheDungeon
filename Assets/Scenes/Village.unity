@@ -284,6 +284,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isComplete: 0
+  fadeColorTexture: {fileID: 0}
   dungeon: {fileID: 1685323517}
   downloadProgress: {fileID: 674374440}
 --- !u!114 &613228451

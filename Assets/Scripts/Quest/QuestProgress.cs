@@ -11,8 +11,6 @@ public class QuestProgress
 {
 	public static class Type {
 		public const string KillMonster = "KillMonster";
-		public const string EnterDungeon = "EnterDungeon";
-		public const string EngerVillage = "EnterVillage";
 		public const string CollectItem = "CollectItem";
 		public const string CrrentLocation = "CurrentLocation";
 	}
@@ -21,8 +19,10 @@ public class QuestProgress
 	public string key;
 	public int goal;
 	public int progress;
-	public QuestProgress(string type, string key, int goal)
+	public string name;
+	public QuestProgress(string name, string type, string key, int goal)
 	{
+		this.name = name;
 		this.type = type;
 		this.key = key;
 		this.goal = goal;
@@ -59,6 +59,7 @@ public class QuestProgress
 		if ("" == this.key || this.key == key)
 		{
 			progress++;
+			UITicker.Instance.Write(name + " " + progress + "/" + goal);
 		}
 	}
 }

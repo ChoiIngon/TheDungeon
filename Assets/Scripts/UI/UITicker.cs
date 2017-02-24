@@ -4,9 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UITicker : MonoBehaviour {
-    public Text contents;
-    public Image image;
-    public float time;
+    public UITickerMessage tickerMessagePrefab;
+
+	float heightScale;
+
     private static UITicker _instance;
     public static UITicker Instance
     {
@@ -25,32 +26,16 @@ public class UITicker : MonoBehaviour {
             return _instance;
         }
     }
-
-    public IEnumerator Write(string text)
-    {
-        gameObject.SetActive(true);
-        contents.text = text;
-        float alpha = 0.0f;
-        while (1.0f > alpha)
-        {
-            image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
-            contents.color = new Color(contents.color.r, contents.color.g, contents.color.b, alpha);
-            alpha += Time.deltaTime /(time * 0.3f);
-            yield return null;
-        }
-
-        image.color = new Color(image.color.r, image.color.g, image.color.b, 1.0f);
-        contents.color = new Color(contents.color.r, contents.color.g, contents.color.b, 1.0f);
-
-        yield return new WaitForSeconds(time * 0.3f);
-        while (0.0f < alpha)
-        {
-            image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
-            contents.color = new Color(contents.color.r, contents.color.g, contents.color.b, alpha);
-            alpha -= Time.deltaTime / (time * 0.3f);
-            yield return null;
-        }
-
-        gameObject.SetActive(false);
-    }
+	void Start()
+	{
+		CanvasScaler canvasScaler = Object.FindObjectOfType<CanvasScaler> ();
+		heightScale = Screen.height / canvasScaler.referenceResolution.y;
+	}
+	public void Write(string text)
+	{
+		UITickerMessage ticker = GameObject.Instantiate<UITickerMessage> (tickerMessagePrefab);
+		ticker.transform.SetParent (transform, false);
+		ticker.transform.localPosition = Vector3.zero;
+		StartCoroutine(ticker.Write(text));
+	}
 }

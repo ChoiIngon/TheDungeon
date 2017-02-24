@@ -9,7 +9,7 @@ public class Quest_Example : QuestData {
 		this.name = "Example Quest";
 		this.state = QuestData.State.Invalid;
 		this.triggers.Add (new QuestTrigger_LessCompleteQuestCount (0));
-		this.progresses.Add (new QuestProgress (QuestProgress.Type.EnterDungeon, "", 1));
+		this.progresses.Add (new QuestProgress ("Go into the dungeon", QuestProgress.Type.CrrentLocation, "Dungeon", 1));
 		startDialouge = new Dialouge ();
 		startDialouge.speaker = "Far Seer";
 		startDialouge.dialouge = new string[] {
