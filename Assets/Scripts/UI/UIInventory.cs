@@ -89,7 +89,8 @@ public class UIInventory : MonoBehaviour {
 				);
 			} else {
 				iTween.Stop (other.arrow.gameObject);
-				other.arrow.gameObject.SetActive (false);
+                other.arrow.transform.localPosition = Vector3.zero;
+                other.arrow.gameObject.SetActive (false);
 			}
 		}
 	}
