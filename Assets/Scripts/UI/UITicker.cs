@@ -21,12 +21,20 @@ public class UITicker : MonoBehaviour {
                     container.name = "UITicker";
                     _instance = container.AddComponent<UITicker>();
                 }
+                _instance.Init();
             }
-            //_instance.Init();
             return _instance;
         }
     }
 
+    void Start()
+    {
+        //gameObject.SetActive(false);
+    }
+    void Init()
+    {
+        //gameObject.SetActive(false);
+    }
     
     public IEnumerator Write(string text)
     {
@@ -41,8 +49,8 @@ public class UITicker : MonoBehaviour {
             yield return null;
         }
 
-        image.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-        contents.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        image.color = new Color(image.color.r, image.color.g, image.color.b, 1.0f);
+        contents.color = new Color(contents.color.r, contents.color.g, contents.color.b, 1.0f);
 
         yield return new WaitForSeconds(time * 0.3f);
         while (0.0f < alpha)
