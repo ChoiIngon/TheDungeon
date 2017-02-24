@@ -44,6 +44,7 @@ public class VillageMain : SceneMain {
 
 		QuestManager.Instance.Update (QuestProgress.Type.CrrentLocation, "Village");
 		yield return StartCoroutine (CheckQuest ());
+        yield return StartCoroutine(UITicker.Instance.Write("test test test"));
     }
 
 	IEnumerator Init()
