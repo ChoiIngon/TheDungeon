@@ -70,6 +70,9 @@ public class DungeonMain : SceneMain {
 
 	public State state {
 		set {
+			if (true == Application.isPlaying) {
+				return;
+			}
 			switch (value) {
 			case State.Invalid:
 				input.enabled = false;
