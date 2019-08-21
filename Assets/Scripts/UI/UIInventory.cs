@@ -13,7 +13,7 @@ public class UIInventory : MonoBehaviour {
 	public void Init() {
 		{
 			inventorySlots = new UIInventorySlot[Inventory.MAX_SLOT_COUNT];
-			Transform tr = transform.FindChild ("InventorySlots");
+			Transform tr = transform.Find ("InventorySlots");
 			for (int i = 0; i < Inventory.MAX_SLOT_COUNT; i++) {
 				UIInventorySlot slot = tr.GetChild (i).GetComponent<UIInventorySlot> ();
 				slot.inventory = this;
@@ -23,7 +23,7 @@ public class UIInventory : MonoBehaviour {
 		}
 		{
 			equipmentSlots = new UIEquipmentSlot[7];
-			Transform tr = transform.FindChild ("EquipmentSlots");
+			Transform tr = transform.Find ("EquipmentSlots");
 			for (int i = 0; i < 7; i++) {
 				UIEquipmentSlot slot = tr.GetChild (i).GetComponent<UIEquipmentSlot> ();
 				slot.inventory = this;

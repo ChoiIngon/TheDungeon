@@ -28,14 +28,16 @@ public class UICoin : MonoBehaviour {
 		}  
 	}	
 	public void Init () {
-		text = transform.FindChild ("Amount").GetComponent<Text> ();
-		image = transform.FindChild ("Image").GetComponent<Image> ();
+		text = transform.Find ("Amount").GetComponent<Text> ();
+		image = transform.Find ("Image").GetComponent<Image> ();
     	
         position = Camera.main.ScreenToWorldPoint(
 			new Vector3(image.rectTransform.position.x + 25.0f, image.rectTransform.position.y, Camera.main.transform.position.z * -1.0f)
         );
 
 		text.text = Player.Instance.coins.ToString();
+
+        Util.EventSystem.Subscribe<int>(EventID.EventID_CoinAmountChanged, ChangeAmount);
     }
 
 	public void ChangeAmount(int amount)

@@ -45,9 +45,9 @@ public class UISlot : MonoBehaviour {
 			trigger.triggers.Add (entry);
 		}
 		rectTransform = GetComponent<RectTransform> ();
-		icon = transform.FindChild ("ItemIcon").GetComponent<Image> ();
-		outline = transform.FindChild ("ItemIcon").GetComponent<ImageOutline> ();
-		grade = transform.FindChild ("ItemGrade").GetComponent<Image> ();
+		icon = transform.Find ("ItemIcon").GetComponent<Image> ();
+		outline = transform.Find ("ItemIcon").GetComponent<ImageOutline> ();
+		grade = transform.Find ("ItemGrade").GetComponent<Image> ();
 		outline.outline = false;
 		Init (data);
 	}

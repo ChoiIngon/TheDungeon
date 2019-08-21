@@ -20,7 +20,7 @@ public class UIButtonGroup : MonoBehaviour {
 			int index = i;
 			//buttons [i].enabled = false;
 			images [i] = buttons [i].GetComponent<Image> ();
-			names [i] = buttons [i].transform.FindChild ("Text").GetComponent<Text> ();
+			names [i] = buttons [i].transform.Find ("Text").GetComponent<Text> ();
 
 			EventTrigger trigger = buttons [i].gameObject.AddComponent<EventTrigger> ();
 			var entry = new EventTrigger.Entry ();

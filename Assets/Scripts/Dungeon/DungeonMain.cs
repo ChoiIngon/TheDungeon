@@ -110,15 +110,15 @@ public class DungeonMain : SceneMain {
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
 		GameObject commonUI = GameObject.Find ("CommonUI");
 		inventory.transform.SetParent (commonUI.transform);
-		rooms = transform.FindChild ("Rooms");
-		current = rooms.FindChild ("Current").GetComponent<Room> ();
-		next [Dungeon.North] = rooms.FindChild ("North").GetComponent<Room> ();
+		rooms = transform.Find ("Rooms");
+		current = rooms.Find ("Current").GetComponent<Room> ();
+		next [Dungeon.North] = rooms.Find ("North").GetComponent<Room> ();
 		next [Dungeon.North].transform.position = new Vector3 (0.0f, 0.0f, walkDistance);
-		next [Dungeon.East] =  rooms.FindChild ("East").GetComponent<Room> ();
+		next [Dungeon.East] =  rooms.Find ("East").GetComponent<Room> ();
 		next [Dungeon.East].transform.position = new Vector3 (walkDistance, 0.0f, 0.0f);
-		next [Dungeon.South] =  rooms.FindChild ("South").GetComponent<Room> ();
+		next [Dungeon.South] =  rooms.Find ("South").GetComponent<Room> ();
 		next [Dungeon.South].transform.position = new Vector3 (0.0f, 0.0f, -walkDistance);
-		next [Dungeon.West] =  rooms.FindChild ("West").GetComponent<Room> ();
+		next [Dungeon.West] =  rooms.Find ("West").GetComponent<Room> ();
 		next [Dungeon.West].transform.position = new Vector3 (-walkDistance, 0.0f, 0.0f);
 		uiMain.position = Camera.main.WorldToScreenPoint(monster.transform.position);
      

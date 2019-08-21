@@ -45,10 +45,10 @@ public class Monster : Unit {
 	private new SpriteRenderer renderer;
 
 	void Start () {
-		animator = transform.FindChild ("Sprite").GetComponent<Animator> ();
-		renderer = transform.FindChild ("Sprite").GetComponent<SpriteRenderer> ();
-		name = ui.FindChild ("Name").GetComponent<Text> ();
-		health = ui.FindChild ("Health").GetComponent<UIGaugeBar> ();
+		animator = transform.Find ("Sprite").GetComponent<Animator> ();
+		renderer = transform.Find ("Sprite").GetComponent<SpriteRenderer> ();
+		name = ui.Find ("Name").GetComponent<Text> ();
+		health = ui.Find ("Health").GetComponent<UIGaugeBar> ();
 
 		#if UNITY_EDITOR
 		Assert.AreNotEqual(null, animator);
@@ -111,7 +111,7 @@ public class Monster : Unit {
 		MeshRenderer renderer = effect.transform.Find ("Text").GetComponent<MeshRenderer> ();
 		renderer.sortingLayerName = "Effect";
 
-		TextMesh text = effect.transform.FindChild ("Text").GetComponent<TextMesh> ();
+		TextMesh text = effect.transform.Find ("Text").GetComponent<TextMesh> ();
 		text.text = "-" + damage.ToString ();
 		iTween.MoveTo(trail.gameObject, direction, 0.3f);
 		iTween.ShakePosition (gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.1f);

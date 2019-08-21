@@ -12,7 +12,7 @@ public class UIEquipmentSlot : UISlot {
 	public override void Start( )
 	{
 		base.Start ();
-		arrow = transform.FindChild ("Arrow").GetComponent<Image> ();
+		arrow = transform.Find ("Arrow").GetComponent<Image> ();
 	}
 
 	public override void OnSelect()

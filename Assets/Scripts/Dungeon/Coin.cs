@@ -18,7 +18,7 @@ public class Coin : MonoBehaviour {
 	}
 
 	void Start () {
-		animator = transform.FindChild ("Sprite").GetComponent<Animator> (); 
+		animator = transform.Find ("Sprite").GetComponent<Animator> (); 
 		animator.Play("Spin", -1, Random.Range(0.0f, 1.0f));
 		groundPos = transform.localPosition.y;
 		velocity = transform.forward * Random.Range(0.5f, 1.0f);
@@ -31,7 +31,7 @@ public class Coin : MonoBehaviour {
 	{
 		StopCoroutine (coroutine);
 		iTween.MoveTo (gameObject, UICoin.Instance.position, 0.1f);
-		DestroyObject (gameObject, 0.1f);
+        Object.Destroy(gameObject, 0.1f);
 	}
 
 	IEnumerator Bounce ()
@@ -57,7 +57,7 @@ public class Coin : MonoBehaviour {
 
 		float t = Random.Range (0.5f, 0.8f);
 		iTween.MoveTo (gameObject, UICoin.Instance.position, t);
-		DestroyObject (gameObject, t);
+		Object.Destroy (gameObject, t);
 	}
 
 	public void OnDisable()
