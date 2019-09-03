@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NetworkManager : Singleton<NetworkManager>
+public class NetworkManager : Util.Singleton<NetworkManager>
 {
     public string host;
     public void Init()

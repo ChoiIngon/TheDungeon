@@ -12,7 +12,7 @@ public class CompleteQuest {
 	public int count;
 };
 
-public class QuestManager : Singleton<QuestManager> {
+public class QuestManager : Util.Singleton<QuestManager> {
 	public delegate void UpdateDelegate(string key);
 	public delegate void CompleteDelegate(QuestData quests);
 	public delegate QuestTrigger CreateTriggerDelegate(string value);

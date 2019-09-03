@@ -6,7 +6,7 @@ using UnityEngine.Analytics;
 #if UNITY_EDITOR
 using UnityEngine.Assertions;
 #endif
-public class ItemManager : Singleton<ItemManager> {
+public class ItemManager : Util.Singleton<ItemManager> {
 	private Dictionary<string, Item.Info> infos;
 	private Dungeon.LevelInfo dungeonLevelInfo;
 	private int totalWeight;

@@ -3,7 +3,7 @@ using UnityEngine.Assertions;
 using System.Collections;
 using System.Collections.Generic;
 
-public class MonsterManager : Singleton<MonsterManager> {
+public class MonsterManager : Util.Singleton<MonsterManager> {
 	[System.Serializable]
 	public class MonsterInfo : Monster.Info
 	{

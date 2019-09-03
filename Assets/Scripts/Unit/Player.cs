@@ -8,7 +8,7 @@ using System.IO;
 using UnityEngine.Assertions;
 #endif
 
-public class Player : Singleton<Player> {
+public class Player : Util.Singleton<Player> {
     public Unit.Stat stats;
     public int coins;
     public Inventory inventory;
