@@ -38,15 +38,19 @@ public class EquipItem : Item {
 		public float value;
 	}
 
-	public Part part;
+	public class Encant {
+	}
 
+	public Part part;
+	public int 	level;
+	public List<Stat> main_stats;
+	public List<Stat> sub_stats;
 	public EquipItem(EquipItem.Meta meta) : base(meta)
 	{
 		part = meta.part;
 	}
 
 	/*
-	public int 	level;
 	
 	public EquipmentItemStat mainStat;
 	public List<EquipmentItemStat> subStats = new List<EquipmentItemStat> ();
