@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UIMiniMapRoom : MonoBehaviour {
+	/*
 	public Image room;
 	public Image[] next;
 	public Color color {
@@ -18,4 +19,5 @@ public class UIMiniMapRoom : MonoBehaviour {
             return room.color;
         }
 	}
+	*/
 }

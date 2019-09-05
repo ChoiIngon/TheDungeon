@@ -1,33 +1,29 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
-using System.Collections.Generic;
-// for file save and load
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Util.MonoSingleton<GameManager>
 {
     public const string VERSION = "1.0";
-    private static GameManager self;
-    public static GameManager Instance
-    {
-        get
-        {
-            if (null == self)
-            {
-                self = FindObjectOfType(typeof(GameManager)) as GameManager;
-            }
-            return self;
-        }
-    }
+	private const string init_scene_name = "Village";
+	private SceneMain current_scene;
 
-    void Start()
-    {
-        Load();
-    }
+	IEnumerator Start()
+	{
+		AsyncOperation operation = SceneManager.LoadSceneAsync("Common", LoadSceneMode.Additive);
+		while (false == operation.isDone)
+		{
+			// loading progress
+			yield return null;
+		}
+		UIDialogBox.Instance.Init();
+		UIDialogBox.Instance.Active("text");
+		//UITicker.Instance.gameObject.SetActive(false);
+	}
 
-    void Update()
+	void Update()
     {
     }
 
@@ -36,8 +32,8 @@ public class GameManager : MonoBehaviour
     {
         public string version;
     }
-    
-    public void Save()
+
+	public void Save()
     {
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Create(Application.persistentDataPath + "/playerdata.dat");

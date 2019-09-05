@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class KeyItem : Item {
+	/*
 	public KeyItem() : base(Item.Type.Key) {
 	}
 	public override List<string> Actions() {
@@ -25,5 +26,6 @@ public class KeyItem : Item {
 			return item;	
 		}
 	}
+	*/
 }
 

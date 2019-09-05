@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UIDungeonPlayer : Unit {
+	/*
     public UIGaugeBar health;
     public UIGaugeBar exp;
     public UIInventory inventory;
@@ -17,16 +18,16 @@ public class UIDungeonPlayer : Unit {
         inventory.Init();
     }
 
-    public EquipmentItem EquipItem(EquipmentItem item, int index)
+    public EquipItem EquipItem(EquipItem item, int index)
     {
-        EquipmentItem prev = Player.Instance.EquipItem(item, index);
+        EquipItem prev = Player.Instance.EquipItem(item, index);
         health.max = Player.Instance.GetStat ().health;
         inventory.playerInfo.Init ();
         return prev;
     }
-    public EquipmentItem UnequipItem(EquipmentItem.Part category, int index)
+    public EquipItem UnequipItem(EquipItem.Part category, int index)
     {
-        EquipmentItem item = Player.Instance.UnequipItem(category, index);
+        EquipItem item = Player.Instance.UnequipItem(category, index);
         health.max = Player.Instance.GetStat ().health;
         inventory.playerInfo.Init ();
         return item;
@@ -59,7 +60,7 @@ public class UIDungeonPlayer : Unit {
 
         for (int i = 0; i < 2; i++)
         {
-            EquipmentItem weapon = Player.Instance.GetEquipment(EquipmentItem.Part.Hand, i);
+            EquipItem weapon = Player.Instance.GetEquipment(EquipItem.Part.Hand, i);
             if (null != weapon && null != weapon.enchantment)
             {
                 weapon.enchantment.Enchant(defender);
@@ -82,4 +83,5 @@ public class UIDungeonPlayer : Unit {
     {
         return Player.Instance.GetStat();
     }
+	*/
 }

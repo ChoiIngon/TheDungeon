@@ -4,6 +4,7 @@ using System.Collections;
 
 public class UIMiniMap : MonoBehaviour
 {
+	/*
 	public float ROOM_SIZE = 50.0f;
 	public UIMiniMapRoom roomPrefab;
 	public Sprite stairSprite;
@@ -124,5 +125,6 @@ public class UIMiniMap : MonoBehaviour
             miniRoom.color = color;
         }
     }
+	*/
 }
 

@@ -5,6 +5,7 @@ using UnityEngine.Assertions;
 
 public class Room : MonoBehaviour
 {
+	/*
 	public GameObject[] doors;
 	public GameObject stair;
 	public void Init(Dungeon.Room data)
@@ -19,4 +20,5 @@ public class Room : MonoBehaviour
 			stair.SetActive (true);
 		}
 	}
+	*/
 }

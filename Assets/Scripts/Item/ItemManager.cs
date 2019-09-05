@@ -7,6 +7,7 @@ using UnityEngine.Analytics;
 using UnityEngine.Assertions;
 #endif
 public class ItemManager : Util.Singleton<ItemManager> {
+	/*
 	private Dictionary<string, Item.Info> infos;
 	private Dungeon.LevelInfo dungeonLevelInfo;
 	private int totalWeight;
@@ -18,22 +19,22 @@ public class ItemManager : Util.Singleton<ItemManager> {
 		public int weight;
 	}
 	[System.Serializable]
-	public class EquipmentItemConfig
+	public class EquipItemConfig
 	{
 		public GradeWeight[] grade_weight;
-		public EquipmentItemStat.Info[] item_stats;
-		public EquipmentItem.Info[] items;
+		public EquipItemStat.Info[] item_stats;
+		public EquipItem.Info[] items;
 	}
-	EquipmentItemConfig config;
+	EquipItemConfig config;
 	public IEnumerator Init() {
 		infos = new Dictionary<string, Item.Info> ();
 		yield return NetworkManager.Instance.HttpRequest ("info_equipment_item.php", (string json) => {
-			config = JsonUtility.FromJson<EquipmentItemConfig>(json);
+			config = JsonUtility.FromJson<EquipItemConfig>(json);
 			foreach(GradeWeight itr in config.grade_weight)
 			{
 				totalWeight += itr.weight;
 			}
-			foreach(EquipmentItem.Info info in config.items)
+			foreach(EquipItem.Info info in config.items)
 			{
 				infos.Add(info.id, info);
 			}
@@ -52,29 +53,29 @@ public class ItemManager : Util.Singleton<ItemManager> {
 		}
 	}
 
-	EquipmentItem.Grade GetRandomGrade() {
+	EquipItem.Grade GetRandomGrade() {
 		int weight = Random.Range(0, totalWeight);
 		foreach(var itr in dungeonLevelInfo.items.grade_weight)
 		{
 			weight -= itr.weight;
 			if(0 >= weight)
 			{
-				return (EquipmentItem.Grade)itr.grade;
+				return (EquipItem.Grade)itr.grade;
 			}
 		}
 
-		return EquipmentItem.Grade.Low;
+		return EquipItem.Grade.Low;
 	}
 
 	public Item CreateRandomItem(int level)
 	{
-		EquipmentItem.Grade grade = GetRandomGrade ();
-		EquipmentItem.Info info = config.items [Random.Range (0, config.items.Length)];
-		EquipmentItem item = info.CreateInstance () as EquipmentItem;
-		item.grade = (EquipmentItem.Grade)grade;
+		EquipItem.Grade grade = GetRandomGrade ();
+		EquipItem.Info info = config.items [Random.Range (0, config.items.Length)];
+		EquipItem item = info.CreateInstance () as EquipItem;
+		item.grade = (EquipItem.Grade)grade;
 		item.level = level;
 		item.mainStat = CreateStat(level, info.main_stat);
-		for (int i = 0; i < (int)item.grade - (int)EquipmentItem.Grade.Normal; i++) {
+		for (int i = 0; i < (int)item.grade - (int)EquipItem.Grade.Normal; i++) {
 			item.subStats.Add (CreateStat(level, config.item_stats [Random.Range (0, config.item_stats.Length)]));
 		}
 
@@ -133,7 +134,7 @@ public class ItemManager : Util.Singleton<ItemManager> {
 		}
 	}
 
-	EquipmentItemStat CreateStat(int level, EquipmentItemStat.Info info)
+	EquipItemStat CreateStat(int level, EquipItemStat.Info info)
 	{
 		float value = info.base_value;
 		for (int i = 0; i < level; i++) {
@@ -141,25 +142,25 @@ public class ItemManager : Util.Singleton<ItemManager> {
 		}
 		value = Mathf.Round (value * 100) / 100.0f;
 		if ("MAX_HEALTH" == info.type) {
-			return new EquipmentItemStat_MaxHealth (value, info.description);
+			return new EquipItemStat_MaxHealth (value, info.description);
 		} else if ("ATTACK" == info.type) {
-			return new EquipmentItemStat_Attack (value, info.description);
+			return new EquipItemStat_Attack (value, info.description);
 		} else if ("MUL_ATTACK" == info.type) {
-			return new EquipmentItemState_MulAttack (value, info.description);
+			return new EquipItemState_MulAttack (value, info.description);
 		} else if ("DEFENSE" == info.type) {
-			return new EquipmentItemStat_Defense (value, info.description);
+			return new EquipItemStat_Defense (value, info.description);
 		} else if ("SPEED" == info.type) {
-			return new EquipmentItemStat_Speed (value, info.description);
+			return new EquipItemStat_Speed (value, info.description);
 		} else if ("CRITICAL" == info.type) {
-			return new EquipmentItemStat_Critical (value, info.description);
+			return new EquipItemStat_Critical (value, info.description);
 		} else if ("COIN_BONUS" == info.type) {
-			return new EquipmentItemStat_CoinBonus (value, info.description);
+			return new EquipItemStat_CoinBonus (value, info.description);
 		} else if ("EXP_BONUS" == info.type) {
-			return new EquipmentItemStat_ExpBonus (value, info.description);
+			return new EquipItemStat_ExpBonus (value, info.description);
 		} else if ("STEALTH" == info.type) {
-			return new EquipmentItemStat_Stealth (value, info.description);
+			return new EquipItemStat_Stealth (value, info.description);
 		} else if ("VIABILITY" == info.type) {
-			return new EquipmentItemStat_Viability (value, info.description);
+			return new EquipItemStat_Viability (value, info.description);
 		}
 		#if UNITY_EDITOR
 		throw new System.Exception("unhandled equipment item stat("+ info.type+")");
@@ -167,4 +168,5 @@ public class ItemManager : Util.Singleton<ItemManager> {
 		return null;
 		#endif
 	}
+	*/
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UIPlayerInfo : MonoBehaviour {
+	/*
 	public Text text;
 
 	void OnEnable()
@@ -19,4 +20,5 @@ public class UIPlayerInfo : MonoBehaviour {
 		text.text += "<b>ATK</b> : " + stat.attack + "\t"; text.text += "<b>DEF</b>:" + stat.defense + "\n";
 		text.text += "<b>SPD</b> : " + stat.speed + "\t"; text.text += "<b>CRI</b>:" + stat.critcal + "%\n";
 	}
+	*/
 }

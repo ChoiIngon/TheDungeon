@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class UIDialogBox : MonoBehaviour {
+public class UIDialogBox : Util.MonoSingleton<UIDialogBox> {
 	public Button submit;
 	public Button cancel;
 
@@ -10,29 +10,8 @@ public class UIDialogBox : MonoBehaviour {
 	public Text content;
 	private RectTransform rectTransform;
 	private bool active;
-	private static UIDialogBox _instance;  
-	public static UIDialogBox Instance  
-	{  
-		get  
-		{  
-			if (!_instance) 
-			{  
-				_instance = (UIDialogBox)GameObject.FindObjectOfType(typeof(UIDialogBox));  
-				if (!_instance)  
-				{  
-					GameObject container = new GameObject();  
-					container.name = "UIDialogBox";  
-					_instance = container.AddComponent<UIDialogBox>();  
-				}  
-				_instance.Init ();
-				//DontDestroyOnLoad (_instance);
-			}  
-
-			return _instance;  
-		}  
-	}
 	// Use this for initialization
-	void Init () {
+	public void Init () {
 		rectTransform = GetComponent<RectTransform> ();
 		gameObject.SetActive (false);
 		submit.onClick.AddListener (Submit);
@@ -43,9 +22,7 @@ public class UIDialogBox : MonoBehaviour {
 	private void Submit() {
 		content.text = "";
 		gameObject.SetActive(false);
-		if (null != onSubmit) {
-			onSubmit ();
-		}
+		onSubmit?.Invoke();
 		active = false;
 		onSubmit = null;
 	}
@@ -75,5 +52,14 @@ public class UIDialogBox : MonoBehaviour {
 		{
 			yield return null;
 		}
+	}
+
+	public void Active(string text, TextAnchor alinement = TextAnchor.MiddleLeft)
+	{
+		active = true;
+		gameObject.SetActive(true);
+		content.text = text;
+		content.alignment = alinement;
+		rectTransform.sizeDelta = new Vector2(rectTransform.rect.width, content.preferredHeight + 100);
 	}
 }

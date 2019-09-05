@@ -9,6 +9,7 @@ using UnityEngine.Assertions;
 #endif
 
 public class Player : Util.Singleton<Player> {
+	/*
     public Unit.Stat stats;
     public int coins;
     public Inventory inventory;
@@ -98,5 +99,5 @@ public class Player : Util.Singleton<Player> {
 			file.Close ();
 		} 
 	}
-
+	*/
 }

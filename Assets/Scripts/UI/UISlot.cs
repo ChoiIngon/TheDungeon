@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class UISlot : MonoBehaviour {
+	/*
 	// Image border;
 	public Image icon;
 	public Image grade;
@@ -123,4 +124,5 @@ public class UISlot : MonoBehaviour {
 		}
 		return color;
 	}
+	*/
 }

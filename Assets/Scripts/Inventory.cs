@@ -16,7 +16,7 @@ public class Inventory
 	}
 	public const int MAX_SLOT_COUNT = 15;
 	public Slot[] slots;
-	//public UIInventory ui;
+	
 	public int count {
 		get {
 			return _count;
@@ -31,33 +31,12 @@ public class Inventory
 			slots [i] = new Slot ();
 			slots [i].index = i;
 		}
-		//ui.Init ();
 	}
 	public Slot Put(Item data)
 	{
 		if (null == data) {
 			return null;
 		}
-		/*
-		switch (data.info.category) {
-		case ItemInfo.Category.Key :
-		case ItemInfo.Category.Potion:
-			foreach(ItemData item in items)
-			{
-				if(null == item) {
-					continue;
-				}
-				if(item.info.id == data.info.id)
-				{
-					item.count += data.count;
-					return;
-				}
-			}
-			break;
-		default :
-			break;
-		}
-		*/
 
 		for(int i=0;i<slots.Length; i++)
 		{
@@ -66,8 +45,9 @@ public class Inventory
 			{
 				slot.item = data;
 				slot.count = 1;
-				//ui.Put (slot);
 				_count += 1;
+
+				Util.EventSystem.Publish(EventID.Inventory_Put, slot);
 				return slot;
 			}
 		}
@@ -87,6 +67,7 @@ public class Inventory
 			//ui.Pull (slot.index);
 			_count -= 1;
 		}
+		Util.EventSystem.Publish(EventID.Inventory_Pull, slot);
 		return item;
 	}
 	public void Swap(int from, int to)
@@ -100,15 +81,15 @@ public class Inventory
 			Slot slot = slots [to];
 			slot.item = a;
 			slot.count = 1;
-			//ui.Put (slot);
 			_count += 1;
+			Util.EventSystem.Publish(EventID.Inventory_Put, slot);
 		}
 		if(null != b) {
 			Slot slot = slots [from];
 			slot.item = b;
 			slot.count = 1;
-			//ui.Put (slot);
 			_count += 1;
+			Util.EventSystem.Publish(EventID.Inventory_Put, slot);
 		}
 	}
 	public T GetItem<T>(int index) where T : Item {

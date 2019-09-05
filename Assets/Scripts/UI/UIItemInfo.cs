@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using System.Collections;
 
 public class UIItemInfo : MonoBehaviour {
+	/*
 	public enum Action
 	{
 		Use, Throw, Drop, Max
@@ -48,4 +49,5 @@ public class UIItemInfo : MonoBehaviour {
 			}
 		}
 	}
+	*/
 }

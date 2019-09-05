@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UICoin : MonoBehaviour {
+	/*
 	public Text text;
 	public Image image;
 	public Vector3 position;
@@ -37,7 +38,7 @@ public class UICoin : MonoBehaviour {
 
 		text.text = Player.Instance.coins.ToString();
 
-        Util.EventSystem.Subscribe<int>(EventID.EventID_CoinAmountChanged, ChangeAmount);
+        Util.EventSystem.Subscribe<int>(EventID.CoinAmountChanged, ChangeAmount);
     }
 
 	public void ChangeAmount(int amount)
@@ -58,4 +59,5 @@ public class UICoin : MonoBehaviour {
 		}
 		text.text = Player.Instance.coins.ToString ();
 	}
+	*/
 }

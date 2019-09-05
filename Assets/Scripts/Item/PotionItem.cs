@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+		/*
 public abstract class PotionItem : Item {
 	public PotionItem() : base(Item.Type.Potion) {
 	}
@@ -55,3 +56,4 @@ public class PoisonPotionItem : PotionItem {
 		}
 	}
 }
+		*/

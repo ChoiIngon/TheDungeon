@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class Coin : MonoBehaviour {
+	/*
 	private Vector3 velocity = Vector3.zero;
 	private float groundPos;
 	private float sleepThreshold = 0.0025f;
@@ -66,4 +67,5 @@ public class Coin : MonoBehaviour {
 			UICoin.Instance.ChangeAmount (amount);
 		}
 	}
+	*/
 }

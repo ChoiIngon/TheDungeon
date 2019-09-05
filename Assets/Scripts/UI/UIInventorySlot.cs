@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 [System.Serializable]
 public class UIInventorySlot : UISlot {
+	/*
 	public int index;
 	public override void OnSelect()
 	{
@@ -111,4 +112,5 @@ public class UIInventorySlot : UISlot {
 			}
 		}
 	}
+	*/
 }

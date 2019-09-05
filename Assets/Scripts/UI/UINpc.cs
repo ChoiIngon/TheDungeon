@@ -3,35 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UINpc : MonoBehaviour {
+public class UINpc : Util.MonoSingleton<UINpc> {
 	public Image image;
 	public Sprite sprite {
 		set {
 			image.sprite = value;
 		}
 	}
-	private static UINpc _instance;  
-	public static UINpc Instance  
-	{  
-		get  
-		{  
-			if (!_instance) 
-			{  
-				_instance = (UINpc)GameObject.FindObjectOfType(typeof(UINpc));  
-				if (!_instance)  
-				{  
-					GameObject container = new GameObject();  
-					container.name = "UINpc";  
-					_instance = container.AddComponent<UINpc>();  
-				}  
-				_instance.Init ();
-				//DontDestroyOnLoad (_instance);
-			}  
-
-			return _instance;  
-		}  
-	}	 
-
+	
 	float widthScale = 1.0f;
 	float heightScale = 1.0f;
 	void Init()

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Dungeon : MonoBehaviour {
+	/*
 	public const int WIDTH = 5;
 	public const int HEIGHT = 5;
 	public const int North = 0;
@@ -219,4 +220,5 @@ public class Dungeon : MonoBehaviour {
 			}
 		}
 	}
+	*/
 }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
 public class DungeonMain : SceneMain {
+	/*
     public UIButtonGroup mainButtonGroup;
     public UIButtonGroup battleButtonGroup;
     
@@ -105,8 +106,9 @@ public class DungeonMain : SceneMain {
 			}
 		}
 	}
-
+*/
 	public override IEnumerator Run () {
+		/*
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object>{});
 		GameObject commonUI = GameObject.Find ("CommonUI");
 		inventory.transform.SetParent (commonUI.transform);
@@ -175,9 +177,10 @@ public class DungeonMain : SceneMain {
 		};
 		completeQuests = new List<QuestData> ();
 		StartCoroutine (Init ());
+		*/
         yield break;
 	}
-
+		  /*
 	IEnumerator Init() {
 		rooms.gameObject.SetActive (false);
 		state = State.Invalid;
@@ -510,4 +513,5 @@ public class DungeonMain : SceneMain {
 			scale += 0.1f;
 		}
     }
+	*/
 }

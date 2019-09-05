@@ -48,6 +48,7 @@ public class VillageMain : SceneMain {
 
 	IEnumerator Init()
 	{
+		/*
 		NetworkManager.Instance.Init ();
 		UILog.Instance.Write ("connect to server complete");;
 		ResourceManager.Instance.onDowonloadProgress += (string bundleName, float progress, int currentCount, int totalCount) => {
@@ -76,6 +77,8 @@ public class VillageMain : SceneMain {
         downloadProgress.gameObject.SetActive(false);
 		dungeon.gameObject.SetActive (true);
 		state = State.Idle;
+		*/
+		yield break;
     }
 
 	IEnumerator ChangeScene(string scene, GameObject target)

@@ -5,9 +5,14 @@ namespace Util
 {
     public class EventSystem : Singleton<EventSystem>
     {
-        public static void Publish(string eventID, object eventParam = null)
+		public static void Publish<T>(string eventID, T param) where T : new()
+		{
+			EventSystem.Instance._Publish<T>(eventID, param);
+		}
+
+        public static void Publish(string eventID)
         {
-            EventSystem.Instance._Publish(eventID, eventParam);
+            EventSystem.Instance._Publish(eventID);
         }
 
         public static void Subscribe<T>(string eventID, System.Action<T> handler) where T : new()
@@ -47,7 +52,7 @@ namespace Util
                 }
 
                 T param = (T)eventParam;
-                onEvent(param);
+				onEvent(param);
             }
         }
 
@@ -162,7 +167,17 @@ namespace Util
             }
         }
 
-        private void _Publish(string eventID, object eventParam)
+		private void _Publish<T>(string eventID, T param) where T : new()
+		{
+			if (false == event_handlers.ContainsKey(eventID))
+			{
+				Debug.LogWarning("can not find event key(event_id:" + eventID + ")");
+				return;
+			}
+
+			event_handlers[eventID].OnEvent(param);
+		}
+		private void _Publish(string eventID)
         {
             if (false == event_handlers.ContainsKey(eventID))
             {
@@ -170,7 +185,7 @@ namespace Util
                 return;
             }
 
-            event_handlers[eventID].OnEvent(eventParam);
+            event_handlers[eventID].OnEvent(null);
         }
     }
 }

@@ -5,7 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class UIEquipmentSlot : UISlot {
-	public EquipmentItem.Part part;
+	/*
+	public EquipItem.Part part;
 	public int index;
 	public Image arrow;
 
@@ -24,7 +25,7 @@ public class UIEquipmentSlot : UISlot {
 			return;
 		}
 
-		EquipmentItem item = (EquipmentItem)data.item;
+		EquipItem item = (EquipItem)data.item;
 		inventory.TurnEquipGuideArrowOn (part, index);
 		inventory.itemInfo.slot = this;
 		inventory.itemInfo.stats.text = item.mainStat.value + " " + item.mainStat.description + "\n";
@@ -48,7 +49,7 @@ public class UIEquipmentSlot : UISlot {
 			return;
 		}
 
-		EquipmentItem item = (EquipmentItem)data.item;
+		EquipItem item = (EquipItem)data.item;
 		for (int i = 0; i < inventory.equipmentSlots.Length; i++) {
 			UIEquipmentSlot other = inventory.equipmentSlots [i];
 			if (this == other) {
@@ -66,7 +67,7 @@ public class UIEquipmentSlot : UISlot {
 			}
 
 			Player.Instance.UnequipItem (part, index);
-			EquipmentItem prev = Player.Instance.EquipItem (item, other.index);
+			EquipItem prev = Player.Instance.EquipItem (item, other.index);
 			other.Init(data);
 			Init (null);
 
@@ -116,5 +117,5 @@ public class UIEquipmentSlot : UISlot {
 			return;
 		}
 	}
-
+	*/
 }
