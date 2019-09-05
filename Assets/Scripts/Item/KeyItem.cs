@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class KeyItem : Item {
-	/*
-	public KeyItem() : base(Item.Type.Key) {
+	
+	public KeyItem() : base(null) {
 	}
+    /*
 	public override List<string> Actions() {
 		List<string> actions = base.Actions ();
 		actions.Add ("OPEN");

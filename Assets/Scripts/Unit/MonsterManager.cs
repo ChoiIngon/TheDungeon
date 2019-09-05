@@ -17,30 +17,33 @@ public class MonsterManager : Util.Singleton<MonsterManager> {
 	private Dictionary<string, Monster.Info> infoDict;
 	private List<Monster.Info> infoList;
 	public Config config;
-	public IEnumerator Init() {
-		infoDict = new Dictionary<string, Monster.Info> ();
-		infoList = new List<Monster.Info> ();
+    public IEnumerator Init()
+    {
+        infoDict = new Dictionary<string, Monster.Info>();
+        infoList = new List<Monster.Info>();
 
-		yield return NetworkManager.Instance.HttpRequest ("info_monster.php", (string json) => {
-			config = JsonUtility.FromJson<Config>(json);
-			foreach (MonsterInfo monster in config.monsters) {
-				Monster.Info info = new Monster.Info ();
-				info.id = monster.id;
-				info.name = monster.name;
-				info.level = monster.level;
-				info.health = monster.health;
-				info.attack = monster.attack;
-				info.defense = monster.defense;
-				info.speed = monster.speed;
-				info.sprite = ResourceManager.Instance.Load<Sprite>(monster.sprite_path);
-				info.reward.coin = monster.reward.coin;
-				info.reward.exp = monster.reward.exp;
+        yield return NetworkManager.Instance.HttpRequest("info_monster.php", (string json) =>
+        {
+            config = JsonUtility.FromJson<Config>(json);
+            foreach (MonsterInfo monster in config.monsters)
+            {
+                Monster.Info info = new Monster.Info();
+                info.id = monster.id;
+                info.name = monster.name;
+                info.level = monster.level;
+                info.health = monster.health;
+                info.attack = monster.attack;
+                info.defense = monster.defense;
+                info.speed = monster.speed;
+                info.sprite = ResourceManager.Instance.Load<Sprite>(monster.sprite_path);
+                info.reward.coin = monster.reward.coin;
+                info.reward.exp = monster.reward.exp;
 
-				infoDict.Add (info.id, info);
-				infoList.Add (info);
-			}
-		});
-		/*
+                infoDict.Add(info.id, info);
+                infoList.Add(info);
+            }
+        });
+        /*
 		CSVReader reader = new CSVReader ("Config/info_monster");
 
 		foreach (CSVReader.Row row in reader) {
@@ -61,7 +64,13 @@ public class MonsterManager : Util.Singleton<MonsterManager> {
 		}
 		Debug.Log ("init complete MonsterManager");
 		*/
-	}
+
+        using (Database conn = new Database())
+        {
+            conn.Open(Application.dataPath + "/meta_data.db");
+            conn.Execute("SELECT monster_id, monster_name, monster_level, health, attaack, defense, speed ");
+        }
+    }
 
 	public Monster.Info FindInfo(string id)
 	{

@@ -1,19 +1,8 @@
 ﻿<Properties StartupConfiguration="{8E1352C3-CD06-2B7E-D1FC-2AE9C607865F}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/VillageMain.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Unit/MonsterManager.cs">
     <Files>
-      <File FileName="Assets/EventID.cs" Line="1" Column="1" />
-      <File FileName="../CitadelDefense/Assets/Scripts/Util/Singleton.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Util/EventSystem.cs" Line="176" Column="2" />
-      <File FileName="Assets/Scripts/Util/GameText.cs" Line="2" Column="1" />
-      <File FileName="Assets/Scripts/Util/Singleton.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Quest/QuestManager.cs" Line="15" Column="34" />
-      <File FileName="Assets/Scripts/Unit/Player.cs" Line="11" Column="28" />
-      <File FileName="Assets/Scripts/Unit/MonsterManager.cs" Line="6" Column="36" />
-      <File FileName="Assets/Scripts/Item/ItemManager.cs" Line="9" Column="33" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="75" Column="9" />
-      <File FileName="Assets/Scripts/SceneMain.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/VillageMain.cs" Line="51" Column="29" />
-      <File FileName="Assets/Scripts/Util/TouchInput.cs" Line="28" Column="36" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="35" Column="118" />
+      <File FileName="Assets/Scripts/Unit/MonsterManager.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -23,24 +12,30 @@
               <Node name="Scripts" expanded="True">
                 <Node name="Item" expanded="True" />
                 <Node name="Quest" expanded="True" />
-                <Node name="Unit" expanded="True" />
+                <Node name="Unit" expanded="True">
+                  <Node name="MonsterManager.cs" selected="True" />
+                </Node>
                 <Node name="Util" expanded="True" />
-                <Node name="VillageMain.cs" selected="True" />
               </Node>
             </Node>
           </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.UnitTesting.TestPad">
+        <State name="__root__">
+          <Node name="TheDungeon" expanded="True" selected="True" />
         </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="e002a06b-7125-44a3-9f92-a9df51a79764" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="f0d72cf3-a28b-441c-8c6a-4867d6a86497" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/GameManager.cs" relfile="Assets/Scripts/GameManager.cs" line="64" column="1" />
-      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/GameManager.cs" relfile="Assets/Scripts/GameManager.cs" line="73" column="1" />
-      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/GameManager.cs" relfile="Assets/Scripts/GameManager.cs" line="69" column="1" />
+      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/GameManager.cs" relfile="Assets/Scripts/GameManager.cs" line="81" column="1" />
+      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/GameManager.cs" relfile="Assets/Scripts/GameManager.cs" line="92" column="1" />
+      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/GameManager.cs" relfile="Assets/Scripts/GameManager.cs" line="87" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MultiItemStartupConfigurations />
