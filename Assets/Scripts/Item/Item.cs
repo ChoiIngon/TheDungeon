@@ -31,14 +31,16 @@ public class Item
 	{
 		public string id;
 		public string name;
+		public Type type;
 		public string icon;
 		public int price;
-		public Grade grade;
 		public string description;
 		public abstract Item CreateInstance ();
 	}
 
 	private Meta _meta;
+	private static int ITEM_SEQ = 1;
+
 	public virtual Meta meta
 	{
 		get {
@@ -47,11 +49,15 @@ public class Item
 	}
 
 	public int item_seq;
+	public Grade grade = Item.Grade.Invalid;
 
 	public Item(Meta meta)
 	{
 		_meta = meta;
+		item_seq = ITEM_SEQ++;
+		Debug.Log("create item(item_id:" + meta.id + ", item_seq:" + item_seq + ")");
 	}
+
 	public virtual void Equip(Unit unit)
 	{
 		throw new System.InvalidOperationException("can not equip item(item_id:" + meta.id + ", item_seq:" + item_seq + ")");

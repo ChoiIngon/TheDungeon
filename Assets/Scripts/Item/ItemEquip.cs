@@ -2,9 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class EquipItem : Item {
-	public enum Part {
+public class EquipItemStatMeta
+{
+	public StatType type;
+	public float base_value;
+	public float rand_value;
+}
+
+public class EquipItem : Item
+{
+	public enum Part
+	{
+		Invalid,
 		Helmet,
 		Hand,
 		Armor,
@@ -15,38 +24,26 @@ public class EquipItem : Item {
 	[System.Serializable]
 	public new class Meta : Item.Meta
 	{
-		public Part part;
+		public Part part = Part.Invalid;
+		public EquipItemStatMeta main_stat = new EquipItemStatMeta();
+
 		public override Item CreateInstance()
 		{
 			return new EquipItem(this);
 		}
 	}
 
-	public class Stat
-	{
-		public enum StatType
-		{
-			Invalid,
-			AddAttackValue,
-			AddAttackRate,
-			AddDefenseValue,
-			AddDefenseRate,
-			AddCriticalChance,
-			AddCriticalDamageRate,
-		}
-		public StatType type;
-		public float value;
-	}
-
 	public class Encant
 	{
 	}
 
-	public Part part;
-	public int 	level;
-	public List<Stat> main_stats;
-	public List<Stat> sub_stats;
-	public Encant enchant;
+	public int 	level = 0;
+	public Part part = Part.Invalid;
+	
+	public bool equip = false;
+	public Stat main_stat = new Stat();
+	public Stat sub_stat = new Stat();
+	public Encant enchant = null;
 
 	public EquipItem(EquipItem.Meta meta) : base(meta)
 	{
@@ -54,28 +51,11 @@ public class EquipItem : Item {
 	}
 
 	/*
-	
-	public EquipmentItemStat mainStat;
-	public List<EquipmentItemStat> subStats = new List<EquipmentItemStat> ();
-	public ItemEnchantmemt enchantment;
-
-	
 	public override List<string> Actions() {
 		List<string> actions = base.Actions ();
 		actions.Add ("EQUIP");
 		actions.Add ("UNEQUIP");
 		return actions;
 	}
-
-	public Unit.Stat GetStat(Unit.Stat stat)
-	{
-        Unit.Stat result = new Unit.Stat ();
-		result += mainStat.GetStat (stat);
-		for (int i = 0; i < subStats.Count; i++) {
-			result += subStats [i].GetStat (stat);
-		}
-		return result;
-	}
-
 	*/
 }

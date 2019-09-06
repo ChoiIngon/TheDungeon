@@ -7,6 +7,7 @@ using UnityEngine.Assertions;
 #endif
 
 public class Monster : Unit {
+	/*
 	[System.Serializable]
 	public class Info
 	{
@@ -133,4 +134,5 @@ public class Monster : Unit {
 		}
 		renderer.color = Color.white;
 	}
+	*/
 }

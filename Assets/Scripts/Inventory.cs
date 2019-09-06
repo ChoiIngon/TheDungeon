@@ -10,13 +10,10 @@ public class Inventory
 		public int index;
 		public int count;
 		public Item item;
-		public void Drop()
-		{
-		}
 	}
 	public const int MAX_SLOT_COUNT = 15;
 	public Slot[] slots;
-	
+	public int coin;
 	public int count {
 		get {
 			return _count;
@@ -92,22 +89,28 @@ public class Inventory
 			Util.EventSystem.Publish(EventID.Inventory_Put, slot);
 		}
 	}
-	public T GetItem<T>(int index) where T : Item {
+	public T GetItem<T>(int index) where T : Item
+	{
 		Slot slot = slots [index];
-		if (null == slot.item) {
+		if (null == slot.item)
+		{
 			return null;
 		}
 		return slot.item as T;
 	}
-	public List<T> GetItems<T>() where T : Item {
+	public List<T> GetItems<T>() where T : Item
+	{
 		List<T> items = new List<T> ();
-		for (int i = 0; i < MAX_SLOT_COUNT; i++) {
+		for (int i = 0; i < MAX_SLOT_COUNT; i++)
+		{
 			Slot slot = slots [i];
-			if (null == slot.item) {
+			if (null == slot.item)
+			{
 				continue;
 			}
 			T item = slot.item as T;
-			if (null == item) {
+			if (null == item)
+			{
 				continue;
 			}
 			items.Add (item);

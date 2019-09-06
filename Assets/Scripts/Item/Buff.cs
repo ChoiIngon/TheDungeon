@@ -22,12 +22,12 @@ public class Buff_Blaze : Buff
 
     public override void OnBuff()
     {
-		duration -= 1;
-        target.Damage(0);
-		if (0 >= duration)
-        {
-            target.buffs.Remove(this);
-        }
+		//duration -= 1;
+        //target.Damage(0);
+		//if (0 >= duration)
+        //{
+        //    target.buffs.Remove(this);
+        //}
     }
 }
 
@@ -36,16 +36,16 @@ public class Buff_Venom : Buff
     public int turn;
     public Buff_Venom(Unit target) : base(target)
     {
-        target.buffs.Add(this);
+        //target.buffs.Add(this);
     }
 
     public override void OnBuff()
     {
-        target.Damage(0);
-        if (0 >= turn)
-        {
-            target.buffs.Remove(this);
-        }
+        //target.Damage(0);
+        //if (0 >= turn)
+        //{
+        //    target.buffs.Remove(this);
+        //}
     }
 }
 
@@ -53,13 +53,13 @@ public class Buff_GrimReaper : Buff
 {
     public Buff_GrimReaper(Unit target) : base(target)
     {
-        target.buffs.Add(this);
+        //target.buffs.Add(this);
     }
 
     public override void OnBuff()
     {
-		target.Damage(target.stats.health);
-        target.buffs.Remove(this);
+		//target.Damage(target.stats.health);
+        //target.buffs.Remove(this);
     }
 }
 
@@ -69,18 +69,17 @@ public class Buff_Stun : Buff
     public float speed;
     public Buff_Stun(Unit target) : base(target)
     {
-        this.speed = target.stats.speed;
-        target.buffs.Add(this);
+        //this.speed = target.stats.speed;
+        //target.buffs.Add(this);
     }
 
     public override void OnBuff()
     {
-
-		target.stats.speed = 0.0f;
-        if (0 >= turn)
-        {
-            target.buffs.Remove(this);
-        }
+		//target.stats.speed = 0.0f;
+        //if (0 >= turn)
+        //{
+        //    target.buffs.Remove(this);
+        //}
     }
 }
 
@@ -90,17 +89,17 @@ public class Buff_Chill : Buff
     public float speed;
     public Buff_Chill(Unit target) : base(target)
     {
-		this.speed = target.stats.speed;
-        target.buffs.Add(this);
+		//this.speed = target.stats.speed;
+        //target.buffs.Add(this);
     }
 
     public override void OnBuff()
     {
-		target.stats.speed = 0.0f;
-        if (0 >= turn)
-        {
-            target.buffs.Remove(this);
-        }
+		//target.stats.speed = 0.0f;
+        //if (0 >= turn)
+        //{
+        //    target.buffs.Remove(this);
+        //}
     }
 }
 
@@ -110,18 +109,18 @@ public class Buff_Unstable : Buff
     public float speed;
     public Buff_Unstable(Unit target) : base(target)
     {
-		this.speed = target.stats.speed;
-        target.buffs.Add(this);
+		//this.speed = target.stats.speed;
+        //target.buffs.Add(this);
     }
 
     public override void OnBuff()
     {
 
-		target.stats.speed = 0.0f;
-        if (0 >= turn)
-        {
-            target.buffs.Remove(this);
-        }
+		//target.stats.speed = 0.0f;
+        //if (0 >= turn)
+        //{
+        //    target.buffs.Remove(this);
+        //}
     }
 }
 
@@ -131,18 +130,17 @@ public class Buff_Terror : Buff
     public float speed;
     public Buff_Terror(Unit target) : base(target)
     {
-		this.speed = target.stats.speed;
-        target.buffs.Add(this);
+		//this.speed = target.stats.speed;
+        //target.buffs.Add(this);
     }
 
     public override void OnBuff()
     {
-
-		target.stats.speed = 0.0f;
-        if (0 >= turn)
-        {
-            target.buffs.Remove(this);
-        }
+		//target.stats.speed = 0.0f;
+        //if (0 >= turn)
+        //{
+        //    target.buffs.Remove(this);
+        //}
     }
 }
 
@@ -152,17 +150,16 @@ public class Buff_Luck : Buff
     public float speed;
     public Buff_Luck(Unit target) : base(target)
     {
-		this.speed = target.stats.speed;
-        target.buffs.Add(this);
+		//this.speed = target.stats.speed;
+        //target.buffs.Add(this);
     }
 
     public override void OnBuff()
     {
-
-		target.stats.speed = 0.0f;
-        if (0 >= turn)
-        {
-            target.buffs.Remove(this);
-        }
+		//target.stats.speed = 0.0f;
+        //if (0 >= turn)
+        //{
+        //    target.buffs.Remove(this);
+        //}
     }
 }

@@ -143,8 +143,11 @@ namespace Util
 
 			if (true == disposing)
 			{
-				Debug.Log("close database");
-				conn.Close();
+				if (null != conn)
+				{
+					Debug.Log("close database");
+					conn.Close();
+				}
 			}
 
 			this.disposed = true;

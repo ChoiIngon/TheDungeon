@@ -12,17 +12,27 @@ public class GameManager : Util.MonoSingleton<GameManager>
 	private const string init_scene_name = "Village";
 	private SceneMain current_scene;
 
+	public Player player;
 	IEnumerator Start()
 	{
+		/*
 		AsyncOperation operation = SceneManager.LoadSceneAsync("Common", LoadSceneMode.Additive);
 		while (false == operation.isDone)
 		{
 			// loading progress
 			yield return null;
 		}
-		UIDialogBox.Instance.Init();
-		UIDialogBox.Instance.Active("text");
-		//UITicker.Instance.gameObject.SetActive(false);
+		*/
+		Database.Connect(Database.Type.MetaData, Application.dataPath + "/meta_data.db");
+		Database.Connect(Database.Type.UserData, Application.persistentDataPath + "/user_data.db");
+		player = new Player();
+		player.Init();
+
+		ItemManager.Instance.Init();
+
+		EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);
+		player.Equip(item);
+		yield break;
     }
 
 	void Update()

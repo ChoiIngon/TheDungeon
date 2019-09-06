@@ -12,10 +12,10 @@ public class Database
 		MetaData,
 		UserData
 	}
-	private static Dictionary<Type, string> db_conn_infos = new Dictionary<Type, string>();
+	private static Dictionary<Type, Util.Database> db_conn_infos = new Dictionary<Type, Util.Database>();
 	public static void Connect(Type type, string db)
 	{
-		db_conn_infos[type] = db;
+		db_conn_infos[type] = new Util.Database(db);
 	}
 
 	public static DataReader Execute(Type type, string query)
@@ -27,10 +27,7 @@ public class Database
 
 		try
 		{
-			using (Util.Database db = new Util.Database(db_conn_infos[type]))
-			{
-				return db.Execute(query);
-			}
+			return db_conn_infos[type].Execute(query);
 		}
 		catch (SqliteException e)
 		{

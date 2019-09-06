@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public abstract class EquipmentItemStat
 {
 	[System.Serializable]
@@ -171,3 +172,4 @@ public class EquipmentItemStat_Viability : EquipmentItemStat {
 		return result;
 	}
 }
+*/

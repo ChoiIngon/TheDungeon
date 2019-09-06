@@ -6,124 +6,84 @@ using UnityEngine.Analytics;
 #if UNITY_EDITOR
 using UnityEngine.Assertions;
 #endif
-public class ItemManager : Util.Singleton<ItemManager> {
-	private Dictionary<string, Item.Meta> metas;
-	[System.Serializable]
-	public class GradeWeight
-	{
-		public int grade;
-		public int weight;
-	}
+public class ItemManager : Util.Singleton<ItemManager>
+{
+	private Dictionary<string, Item.Meta> metas = new Dictionary<string, Item.Meta>();
+	private List<EquipItem.Meta> equip_item_metas = new List<EquipItem.Meta>();
+	private Util.WeightRandom<Item.Grade> grade_gacha = new Util.WeightRandom<Item.Grade>();
+	private Util.WeightRandom<EquipItemStatMeta> stat_type_gacha = new Util.WeightRandom<EquipItemStatMeta>();
+
 	public void Init()
 	{
-		/*
 		metas = new Dictionary<string, Item.Meta>();
-		
-		yield return NetworkManager.Instance.HttpRequest("info_equipment_item.php", (string json) => {
-			config = JsonUtility.FromJson<EquipItemConfig>(json);
-			foreach (GradeWeight itr in config.grade_weight)
-			{
-				totalWeight += itr.weight;
-			}
-			foreach (EquipItem.Info info in config.items)
-			{
-				infos.Add(info.id, info);
-			}
+
+		grade_gacha.SetWeight(Item.Grade.Low, 300);
+		grade_gacha.SetWeight(Item.Grade.Normal, 200);
+		grade_gacha.SetWeight(Item.Grade.High, 150);
+		grade_gacha.SetWeight(Item.Grade.Magic, 125);
+		grade_gacha.SetWeight(Item.Grade.Rare, 100);
+		grade_gacha.SetWeight(Item.Grade.Legendary, 030);
+
+		stat_type_gacha.SetWeight(new EquipItemStatMeta() { type = StatType.CoinBonus, base_value = 0.05f, rand_value = 0.001f }, 1);
+		stat_type_gacha.SetWeight(new EquipItemStatMeta() { type = StatType.ExpBonus, base_value = 0.05f, rand_value = 0.001f }, 1);
+
+		InitEquipItem();
+	}
+
+	public Item CreateItem(string id)
+	{
+		Item item = FindInfo<Item.Meta>(id).CreateInstance();
+		Analytics.CustomEvent("CreateItem", new Dictionary<string, object>
+		{
+			{"id", item.meta.id },
+			{"type", item.meta.type.ToString()},
+			{"name", item.meta.name },
+			{"grade", item.grade.ToString()}
 		});
-
-		InitPotionItemInfo();
-		*/
+		return item;
 	}
-	/*
-	private Dungeon.LevelInfo dungeonLevelInfo;
-	private int totalWeight;
 
-	
-	[System.Serializable]
-	public class EquipItemConfig
+	public EquipItem CreateRandomEquipItem(int level)
 	{
-		public GradeWeight[] grade_weight;
-		public EquipItemStat.Info[] item_stats;
-		public EquipItem.Info[] items;
-	}
-	EquipItemConfig config;
-	
-
-	public void InitDungeonLevel(Dungeon.LevelInfo info)
-	{
-		dungeonLevelInfo = info;
-		totalWeight = 0;
-		foreach(GradeWeight itr in info.items.grade_weight)
-		{
-			totalWeight += itr.weight;
-		}
-	}
-
-	EquipItem.Grade GetRandomGrade() {
-		int weight = Random.Range(0, totalWeight);
-		foreach(var itr in dungeonLevelInfo.items.grade_weight)
-		{
-			weight -= itr.weight;
-			if(0 >= weight)
-			{
-				return (EquipItem.Grade)itr.grade;
-			}
-		}
-
-		return EquipItem.Grade.Low;
-	}
-
-	public Item CreateRandomItem(int level)
-	{
-		EquipItem.Grade grade = GetRandomGrade ();
-		EquipItem.Info info = config.items [Random.Range (0, config.items.Length)];
-		EquipItem item = info.CreateInstance () as EquipItem;
-		item.grade = (EquipItem.Grade)grade;
+		EquipItem.Meta meta = equip_item_metas[Random.Range(0, equip_item_metas.Count)];
+		EquipItem item = meta.CreateInstance() as EquipItem;
+		item.grade = grade_gacha.Random();
 		item.level = level;
-		item.mainStat = CreateStat(level, info.main_stat);
-		for (int i = 0; i < (int)item.grade - (int)EquipItem.Grade.Normal; i++) {
-			item.subStats.Add (CreateStat(level, config.item_stats [Random.Range (0, config.item_stats.Length)]));
+		item.main_stat.AddStat(CreateStat(level, meta.main_stat));
+		for (int i = 0; i < (int)item.grade - (int)EquipItem.Grade.Normal; i++)
+		{
+			item.sub_stat.AddStat(CreateStat(level, stat_type_gacha.Random()));
 		}
 
 		Analytics.CustomEvent("CreateItem", new Dictionary<string, object>
 		{
-			{"id", item.id },
-			{"type", item.type.ToString()},
-			{"name", item.name },
+			{"id", item.meta.id },
+			{"type", item.meta.type.ToString()},
+			{"name", item.meta.name },
 			{"grade", item.grade.ToString()},
 			{"level", item.level}
 		});
 		return item;
 	}
 
-	public Item CreateItem(string id)
+	public T FindInfo<T>(string id) where T : Item.Meta
 	{
-		Item item = FindInfo<Item.Info> (id).CreateInstance ();
-		Analytics.CustomEvent("CreateItem", new Dictionary<string, object>
+		if (false == metas.ContainsKey(id))
 		{
-			{"id", item.id },
-			{"type", item.type.ToString()},
-			{"name", item.name },
-			{"grade", item.grade.ToString()}
-		});
-		return item;
-	}
-			
-	public T FindInfo<T>(string id) where T:Item.Info
-	{
-		if (false == infos.ContainsKey (id)) {
-			throw new System.Exception ("can't find item info(id:" + id + ")");
+			throw new System.Exception("can't find item meta(id:" + id + ")");
 		}
-		return infos[id] as T;
+		return metas[id] as T;
 	}
 
+	
+	/*
 	private void InitPotionItemInfo()
 	{
 		{
 			HealingPotionItem.Info info = new HealingPotionItem.Info ();
 			info.id = "ITEM_POTION_HEALING";
 			info.name = "Healing Potion";
-0			info.price = 100;
+			info.price = 100;
 			info.icon = "item_potion_002";
 			info.grade = (int)Item.Grade.Normal;
 			info.description = "An elixir that will instantly return you to full health and cure poison.";
@@ -140,39 +100,35 @@ public class ItemManager : Util.Singleton<ItemManager> {
 		}
 	}
 
-	EquipItemStat CreateStat(int level, EquipItemStat.Info info)
-	{
-		float value = info.base_value;
-		for (int i = 0; i < level; i++) {
-			value += Random.Range (0, info.random_value);
-		}
-		value = Mathf.Round (value * 100) / 100.0f;
-		if ("MAX_HEALTH" == info.type) {
-			return new EquipItemStat_MaxHealth (value, info.description);
-		} else if ("ATTACK" == info.type) {
-			return new EquipItemStat_Attack (value, info.description);
-		} else if ("MUL_ATTACK" == info.type) {
-			return new EquipItemState_MulAttack (value, info.description);
-		} else if ("DEFENSE" == info.type) {
-			return new EquipItemStat_Defense (value, info.description);
-		} else if ("SPEED" == info.type) {
-			return new EquipItemStat_Speed (value, info.description);
-		} else if ("CRITICAL" == info.type) {
-			return new EquipItemStat_Critical (value, info.description);
-		} else if ("COIN_BONUS" == info.type) {
-			return new EquipItemStat_CoinBonus (value, info.description);
-		} else if ("EXP_BONUS" == info.type) {
-			return new EquipItemStat_ExpBonus (value, info.description);
-		} else if ("STEALTH" == info.type) {
-			return new EquipItemStat_Stealth (value, info.description);
-		} else if ("VIABILITY" == info.type) {
-			return new EquipItemStat_Viability (value, info.description);
-		}
-		#if UNITY_EDITOR
-		throw new System.Exception("unhandled equipment item stat("+ info.type+")");
-		#else
-		return null;
-		#endif
-	}
+	
 	*/
+	void InitEquipItem()
+	{
+		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT item_id, item_name, equip_part, price, description, main_stat_type, base_value, rand_value FROM meta_item_equip");
+		while(true == reader.Read())
+		{
+			EquipItem.Meta meta = new EquipItem.Meta();
+			meta.description = reader.GetString("description");
+			meta.id = reader.GetString("item_id");
+			meta.main_stat = new EquipItemStatMeta() { type = (StatType)reader.GetInt32("main_stat_type"), base_value = reader.GetFloat("base_value"), rand_value = reader.GetFloat("rand_value") };
+			meta.name = reader.GetString("item_name");
+			meta.part = (EquipItem.Part)reader.GetInt32("equip_part");
+			meta.price = reader.GetInt32("price");
+			meta.type = Item.Type.Equipment;
+			equip_item_metas.Add(meta);
+		}
+	}
+
+	private Stat.Data CreateStat(int level, EquipItemStatMeta meta)
+	{
+		Stat.Data data = new Stat.Data();
+		data.type = meta.type;
+		data.value = meta.base_value;
+		for (int i = 0; i < level; i++)
+		{
+			data.value += Random.Range(0, meta.rand_value);
+		}
+		data.value = Mathf.Round(data.value * 100) / 100.0f;
+		return data;
+	}
 }
