@@ -22,22 +22,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		}
 		UIDialogBox.Instance.Init();
 		UIDialogBox.Instance.Active("text");
-        //UITicker.Instance.gameObject.SetActive(false);
-        using (Database sqlite = new Database())
-        {
-            sqlite.Open(Application.dataPath + "/meta_data.db");
-            sqlite.Execute("DELETE FROM meta_item_equip");
-            sqlite.Execute("INSERT INTO meta_item_equip(item_id, item_name, item_type) VALUES('item_id_1', 'item_name', 1)");
-            sqlite.Execute("INSERT INTO meta_item_equip(item_id, item_name, item_type) VALUES('item_id_2', 'item_name', 1)");
-            sqlite.Execute("INSERT INTO meta_item_equip(item_id, item_name, item_type) VALUES('item_id_3', 'item_name', 1)");
-
-            //Database.DataReader reader = sqlite.Execute("SELECT item_id, item_name, item_type FROM meta_item_equip");
-            Database.DataReader reader = sqlite.Execute("SELECT item_id, item_name, item_type FROM meta_item_equip");
-            while (true == reader.Read())
-            {
-                Debug.Log("item_id:" + reader.GetString("item_id") + ", item_name:" + reader.GetString("item_name") +", item_type:" + reader.GetInt32("item_type"));
-            }
-        }
+		//UITicker.Instance.gameObject.SetActive(false);
     }
 
 	void Update()

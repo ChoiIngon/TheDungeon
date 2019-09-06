@@ -1,135 +1,40 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Data;
 using Mono.Data.Sqlite;
 using UnityEngine;
 
-public class Database : System.IDisposable
+using DataReader = Util.Database.DataReader;
+public class Database 
 {
-    private IDbConnection conn;
-    private bool disposed;
+	public enum Type
+	{
+		Invalid,
+		MetaData,
+		UserData
+	}
+	private static Dictionary<Type, string> db_conn_infos = new Dictionary<Type, string>();
+	public static void Connect(Type type, string db)
+	{
+		db_conn_infos[type] = db;
+	}
 
-    public class DataReader
-    {
-        private IDataReader impl;
-        private Dictionary<string, int> nameToIndex = new Dictionary<string, int>();
-        public DataReader(IDataReader data)
-        {
-            impl = data;
+	public static DataReader Execute(Type type, string query)
+	{
+		if (false == db_conn_infos.ContainsKey(type))
+		{
+			throw new System.Exception("invalid db connection id(type:" + type.ToString() + ")");
+		}
 
-            for(int i=0; i<data.FieldCount; i++)
-            {
-                nameToIndex[data.GetName(i)] = i;
-            }
-        }
-
-        public bool Read()
-        {
-            return impl.Read();
-        }
-
-        public bool GetBoolean(string name)
-        {
-            if(false == nameToIndex.ContainsKey(name))
-            {
-                throw new System.Exception("can not find colum(name:" + name + ")");
-            }
-            return impl.GetBoolean(nameToIndex[name]);
-        }
-
-        public double GetDouble(string name)
-        {
-            if (false == nameToIndex.ContainsKey(name))
-            {
-                throw new System.Exception("can not find colum(name:" + name + ")");
-            }
-            return impl.GetDouble(nameToIndex[name]);
-        }
-
-        public float GetFloat(string name)
-        {
-            if (false == nameToIndex.ContainsKey(name))
-            {
-                throw new System.Exception("can not find colum(name:" + name + ")");
-            }
-            return impl.GetFloat(nameToIndex[name]);
-        }
-
-        public short GetInt16(string name)
-        {
-            if (false == nameToIndex.ContainsKey(name))
-            {
-                throw new System.Exception("can not find colum(name:" + name + ")");
-            }
-            return impl.GetInt16(nameToIndex[name]);
-        }
-
-        public int GetInt32(string name)
-        {
-            if (false == nameToIndex.ContainsKey(name))
-            {
-                throw new System.Exception("can not find colum(name:" + name + ")");
-            }
-            return impl.GetInt32(nameToIndex[name]);
-        }
-
-        public long GetInt64(string name)
-        {
-            if (false == nameToIndex.ContainsKey(name))
-            {
-                throw new System.Exception("can not find colum(name:" + name + ")");
-            }
-            return impl.GetInt64(nameToIndex[name]);
-        }
-
-        public string GetString(string name)
-        {
-            if (false == nameToIndex.ContainsKey(name))
-            {
-                throw new System.Exception("can not find colum(name:" + name + ")");
-            }
-            return impl.GetString(nameToIndex[name]);
-        }
-    }
-
-    ~Database()
-    {
-        this.Dispose(false);
-    }
-    public void Open(string db)
-    {
-        conn = new SqliteConnection("URI=file:" + db);
-        conn.Open();
-    }
-
-    public DataReader Execute(string query)
-    {
-        IDbCommand cmd = conn.CreateCommand();
-        cmd.CommandText = query;
-        return new DataReader(cmd.ExecuteReader());
-        //return cmd.ExecuteReader();
-    }
-
-    public void Dispose()
-    {
-        this.Dispose(true);
-        System.GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if(true == this.disposed)
-        {
-            return;
-        }
-        
-        if (true == disposing)
-        {
-            Debug.Log("close database");
-            conn.Close();
-        }
-
-        this.disposed = true;
-    }
+		try
+		{
+			using (Util.Database db = new Util.Database(db_conn_infos[type]))
+			{
+				return db.Execute(query);
+			}
+		}
+		catch (SqliteException e)
+		{
+			throw new System.Exception("db_id:" + type.ToString() + ", query:" + query + ", exception:" + e.Message);
+		}
+	}
 }

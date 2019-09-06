@@ -7,17 +7,38 @@ using UnityEngine.Analytics;
 using UnityEngine.Assertions;
 #endif
 public class ItemManager : Util.Singleton<ItemManager> {
-	/*
-	private Dictionary<string, Item.Info> infos;
-	private Dungeon.LevelInfo dungeonLevelInfo;
-	private int totalWeight;
-
+	private Dictionary<string, Item.Meta> metas;
 	[System.Serializable]
 	public class GradeWeight
 	{
 		public int grade;
 		public int weight;
 	}
+	public void Init()
+	{
+		/*
+		metas = new Dictionary<string, Item.Meta>();
+		
+		yield return NetworkManager.Instance.HttpRequest("info_equipment_item.php", (string json) => {
+			config = JsonUtility.FromJson<EquipItemConfig>(json);
+			foreach (GradeWeight itr in config.grade_weight)
+			{
+				totalWeight += itr.weight;
+			}
+			foreach (EquipItem.Info info in config.items)
+			{
+				infos.Add(info.id, info);
+			}
+		});
+
+		InitPotionItemInfo();
+		*/
+	}
+	/*
+	private Dungeon.LevelInfo dungeonLevelInfo;
+	private int totalWeight;
+
+	
 	[System.Serializable]
 	public class EquipItemConfig
 	{
@@ -26,22 +47,7 @@ public class ItemManager : Util.Singleton<ItemManager> {
 		public EquipItem.Info[] items;
 	}
 	EquipItemConfig config;
-	public IEnumerator Init() {
-		infos = new Dictionary<string, Item.Info> ();
-		yield return NetworkManager.Instance.HttpRequest ("info_equipment_item.php", (string json) => {
-			config = JsonUtility.FromJson<EquipItemConfig>(json);
-			foreach(GradeWeight itr in config.grade_weight)
-			{
-				totalWeight += itr.weight;
-			}
-			foreach(EquipItem.Info info in config.items)
-			{
-				infos.Add(info.id, info);
-			}
-		});
-
-		InitPotionItemInfo ();
-	}
+	
 
 	public void InitDungeonLevel(Dungeon.LevelInfo info)
 	{
@@ -117,7 +123,7 @@ public class ItemManager : Util.Singleton<ItemManager> {
 			HealingPotionItem.Info info = new HealingPotionItem.Info ();
 			info.id = "ITEM_POTION_HEALING";
 			info.name = "Healing Potion";
-			info.price = 100;
+0			info.price = 100;
 			info.icon = "item_potion_002";
 			info.grade = (int)Item.Grade.Normal;
 			info.description = "An elixir that will instantly return you to full health and cure poison.";

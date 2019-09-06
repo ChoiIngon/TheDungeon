@@ -64,12 +64,6 @@ public class MonsterManager : Util.Singleton<MonsterManager> {
 		}
 		Debug.Log ("init complete MonsterManager");
 		*/
-
-        using (Database conn = new Database())
-        {
-            conn.Open(Application.dataPath + "/meta_data.db");
-            conn.Execute("SELECT monster_id, monster_name, monster_level, health, attaack, defense, speed ");
-        }
     }
 
 	public Monster.Info FindInfo(string id)
