@@ -5,7 +5,7 @@ namespace Util
 {
     public class EventSystem : Singleton<EventSystem>
     {
-		public static void Publish<T>(string eventID, T param) where T : new()
+		public static void Publish<T>(string eventID, T param) 
 		{
 			EventSystem.Instance._Publish<T>(eventID, param);
 		}
@@ -15,7 +15,7 @@ namespace Util
             EventSystem.Instance._Publish(eventID);
         }
 
-        public static void Subscribe<T>(string eventID, System.Action<T> handler) where T : new()
+        public static void Subscribe<T>(string eventID, System.Action<T> handler)
         {
             EventSystem.Instance._Subscribe<T>(eventID, handler);
         }
@@ -25,7 +25,7 @@ namespace Util
             EventSystem.Instance._Subscribe(eventID, handler);
         }
 
-        public static void Unsubscribe<T>(string eventID, System.Action<T> handler = null) where T : new()
+        public static void Unsubscribe<T>(string eventID, System.Action<T> handler = null) 
         {
             EventSystem.Instance._Unsubscribe<T>(eventID, handler);
         }
@@ -40,7 +40,7 @@ namespace Util
             public abstract void OnEvent(object eventParam);
         }
 
-        public class EventHandler<T> : IEventHandler where T : new()
+        public class EventHandler<T> : IEventHandler
         {
             public System.Action<T> onEvent;
 
@@ -73,7 +73,7 @@ namespace Util
 
         private Dictionary<string, IEventHandler> event_handlers = new Dictionary<string, IEventHandler>();
 
-        private void _Subscribe<T>(string eventID, System.Action<T> handler) where T : new()
+        private void _Subscribe<T>(string eventID, System.Action<T> handler) 
         {
             EventHandler<T> eventHandler = null;
             if (true == event_handlers.ContainsKey(eventID))
@@ -117,7 +117,7 @@ namespace Util
             eventHandler.onEvent += handler;
         }
 
-        private void _Unsubscribe<T>(string eventID, System.Action<T> handler) where T : new()
+        private void _Unsubscribe<T>(string eventID, System.Action<T> handler)
         {
             if (false == event_handlers.ContainsKey(eventID))
             {
@@ -167,7 +167,7 @@ namespace Util
             }
         }
 
-		private void _Publish<T>(string eventID, T param) where T : new()
+		private void _Publish<T>(string eventID, T param) 
 		{
 			if (false == event_handlers.ContainsKey(eventID))
 			{

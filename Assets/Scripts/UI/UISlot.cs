@@ -4,27 +4,31 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class UISlot : MonoBehaviour {
-	/*
+public class UISlot : MonoBehaviour
+{
 	// Image border;
-	public Image icon;
-	public Image grade;
-	public ImageOutline outline;
-
-	public Image clone;
+	public Image icon = null;
+	public Image grade = null;
+    public Image clone = null;
+    public ImageOutline outline = null;
 	public RectTransform rectTransform;
 
-    public Unit player;
-    public UIInventory inventory;
-	public Inventory.Slot data;
-    
-	public virtual void Start()
+    public Item item;
+    private Canvas canvas = null;
+
+    public virtual void Start()
 	{
-		EventTrigger trigger = GetComponent<EventTrigger>( );
+        canvas = FindObjectOfType<Canvas>();
+        if (null == canvas)
+        {
+            throw new System.Exception("can not find child component(name:Canvas)");
+        }
+
+        EventTrigger trigger = GetComponent<EventTrigger>( );
 		{
 			EventTrigger.Entry entry = new EventTrigger.Entry ();
 			entry.eventID = EventTriggerType.PointerDown;
-			entry.callback.AddListener (( data) => {
+			entry.callback.AddListener ((data) => {
 				OnPointerDown ((PointerEventData)data);
 			});
 			trigger.triggers.Add (entry);
@@ -32,7 +36,7 @@ public class UISlot : MonoBehaviour {
 		{
 			EventTrigger.Entry entry = new EventTrigger.Entry ();
 			entry.eventID = EventTriggerType.PointerUp;
-			entry.callback.AddListener (( data) => {
+			entry.callback.AddListener ((data) => {
 				OnPointerUp ((PointerEventData)data);
 			});
 			trigger.triggers.Add (entry);
@@ -45,84 +49,134 @@ public class UISlot : MonoBehaviour {
 			});
 			trigger.triggers.Add (entry);
 		}
+
 		rectTransform = GetComponent<RectTransform> ();
 		icon = transform.Find ("ItemIcon").GetComponent<Image> ();
-		outline = transform.Find ("ItemIcon").GetComponent<ImageOutline> ();
-		grade = transform.Find ("ItemGrade").GetComponent<Image> ();
+        grade = transform.Find("ItemGrade").GetComponent<Image>();
+        outline = transform.Find ("ItemIcon").GetComponent<ImageOutline> ();
 		outline.outline = false;
-		Init (data);
+
+        Init (item);
+
+        Util.EventSystem.Subscribe<UISlot>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
+        Util.EventSystem.Subscribe<UISlot>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
 	}
 
-	public virtual void Init(Inventory.Slot data)
+	public virtual void Init(Item item)
 	{
-		this.data = data;
+		this.item = item;
 		icon.gameObject.SetActive (false);
 		grade.gameObject.SetActive (false);
-		if (null != data && null != data.item) {
-			icon.gameObject.SetActive (true);
-			grade.gameObject.SetActive (true);
-			icon.sprite = data.item.icon;
-			grade.color = GetGradeColor (data.item.grade);
-		}
+        if (null == item)
+        {
+            return;
+        }
+		icon.gameObject.SetActive (true);
+        icon.sprite = ResourceManager.Instance.Load<Sprite>(item.meta.sprite_path);
+        if (null == icon.sprite)
+        {
+            throw new System.Exception("can not find sprite(sprite_path:" + item.meta.sprite_path + ")");
+        }
+        grade.gameObject.SetActive (true);
+		grade.color = GetGradeColor (item.grade);
 	}
 
-	public void OnPointerDown( PointerEventData evt )
-	{
-		inventory.selected = this;
+    public virtual void OnSlotSelectNotify(UISlot other)
+    {
+    }
 
-		clone = Instantiate<Image> (icon);
-		clone.transform.SetParent (inventory.transform, false);
+    public virtual void OnSlotReleaseNotify(UISlot other) {}
+	
+	public bool Overlaps(UISlot other)
+    {
+        if(this == other)
+        {
+            return true;
+        }
 
-		RectTransform rtClone = clone.rectTransform;
-		rtClone.anchorMax = new Vector2(0.5f, 0.5f);
-		rtClone.anchorMin = new Vector2(0.5f, 0.5f);
-		rtClone.localScale = Vector3.one;
-		rtClone.sizeDelta = new Vector2 (100.0f, 100.0f); //rtOriginal.sizeDelta;
+        Rect rhs = other.clone.rectTransform.rect;
+        Rect lhs = rectTransform.rect;
 
-		clone.transform.position = transform.position;
-		OnSelect ();
-	}
+        rhs.width *= canvas.scaleFactor;
+        rhs.height *= canvas.scaleFactor;
 
-	public void OnDrag( PointerEventData evt )
-	{
-		clone.transform.position = evt.position;
-	}
+        lhs.width *= canvas.scaleFactor;
+        lhs.height *= canvas.scaleFactor;
 
-	public void OnPointerUp( PointerEventData evt )
-	{
-		OnDrop ();
-		clone.transform.SetParent (null);
-		Destroy (clone.gameObject);
-		clone = null;
-	}
+        rhs.position = (Vector2)other.clone.transform.position;
+        lhs.position = (Vector2)transform.position;
 
-	public virtual void OnSelect() {}
-	public virtual void OnDrop() {}
+        return rhs.Overlaps(lhs);
+    }
 
-	public static Color GetGradeColor(EquipmentItem.Grade grade)
+    private void OnPointerDown(PointerEventData evt)
+    {
+        if (null == item)
+        {
+            return;
+        }
+
+        outline.outline = true;
+        clone = Instantiate<Image>(icon);
+        if (null == clone)
+        {
+            throw new System.Exception("can not clone icon image");
+        }
+
+        Transform inventory = transform.parent.parent;
+        clone.transform.SetParent(inventory, false);
+
+        RectTransform rtClone = clone.rectTransform;
+        rtClone.anchorMax = new Vector2(0.5f, 0.5f);
+        rtClone.anchorMin = new Vector2(0.5f, 0.5f);
+        rtClone.localScale = Vector3.one;
+        rtClone.sizeDelta = new Vector2(100.0f, 100.0f); //rtOriginal.sizeDelta;
+
+        clone.transform.position = transform.position;
+        Util.EventSystem.Publish<UISlot>(EventID.Inventory_Slot_Select, this);
+    }
+
+    private void OnDrag(PointerEventData evt)
+    {
+        clone.transform.position = evt.position;
+    }
+
+    private void OnPointerUp(PointerEventData evt)
+    {
+        if (null == item)
+        {
+            return;
+        }
+
+        outline.outline = false;
+        Util.EventSystem.Publish<UISlot>(EventID.Inventory_Slot_Release, this);
+        clone.transform.SetParent(null);
+        Destroy(clone.gameObject);
+        clone = null;
+    }
+    public static Color GetGradeColor(Item.Grade grade)
 	{
 		Color color = Color.white;
 		switch (grade) {
-		case EquipmentItem.Grade.Low:
+		case Item.Grade.Low:
 			color = new Color (0x80, 0x80, 0x80); // gray
 			break;
-		case EquipmentItem.Grade.Normal:
+		case Item.Grade.Normal:
 			color = Color.white;
 			break;
-		case EquipmentItem.Grade.High:
+		case Item.Grade.High:
 			color = new Color (0x00, 0x80, 0x00); // green
 			break;
-		case EquipmentItem.Grade.Magic:
+		case Item.Grade.Magic:
 			color = new Color (0x00, 0x00, 0xA0); // dark blue
 			break;
-		case EquipmentItem.Grade.Rare:
+		case Item.Grade.Rare:
 			color = new Color (0x80, 0x00, 0x80); // purple
 			break;
-		case EquipmentItem.Grade.Legendary:
+		case Item.Grade.Legendary:
 			color = new Color (0xFF, 0xA5, 0x00); // orange
 			break;
 		}
 		return color;
 	}
-	*/
 }

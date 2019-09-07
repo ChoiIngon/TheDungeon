@@ -40,7 +40,13 @@ public class EquipItem : Item
 	public int 	level = 0;
 	public Part part = Part.Invalid;
 	
-	public bool equip = false;
+	public bool equip
+    {
+        get {
+            return equip_index != -1;
+        }
+    }
+    public int  equip_index = -1;
 	public Stat main_stat = new Stat();
 	public Stat sub_stat = new Stat();
 	public Encant enchant = null;

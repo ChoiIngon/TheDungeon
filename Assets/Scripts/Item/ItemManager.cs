@@ -104,18 +104,19 @@ public class ItemManager : Util.Singleton<ItemManager>
 	*/
 	void InitEquipItem()
 	{
-		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT item_id, item_name, equip_part, price, description, main_stat_type, base_value, rand_value FROM meta_item_equip");
+		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT item_id, item_name, equip_part, price, sprite_path, description, main_stat_type, base_value, rand_value FROM meta_item_equip");
 		while(true == reader.Read())
 		{
 			EquipItem.Meta meta = new EquipItem.Meta();
-			meta.description = reader.GetString("description");
-			meta.id = reader.GetString("item_id");
+            meta.id = reader.GetString("item_id");
+            meta.name = reader.GetString("item_name");
+            meta.type = Item.Type.Equipment;
 			meta.main_stat = new EquipItemStatMeta() { type = (StatType)reader.GetInt32("main_stat_type"), base_value = reader.GetFloat("base_value"), rand_value = reader.GetFloat("rand_value") };
-			meta.name = reader.GetString("item_name");
 			meta.part = (EquipItem.Part)reader.GetInt32("equip_part");
 			meta.price = reader.GetInt32("price");
-			meta.type = Item.Type.Equipment;
-			equip_item_metas.Add(meta);
+            meta.sprite_path = reader.GetString("sprite_path");
+            meta.description = reader.GetString("description");
+            equip_item_metas.Add(meta);
 		}
 	}
 

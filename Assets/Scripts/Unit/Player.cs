@@ -8,6 +8,12 @@ using System.IO;
 using UnityEngine.Assertions;
 #endif
 
+public class ItemEquipEvent
+{
+    public EquipItem item;
+    public int equip_index;
+}
+
 public class Player : Unit
 {
 	private Dictionary<Tuple<EquipItem.Part, int>, EquipItem> equip_items;
@@ -25,12 +31,12 @@ public class Player : Unit
 		equip_items.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Ring, 1), null);
 		equip_items.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Shoes, 0), null);
 		inventory = new Inventory();
-		inventory.Init();
 
 		Load();
 
 		CalculateStat();
 	}
+    
 	public EquipItem Equip(EquipItem item, int index = 0)
 	{
 		if (null == item)
@@ -38,26 +44,37 @@ public class Player : Unit
 			return null;
 		}
 
-		EquipItem prev = equip_items[new Tuple<EquipItem.Part, int>(item.part, index)];
+        EquipItem prev = Unequip(item.part, index);
 		equip_items[new Tuple<EquipItem.Part, int>(item.part, index)] = item;
-
+        item.equip_index = index;
 		stats += item.main_stat;
 		stats += item.sub_stat;
 
 		CalculateStat();
-		return prev;
+
+        Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Equip, new ItemEquipEvent() { item = item, equip_index = index } );
+        return prev;
 	}
 
 	public EquipItem Unequip(EquipItem.Part part, int index)
 	{
 		EquipItem item = equip_items[new Tuple<EquipItem.Part, int>(part, index)];
+        if (null == item)
+        {
+            return null;
+        }
+
+        item.equip_index = -1;
 		equip_items[new Tuple<EquipItem.Part, int>(part, index)] = null;
 
 		stats -= item.main_stat;
 		stats -= item.sub_stat;
 
 		CalculateStat();
-		return item;
+
+        Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Unequip, new ItemEquipEvent() { item = item, equip_index = index });
+
+        return item;
 	}
 
 	public void Save()
@@ -83,9 +100,6 @@ public class Player : Unit
 		}
 	}
 	/*
-
-
-   
 	public EquipmentItem GetEquipment(EquipmentItem.Part category, int index) {
         if(equipments.ContainsKey(new Tuple<EquipmentItem.Part, int>(category, index)))
         {
@@ -93,7 +107,5 @@ public class Player : Unit
         }
 		return equipments [new Tuple<EquipmentItem.Part, int> (category, index)];
 	}
-	
-	
 	*/
 }

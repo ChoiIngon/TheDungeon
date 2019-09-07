@@ -1,22 +1,27 @@
 ﻿<Properties StartupConfiguration="{8E1352C3-CD06-2B7E-D1FC-2AE9C607865F}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Unit/MonsterManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Inventory.cs">
     <Files>
-      <File FileName="Assets/Scripts/GameManager.cs" Line="35" Column="118" />
-      <File FileName="Assets/Scripts/Unit/MonsterManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Util/Singleton.cs" Line="40" Column="1" />
+      <File FileName="Assets/Scripts/Util/Tuple.cs" Line="8" Column="1" />
+      <File FileName="Assets/Scripts/UI/UISlotEquip.cs" Line="102" Column="1" />
+      <File FileName="Assets/Scripts/Unit/Player.cs" Line="47" Column="1" />
+      <File FileName="Assets/Scripts/UI/UISlotInventory.cs" Line="73" Column="1" />
+      <File FileName="Assets/Scripts/Inventory.cs" Line="22" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="TheDungeon" expanded="True">
             <Node name="Assets" expanded="True">
+              <Node name="AssetBundleManager" expanded="True" />
               <Node name="Scripts" expanded="True">
                 <Node name="Item" expanded="True" />
-                <Node name="Quest" expanded="True" />
-                <Node name="Unit" expanded="True">
-                  <Node name="MonsterManager.cs" selected="True" />
-                </Node>
+                <Node name="UI" expanded="True" />
+                <Node name="Unit" expanded="True" />
                 <Node name="Util" expanded="True" />
+                <Node name="Inventory.cs" selected="True" />
               </Node>
+              <Node name="Sprites" expanded="True" />
             </Node>
           </Node>
         </State>
@@ -33,9 +38,11 @@
   <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="f0d72cf3-a28b-441c-8c6a-4867d6a86497" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/GameManager.cs" relfile="Assets/Scripts/GameManager.cs" line="81" column="1" />
-      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/GameManager.cs" relfile="Assets/Scripts/GameManager.cs" line="92" column="1" />
-      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/GameManager.cs" relfile="Assets/Scripts/GameManager.cs" line="87" column="1" />
+      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/GameManager.cs" relfile="Assets/Scripts/GameManager.cs" line="98" column="1" />
+      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/UI/UISlotInventory.cs" relfile="Assets/Scripts/UI/UISlotInventory.cs" line="73" column="1" />
+      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/UI/UISlotEquip.cs" relfile="Assets/Scripts/UI/UISlotEquip.cs" line="100" column="1" />
+      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/UI/UISlotEquip.cs" relfile="Assets/Scripts/UI/UISlotEquip.cs" line="106" column="1" />
+      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/UI/UISlotEquip.cs" relfile="Assets/Scripts/UI/UISlotEquip.cs" line="102" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MultiItemStartupConfigurations />

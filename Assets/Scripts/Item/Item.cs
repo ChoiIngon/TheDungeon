@@ -32,8 +32,8 @@ public class Item
 		public string id;
 		public string name;
 		public Type type;
-		public string icon;
 		public int price;
+		public string sprite_path;
 		public string description;
 		public abstract Item CreateInstance ();
 	}
@@ -48,7 +48,8 @@ public class Item
 		}
 	}
 
-	public int item_seq;
+	public int item_seq = 0;
+	public int slot_index = -1;
 	public Grade grade = Item.Grade.Invalid;
 
 	public Item(Meta meta)

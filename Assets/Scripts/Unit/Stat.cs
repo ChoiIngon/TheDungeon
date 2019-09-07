@@ -4,11 +4,11 @@ using UnityEngine;
 public enum StatType
 {
 	Invalid,
-	Health,
+	Health = 1,
 	Health_Rate,
 	Attack,
 	Attack_Rate,
-	Defense,
+	Defense = 5,
 	Defense_Rate,
 	Speed,
 	Speed_Rate,
@@ -62,6 +62,16 @@ public class Stat
 		}
 		return 0.0f;
 	}
+
+    public List<Data> GetStats()
+    {
+        List<Data> stats = new List<Data>();
+        foreach(var itr in datas)
+        {
+            stats.Add(new Data() { type = itr.Key, value = itr.Value });
+        }
+        return stats; 
+    }
 
 	public void AddStat(Data data)
 	{

@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-public class ResourceManager : MonoBehaviour {
+public class ResourceManager : Util.MonoSingleton<ResourceManager> {
     Dictionary<string, Object> resource;
 	public delegate void OnLoadProgress(string bundleName, string assetName);
 	public OnLoadProgress onLoadProgress;
@@ -19,27 +19,7 @@ public class ResourceManager : MonoBehaviour {
 		}
 	}
 
-    private static ResourceManager _instance;  
-	public static ResourceManager Instance  
-	{  
-		get  
-		{  
-			if (!_instance) 
-			{  
-				_instance = (ResourceManager)GameObject.FindObjectOfType(typeof(ResourceManager));  
-				if (!_instance)  
-				{  
-					GameObject container = new GameObject();  
-					container.name = "ResourceManager";  
-					_instance = container.AddComponent<ResourceManager>();  
-					DontDestroyOnLoad (container);
-				}  
-			}  
-
-			return _instance;  
-		}  
-	}
-	public IEnumerator Init()
+    public IEnumerator Init()
 	{
         if(null != resource)
         {

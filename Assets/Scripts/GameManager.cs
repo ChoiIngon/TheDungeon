@@ -13,9 +13,11 @@ public class GameManager : Util.MonoSingleton<GameManager>
 	private SceneMain current_scene;
 
 	public Player player;
+
+	public UIInventory inventory;
 	IEnumerator Start()
 	{
-		/*
+        /*
 		AsyncOperation operation = SceneManager.LoadSceneAsync("Common", LoadSceneMode.Additive);
 		while (false == operation.isDone)
 		{
@@ -23,15 +25,23 @@ public class GameManager : Util.MonoSingleton<GameManager>
 			yield return null;
 		}
 		*/
-		Database.Connect(Database.Type.MetaData, Application.dataPath + "/meta_data.db");
-		Database.Connect(Database.Type.UserData, Application.persistentDataPath + "/user_data.db");
-		player = new Player();
+        yield return ResourceManager.Instance.Init();
+
+        Database.Connect(Database.Type.MetaData, Application.dataPath + "/meta_data.db");
+        Database.Connect(Database.Type.UserData, Application.persistentDataPath + "/user_data.db");
+        ItemManager.Instance.Init();
+
+        player = new Player();
 		player.Init();
 
-		ItemManager.Instance.Init();
+        inventory.Init();
 
-		EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);
-		player.Equip(item);
+        for (int i = 0; i < 10; i++)
+        {
+            EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);
+            player.inventory.Add(item);
+        }
+		
 		yield break;
     }
 

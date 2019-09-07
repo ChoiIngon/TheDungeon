@@ -3,8 +3,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
 
-public class UIItemInfo : MonoBehaviour {
-	/*
+public class UIItemInfo : MonoBehaviour
+{
 	public enum Action
 	{
 		Use, Throw, Drop, Max
@@ -20,6 +20,17 @@ public class UIItemInfo : MonoBehaviour {
 
 	public void Init()
 	{
+        name = UIUtil.FindChild<Text>(transform, "ItemName");
+        icon = UIUtil.FindChild<Image>(transform, "Image/ItemIcon");
+		grade = UIUtil.FindChild<Image>(transform, "Image/ItemGrade");
+		description = UIUtil.FindChild<Text>(transform, "ItemDescription");
+		stats = UIUtil.FindChild<Text>(transform, "ItemStats");
+
+		buttons = new Button[(int)Action.Max];
+		buttons[(int)Action.Use] = UIUtil.FindChild<Button>(transform, "Actions/Use");
+		buttons[(int)Action.Throw] = UIUtil.FindChild<Button>(transform, "Actions/Throw");
+		buttons[(int)Action.Drop] = UIUtil.FindChild<Button>(transform, "Actions/Drop");
+
 		actions = new System.Action[(int)Action.Max];
 		for (int i = 0; i < (int)Action.Max; i++) {
 			int index = i;
@@ -29,7 +40,7 @@ public class UIItemInfo : MonoBehaviour {
 			entry.callback.AddListener (( data) => { actions[index]();	});
 			trigger.triggers.Add (entry);
 		}
-	}
+    }
 
 	public UISlot slot {
 		set {
@@ -37,11 +48,11 @@ public class UIItemInfo : MonoBehaviour {
 				return;
 			}
 			gameObject.SetActive (true);
-			Item item = value.data.item;
-			name.text = item.name;
+			Item item = value.item;
+			name.text = item.meta.name;
 			grade.color = UISlot.GetGradeColor(item.grade);
-			description.text = item.description;
-			icon.sprite = item.icon;
+			description.text = item.meta.description;
+			icon.sprite = ResourceManager.Instance.Load<Sprite>(item.meta.sprite_path);
 			stats.text = "";
 			for (int i = 0; i < (int)Action.Max; i++) {
 				buttons [i].gameObject.SetActive (false);
@@ -49,5 +60,5 @@ public class UIItemInfo : MonoBehaviour {
 			}
 		}
 	}
-	*/
+
 }
