@@ -103,10 +103,32 @@ public class UISlot : MonoBehaviour
         lhs.width *= canvas.scaleFactor;
         lhs.height *= canvas.scaleFactor;
 
+        
+
+        return lhs.Overlaps(rhs);
+    }
+
+    public bool Contains(UISlot other)
+    {
+        if(this == other)
+        {
+            return true;
+        }
+
+        Rect rhs = other.clone.rectTransform.rect;
+        Rect lhs = rectTransform.rect;
+
+        rhs.width *= canvas.scaleFactor;
+        rhs.height *= canvas.scaleFactor;
+
+        lhs.width *= canvas.scaleFactor;
+        lhs.height *= canvas.scaleFactor;
+
         rhs.position = (Vector2)other.clone.transform.position;
         lhs.position = (Vector2)transform.position;
 
-        return rhs.Overlaps(lhs);
+        Vector2 point = new Vector2(rhs.x+rhs.width/2, rhs.y + rhs.height/2);
+        return lhs.Contains(point);
     }
 
     private void OnPointerDown(PointerEventData evt)
@@ -116,7 +138,6 @@ public class UISlot : MonoBehaviour
             return;
         }
 
-        outline.outline = true;
         clone = Instantiate<Image>(icon);
         if (null == clone)
         {
@@ -134,6 +155,7 @@ public class UISlot : MonoBehaviour
 
         clone.transform.position = transform.position;
         Util.EventSystem.Publish<UISlot>(EventID.Inventory_Slot_Select, this);
+        outline.outline = true;
     }
 
     private void OnDrag(PointerEventData evt)
@@ -148,7 +170,6 @@ public class UISlot : MonoBehaviour
             return;
         }
 
-        outline.outline = false;
         Util.EventSystem.Publish<UISlot>(EventID.Inventory_Slot_Release, this);
         clone.transform.SetParent(null);
         Destroy(clone.gameObject);

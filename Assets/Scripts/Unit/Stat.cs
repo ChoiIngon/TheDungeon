@@ -41,6 +41,7 @@ public class RandomStatMeta
 
 public class Stat
 {
+    const float EPSILON = 0.0001f;
 	public class Data
 	{
 		public StatType type;
@@ -101,7 +102,7 @@ public class Stat
 #endif
 		datas[data.type] -= data.value;
 
-		if (0 >= datas[data.type])
+		if (EPSILON >= datas[data.type])
 		{
 			datas.Remove(data.type);
 		}

@@ -31,7 +31,7 @@ public class EquipItem : Item
 		{
 			return new EquipItem(this);
 		}
-	}
+    }
 
 	public class Encant
 	{
@@ -56,7 +56,7 @@ public class EquipItem : Item
 		part = meta.part;
 	}
 
-	/*
+    /*
 	public override List<string> Actions() {
 		List<string> actions = base.Actions ();
 		actions.Add ("EQUIP");
@@ -64,4 +64,25 @@ public class EquipItem : Item
 		return actions;
 	}
 	*/
+
+    public override void OnShowDescription()
+    {
+        foreach (Stat.Data stat in main_stat.GetStats())
+        {
+            Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)stat.type);
+            while (true == reader.Read())
+            {
+                GameManager.Instance.inventory.item_info.stats.text += string.Format(reader.GetString("description"), stat.value) + "\n";
+            }
+        }
+
+        foreach (Stat.Data stat in sub_stat.GetStats())
+        {
+            Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)stat.type);
+            while (true == reader.Read())
+            {
+                GameManager.Instance.inventory.item_info.stats.text += "<color=green> +" + string.Format(reader.GetString("description"), stat.value) + "</color>\n";
+            }
+        }
+    }
 }

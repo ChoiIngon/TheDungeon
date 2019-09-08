@@ -25,6 +25,14 @@ public class UISlotEquip : UISlot
 
     public override void OnSlotSelectNotify(UISlot other)
     {
+        if(this == other)
+        {
+            outline.outline = true;
+        }
+        else
+        {
+            outline.outline = false;
+        }
         if (Item.Type.Equipment != other.item.meta.type)
         {
             return;
@@ -89,7 +97,7 @@ public class UISlotEquip : UISlot
             return;
         }
 
-        if (false == Overlaps(other))
+        if (false == Contains(other))
         {
             return;
         }
@@ -114,34 +122,11 @@ public class UISlotEquip : UISlot
     private void OnItemEquip(ItemEquipEvent evt)
     {
         SetActiveGuideArrow(false);
-        if (part != evt.item.part)
-        {
-            return;
-        }
-
-        if(equip_index != evt.equip_index)
-        {
-            return;
-        }
-
-        Init(evt.item);
-        Debug.Log("equip item(part:" + part + ", equip_index:" + equip_index +")");
     }
 
     private void OnItemUnequip(ItemEquipEvent evt)
     {
-        if(part != evt.item.part)
-        {
-            return;
-        }
-
-        if (equip_index != evt.equip_index)
-        {
-            return;
-        }
-
-        Init(null);
-        Debug.Log("unequip item(part:" + part + ", equip_index:" + equip_index + ")");
+        SetActiveGuideArrow(false);
     }
 
     private void SetActiveGuideArrow(bool active)

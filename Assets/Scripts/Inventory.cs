@@ -64,26 +64,26 @@ public class Inventory
 	}
 	public void Swap(int from, int to)
 	{
-		if (0 >= from || MAX_SLOT_COUNT <= from)
+		if (0 > from || MAX_SLOT_COUNT <= from)
 		{
 			throw new System.Exception("out of range inventory index(index:" + from + ")");
 		}
 
-        if (0 >= to || MAX_SLOT_COUNT <= to)
+        if (0 > to || MAX_SLOT_COUNT <= to)
 		{
 			throw new System.Exception("out of range inventory index(index:" + to + ")");
 		}
 
 		Item a = Remove (from);
-		if (null != a)
-		{
-			a.slot_index = to;
-			items[to] = a;
-			Util.EventSystem.Publish<Item>(EventID.Inventory_Add, a);
-		}
-
 		Item b = Remove(to);
-		if (null != b)
+
+        if (null != a)
+        {
+            a.slot_index = to;
+            items[to] = a;
+            Util.EventSystem.Publish<Item>(EventID.Inventory_Add, a);
+        }
+        if (null != b)
 		{
 			b.slot_index = from;
 			items[from] = b;
@@ -98,6 +98,7 @@ public class Inventory
 		}
 		return items[index] as T;
 	}
+    /*
 	public List<T> GetItems<T>() where T : Item
 	{
 		List<T> items = new List<T> ();
@@ -116,4 +117,5 @@ public class Inventory
 		}
 		return items;
 	}
+    */
 }

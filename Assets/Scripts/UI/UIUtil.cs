@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class UIUtil
 {
@@ -18,5 +19,21 @@ public class UIUtil
 		}
 		return ret;
 	}
- 
+
+    public static void AddPointerUpListener(GameObject obj, Action listener)
+    {
+        if(null == obj)
+        {
+            throw new System.Exception("AddPointerUpListener, game object is null");
+        }
+        EventTrigger trigger = obj.GetComponent<EventTrigger>();
+        if(null == trigger)
+        {
+            trigger = obj.AddComponent<EventTrigger>();
+        }
+        var entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerUp;
+        entry.callback.AddListener((data) => { listener(); });
+        trigger.triggers.Add(entry);
+    }
 }

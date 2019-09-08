@@ -37,43 +37,44 @@ public class Player : Unit
 		CalculateStat();
 	}
     
-	public EquipItem Equip(EquipItem item, int index = 0)
+	public EquipItem Equip(EquipItem item, int equip_index = 0)
 	{
 		if (null == item)
 		{
 			return null;
 		}
 
-        EquipItem prev = Unequip(item.part, index);
-		equip_items[new Tuple<EquipItem.Part, int>(item.part, index)] = item;
-        item.equip_index = index;
+        EquipItem prev = Unequip(item.part, equip_index);
+		equip_items[new Tuple<EquipItem.Part, int>(item.part, equip_index)] = item;
+        item.equip_index = equip_index;
 		stats += item.main_stat;
 		stats += item.sub_stat;
 
 		CalculateStat();
 
-        Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Equip, new ItemEquipEvent() { item = item, equip_index = index } );
+        Debug.Log("equip item(item_id:" + item.meta.id + ", part:" + item.part + ", equip_index:" + equip_index + ")");
+        Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Equip, new ItemEquipEvent() { item = item, equip_index = equip_index } );
         return prev;
 	}
 
-	public EquipItem Unequip(EquipItem.Part part, int index)
+	public EquipItem Unequip(EquipItem.Part part, int equip_index)
 	{
-		EquipItem item = equip_items[new Tuple<EquipItem.Part, int>(part, index)];
+		EquipItem item = equip_items[new Tuple<EquipItem.Part, int>(part, equip_index)];
         if (null == item)
         {
             return null;
         }
 
         item.equip_index = -1;
-		equip_items[new Tuple<EquipItem.Part, int>(part, index)] = null;
+		equip_items[new Tuple<EquipItem.Part, int>(part, equip_index)] = null;
 
 		stats -= item.main_stat;
 		stats -= item.sub_stat;
 
 		CalculateStat();
 
-        Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Unequip, new ItemEquipEvent() { item = item, equip_index = index });
-
+        Debug.Log("unequip item(item_id:" + item.meta.id + ", part:" + item.part + ", equip_index:" + equip_index + ")");
+        Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Unequip, new ItemEquipEvent() { item = item, equip_index = equip_index });
         return item;
 	}
 
