@@ -1,5 +1,5 @@
 ﻿<Properties StartupConfiguration="{8E1352C3-CD06-2B7E-D1FC-2AE9C607865F}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/UI/UIPlayerInfo.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Unit/Player.cs">
     <Files>
       <File FileName="Assets/Scripts/Inventory.cs" Line="120" Column="7" />
       <File FileName="Assets/Scripts/UI/UISlotInventory.cs" Line="59" Column="1" />
@@ -7,13 +7,11 @@
       <File FileName="Assets/Scripts/Util/EventSystem.cs" Line="55" Column="1" />
       <File FileName="Assets/Scripts/UI/UIInventory.cs" Line="91" Column="26" />
       <File FileName="Assets/Scripts/SceneMain.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Item/ItemEquip.cs" Line="68" Column="43" />
       <File FileName="Assets/Scripts/UI/UISlotEquip.cs" Line="35" Column="10" />
       <File FileName="Assets/Scripts/UI/UISlot.cs" Line="158" Column="9" />
-      <File FileName="Assets/Scripts/Unit/Unit.cs" Line="19" Column="34" />
-      <File FileName="Assets/Scripts/Unit/Player.cs" Line="77" Column="133" />
-      <File FileName="Assets/Scripts/Unit/Stat.cs" Line="53" Column="3" />
-      <File FileName="Assets/Scripts/UI/UIPlayerInfo.cs" Line="15" Column="17" />
+      <File FileName="Assets/Scripts/Unit/Unit.cs" Line="32" Column="1" />
+      <File FileName="Assets/Scripts/UI/UIPlayerInfo.cs" Line="19" Column="1" />
+      <File FileName="Assets/Scripts/Unit/Player.cs" Line="121" Column="29" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -22,10 +20,10 @@
             <Node name="Assets" expanded="True">
               <Node name="Scripts" expanded="True">
                 <Node name="Item" expanded="True" />
-                <Node name="UI" expanded="True">
-                  <Node name="UIPlayerInfo.cs" selected="True" />
+                <Node name="UI" expanded="True" />
+                <Node name="Unit" expanded="True">
+                  <Node name="Player.cs" selected="True" />
                 </Node>
-                <Node name="Unit" expanded="True" />
                 <Node name="Util" expanded="True" />
               </Node>
             </Node>
@@ -45,8 +43,10 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/Inventory.cs" relfile="Assets/Scripts/Inventory.cs" line="67" column="1" />
-      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/Unit/Stat.cs" relfile="Assets/Scripts/Unit/Stat.cs" line="99" column="1" />
+      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/Unit/Stat.cs" relfile="Assets/Scripts/Unit/Stat.cs" line="100" column="1" />
       <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/UI/UIPlayerInfo.cs" relfile="Assets/Scripts/UI/UIPlayerInfo.cs" line="19" column="1" />
+      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/Unit/Unit.cs" relfile="Assets/Scripts/Unit/Unit.cs" line="32" column="1" />
+      <Breakpoint file="/Users/kukuta/Project/TheDungeon/Assets/Scripts/Unit/Stat.cs" relfile="Assets/Scripts/Unit/Stat.cs" line="91" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MultiItemStartupConfigurations />

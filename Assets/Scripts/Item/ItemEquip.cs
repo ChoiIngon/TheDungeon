@@ -11,6 +11,7 @@ public class EquipItemStatMeta
 
 public class EquipItem : Item
 {
+    public const int MAX_SUB_STAT_COUNT = (int)Item.Grade.Legendary - (int)Item.Grade.Normal;
 	public enum Part
 	{
 		Invalid,

@@ -32,7 +32,7 @@ public class ItemManager : Util.Singleton<ItemManager>
 
 	public Item CreateItem(string id)
 	{
-		Item item = FindInfo<Item.Meta>(id).CreateInstance();
+		Item item = FindMeta<Item.Meta>(id).CreateInstance();
 		Analytics.CustomEvent("CreateItem", new Dictionary<string, object>
 		{
 			{"id", item.meta.id },
@@ -66,7 +66,7 @@ public class ItemManager : Util.Singleton<ItemManager>
 		return item;
 	}
 
-	public T FindInfo<T>(string id) where T : Item.Meta
+	public T FindMeta<T>(string id) where T : Item.Meta
 	{
 		if (false == metas.ContainsKey(id))
 		{

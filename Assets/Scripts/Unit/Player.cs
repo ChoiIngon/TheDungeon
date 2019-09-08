@@ -90,16 +90,55 @@ public class Player : Unit
 
 	public void Load()
 	{
-		Debug.Log(Application.persistentDataPath);
-		if (File.Exists(Application.persistentDataPath + "/playerdata.dat"))
-		{
-			BinaryFormatter bf = new BinaryFormatter();
-			FileStream file = File.Open(Application.persistentDataPath + "/playerdata.dat", FileMode.Open);
-			string json = (string)bf.Deserialize(file);
-			Player player = JsonUtility.FromJson<Player>(json);
-			file.Close();
-		}
-	}
+		Debug.Log("data path:" + Application.persistentDataPath);
+        string sub_stat_column = "";
+        for(int i=0; i<EquipItem.MAX_SUB_STAT_COUNT; i++)
+        {
+            sub_stat_column += "sub_stat_type_" + (i+1) + " INTEGER NOT NULL DEFAULT 0," +
+                "sub_stat_value_" + (i+1) + " REAL NOT NULL DEFAULT 0,";
+        }
+        Database.Execute(Database.Type.UserData,
+            "CREATE TABLE IF NOT EXISTS user_item_equip (" +
+                "item_seq INTEGER NOT NULL," + 
+                "item_id TEXT NOT NULL," +
+                "equip_index INTEGER NOT NULL," +  
+                "main_stat_type INTEGER NOT NULL," +
+                "main_stat_value REAL NOT NULL," +
+                sub_stat_column +
+                "PRIMARY KEY('item_seq')" +
+            ")"
+        );
+
+        sub_stat_column = "";
+        for (int i = 0; i < EquipItem.MAX_SUB_STAT_COUNT; i++)
+        {
+            sub_stat_column += "sub_stat_type_" + (i + 1) + ", sub_stat_value_" + (i + 1) + " ,";
+        }
+        Util.Database.DataReader reader = Database.Execute(Database.Type.UserData,
+            "SELECT item_seq, item_id,  " +
+                "main_stat_type, main_stat_value, " +
+                sub_stat_column +
+                "equip_index " +
+            "FROM user_item_equip"
+        );
+        while(true == reader.Read())
+        {
+            string itemID = reader.GetString("item_id");
+            EquipItem.Meta meta = ItemManager.Instance.FindMeta<EquipItem.Meta>(itemID);
+            EquipItem item = meta.CreateInstance() as EquipItem;
+            item.item_seq = reader.GetInt32("item_seq");
+            item.main_stat.AddStat(new Stat.Data() { type=(StatType)reader.GetInt32("main_stat_type"), value=reader.GetFloat("main_stat_value") });
+
+            for (int i = 0; i < EquipItem.MAX_SUB_STAT_COUNT; i++)
+            {
+                if(0 == reader.GetInt32("sub_stat_type_" + (i+1)))
+                {
+                    continue;
+                }
+                item.sub_stat.AddStat(new Stat.Data() { type = (StatType)reader.GetInt32("sub_stat_type" + (i+1)), value = reader.GetFloat("sub_stat_value_" + (i+1)) });
+            }
+        }
+    }
 	/*
 	public EquipmentItem GetEquipment(EquipmentItem.Part category, int index) {
         if(equipments.ContainsKey(new Tuple<EquipmentItem.Part, int>(category, index)))
