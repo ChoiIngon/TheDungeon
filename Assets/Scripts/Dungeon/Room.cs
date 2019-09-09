@@ -5,20 +5,29 @@ using UnityEngine.Assertions;
 
 public class Room : MonoBehaviour
 {
-	/*
 	public GameObject[] doors;
 	public GameObject stair;
+	private void Start()
+	{
+		doors = new GameObject[Dungeon.Max];
+		doors[Dungeon.North] = UIUtil.FindChild<Transform>(transform, "NorthDoor").gameObject;
+		doors[Dungeon.East] = UIUtil.FindChild<Transform>(transform, "EastDoor").gameObject;
+		doors[Dungeon.West] = UIUtil.FindChild<Transform>(transform, "WestDoor").gameObject;
+		stair = UIUtil.FindChild<Transform>(transform, "Stair").gameObject;
+	}
 	public void Init(Dungeon.Room data)
 	{
-		for (int i = 0; i < doors.Length; i++) {
-			if (null != doors [i]) {
+		for (int i = 0; i < doors.Length; i++)
+		{
+			if (null != doors [i])
+			{
 				doors [i].SetActive ((bool)(null != data.next [i]));
 			}
 		}
 		stair.SetActive (false);
-		if (Dungeon.Room.Type.Exit == data.type) {
+		if (Dungeon.Room.Type.Exit == data.type)
+		{
 			stair.SetActive (true);
 		}
 	}
-	*/
 }

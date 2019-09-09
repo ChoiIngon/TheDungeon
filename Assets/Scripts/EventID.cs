@@ -8,6 +8,15 @@ public class EventID
 	public const string Inventory_Remove = "Inventory_Remove";
     public const string Inventory_Slot_Select = "Inventory_Slot_Select";
 	public const string Inventory_Slot_Release = "Inventory_Slot_Release";
+	public const string Inventory_Open = "Inventory_Open";
+	public const string Inventory_Close = "Inventory_Close";
+
     public const string Item_Equip = "Item_Equip";
     public const string Item_Unequip = "Item_Unequip";
+
+	public const string Dungeon_Move_Start = "Dungeon_Move_Start";
+	public const string Dungeon_Move_Finish = "Dungeon_Move_Finish";
+
+	public const string Dialog_Open = "Dialog_Open";
+	public const string Dialog_Close = "Dialog_Close";
 }

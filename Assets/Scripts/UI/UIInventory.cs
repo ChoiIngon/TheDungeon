@@ -6,14 +6,15 @@ public class UIInventory : MonoBehaviour
 {
     public UIPlayerInfo player_info;
     public UIItemInfo item_info;
-    //public List<UISlot> slots = new List<UISlot>();
-    public UISlotInventory[] inventory_slots = new UISlotInventory[Inventory.MAX_SLOT_COUNT];
-    public Dictionary<Tuple<EquipItem.Part, int>, UISlotEquip> equip_slots = new Dictionary<Tuple<EquipItem.Part, int>, UISlotEquip>();
-    public Button close;
+
+	public UISlotInventory[] inventory_slots = new UISlotInventory[Inventory.MAX_SLOT_COUNT];
+	public Dictionary<Tuple<EquipItem.Part, int>, UISlotEquip> equip_slots = new Dictionary<Tuple<EquipItem.Part, int>, UISlotEquip>();
+	public Button close;
 
     public void Init()
     {
-        Transform inventorySlots = UIUtil.FindChild<Transform>(transform, "InventorySlots");
+		gameObject.SetActive(false);
+		Transform inventorySlots = UIUtil.FindChild<Transform>(transform, "InventorySlots");
         for (int i = 0; i < Inventory.MAX_SLOT_COUNT; i++)
         {
             UISlotInventory slot = inventorySlots.GetChild(i).GetComponent<UISlotInventory>();
@@ -31,7 +32,7 @@ public class UIInventory : MonoBehaviour
         }
         
         close = UIUtil.FindChild<Button>(transform, "Close");
-        UIUtil.AddPointerUpListener(close.gameObject, () => { gameObject.SetActive(false); });
+        UIUtil.AddPointerUpListener(close.gameObject, () => { SetActive(false); });
         
         item_info = UIUtil.FindChild<UIItemInfo>(transform, "ItemInfo");
         item_info.Init();
@@ -40,33 +41,54 @@ public class UIInventory : MonoBehaviour
         player_info = UIUtil.FindChild<UIPlayerInfo>(transform, "PlayerInfo");
         player_info.Init();
 
+		foreach (var item in GameManager.Instance.player.inventory.items)
+		{
+			if (null == item)
+			{
+				continue;
+			}
+			OnItemAdd(item);
+		}
+
+		foreach (var itr in GameManager.Instance.player.equip_items)
+		{
+			if (null == itr.Value)
+			{
+				continue;
+			}
+			OnItemEquip(new ItemEquipEvent() { equip_index = itr.Key.second, item = itr.Value });	
+		}
         Util.EventSystem.Subscribe<Item>(EventID.Inventory_Add, OnItemAdd);
         Util.EventSystem.Subscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
         Util.EventSystem.Subscribe<UISlot>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
         Util.EventSystem.Subscribe<UISlot>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
-        Debug.Log("init complete UIInventory");
 
-        SetActive(true);
-        /*
-		gameObject.SetActive (false);
-        */
+        Debug.Log("init complete UIInventory");
     }
 
-    public void SetActive(bool flag)
+	private void OnDestroy()
+	{
+		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Add, OnItemAdd);
+		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
+		Util.EventSystem.Unsubscribe<UISlot>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
+		Util.EventSystem.Unsubscribe<UISlot>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
+	}
+	public void SetActive(bool flag)
     {
         gameObject.SetActive(flag);
         if(true == flag)
         {
             item_info.gameObject.SetActive(false);
-            player_info.Init();
             Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
             Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
+			Util.EventSystem.Publish(EventID.Inventory_Open);
         }
         else
         {
             Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
             Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
-        }
+			Util.EventSystem.Publish(EventID.Inventory_Close);
+		}
     }
 	
     private void OnItemAdd(Item item)
@@ -116,7 +138,7 @@ public class UIInventory : MonoBehaviour
     {
         item_info.slot = slot;
 
-        slot.item.OnShowDescription();
+        item_info.description.text = slot.item.description;
 
         item_info.buttons[(int)UIItemInfo.Action.Drop].gameObject.SetActive(true);
         item_info.actions[(int)UIItemInfo.Action.Drop] += () => {

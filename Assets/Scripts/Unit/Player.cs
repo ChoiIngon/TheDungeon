@@ -16,8 +16,7 @@ public class ItemEquipEvent
 
 public class Player : Unit
 {
-	private Dictionary<Tuple<EquipItem.Part, int>, EquipItem> equip_items;
-
+	public Dictionary<Tuple<EquipItem.Part, int>, EquipItem> equip_items;
 	public Inventory inventory;
 
 	public void Init()

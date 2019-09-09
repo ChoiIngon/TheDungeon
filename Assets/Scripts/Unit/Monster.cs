@@ -6,12 +6,10 @@ using System.Collections.Generic;
 using UnityEngine.Assertions;
 #endif
 
-public class Monster : Unit {
-	/*
-	[System.Serializable]
-	public class Info
+public class Monster : MonoBehaviour
+{
+	public class Meta
 	{
-		[System.Serializable]
 		public class Reward
 		{
 			public int coin;
@@ -20,47 +18,49 @@ public class Monster : Unit {
 		public string id;
 		public string name;
 		public int level;
-		public int health;
+		public float health;
 		public float defense;
 		public float attack;
 		public float speed;
+		public string sprite_path;
 		public Sprite sprite;
 		public Reward reward;
 
-		public Info()
+		public Meta()
 		{
 			reward = new Reward();
 		}
 	}
 
-	public Transform ui;
+	public Meta meta;
+
+	public Transform ui_monster_info;
 	private new Text name;
 	public UIGaugeBar health;
 
-	public Info info;
 	public TrailRenderer trailPrefab;
+	private new SpriteRenderer renderer;
+
 	public GameObject damageEffectPrefab;
 	public GameObject dieEffectPrefab;
 
 	private Animator animator;
-	private new SpriteRenderer renderer;
-
-	void Start () {
-		animator = transform.Find ("Sprite").GetComponent<Animator> ();
-		renderer = transform.Find ("Sprite").GetComponent<SpriteRenderer> ();
-		name = ui.Find ("Name").GetComponent<Text> ();
-		health = ui.Find ("Health").GetComponent<UIGaugeBar> ();
-
-		#if UNITY_EDITOR
-		Assert.AreNotEqual(null, animator);
-		Assert.AreNotEqual(null, renderer);
-		Assert.AreNotEqual(null, name);
-		Assert.AreNotEqual(null, health);
-		Assert.AreNotEqual(null, ui);
-		#endif
-		gameObject.SetActive (false);
-		ui.gameObject.SetActive (false);
+	void Start()
+	{
+		animator = UIUtil.FindChild<Animator>(transform, "Sprite");
+		renderer = UIUtil.FindChild<SpriteRenderer>(transform, "Sprite");
+		ui_monster_info = UIUtil.FindChild<Transform>(transform, "../UI/UIMonsterInfo");
+		name = UIUtil.FindChild<Text>(ui_monster_info, "Name");
+		health = UIUtil.FindChild<UIGaugeBar>(ui_monster_info, "Health");
+		gameObject.SetActive(false);
+		ui_monster_info.gameObject.SetActive(false);
 	}
+
+	/*
+	
+
+	
+
 
 	public void Init(Info info_)
 	{

@@ -62,6 +62,12 @@ public class UISlot : MonoBehaviour
         Util.EventSystem.Subscribe<UISlot>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
 	}
 
+	protected virtual void OnDestroy()
+	{
+		Util.EventSystem.Unsubscribe<UISlot>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
+		Util.EventSystem.Unsubscribe<UISlot>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
+	}
+
 	public virtual void Init(Item item)
 	{
 		this.item = item;

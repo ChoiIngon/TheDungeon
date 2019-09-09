@@ -9,41 +9,51 @@ using Mono.Data.Sqlite;
 public class GameManager : Util.MonoSingleton<GameManager>
 {
     public const string VERSION = "1.0";
-	private const string init_scene_name = "Village";
-	private SceneMain current_scene;
-
 	public Player player;
 
-	public UIInventory inventory;
-	IEnumerator Start()
+	private IEnumerator Start()
 	{
-        /*
+		yield return StartCoroutine(Init());
+
+		{
+			AsyncOperation operation = SceneManager.LoadSceneAsync("Dungeon");
+			while (false == operation.isDone)
+			{
+				// loading progress
+				yield return null;
+			}
+		}
+	}
+
+	public IEnumerator Init()
+	{
 		AsyncOperation operation = SceneManager.LoadSceneAsync("Common", LoadSceneMode.Additive);
 		while (false == operation.isDone)
 		{
 			// loading progress
 			yield return null;
 		}
-		*/
-        yield return ResourceManager.Instance.Init();
 
-        Database.Connect(Database.Type.MetaData, Application.dataPath + "/meta_data.db");
-        Database.Connect(Database.Type.UserData, Application.persistentDataPath + "/user_data.db");
-        ItemManager.Instance.Init();
+		yield return ResourceManager.Instance.Init();
+		DontDestroyOnLoad(ResourceManager.Instance.gameObject);
+		DontDestroyOnLoad(gameObject);
 
-        player = new Player();
+		Database.Connect(Database.Type.MetaData, Application.dataPath + "/meta_data.db");
+		Database.Connect(Database.Type.UserData, Application.persistentDataPath + "/user_data.db");
+
+		UIDialogBox.Instance.Init();
+		UIDialogBox.Instance.gameObject.SetActive(false);
+		ItemManager.Instance.Init();
+		MonsterManager.Instance.Init();
+		player = new Player();
 		player.Init();
-
-        inventory.Init();
-
-        for (int i = 0; i < 10; i++)
-        {
-            EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);
-            player.inventory.Add(item);
-        }
 		
-		yield break;
-    }
+		for (int i = 0; i < 10; i++)
+		{
+			EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);
+			player.inventory.Add(item);
+		}
+	}
 
 	void Update()
     {

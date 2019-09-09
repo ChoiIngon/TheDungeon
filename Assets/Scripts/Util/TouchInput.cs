@@ -6,6 +6,7 @@ public class TouchInput : MonoBehaviour {
 	public Action<Vector3> onTouchDown;
     public Action<Vector3> onTouchUp;
     public Action<Vector3> onTouchDrag;
+	public int touchBlockCount = 0;
 	public Vector2 size {
 		set {
 			touchCollider.size = value;
@@ -32,10 +33,12 @@ public class TouchInput : MonoBehaviour {
 		lastPressPosition = Input.mousePosition;
 		touchCollider = GetComponent<BoxCollider2D> ();
 		isButtonDown = false;
+		touchBlockCount = 0;
 	}
 
-	void OnMouseDown() {
-        if (false == enabled)
+	void OnMouseDown()
+	{
+        if (0 < touchBlockCount)
         {
             return;
         }
@@ -46,8 +49,10 @@ public class TouchInput : MonoBehaviour {
         onTouchDown?.Invoke(lastPressPosition);
     }
 	void OnMouseDrag() {
-		if (!enabled || false == isButtonDown) 
+		if (0 < touchBlockCount || false == isButtonDown)
+		{
 			return;
+		}
 		Vector3 currentPressPosition = Camera.main.ScreenToWorldPoint (
 			new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane)
 		);
@@ -58,12 +63,11 @@ public class TouchInput : MonoBehaviour {
 		lastPressPosition = currentPressPosition;
 	}
 	void OnMouseUp() {
-        if (false == enabled || false == isButtonDown)
+        if (0 < touchBlockCount || false == isButtonDown)
         {
             return;
         }
 		isButtonDown = false;
-		
 		onTouchUp?.Invoke(lastPressPosition);
 	}
 }

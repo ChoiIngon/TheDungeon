@@ -6,20 +6,13 @@ using UnityEngine.SceneManagement;
 
 public abstract class SceneMain : MonoBehaviour {
 	[ReadOnly] public bool isComplete = false;
-    [ReadOnly] public Texture2D fadeColorTexture;
-	IEnumerator Start () {
+	[ReadOnly] public Texture2D fadeColorTexture;
+	void Start ()
+	{
 		iTween.CameraFadeAdd ();
-        fadeColorTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-
-        StartCoroutine(CameraFadeFrom(Color.black, iTween.Hash("amount", 1.0f, "time", 1.0f)));
-        AsyncOperation operation = SceneManager.LoadSceneAsync("Common", LoadSceneMode.Additive);
-        while (false == operation.isDone)
-        {
-            // loading progress
-            yield return null;
-        }
-        UIDialogBox.Instance.gameObject.SetActive(false);
-        //UITicker.Instance.gameObject.SetActive(false);
+		fadeColorTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+		StartCoroutine(CameraFadeFrom(Color.black, iTween.Hash("amount", 1.0f, "time", 1.0f)));
+	    //UITicker.Instance.gameObject.SetActive(false);
         StartCoroutine(Run ());
 	}
 

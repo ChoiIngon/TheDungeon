@@ -23,7 +23,14 @@ public class UISlotEquip : UISlot
         Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
     }
 
-    public override void OnSlotSelectNotify(UISlot other)
+	protected override void OnDestroy()
+	{
+		base.OnDestroy();
+		Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
+		Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
+	}
+
+	public override void OnSlotSelectNotify(UISlot other)
     {
         if(this == other)
         {

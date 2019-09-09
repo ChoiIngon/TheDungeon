@@ -1,11 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Analytics;
 
-#if UNITY_EDITOR
-using UnityEngine.Assertions;
-#endif
 public class ItemManager : Util.Singleton<ItemManager>
 {
 	private Dictionary<string, Item.Meta> metas = new Dictionary<string, Item.Meta>();

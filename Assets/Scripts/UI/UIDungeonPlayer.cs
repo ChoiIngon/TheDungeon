@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIDungeonPlayer : Unit {
+public class UIDungeonPlayer : MonoBehaviour
+{
+	public UIGaugeBar health;
+	public UIGaugeBar exp;
+
 	/*
-    public UIGaugeBar health;
-    public UIGaugeBar exp;
+    
+    
     public UIInventory inventory;
     public override void Init()
     {

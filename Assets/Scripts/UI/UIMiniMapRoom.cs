@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIMiniMapRoom : MonoBehaviour {
-	/*
+public class UIMiniMapRoom : MonoBehaviour
+{
 	public Image room;
 	public Image[] next;
-	public Color color {
-		set {
+	public Color color
+	{
+		set
+		{
 			room.color = value;
-			for (int i = 0; i < Dungeon.Max; i++) {
+			for (int i = 0; i < Dungeon.Max; i++)
+			{
 				next [i].color = value;
 			}
 		}
@@ -19,5 +22,4 @@ public class UIMiniMapRoom : MonoBehaviour {
             return room.color;
         }
 	}
-	*/
 }

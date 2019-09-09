@@ -66,24 +66,30 @@ public class EquipItem : Item
 	}
 	*/
 
-    public override void OnShowDescription()
+    public override string description
     {
-        foreach (Stat.Data stat in main_stat.GetStats())
-        {
-            Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)stat.type);
-            while (true == reader.Read())
-            {
-                GameManager.Instance.inventory.item_info.stats.text += string.Format(reader.GetString("description"), stat.value) + "\n";
-            }
-        }
+		get
+		{
+			string description = "";
+			foreach (Stat.Data stat in main_stat.GetStats())
+			{
+				Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)stat.type);
+				while (true == reader.Read())
+				{
+					description += string.Format(reader.GetString("description"), stat.value) + "\n";
+				}
+			}
 
-        foreach (Stat.Data stat in sub_stat.GetStats())
-        {
-            Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)stat.type);
-            while (true == reader.Read())
-            {
-                GameManager.Instance.inventory.item_info.stats.text += "<color=green> +" + string.Format(reader.GetString("description"), stat.value) + "</color>\n";
-            }
-        }
+			foreach (Stat.Data stat in sub_stat.GetStats())
+			{
+				Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)stat.type);
+				while (true == reader.Read())
+				{
+					description += "<color=green> +" + string.Format(reader.GetString("description"), stat.value) + "</color>\n";
+				}
+			}
+
+			return description;
+		}
     }
 }

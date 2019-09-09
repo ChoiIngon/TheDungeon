@@ -33,7 +33,13 @@ public class UIUtil
         }
         var entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerUp;
-        entry.callback.AddListener((data) => { listener(); });
+        entry.callback.AddListener((data) => {
+			if (null == listener)
+			{
+				throw new System.Exception("listener of " + obj.name + " is null");
+			}
+			listener();
+		});
         trigger.triggers.Add(entry);
     }
 }

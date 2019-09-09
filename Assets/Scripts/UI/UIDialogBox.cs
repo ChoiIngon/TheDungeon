@@ -10,8 +10,12 @@ public class UIDialogBox : Util.MonoSingleton<UIDialogBox> {
 	public Text content;
 	private RectTransform rectTransform;
 	private bool active;
+	void Start()
+	{
+	}
 	// Use this for initialization
-	public void Init () {
+	public void Init ()
+	{
 		rectTransform = GetComponent<RectTransform> ();
 		gameObject.SetActive (false);
 		submit.onClick.AddListener (Submit);
@@ -25,6 +29,7 @@ public class UIDialogBox : Util.MonoSingleton<UIDialogBox> {
 		onSubmit?.Invoke();
 		active = false;
 		onSubmit = null;
+		Util.EventSystem.Publish(EventID.Dialog_Close);
 	}
 
 	private void Close() {
@@ -32,6 +37,7 @@ public class UIDialogBox : Util.MonoSingleton<UIDialogBox> {
 		gameObject.SetActive(false);
 		active = false;
 		onSubmit = null;
+		Util.EventSystem.Publish(EventID.Dialog_Close);
 	}
 		
 	public int width {
@@ -42,6 +48,7 @@ public class UIDialogBox : Util.MonoSingleton<UIDialogBox> {
 
 	public IEnumerator Write(string text, TextAnchor alinement = TextAnchor.MiddleLeft)
 	{
+		Util.EventSystem.Publish(EventID.Dialog_Open);
 		active = true;
 		gameObject.SetActive(true);
 		content.text = text;
@@ -53,13 +60,15 @@ public class UIDialogBox : Util.MonoSingleton<UIDialogBox> {
 			yield return null;
 		}
 	}
-
+	 /*
 	public void Active(string text, TextAnchor alinement = TextAnchor.MiddleLeft)
 	{
+		Util.EventSystem.Publish(EventID.Dialog_Open);
 		active = true;
 		gameObject.SetActive(true);
 		content.text = text;
 		content.alignment = alinement;
 		rectTransform.sizeDelta = new Vector2(rectTransform.rect.width, content.preferredHeight + 100);
 	}
+	*/
 }

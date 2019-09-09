@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
 public class Item
 {
@@ -83,9 +81,6 @@ public class Item
 	{
 		throw new System.InvalidOperationException("can not use item(item_id:" + meta.id + ", item_seq:" + item_seq + ")");
 	}
-    public virtual void OnShowDescription()
-    {
-        throw new System.NotImplementedException();
-    }
+    public virtual string description { get { throw new System.NotImplementedException(); } }
 }
 	

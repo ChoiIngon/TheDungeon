@@ -11,27 +11,21 @@ public class UIButtonGroup : MonoBehaviour {
 	public Image[] images;
 	public Text[] names;
 	// Use this for initialization
-	public void Init () {
+	public void Init ()
+	{
 		actions = new System.Action[buttons.Length];
 		images = new Image[buttons.Length];
 		names = new Text[buttons.Length];
 
-		for (int i = 0; i < buttons.Length; i++) {
+		for (int i = 0; i < buttons.Length; i++)
+		{
 			int index = i;
 			//buttons [i].enabled = false;
 			images [i] = buttons [i].GetComponent<Image> ();
-			names [i] = buttons [i].transform.Find ("Text").GetComponent<Text> ();
-
-			EventTrigger trigger = buttons [i].gameObject.AddComponent<EventTrigger> ();
-			var entry = new EventTrigger.Entry ();
-			entry.eventID = EventTriggerType.PointerUp;
-			entry.callback.AddListener (( data) => {
-				if(null != actions [index])
-				{
-					actions[index]();
-				}
+			names[i] = UIUtil.FindChild<Text>(buttons[i].transform, "Text");
+			UIUtil.AddPointerUpListener(buttons[i].gameObject, () => {
+				actions[index]?.Invoke();
 			});
-			trigger.triggers.Add (entry);
 		}
 	}
 
@@ -41,8 +35,8 @@ public class UIButtonGroup : MonoBehaviour {
 			buttons [i].enabled = flag;
 		}
 	}
-	/*
-	public void Show(float time)
+	
+	public void Show(float time = 0.5f)
 	{
 		for (int i = 0; i < buttons.Length; i++) {
 			buttons [i].enabled = true;
@@ -50,12 +44,11 @@ public class UIButtonGroup : MonoBehaviour {
 		}
 	}
 
-	public void Hide(float time)
+	public void Hide(float time = 0.5f)
 	{
 		for (int i = 0; i < buttons.Length; i++) {
 			buttons [i].enabled = false;
 			iTween.ColorTo (images[i].gameObject, new Color(1.0f, 1.0f, 1.0f, 0.0f), time);
 		}
 	}
-	*/
 }

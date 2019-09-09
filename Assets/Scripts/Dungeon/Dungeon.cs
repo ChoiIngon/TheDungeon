@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Dungeon : MonoBehaviour {
-	/*
+public class Dungeon 
+{
 	public const int WIDTH = 5;
 	public const int HEIGHT = 5;
 	public const int North = 0;
@@ -12,34 +12,20 @@ public class Dungeon : MonoBehaviour {
 	public const int West = 3;
 	public const int Max = 4;
 
-	private static Dungeon _instance;  
-	public static Dungeon Instance {  
-		get {  
-			if (!_instance) {  
-				_instance = (Dungeon)GameObject.FindObjectOfType(typeof(Dungeon));  
-				if (!_instance) {  
-					GameObject container = new GameObject();  
-					container.name = "Dungeon";  
-					_instance = container.AddComponent<Dungeon>();  
-				}  
-			}  
-
-			return _instance;  
-		}  
-	}
-
 	[System.Serializable]
-	public class LevelInfo {
+	public class LevelInfo
+	{
 		[System.Serializable]
 		public class Item {
 			public float chance;
-			public ItemManager.GradeWeight[] grade_weight;
+	//		public ItemManager.GradeWeight[] grade_weight;
 		}
 
 		public int level;
 		public string[] monsters;
 		public Item items;
 	}
+
 	public class Room
 	{
 		public enum Type {
@@ -48,39 +34,31 @@ public class Dungeon : MonoBehaviour {
 			Lock,
 			Normal
 		}
-		public int id;
-		public int group;
-		public bool visit;
-		public Type type;
-		public Monster.Info monster;
-		public Item item;
-		public Room[] next;
-		public Room() {
-			id = 0;
-			group = 0;
-			visit = false;
-			type = Type.Normal;
-			monster = null;
-			item = null;
-			next = new Room[Max];
-			for (int direction = 0; direction < Max; direction++) {
-				next [direction] = null;
-			}
-		}
-
+		public int id = 0;
+		public int group = 0;
+		public bool visit = false;
+		public Type type = Type.Normal;
+		public Monster.Meta monster_meta = null;
+		public Item item = null;
+		public Room[] next = new Room[Max];
+		
 		public Room GetNext(int direction)
 		{
-			if (0 > direction || Max <= direction) {
+			if (0 > direction || Max <= direction)
+			{
 				throw new System.Exception ("room id:" + direction + ", invalid direction:" + direction);
 			}
 			return next [direction];
 		}
 	}
-	public Room current = null;
+
+	public Room current_room = null;
 	public Room[] rooms = new Room[WIDTH * HEIGHT];
 	// Use this for initialization
-	public void Init(LevelInfo info) {
-		for(int i=0; i<WIDTH*HEIGHT; i++) {
+	public void Init()
+	{
+		for(int i=0; i<WIDTH*HEIGHT; i++)
+		{
 			Room room = new Room ();
 			room.id = i;
 			room.group = i;
@@ -88,19 +66,25 @@ public class Dungeon : MonoBehaviour {
 		}
 			
 		int group = 0;
-		while (true) {
+		while (true)
+		{
 			List<Room> outerRooms = GetOuterRoomsInGroup (group);
-			if (0 < outerRooms.Count) {
+			if (0 < outerRooms.Count)
+			{
 				Room room = outerRooms [Random.Range (0, outerRooms.Count)];
 				int direction = Random.Range (0, Max);
-				for (int j = 0; j < Max; j++) {
+				for (int j = 0; j < Max; j++)
+				{
 					Room other = GetNeighbor (room.id, direction);
-					if (null == other) {
+					if (null == other)
+					{
 						direction = (direction + 1) % Max;
 						continue;
 					}
+
 					room.next [direction] = other;
-					switch (direction) {
+					switch (direction)
+					{
 					case North:
 						other.next [South] = room;
 						break;
@@ -115,8 +99,10 @@ public class Dungeon : MonoBehaviour {
 						break;
 					}
 
-					if (other.group != room.group) {
-						if (room.group < other.group) {
+					if (other.group != room.group)
+					{
+						if (room.group < other.group)
+						{
 							ChangeGroupID (other.group, room.group);
 						} else {
 							ChangeGroupID (room.group, other.group);
@@ -142,16 +128,18 @@ public class Dungeon : MonoBehaviour {
 		List<Room> candidates = new List<Room> (rooms);
 		int start = Random.Range (0, candidates.Count);
 		candidates[start].type = Room.Type.Start;
-		current = candidates [start];
+		current_room = candidates [start];
 		candidates.RemoveAt (start);
 
+		/*
 		int monsterCount = Random.Range (6, 10);
-		for (int i = 0; i < monsterCount; i++) {
+		for (int i = 0; i < monsterCount; i++)
+		{
 			int index = Random.Range (0, candidates.Count);
-			candidates [index].monster = MonsterManager.Instance.FindInfo(info.monsters[Random.Range(0, info.monsters.Length)]);
+			candidates [index].monster_meta = MonsterManager.Instance.FindMeta(info.monsters[Random.Range(0, info.monsters.Length)]);
 			candidates.RemoveAt (index);
 		}
-
+		*/
 		int end = Random.Range (0, candidates.Count);
 		candidates [end].type = Room.Type.Exit;
 		candidates.RemoveAt (end);
@@ -159,12 +147,12 @@ public class Dungeon : MonoBehaviour {
 
 	public Room Move(int direction)
 	{
-		if (null == current.next [direction]) {
+		if (null == current_room.next [direction]) {
 			return null;
 		}
-		current = current.next [direction];
-		current.visit = true;
-		return current;
+		current_room = current_room.next [direction];
+		current_room.visit = true;
+		return current_room;
 	}
 		
 	private Room GetNeighbor(int id, int direction)
@@ -220,5 +208,4 @@ public class Dungeon : MonoBehaviour {
 			}
 		}
 	}
-	*/
 }
