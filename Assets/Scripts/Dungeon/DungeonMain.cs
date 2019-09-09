@@ -27,15 +27,13 @@ public class DungeonMain : SceneMain
 	public UIGaugeBar ui_monster_health;
 
 	private Dungeon dungeon;
-    public Text dungeon_level;
-	public UIInventory inventory;
-
+	public int dungeon_level = 1;
+    public Text ui_dungeon_level;
+	public UIInventory ui_inventory;
+	public UICoin ui_coin;
 	
+
 	/*
-    
-	public RectTransform uiMain;
-    
-    
     public float battleSpeed;
     public AudioSource audioWalk;
     public AudioSource audioBG;
@@ -46,71 +44,30 @@ public class DungeonMain : SceneMain
     public Coin         coinPrefab;
     
     public UIDungeonPlayer player;
-    private int level;
     
-    
-    
-    
-    
-
     private Config config;
     private Dungeon.LevelInfo dungeonLevelInfo;
     
-    
-	private List<QuestData> completeQuests;
+    private List<QuestData> completeQuests;
     
 	[System.Serializable]
 	public class Config
 	{
 		public Dungeon.LevelInfo[] level_infos;
 	}
-
-	public enum State
-	{
-		Invalid, Idle, Move, Battle, Popup, Max
-	}
-
-	public State state {
-		set {
-			if (true == Application.isPlaying) {
-				return;
-			}
-			switch (value) {
-			case State.Invalid:
-				input.enabled = false;
-				mainButtonGroup.gameObject.SetActive (false);
-				battleButtonGroup.gameObject.SetActive (false);
-				break;
-			case State.Idle:
-				input.enabled = true;
-				mainButtonGroup.gameObject.SetActive (true);
-				battleButtonGroup.gameObject.SetActive (false);
-				break;
-			case State.Move:
-				input.enabled = false;
-				mainButtonGroup.gameObject.SetActive (true);
-				mainButtonGroup.Enable (false);
-				battleButtonGroup.gameObject.SetActive (false);
-				break;
-			case State.Battle:
-				input.enabled = false;
-				mainButtonGroup.gameObject.SetActive (false);
-				battleButtonGroup.gameObject.SetActive (true);
-				break;
-			case State.Popup:
-				input.enabled = false;
-                mainButtonGroup.enabled = false; 
-                battleButtonGroup.enabled = false;
-                break;
-			default :
-				throw new System.Exception ("undefined state : " + value.ToString ());
-			}
-		}
-	}
 */
 	public override IEnumerator Run ()
 	{
-		yield return StartCoroutine(GameManager.Instance.Init());
+		if ("Dungeon" == SceneManager.GetActiveScene().name)
+		{
+			AsyncOperation operation = SceneManager.LoadSceneAsync("Common", LoadSceneMode.Additive);
+			while (false == operation.isDone)
+			{
+				// loading progress
+				yield return null;
+			}
+			yield return StartCoroutine(GameManager.Instance.Init());
+		}
 
 		rooms = UIUtil.FindChild<Transform>(transform, "Rooms");
 		current_room = UIUtil.FindChild<Room>(rooms, "Current");
@@ -123,25 +80,27 @@ public class DungeonMain : SceneMain
 		next_rooms[Dungeon.West] = UIUtil.FindChild<Room>(rooms, "West");
 		next_rooms[Dungeon.West].transform.position = new Vector3(-room_size, 0.0f, 0.0f);
 
-		inventory = UIUtil.FindChild<UIInventory>(transform, "UI/UIInventory");
-		inventory.Init();
+		ui_inventory = UIUtil.FindChild<UIInventory>(transform, "UI/UIInventory");
+		ui_inventory.Init();
 		
 		main_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "UI/Main/MainButtonGroup");
 		main_buttons.Init();
 		main_buttons.actions[0] += () => {
-			inventory.SetActive(true);
+			ui_inventory.SetActive(true);
 		};
 		main_buttons.actions[1] += () => {
 			Debug.Log("touch ui");
 		};
-		//main_buttons.gameObject.SetActive(false);
+		main_buttons.buttons[2].gameObject.SetActive(false);
+		main_buttons.buttons[3].gameObject.SetActive(false);
+		
 		battle_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "UI/Main/BattleButtonGroup");
 		battle_buttons.Init();
 
-		mini_map = UIUtil.FindChild<UIMiniMap>(transform, "UI/UIMiniMap");
-		dungeon_level = UIUtil.FindChild<Text>(transform, "UI/DungeonLevel");
-
 		monster = UIUtil.FindChild<Monster>(transform, "Monster");
+		mini_map = UIUtil.FindChild<UIMiniMap>(transform, "UI/UIMiniMap");
+		ui_dungeon_level = UIUtil.FindChild<Text>(transform, "UI/DungeonLevel");
+
 		touch_input = GetComponent<TouchInput>();
 		if (null == touch_input)
 		{
@@ -188,7 +147,6 @@ public class DungeonMain : SceneMain
 		};
 
 		dungeon = new Dungeon();
-				
 		
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object> { });
 		/*
@@ -220,13 +178,12 @@ public class DungeonMain : SceneMain
 		StartCoroutine (Init ());
 		*/
 		Init();
-		Debug.Log("init complete dungeon");
 
 		Util.EventSystem.Subscribe(EventID.Inventory_Open, OnTouchInputBlock);
 		Util.EventSystem.Subscribe(EventID.Inventory_Close, OnTouchInputRelease);
 		Util.EventSystem.Subscribe(EventID.Dialog_Open, OnTouchInputBlock);
 		Util.EventSystem.Subscribe(EventID.Dialog_Close, OnTouchInputRelease);
-		yield break;
+		Debug.Log("init complete dungeon");
 	}
 
 	private void OnDestroy()
@@ -238,24 +195,14 @@ public class DungeonMain : SceneMain
 	}
 	void Init()
 	{
-		rooms.gameObject.SetActive (false);
+		dungeon_level = 1;
 		/*
-	  state = State.Invalid;
-	  level = 1;
-	  #if UNITY_EDITOR
-	  NetworkManager.Instance.Init ();
-	  yield return StartCoroutine(ResourceManager.Instance.Init ());
-	  yield return StartCoroutine(ItemManager.Instance.Init ());
-	  yield return StartCoroutine(MonsterManager.Instance.Init ());
-	  #endif
-
+	  
+	  
 	  yield return StartCoroutine(QuestManager.Instance.Init ());
 	  QuestManager.Instance.onComplete += (QuestData data) => {
 		  completeQuests.Add(data);
 	  };
-	  #if UNITY_EDITOR
-	  Player.Instance.Init();
-	  #endif
 	  yield return NetworkManager.Instance.HttpRequest ("info_dungeon.php", (string json) => {
 		  config = JsonUtility.FromJson<Config>(json);
 	  });
@@ -271,19 +218,19 @@ public class DungeonMain : SceneMain
 	  yield return StartCoroutine(CheckCompleteQuest ());
 
 	  UICoin.Instance.Init ();
-	  player.Init();
+	  
 	  */
 	  InitDungeon ();
 		//state = State.Idle;
 	}
 	void InitDungeon()
 	{
-		dungeon.Init();
+		dungeon.Init(dungeon_level);
 		mini_map.Init(dungeon);
 		InitRooms();
 		rooms.gameObject.SetActive(true);
 
-		dungeon_level.text = "<size=" + (dungeon_level.fontSize * 0.8f) + ">B</size> " + 1;
+		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon_level.ToString();
 
 		StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 0.0f, "time", 1.0f)));
 /*		
@@ -522,21 +469,21 @@ public class DungeonMain : SceneMain
 		yield return StartCoroutine (CameraFadeTo (Color.black, iTween.Hash ("amount", 1.0f, "time", 1.0f), true));
 		SceneManager.LoadScene("Village");
 	}
-
+	*/
 	IEnumerator GoDown()
 	{
 		Vector3 position = Camera.main.transform.position;
 		StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 1.0f, "time", 1.0f)));
 		yield return StartCoroutine(MoveTo (Camera.main.gameObject, iTween.Hash(
-			"x", current.stair.transform.position.x,
-			"y", current.stair.transform.position.y,
-			"z", current.stair.transform.position.z-0.5f,
+			"x", current_room.stair.transform.position.x,
+			"y", current_room.stair.transform.position.y,
+			"z", current_room.stair.transform.position.z-0.5f,
 			"time", 1.0f
 		), true));
-		level += 1;
-
+		dungeon_level += 1;
 		Camera.main.transform.position = position;
 	}
+	/*
 	IEnumerator CheckCompleteQuest()
 	{
 		state = State.Popup;
@@ -655,29 +602,27 @@ public class DungeonMain : SceneMain
 		
 		InitRooms();
 		audioWalk.Stop();
-
-		if (null != Dungeon.Instance.current.monster)
+		*/
+		/*
+		if (null != dungeon.current_room.monster_meta)
 		{
-			state = State.Battle;
-			monster.Init(Dungeon.Instance.current.monster);
+			monster.Init(dungeon.current_room.monster_meta);
 			yield return StartCoroutine(Battle());
 		}
-
 		*/
+		
 		if (Dungeon.Room.Type.Exit == dungeon.current_room.type)
 		{
 			bool goDown = false;
 			UIDialogBox.Instance.onSubmit += () => {
 				goDown = true;
 			};
-			StartCoroutine(UIDialogBox.Instance.Write("Do you want to go down the stair?"));
+			yield return StartCoroutine(UIDialogBox.Instance.Write("Do you want to go down the stair?"));
 			if (true == goDown)
 			{
-				/*
 				yield return StartCoroutine(GoDown());
 				InitDungeon();
 				yield return new WaitForSeconds(1.0f);
-				*/
 			}
 		}
 		touch_input.touchBlockCount--;
@@ -687,11 +632,19 @@ public class DungeonMain : SceneMain
 	private void OnTouchInputBlock()
 	{
 		touch_input.touchBlockCount++;
+		if (0 < touch_input.touchBlockCount)
+		{
+			mini_map.Hide(1.0f);
+		}
 	}
 
 	private void OnTouchInputRelease()
 	{
 		touch_input.touchBlockCount--;
+		if (0 == touch_input.touchBlockCount)
+		{
+			mini_map.Show(1.0f);
+		}
 	}
 	
 }

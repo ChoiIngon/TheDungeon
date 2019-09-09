@@ -80,8 +80,9 @@ public class UIGaugeBar : MonoBehaviour {
 	float _max;
 	Coroutine _coroutine;
 	// Use this for initialization
-	void Start () {
-		//RectTransform rt = text.gameObject.GetComponent<RectTransform> ();
-		//text.fontSize = (int)(rt.rect.height - text.lineSpacing);
+	void Start ()
+	{
+		RectTransform rt = text.gameObject.GetComponent<RectTransform> ();
+		text.fontSize = (int)(rt.rect.height - text.lineSpacing);
     }
 }

@@ -23,7 +23,6 @@ public class Monster : MonoBehaviour
 		public float attack;
 		public float speed;
 		public string sprite_path;
-		public Sprite sprite;
 		public Reward reward;
 
 		public Meta()
@@ -45,6 +44,7 @@ public class Monster : MonoBehaviour
 	public GameObject dieEffectPrefab;
 
 	private Animator animator;
+	
 	void Start()
 	{
 		animator = UIUtil.FindChild<Animator>(transform, "Sprite");
@@ -53,36 +53,22 @@ public class Monster : MonoBehaviour
 		name = UIUtil.FindChild<Text>(ui_monster_info, "Name");
 		health = UIUtil.FindChild<UIGaugeBar>(ui_monster_info, "Health");
 		gameObject.SetActive(false);
+
 		ui_monster_info.gameObject.SetActive(false);
 	}
 
-	/*
-	
-
-	
-
-
-	public void Init(Info info_)
+	public void Init(Meta meta)
 	{
 		gameObject.SetActive (true);
-		ui.gameObject.SetActive (true);
-
-		info = info_;
-		name.text = info.name;
-		renderer.sprite = info.sprite;
+		ui_monster_info.gameObject.SetActive (true);
+		name.text = meta.name;
+		renderer.sprite = ResourceManager.Instance.Load<Sprite>(meta.sprite_path);
 		renderer.color = Color.black;
-		stats.health = info.health;
-		stats.attack = info.attack;
-		stats.defense = info.defense;
-		stats.speed = info.speed;
-		stats.coinBonus = 0.0f;
-		stats.critcal = 0.0f; //ToDo
-		stats.expBonus = 0.0f;
-
-		health.max = info.health;
-		health.current = health.max;
+		health.max = meta.health;
+		health.current = meta.health;
 	}
 
+	/*
 	public override void Attack(Unit defender)
 	{
 		animator.SetTrigger ("Attack");

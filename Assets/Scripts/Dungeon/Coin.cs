@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Coin : MonoBehaviour {
+public class Coin : MonoBehaviour
+{
 	/*
 	private Vector3 velocity = Vector3.zero;
 	private float groundPos;

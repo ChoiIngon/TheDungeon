@@ -13,10 +13,10 @@ public class GameManager : Util.MonoSingleton<GameManager>
 
 	private IEnumerator Start()
 	{
-		yield return StartCoroutine(Init());
-
+		if("Common" == SceneManager.GetActiveScene().name)
 		{
-			AsyncOperation operation = SceneManager.LoadSceneAsync("Dungeon");
+			yield return StartCoroutine(Init());
+			AsyncOperation operation = SceneManager.LoadSceneAsync("Dungeon", LoadSceneMode.Additive);
 			while (false == operation.isDone)
 			{
 				// loading progress
@@ -24,30 +24,25 @@ public class GameManager : Util.MonoSingleton<GameManager>
 			}
 		}
 	}
-
+	
 	public IEnumerator Init()
 	{
-		AsyncOperation operation = SceneManager.LoadSceneAsync("Common", LoadSceneMode.Additive);
-		while (false == operation.isDone)
-		{
-			// loading progress
-			yield return null;
-		}
-
 		yield return ResourceManager.Instance.Init();
 		DontDestroyOnLoad(ResourceManager.Instance.gameObject);
 		DontDestroyOnLoad(gameObject);
 
 		Database.Connect(Database.Type.MetaData, Application.dataPath + "/meta_data.db");
 		Database.Connect(Database.Type.UserData, Application.persistentDataPath + "/user_data.db");
+		ItemManager.Instance.Init();
+		MonsterManager.Instance.Init();
+
+		player = new Player();
+		player.Init();
 
 		UIDialogBox.Instance.Init();
 		UIDialogBox.Instance.gameObject.SetActive(false);
-		ItemManager.Instance.Init();
-		MonsterManager.Instance.Init();
-		player = new Player();
-		player.Init();
-		
+		UICoin.Instance.Init();
+
 		for (int i = 0; i < 10; i++)
 		{
 			EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);

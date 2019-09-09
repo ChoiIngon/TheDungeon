@@ -55,7 +55,7 @@ public class Dungeon
 	public Room current_room = null;
 	public Room[] rooms = new Room[WIDTH * HEIGHT];
 	// Use this for initialization
-	public void Init()
+	public void Init(int dungeonLevel)
 	{
 		for(int i=0; i<WIDTH*HEIGHT; i++)
 		{
@@ -126,23 +126,35 @@ public class Dungeon
 		}
 
 		List<Room> candidates = new List<Room> (rooms);
+
 		int start = Random.Range (0, candidates.Count);
 		candidates[start].type = Room.Type.Start;
-		current_room = candidates [start];
 		candidates.RemoveAt (start);
+		current_room = candidates[start];
 
-		/*
-		int monsterCount = Random.Range (6, 10);
-		for (int i = 0; i < monsterCount; i++)
+		int end = Random.Range(0, candidates.Count);
+		candidates[end].type = Room.Type.Exit;
+		candidates.RemoveAt(end);
+
+		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+			"SELECT monster_id FROM meta_monster where monster_level<=" + dungeonLevel
+		);
+		List<string> monsterIDs = new List<string>();
+		while (true == reader.Read())
 		{
-			int index = Random.Range (0, candidates.Count);
-			candidates [index].monster_meta = MonsterManager.Instance.FindMeta(info.monsters[Random.Range(0, info.monsters.Length)]);
-			candidates.RemoveAt (index);
+			monsterIDs.Add(reader.GetString("monster_id"));
 		}
-		*/
-		int end = Random.Range (0, candidates.Count);
-		candidates [end].type = Room.Type.Exit;
-		candidates.RemoveAt (end);
+
+		if (0 < monsterIDs.Count)
+		{
+			int monsterCount = Random.Range(6, 10);
+			for (int i = 0; i < monsterCount; i++)
+			{
+				int index = Random.Range(0, candidates.Count - 1);
+				candidates[index].monster_meta = MonsterManager.Instance.FindMeta(monsterIDs[Random.Range(0, monsterIDs.Count - 1)]);
+				candidates.RemoveAt(index);
+			}
+		}
 	}
 
 	public Room Move(int direction)

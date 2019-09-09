@@ -166,6 +166,10 @@ public class UISlot : MonoBehaviour
 
     private void OnDrag(PointerEventData evt)
     {
+		if (null == clone)
+		{
+			return;
+		}
         clone.transform.position = evt.position;
     }
 
