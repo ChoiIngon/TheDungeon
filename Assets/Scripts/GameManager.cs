@@ -40,7 +40,6 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		player.Init();
 
 		UIDialogBox.Instance.Init();
-		UIDialogBox.Instance.gameObject.SetActive(false);
 		UICoin.Instance.Init();
 
 		for (int i = 0; i < 10; i++)
