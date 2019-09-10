@@ -345,7 +345,7 @@ public class SceneDungeon : SceneMain
 		float monsterAPS = 1.0f;
 		float playerTurn = playerAPS;
 		float monsterTurn = monsterAPS;
-		
+		/*
 		while (0.0f < monster.health.current && 0.0f < GameManager.Instance.player.cur_health) {
 			float waitTime = 0.0f;
 
