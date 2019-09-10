@@ -10,6 +10,11 @@ public class GameManager : Util.MonoSingleton<GameManager>
 {
     public const string VERSION = "1.0";
 	public Player player;
+	public UIInventory ui_inventory;
+	public UICoin ui_coin;
+	public UINpc ui_npc;
+	public UIDialogBox ui_dialogbox;
+	public UITextBox ui_textbox;
 
 	private IEnumerator Start()
 	{
@@ -39,9 +44,17 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		player = new Player();
 		player.Init();
 
-		UIDialogBox.Instance.Init();
-		UICoin.Instance.Init();
-
+		ui_dialogbox = UIUtil.FindChild<UIDialogBox>(transform, "UI/UIDialogBox");
+		ui_dialogbox.Init();
+		ui_inventory = UIUtil.FindChild<UIInventory>(transform, "UI/UIInventory");
+		ui_inventory.Init();
+		ui_coin = UIUtil.FindChild<UICoin>(transform, "UI/UICoin");
+		ui_coin.Init();
+		ui_npc = UIUtil.FindChild<UINpc>(transform, "UI/UINpc");
+		ui_npc.Init();
+		ui_textbox = UIUtil.FindChild<UITextBox>(transform, "UI/UITextBox");
+		ui_textbox.Init();
+	
 		for (int i = 0; i < 10; i++)
 		{
 			EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);

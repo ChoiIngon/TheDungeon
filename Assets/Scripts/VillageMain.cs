@@ -85,10 +85,10 @@ public class VillageMain : SceneMain {
 	{
 		state = State.Popup;
 		bool isSubmit = false;
-		UIDialogBox.Instance.onSubmit += () =>  {
+		GameManager.Instance.ui_dialogbox.onSubmit += () =>  {
 			isSubmit = true;
 		};
-		yield return StartCoroutine(UIDialogBox.Instance.Write("Do you want to go into the dungeon?"));
+		yield return StartCoroutine(GameManager.Instance.ui_dialogbox.Write("Do you want to go into the dungeon?"));
 		if(true == isSubmit)
 		{
 			StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 1.0f, "time", 2.0f)));
@@ -112,7 +112,7 @@ public class VillageMain : SceneMain {
 			QuestData quest = QuestManager.Instance.GetAvailableQuest ();
 			if (null != quest && null != quest.startDialouge) {
 				state = State.Popup;
-				yield return StartCoroutine (UINpc.Instance.Talk (quest.startDialouge.speaker, quest.startDialouge.dialouge));
+				yield return StartCoroutine (GameManager.Instance.ui_npc.Talk (quest.startDialouge.speaker, quest.startDialouge.dialouge));
 				state = State.Idle;
 			}
 		}
@@ -154,7 +154,7 @@ public class VillageMain : SceneMain {
 			}
 
 			state = State.Popup;
-			yield return StartCoroutine (UINpc.Instance.Talk (quest.completeDialouge.speaker, quest.completeDialouge.dialouge));
+			yield return StartCoroutine (GameManager.Instance.ui_npc.Talk (quest.completeDialouge.speaker, quest.completeDialouge.dialouge));
 			state = State.Idle;
 		}
 	//	completeQuests.Clear ();

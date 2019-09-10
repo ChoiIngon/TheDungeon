@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
-public class DungeonMain : SceneMain
+public class SceneDungeon : SceneMain
 {
 	public UIButtonGroup main_buttons;
 	public UIButtonGroup battle_buttons;
@@ -29,10 +29,7 @@ public class DungeonMain : SceneMain
 	private Dungeon dungeon;
 	public int dungeon_level = 1;
     public Text ui_dungeon_level;
-	public UIInventory ui_inventory;
-	public UICoin ui_coin;
 	
-
 	/*
     public float battleSpeed;
     public AudioSource audioWalk;
@@ -80,13 +77,10 @@ public class DungeonMain : SceneMain
 		next_rooms[Dungeon.West] = UIUtil.FindChild<Room>(rooms, "West");
 		next_rooms[Dungeon.West].transform.position = new Vector3(-room_size, 0.0f, 0.0f);
 
-		ui_inventory = UIUtil.FindChild<UIInventory>(transform, "UI/UIInventory");
-		ui_inventory.Init();
-		
 		main_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "UI/Main/MainButtonGroup");
 		main_buttons.Init();
 		main_buttons.actions[0] += () => {
-			ui_inventory.SetActive(true);
+			GameManager.Instance.ui_inventory.SetActive(true);
 		};
 		main_buttons.actions[1] += () => {
 			Debug.Log("touch ui");
@@ -106,6 +100,7 @@ public class DungeonMain : SceneMain
 		{
 			throw new System.Exception("can not find component 'TouchInput'");
 		}
+		touch_input.touchBlockCount = 1;
 		touch_input.onTouchDown += (Vector3 position) => 
 		{
 			touch_point = position;
@@ -147,7 +142,7 @@ public class DungeonMain : SceneMain
 		};
 
 		dungeon = new Dungeon();
-		
+
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object> { });
 		/*
 		
@@ -183,6 +178,7 @@ public class DungeonMain : SceneMain
 		Util.EventSystem.Subscribe(EventID.Inventory_Close, OnTouchInputRelease);
 		Util.EventSystem.Subscribe(EventID.Dialog_Open, OnTouchInputBlock);
 		Util.EventSystem.Subscribe(EventID.Dialog_Close, OnTouchInputRelease);
+		touch_input.touchBlockCount = 0;
 		Debug.Log("init complete dungeon");
 	}
 
@@ -614,10 +610,10 @@ public class DungeonMain : SceneMain
 		if (Dungeon.Room.Type.Exit == dungeon.current_room.type)
 		{
 			bool goDown = false;
-			UIDialogBox.Instance.onSubmit += () => {
+			GameManager.Instance.ui_dialogbox.onSubmit += () => {
 				goDown = true;
 			};
-			yield return StartCoroutine(UIDialogBox.Instance.Write("Do you want to go down the stair?"));
+			yield return StartCoroutine(GameManager.Instance.ui_dialogbox.Write("Do you want to go down the stair?"));
 			if (true == goDown)
 			{
 				yield return StartCoroutine(GoDown());

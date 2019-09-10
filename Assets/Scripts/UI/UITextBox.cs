@@ -27,28 +27,8 @@ public class UITextBox : MonoBehaviour {
 	private RectTransform rectTransform;
 	private int paragraph;
 	private Coroutine hideCoroutine;
-	private static UITextBox _instance;  
-	public static UITextBox Instance  
-	{  
-		get  
-		{  
-			if (!_instance) 
-			{  
-				_instance = (UITextBox)GameObject.FindObjectOfType(typeof(UITextBox));  
-				if (!_instance)  
-				{  
-					GameObject container = new GameObject();  
-					container.name = "UITextBox";  
-					_instance = container.AddComponent<UITextBox>();  
-				}  
-				_instance.Init ();
-				//DontDestroyOnLoad (_instance.gameObject);
-			}  
-
-			return _instance;  
-		}  
-	}
-	void Init () {
+	
+	public void Init () {
 		fast.gameObject.SetActive (false);
 		fast.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, Screen.height);
 		fast.onClick.AddListener (FastForward);

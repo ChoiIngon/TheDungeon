@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UICoin : Util.MonoSingleton<UICoin>
+public class UICoin : MonoBehaviour
 {
 	public Text text;
 	public Image image;
@@ -27,7 +27,7 @@ public class UICoin : Util.MonoSingleton<UICoin>
 
 	IEnumerator DeferredChange(int amount)
 	{
-		int current_amount = GameManager.Instance.player.inventory.coin - amount;
+		current_amount = GameManager.Instance.player.inventory.coin - amount;
 		int increase = amount / 10;
 		while (0 < increase && current_amount < GameManager.Instance.player.inventory.coin) {
 			current_amount += increase;

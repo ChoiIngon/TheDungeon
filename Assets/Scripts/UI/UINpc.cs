@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UINpc : Util.MonoSingleton<UINpc> {
+public class UINpc : MonoBehaviour {
 	public Image image;
 	public Sprite sprite {
 		set {
@@ -13,7 +13,7 @@ public class UINpc : Util.MonoSingleton<UINpc> {
 	
 	float widthScale = 1.0f;
 	float heightScale = 1.0f;
-	void Init()
+	public void Init()
 	{
 		CanvasScaler canvasScaler = Object.FindObjectOfType<CanvasScaler> ();
 		widthScale = Screen.width/canvasScaler.referenceResolution.x;
@@ -22,7 +22,7 @@ public class UINpc : Util.MonoSingleton<UINpc> {
 	public IEnumerator Talk(string text)
 	{
 		iTween.MoveBy(image.gameObject, iTween.Hash("x", image.rectTransform.rect.width * widthScale, "easeType", "easeInOutExpo"));
-		yield return StartCoroutine(UITextBox.Instance.Write(text));
+		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
 		iTween.MoveTo(image.gameObject, iTween.Hash("x", 0.0f, "easeType", "easeInOutExpo", "time", 0.5f));
 	}
 
@@ -30,7 +30,7 @@ public class UINpc : Util.MonoSingleton<UINpc> {
 	{
 		gameObject.SetActive (true);
 		iTween.MoveBy(image.gameObject, iTween.Hash("x", image.rectTransform.rect.width * widthScale, "easeType", "easeInOutExpo"));
-		yield return StartCoroutine(UITextBox.Instance.Write(text));
+		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
 		iTween.MoveTo(image.gameObject, iTween.Hash("x", 0.0f, "easeType", "easeInOutExpo", "time", 0.5f));
 	}
 }

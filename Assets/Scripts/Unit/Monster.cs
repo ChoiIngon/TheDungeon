@@ -120,5 +120,5 @@ public class Monster : MonoBehaviour
 		}
 		renderer.color = Color.white;
 	}
-	*/
+	*/			 
 }

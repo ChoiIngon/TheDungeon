@@ -111,6 +111,30 @@ public abstract class SceneMain : MonoBehaviour {
 		isComplete = false;	
 	}
 
+	protected IEnumerator ValueTo(GameObject go, float amount, float time)
+	{
+		Hashtable hashTable = iTween.Hash("amount", amount, "time", time);
+		hashTable.Add("oncompletetarget", gameObject);
+		hashTable.Add("oncomplete", "OnComplete");
+
+		iTween.FadeTo(go, hashTable);
+		while (false == isComplete)
+		{
+			yield return null;
+		}
+		isComplete = false;
+		/*
+		float color = 0.0f;
+		yield return new WaitForSeconds(time * 0.6f);
+		while (1.0f > color)
+		{
+			renderer.color = new Color(color, color, color, 1.0f);
+			color += Time.deltaTime / (time - time * 0.6f);
+			yield return null;
+		}
+		renderer.color = Color.white;
+		*/
+	}
 	void OnComplete() {
 		isComplete = true;
 	}

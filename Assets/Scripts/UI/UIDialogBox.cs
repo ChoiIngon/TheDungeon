@@ -2,7 +2,8 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class UIDialogBox : Util.MonoSingleton<UIDialogBox> {
+public class UIDialogBox : MonoBehaviour
+{
 	public Button submit;
 	public Button cancel;
 
@@ -10,9 +11,7 @@ public class UIDialogBox : Util.MonoSingleton<UIDialogBox> {
 	public Text content;
 	private RectTransform rectTransform;
 	private bool active;
-	void Start()
-	{
-	}
+	
 	// Use this for initialization
 	public void Init ()
 	{
