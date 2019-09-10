@@ -212,12 +212,8 @@ public class SceneDungeon : SceneMain
 
 	  QuestManager.Instance.Update (QuestProgress.Type.CrrentLocation, "Dungeon");
 	  yield return StartCoroutine(CheckCompleteQuest ());
-
-	  UICoin.Instance.Init ();
-	  
 	  */
 	  InitDungeon ();
-		//state = State.Idle;
 	}
 	void InitDungeon()
 	{
@@ -342,16 +338,15 @@ public class SceneDungeon : SceneMain
 	{
 		//battle_buttons.names [0].text = "Heal(" + GamePlayer.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
 		yield return StartCoroutine(mini_map.Hide(1.0f));
-		/*
 		yield return StartCoroutine(monster.Show(1.0f));
 
 		// attack per second
-		float playerAPS = Player.Instance.GetStat().speed/monster.info.speed; 
+		float playerAPS = GameManager.Instance.player.speed/monster.meta.speed; 
 		float monsterAPS = 1.0f;
 		float playerTurn = playerAPS;
 		float monsterTurn = monsterAPS;
 		
-		while (0.0f < monster.health.current && 0.0f < player.health.current) {
+		while (0.0f < monster.health.current && 0.0f < GameManager.Instance.player.cur_health) {
 			float waitTime = 0.0f;
 
 			if (monsterTurn < playerTurn) {

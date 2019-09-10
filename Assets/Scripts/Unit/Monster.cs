@@ -68,7 +68,7 @@ public class Monster : MonoBehaviour
 		health.current = meta.health;
 	}
 
-	/*
+    /*
 	public override void Attack(Unit defender)
 	{
 		animator.SetTrigger ("Attack");
@@ -109,7 +109,8 @@ public class Monster : MonoBehaviour
         StartCoroutine(this.health.DeferredValue((float)health, 0.2f));
     }
 
-	public IEnumerator Show(float time)
+    */
+    public IEnumerator Show(float time)
 	{
 		float color = 0.0f;
 		yield return new WaitForSeconds (time * 0.6f);
@@ -120,5 +121,4 @@ public class Monster : MonoBehaviour
 		}
 		renderer.color = Color.white;
 	}
-	*/			 
 }
