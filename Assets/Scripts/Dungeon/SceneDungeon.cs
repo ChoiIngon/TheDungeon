@@ -11,8 +11,7 @@ public class SceneDungeon : SceneMain
 	public UIButtonGroup main_buttons;
 	public UIButtonGroup battle_buttons;
     public UIMiniMap mini_map;
-	public Transform coins;
-
+	
 	private float room_size = 7.2f; // walkDistance;
 	private float room_move_speed = 21.6f;
 	private Transform rooms;
@@ -29,8 +28,10 @@ public class SceneDungeon : SceneMain
 	private Dungeon dungeon;
 	public int dungeon_level = 1;
     public Text ui_dungeon_level;
-	
-	/*
+
+    public Transform coin_spot;
+    public Coin coin_prefab;
+    /*
     public float battleSpeed;
     public AudioSource audioWalk;
     public AudioSource audioBG;
@@ -53,7 +54,7 @@ public class SceneDungeon : SceneMain
 		public Dungeon.LevelInfo[] level_infos;
 	}
 */
-	public override IEnumerator Run ()
+    public override IEnumerator Run ()
 	{
 		if ("Dungeon" == SceneManager.GetActiveScene().name)
 		{
@@ -94,6 +95,9 @@ public class SceneDungeon : SceneMain
 		monster = UIUtil.FindChild<Monster>(transform, "Monster");
 		mini_map = UIUtil.FindChild<UIMiniMap>(transform, "UI/UIMiniMap");
 		ui_dungeon_level = UIUtil.FindChild<Text>(transform, "UI/DungeonLevel");
+
+        coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot");
+        coin_prefab = UIUtil.FindChild<Coin>(transform, "CoinSpot/Coin");
 
 		touch_input = GetComponent<TouchInput>();
 		if (null == touch_input)

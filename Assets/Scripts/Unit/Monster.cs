@@ -114,7 +114,8 @@ public class Monster : MonoBehaviour
 	{
 		float color = 0.0f;
 		yield return new WaitForSeconds (time * 0.6f);
-		while (1.0f > color) {
+		while (1.0f > color)
+        {
 			renderer.color = new Color (color, color, color, 1.0f);
 			color += Time.deltaTime / (time - time*0.6f);
 			yield return null;

@@ -1,19 +1,8 @@
 ﻿<Properties StartupConfiguration="{8E1352C3-CD06-2B7E-D1FC-2AE9C607865F}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Dungeon/SceneDungeon.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Unit/Monster.cs">
     <Files>
-      <File FileName="Assets/Scripts/Inventory.cs" Line="120" Column="7" />
-      <File FileName="Assets/Scripts/UI/UISlotInventory.cs" Line="59" Column="1" />
-      <File FileName="Assets/Scripts/Util/Singleton.cs" Line="17" Column="1" />
-      <File FileName="Assets/Scripts/Util/EventSystem.cs" Line="55" Column="1" />
-      <File FileName="Assets/Scripts/UI/UIInventory.cs" Line="155" Column="1" />
-      <File FileName="Assets/Scripts/SceneMain.cs" Line="142" Column="1" />
-      <File FileName="Assets/Scripts/UI/UISlotEquip.cs" Line="156" Column="1" />
-      <File FileName="Assets/Scripts/UI/UISlot.cs" Line="214" Column="1" />
-      <File FileName="Assets/Scripts/Unit/Unit.cs" Line="32" Column="1" />
-      <File FileName="Assets/Scripts/UI/UIPlayerInfo.cs" Line="19" Column="1" />
-      <File FileName="Assets/Scripts/Unit/Player.cs" Line="151" Column="1" />
-      <File FileName="Assets/Scripts/Unit/Monster.cs" Line="125" Column="1" />
-      <File FileName="Assets/Scripts/Dungeon/SceneDungeon.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Unit/Monster.cs" Line="124" Column="1" />
+      <File FileName="Assets/Scripts/Dungeon/SceneDungeon.cs" Line="157" Column="40" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -21,12 +10,12 @@
           <Node name="TheDungeon" expanded="True">
             <Node name="Assets" expanded="True">
               <Node name="Scripts" expanded="True">
-                <Node name="Dungeon" expanded="True">
-                  <Node name="SceneDungeon.cs" selected="True" />
-                </Node>
+                <Node name="Dungeon" expanded="True" />
                 <Node name="Item" expanded="True" />
                 <Node name="UI" expanded="True" />
-                <Node name="Unit" expanded="True" />
+                <Node name="Unit" expanded="True">
+                  <Node name="Monster.cs" selected="True" />
+                </Node>
                 <Node name="Util" expanded="True" />
               </Node>
             </Node>
