@@ -7,41 +7,13 @@ public class UIDungeonPlayer : MonoBehaviour
 {
 	public UIGaugeBar health;
 	public UIGaugeBar exp;
-
 	/*
-    
-    
-    public UIInventory inventory;
-    public override void Init()
-    {
-        base.Init();
-		level = 1;
-        exp.max = level;
-        exp.current = 0;
-        health.current = health.max = Player.Instance.GetStat().health;
-        inventory.Init();
-    }
-
-    public EquipItem EquipItem(EquipItem item, int index)
-    {
-        EquipItem prev = Player.Instance.EquipItem(item, index);
-        health.max = Player.Instance.GetStat ().health;
-        inventory.playerInfo.Init ();
-        return prev;
-    }
-    public EquipItem UnequipItem(EquipItem.Part category, int index)
-    {
-        EquipItem item = Player.Instance.UnequipItem(category, index);
-        health.max = Player.Instance.GetStat ().health;
-        inventory.playerInfo.Init ();
-        return item;
-    }
-
-    public IEnumerator AddExp(int amount)
-    {
+	public IEnumerator AddExp(int amount)
+	{
 		int incExp = amount + (int)exp.current;
 		exp.current = 0;
-		while (exp.max <= incExp) {
+		while (exp.max <= incExp)
+		{
 			yield return StartCoroutine(exp.DeferredValue(exp.max, 0.25f));
 			incExp -= (int)exp.max;
 			level += 1;
@@ -51,7 +23,30 @@ public class UIDungeonPlayer : MonoBehaviour
 			// levelup effect
 		}
 		yield return StartCoroutine(exp.DeferredValue(incExp, 0.1f));
-    }
+	}
+
+	private void OnChangeExp()
+	{
+		int incExp = amount + (int)exp.current;
+		exp.current = 0;
+		while (exp.max <= incExp)
+		{
+			yield return StartCoroutine(exp.DeferredValue(exp.max, 0.25f));
+			incExp -= (int)exp.max;
+			level += 1;
+			exp.max += level;
+			exp.current = 0;
+			health.current = health.max;
+			// levelup effect
+		}
+		yield return StartCoroutine(exp.DeferredValue(incExp, 0.1f));
+	}
+	/*
+    
+    
+
+    
+    
     public override void Attack(Unit defender)
     {
         Unit.Stat stat = Player.Instance.GetStat();

@@ -38,11 +38,12 @@ public class Monster : MonoBehaviour
 	public UIGaugeBar health;
 
 	public TrailRenderer trailPrefab;
-	private new SpriteRenderer renderer;
+	public new SpriteRenderer renderer;
 
 	public GameObject damageEffectPrefab;
 	public GameObject dieEffectPrefab;
 
+	public Unit unit;
 	private Animator animator;
 	
 	void Start()
@@ -59,11 +60,20 @@ public class Monster : MonoBehaviour
 
 	public void Init(Meta meta)
 	{
+		unit = new Unit();
+		
 		gameObject.SetActive (true);
 		ui_monster_info.gameObject.SetActive (true);
 		name.text = meta.name;
 		renderer.sprite = ResourceManager.Instance.Load<Sprite>(meta.sprite_path);
 		renderer.color = Color.black;
+		
+		unit.stats.AddStat(new Stat.Data() { type = StatType.Attack, value = meta.attack });
+		unit.stats.AddStat(new Stat.Data() { type = StatType.Defense, value = meta.defense});
+		unit.stats.AddStat(new Stat.Data() { type = StatType.Speed, value = meta.speed });
+		unit.CalculateStat();
+		unit.max_health = meta.health;
+		unit.cur_health = meta.health;
 		health.max = meta.health;
 		health.current = meta.health;
 	}

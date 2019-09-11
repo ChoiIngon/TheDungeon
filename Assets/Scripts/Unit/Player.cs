@@ -14,10 +14,26 @@ public class ItemEquipEvent
     public int equip_index;
 }
 
+public class AddExpEvent
+{
+	public int prev_level;
+	public int curr_level;
+	public int exp;
+}
+
 public class Player : Unit
 {
+	public class LevelStatMeta
+	{
+		public RandomStatMeta health;
+	}
 	public Dictionary<Tuple<EquipItem.Part, int>, EquipItem> equip_items;
 	public Inventory inventory;
+	public int level;
+	public int exp;
+	public LevelStatMeta level_stat_meta = new LevelStatMeta();
+
+
 
 	public void Init()
 	{
@@ -77,16 +93,6 @@ public class Player : Unit
         return item;
 	}
 
-	public void Save()
-	{
-		BinaryFormatter bf = new BinaryFormatter();
-		FileStream file = File.Create(Application.persistentDataPath + "/playerdata.dat");
-		string json = JsonUtility.ToJson(this);
-		Debug.Log("save data:" + json);
-		bf.Serialize(file, json);
-		file.Close();
-	}
-
 	public void Load()
 	{
 		Debug.Log("data path:" + Application.persistentDataPath);
@@ -137,7 +143,24 @@ public class Player : Unit
                 item.sub_stat.AddStat(new Stat.Data() { type = (StatType)reader.GetInt32("sub_stat_type" + (i+1)), value = reader.GetFloat("sub_stat_value_" + (i+1)) });
             }
         }
+
+		level_stat_meta.health = new RandomStatMeta { type = StatType.Health, min_value = 100.0f, max_value = 200.0f, interval = 10.0f };
     }
+
+	public void AddExp(int exp)
+	{
+		this.exp += exp;
+		while (this.exp > level)
+		{
+			level += 1;
+			this.exp -= level;
+
+			max_health += level_stat_meta.health.value;
+
+			//Util.EventSystem.Publish<AddExpEvent>(EventID.Player_Add_Exp, 
+		}
+	}
+
 	/*
 	public EquipmentItem GetEquipment(EquipmentItem.Part category, int index) {
         if(equipments.ContainsKey(new Tuple<EquipmentItem.Part, int>(category, index)))

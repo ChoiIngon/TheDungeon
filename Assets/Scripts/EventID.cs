@@ -19,4 +19,6 @@ public class EventID
 
 	public const string Dialog_Open = "Dialog_Open";
 	public const string Dialog_Close = "Dialog_Close";
+
+	public const string Player_Add_Exp = "Player_Add_Exp";
 }

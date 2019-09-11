@@ -3,7 +3,6 @@ using System.Collections;
 
 public class Coin : MonoBehaviour
 {
-	/*
 	private Vector3 velocity = Vector3.zero;
 	private float groundPos;
 	private float sleepThreshold = 0.0025f;
@@ -19,8 +18,9 @@ public class Coin : MonoBehaviour
 		this.amount = amount;
 	}
 
-	void Start () {
-		animator = transform.Find ("Sprite").GetComponent<Animator> (); 
+	void Start ()
+	{
+		animator = UIUtil.FindChild<Animator>(transform, "Sprite");
 		animator.Play("Spin", -1, Random.Range(0.0f, 1.0f));
 		groundPos = transform.localPosition.y;
 		velocity = transform.forward * Random.Range(0.5f, 1.0f);
@@ -32,7 +32,7 @@ public class Coin : MonoBehaviour
 	public void Stop()
 	{
 		StopCoroutine (coroutine);
-		iTween.MoveTo (gameObject, UICoin.Instance.position, 0.1f);
+		iTween.MoveTo (gameObject, GameManager.Instance.ui_coin.position, 0.1f);
         Object.Destroy(gameObject, 0.1f);
 	}
 
@@ -58,15 +58,14 @@ public class Coin : MonoBehaviour
 		}
 
 		float t = Random.Range (0.5f, 0.8f);
-		iTween.MoveTo (gameObject, UICoin.Instance.position, t);
+		iTween.MoveTo (gameObject, GameManager.Instance.ui_coin.position, t);
 		Object.Destroy (gameObject, t);
 	}
 
 	public void OnDisable()
 	{
 		if (true == Application.isPlaying) {
-			UICoin.Instance.ChangeAmount (amount);
+			GameManager.Instance.ui_coin.ChangeAmount (amount);
 		}
 	}
-	*/
 }

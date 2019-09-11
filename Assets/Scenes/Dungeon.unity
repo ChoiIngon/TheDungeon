@@ -1843,7 +1843,7 @@ GameObject:
   - component: {fileID: 853562128}
   - component: {fileID: 853562129}
   m_Layer: 0
-  m_Name: DungeonMain
+  m_Name: DungeonManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1929,7 +1929,7 @@ MonoBehaviour:
   dungeon_level: 1
   ui_dungeon_level: {fileID: 0}
   coin_spot: {fileID: 0}
-  coin: {fileID: 0}
+  coin_prefab: {fileID: 0}
 --- !u!1 &886684693
 GameObject:
   m_ObjectHideFlags: 0

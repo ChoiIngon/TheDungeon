@@ -20,8 +20,31 @@ public class ItemManager : Util.Singleton<ItemManager>
 		grade_gacha.SetWeight(Item.Grade.Rare, 100);
 		grade_gacha.SetWeight(Item.Grade.Legendary, 030);
 
-		stat_type_gacha.SetWeight(new EquipItemStatMeta() { type = StatType.CoinBonus, base_value = 0.05f, rand_value = 0.001f }, 1);
-		stat_type_gacha.SetWeight(new EquipItemStatMeta() { type = StatType.ExpBonus, base_value = 0.05f, rand_value = 0.001f }, 1);
+		stat_type_gacha.SetWeight(new EquipItemStatMeta()
+		{
+			type = StatType.CoinBonus,
+			base_value = 0.05f,
+			rand_stat_meta = new RandomStatMeta()
+			{
+				type = StatType.CoinBonus,
+				min_value = 0.0f,
+				max_value = 0.1f,
+				interval = 0.01f
+			}
+		}, 1);
+
+		stat_type_gacha.SetWeight(new EquipItemStatMeta()
+		{
+			type = StatType.ExpBonus,
+			base_value = 0.05f,
+			rand_stat_meta = new RandomStatMeta()
+			{
+				type = StatType.ExpBonus,
+				min_value = 0.0f,
+				max_value = 0.1f,
+				interval = 0.01f
+			}
+		}, 1);
 
 		InitEquipItem();
 	}
@@ -107,7 +130,18 @@ public class ItemManager : Util.Singleton<ItemManager>
             meta.id = reader.GetString("item_id");
             meta.name = reader.GetString("item_name");
             meta.type = Item.Type.Equipment;
-			meta.main_stat = new EquipItemStatMeta() { type = (StatType)reader.GetInt32("main_stat_type"), base_value = reader.GetFloat("base_value"), rand_value = reader.GetFloat("rand_value") };
+			meta.main_stat = new EquipItemStatMeta()
+			{
+				type = (StatType)reader.GetInt32("main_stat_type"),
+				base_value = reader.GetFloat("base_value"),
+				rand_stat_meta = new RandomStatMeta()
+				{
+					type = (StatType)reader.GetInt32("main_stat_type"),
+					min_value = 0,
+					max_value = reader.GetFloat("rand_value"),
+					interval = 0.01f
+				}
+			};
 			meta.part = (EquipItem.Part)reader.GetInt32("equip_part");
 			meta.price = reader.GetInt32("price");
             meta.sprite_path = reader.GetString("sprite_path");
@@ -123,7 +157,7 @@ public class ItemManager : Util.Singleton<ItemManager>
 		data.value = meta.base_value;
 		for (int i = 0; i < level; i++)
 		{
-			data.value += Random.Range(0, meta.rand_value);
+			data.value += meta.rand_stat_meta.value;
 		}
 		data.value = Mathf.Round(data.value * 100) / 100.0f;
 		return data;

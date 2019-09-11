@@ -6,7 +6,7 @@ public class EquipItemStatMeta
 {
 	public StatType type;
 	public float base_value;
-	public float rand_value;
+	public RandomStatMeta rand_stat_meta;
 }
 
 public class EquipItem : Item

@@ -166,8 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 766b0e95b768677479b16da45d76b718, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tickerMessagePrefab: {fileID: 114332674404785042, guid: 027acdbaaea8e4044ba8222e8f22bbc3,
-    type: 3}
+  tickerMessagePrefab: {fileID: 0}
 --- !u!1 &490226598
 GameObject:
   m_ObjectHideFlags: 0
@@ -1616,7 +1615,7 @@ PrefabInstance:
     - target: {fileID: 224660283911366242, guid: ebb5f2e7f2d604940a83e114f23452cb,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00007200358
+      value: 0.000049733506
       objectReference: {fileID: 0}
     - target: {fileID: 224693995267740428, guid: ebb5f2e7f2d604940a83e114f23452cb,
         type: 3}

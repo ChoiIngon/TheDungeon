@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Unit
 {
-	public int level;
-
 	public float max_health;
 	public float cur_health;
 

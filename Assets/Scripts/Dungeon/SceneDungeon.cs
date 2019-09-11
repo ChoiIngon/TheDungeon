@@ -31,15 +31,17 @@ public class SceneDungeon : SceneMain
 
     public Transform coin_spot;
     public Coin coin_prefab;
-    /*
-    public float battleSpeed;
+
+	public Transform bloodmark_spot;
+	public BloodMark bloodmark_prefab;
+
+    public float battle_speed;
+	/*
     public AudioSource audioWalk;
     public AudioSource audioBG;
     public AudioSource audioMonsterDie;
 
-    public Transform 	bloodMarkPanel;
-    public BloodMark    bloodMarkPrefab;
-    public Coin         coinPrefab;
+    
     
     public UIDungeonPlayer player;
     
@@ -54,7 +56,7 @@ public class SceneDungeon : SceneMain
 		public Dungeon.LevelInfo[] level_infos;
 	}
 */
-    public override IEnumerator Run ()
+	public override IEnumerator Run()
 	{
 		if ("Dungeon" == SceneManager.GetActiveScene().name)
 		{
@@ -68,6 +70,7 @@ public class SceneDungeon : SceneMain
 		}
 
 		rooms = UIUtil.FindChild<Transform>(transform, "Rooms");
+		
 		current_room = UIUtil.FindChild<Room>(rooms, "Current");
 		next_rooms[Dungeon.North] = UIUtil.FindChild<Room>(rooms, "North");
 		next_rooms[Dungeon.North].transform.position = new Vector3(0.0f, 0.0f, room_size);
@@ -349,36 +352,43 @@ public class SceneDungeon : SceneMain
 		float monsterAPS = 1.0f;
 		float playerTurn = playerAPS;
 		float monsterTurn = monsterAPS;
-		/*
-		while (0.0f < monster.health.current && 0.0f < GameManager.Instance.player.cur_health) {
+
+		while (0.0f < monster.unit.cur_health && 0.0f < GameManager.Instance.player.cur_health)
+		{
 			float waitTime = 0.0f;
 
-			if (monsterTurn < playerTurn) {
+			if (monsterTurn < playerTurn)
+			{
 				int attackCount = 1;
 
-				if (0 == Random.Range (0, 5)) {
-					attackCount += 1;
-					waitTime = 1.0f / battleSpeed / 2;
+				if (0 == Random.Range (0, 5))
+				{
+					attackCount = 2;
+					waitTime = 1.0f / battle_speed / 2;
 				}
-				if (0 == Random.Range (0, 10)) {
-					attackCount += 1;
-					waitTime = 1.0f / battleSpeed / 3;
+
+				if (0 == Random.Range (0, 10))
+				{
+					attackCount = 3;
+					waitTime = 1.0f / battle_speed / 3;
                 }
 
-				for (int i = 0; i < attackCount; i++) {
-					player.Attack(monster);
+				for (int i = 0; i < attackCount; i++)
+				{
+					GameManager.Instance.player.Attack(monster.unit);
 					yield return new WaitForSeconds (waitTime);
 				}
 				monsterTurn += monsterAPS + Random.Range(0, monsterAPS * 0.1f);
 			}
 			else 
 			{
-				monster.Attack (player);
-                StartCoroutine(CameraFadeFrom(Color.white, iTween.Hash("amount", 0.1f, "time", 0.1f)));
+				monster.unit.Attack (GameManager.Instance.player);
+
+                //StartCoroutine(CameraFadeFrom(Color.white, iTween.Hash("amount", 0.1f, "time", 0.1f)));
                 iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
 
-                BloodMark bloodMark = GameObject.Instantiate<BloodMark>(bloodMarkPrefab);
-                bloodMark.transform.SetParent(bloodMarkPanel.transform, false);
+                BloodMark bloodMark = GameObject.Instantiate<BloodMark>(bloodmark_prefab);
+                bloodMark.transform.SetParent(bloodmark_spot.transform, false);
                 bloodMark.transform.position = new Vector3(
                     Random.Range(Screen.width / 2 - Screen.width / 2 * 0.85f, Screen.width / 2 + Screen.width / 2 * 0.9f),
                     Random.Range(Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
@@ -386,85 +396,91 @@ public class SceneDungeon : SceneMain
                 );
                 playerTurn += playerAPS + Random.Range(0, playerAPS * 0.1f);
 			}
-			yield return new WaitForSeconds (1.0f/battleSpeed);
+			yield return new WaitForSeconds (1.0f/battle_speed);
 		}
 		
-		monster.ui.gameObject.SetActive (false);
-		if (0.0f < monster.health.current) {
+		monster.gameObject.SetActive (false);
+		if (0.0f < monster.health.current)
+		{
 			yield return StartCoroutine (Lose ());
 		}
-		else {
+		else
+		{
 			GameObject.Instantiate<GameObject> (monster.dieEffectPrefab);
 			monster.gameObject.SetActive (false);
-			yield return StartCoroutine (Win (monster.info));
-			yield return StartCoroutine (miniMap.Show (0.5f));
-			Dungeon.Instance.current.monster = null;
+			yield return StartCoroutine (Win (monster.meta));
+			yield return StartCoroutine (mini_map.Show (0.5f));
+			dungeon.current_room.monster_meta = null;
 		}
-		*/
     }
-	/*
-	IEnumerator Win(Monster.Info info)
+		
+	IEnumerator Win(Monster.Meta meta)
 	{
-        audioMonsterDie.Play();
+		// audioMonsterDie.Play();
+		string text = "";
+		text += "You defeated \'" + meta.name + "\'\n";
 
-        string text = "";
-		text += "You defeated \'" + info.name + "\'\n";
+		Stat stat = GameManager.Instance.player.stats;
+		int rewardCoin = meta.reward.coin + (int)Random.Range(-meta.reward.coin * 0.1f, meta.reward.coin * 0.1f);
+		int bonusCoin = (int)(rewardCoin * stat.GetStat(StatType.CoinBonus) / 100.0f);
+		int rewardExp = meta.reward.exp + (int)Random.Range(-meta.reward.exp * 0.1f, meta.reward.exp * 0.1f);
+		int bonusExp = (int)(rewardExp * stat.GetStat(StatType.ExpBonus) / 100.0f);
+		text += "Coins : +" + rewardCoin + (0 < bonusCoin ? "(" + bonusCoin + " bonus)" : "") + "\n";
+		text += "Exp : +" + rewardExp + (0 < bonusExp ? "(" + bonusExp + " bonus)" : "") + "\n";
 
-		Unit.Stat stat = player.GetStat ();
-		int gainCoins = info.reward.coin + (int)Random.Range (-info.reward.coin * 0.1f, info.reward.coin * 0.1f);
-		int coinBonus = (int)(gainCoins * stat.coinBonus/100.0f);
-		int gainExp = info.reward.exp + (int)Random.Range (-info.reward.exp * 0.1f, info.reward.exp * 0.1f);
-		int expBonus = (int)(gainExp * stat.expBonus/100.0f);
-		text += "Coins : +" + gainCoins + (0 < coinBonus ? "(" + coinBonus + " bonus)" : "") + "\n";
-		text += "Exp : +" + gainExp + (0 < expBonus ? "(" + expBonus + " bonus)" : "") + "\n";
+		GameManager.Instance.player.inventory.coin += rewardCoin + bonusCoin;
+		GameManager.Instance.player.AddExp(rewardExp + bonusExp);
+		CreateCoins(rewardCoin + bonusCoin);
+		//StartCoroutine(player.AddExp(gainExp + expBonus));
+		int playerLevel = GameManager.Instance.player.level;
+		text += "Level : " + playerLevel + " -> " + GameManager.Instance.player.level + "\n";
 
-        CreateCoins(gainCoins + coinBonus);
-
-        int playerLevel = player.level;
-        yield return StartCoroutine(player.AddExp(gainExp + expBonus));
-		text += "Level : " + playerLevel + " -> " + player.level + "\n";
-
-		if(dungeonLevelInfo.items.chance >= Random.Range(0.0f, 1.0f)) 
+		/*
+		if (dungeonLevelInfo.items.chance >= Random.Range(0.0f, 1.0f))
 		{
-			Item item = ItemManager.Instance.CreateRandomItem (this.level);
-			inventory.Put (item);
+			Item item = ItemManager.Instance.CreateRandomItem(this.level);
+			inventory.Put(item);
 			text += "You got a " + item.name + "\n";
 		}
+		*/
 
-		if(10 >= Random.Range(0, 100)) {
-			Item item = ItemManager.Instance.CreateItem ("ITEM_POTION_HEALING");
-			inventory.Put (item);
-			text += "You got a " + item.name;
+		if (10 >= Random.Range(0, 100)) {
+			Item item = ItemManager.Instance.CreateItem("ITEM_POTION_HEALING");
+			GameManager.Instance.player.inventory.Add(item);
+			text += "You got a " + item.meta.name;
 		}
-		yield return StartCoroutine(UITextBox.Instance.Write(text));
+		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
+		/*
+		QuestManager.Instance.Update("KillMonster", info.id);
+		yield return StartCoroutine(CheckCompleteQuest());
 
-		QuestManager.Instance.Update ("KillMonster", info.id);
-		yield return StartCoroutine(CheckCompleteQuest ());
-
-        Analytics.CustomEvent("Win", new Dictionary<string, object>
-        {
+		Analytics.CustomEvent("Win", new Dictionary<string, object>
+		{
 			{"dungeon_level", level},
-            {"monster_id", info.id },
+			{"monster_id", info.id },
 			{"player_level", playerLevel}
-        });
-    }
+		});
+		*/
+	}
+	
 	IEnumerator Lose()
 	{
+		/*
 		Analytics.CustomEvent("Lose", new Dictionary<string, object>
 		{
 			{"dungeon_level", level },
 			{"player_level", player.level}
 		});
-		
-		yield return StartCoroutine(UITextBox.Instance.Write(
+		*/
+		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(
 			"You died.\n" +
 			"Your body will be carried to village.\n" +
 			"See you soon.."
 		));
 		yield return StartCoroutine (CameraFadeTo (Color.black, iTween.Hash ("amount", 1.0f, "time", 1.0f), true));
-		SceneManager.LoadScene("Village");
+		//SceneManager.LoadScene("Village");
 	}
-	*/
+	
 	IEnumerator GoDown()
 	{
 		Vector3 position = Camera.main.transform.position;
@@ -498,7 +514,8 @@ public class SceneDungeon : SceneMain
 		completeQuests.Clear ();
 		state = State.Idle;
 	}
-
+	*/
+	
     void CreateCoins(int amount)
     {
         int total = amount;
@@ -508,9 +525,9 @@ public class SceneDungeon : SceneMain
 		while (0 < total) {
 			int countCount = Random.Range (1, 10);
 			for (int i = 0; i < countCount; i++) {
-				Coin coin = GameObject.Instantiate<Coin> (coinPrefab);
+				Coin coin = GameObject.Instantiate<Coin> (coin_prefab);
 				coin.amount = Mathf.Min(total, multiply);
-				coin.transform.SetParent (coins, false);
+				coin.transform.SetParent (coin_spot, false);
 				coin.transform.localScale = new Vector3 (scale, scale, 1.0f);
 				coin.transform.localPosition = Vector3.zero;
 				iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
@@ -523,7 +540,6 @@ public class SceneDungeon : SceneMain
 			scale += 0.1f;
 		}
     }
-	*/
 
 	IEnumerator Move(int direction)
 	{
