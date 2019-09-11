@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class BloodMark : MonoBehaviour {
+public class Effect_PlayerDamage : MonoBehaviour {
 	public float fadetime = 1.0f;
 	public Sprite[] sprites;
 	private Image image;

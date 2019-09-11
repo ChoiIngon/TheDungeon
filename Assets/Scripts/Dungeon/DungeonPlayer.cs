@@ -46,17 +46,17 @@ public class UIDungeonPlayer : MonoBehaviour
     
 
     
-    
-    public override void Attack(Unit defender)
+*/    
+    public void Attack(Unit defender)
     {
-        Unit.Stat stat = Player.Instance.GetStat();
-        int attack = (int)Mathf.Max(1, stat.attack + Random.Range(-stat.attack * 0.1f, stat.attack * 0.1f) - defender.stats.defense);
-        if (stat.critcal / 100.0f >= Random.Range(0.0f, 1.0f))
+        int attack = (int)Mathf.Max(1, GameManager.Instance.player.attack + Random.Range(-GameManager.Instance.player.attack * 0.1f, GameManager.Instance.player.attack * 0.1f) - defender.defense);
+        if (GameManager.Instance.player.critcal >= Random.Range(0.0f, 100.0f))
         {
             attack *= 3;
             // critical effect
         }
 
+		/*
         for (int i = 0; i < 2; i++)
         {
             EquipItem weapon = Player.Instance.GetEquipment(EquipItem.Part.Hand, i);
@@ -65,8 +65,10 @@ public class UIDungeonPlayer : MonoBehaviour
                 weapon.enchantment.Enchant(defender);
             }
         }
+		*/
         defender.Damage(attack);
     }
+	/*
     public override void Damage(int damage)
     {
         // proc damage

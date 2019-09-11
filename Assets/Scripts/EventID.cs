@@ -16,6 +16,8 @@ public class EventID
 
 	public const string Dungeon_Move_Start = "Dungeon_Move_Start";
 	public const string Dungeon_Move_Finish = "Dungeon_Move_Finish";
+	public const string Dungeon_Battle_Start = "Dungeon_Battle_Start";
+	public const string Dungeon_Battle_Finish = "Dungeon_Battle_Finish";
 
 	public const string Dialog_Open = "Dialog_Open";
 	public const string Dialog_Close = "Dialog_Close";

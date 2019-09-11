@@ -38,7 +38,6 @@ public class Dungeon
 		public int group = 0;
 		public bool visit = false;
 		public Type type = Type.Normal;
-		public Monster.Meta monster_meta = null;
 		public Item item = null;
 		public Room[] next = new Room[Max];
 		
@@ -54,6 +53,8 @@ public class Dungeon
 
 	public Room current_room = null;
 	public Room[] rooms = new Room[WIDTH * HEIGHT];
+	public List<string> monster_ids = null;
+	public int monster_count;
 	// Use this for initialization
 	public void Init(int dungeonLevel)
 	{
@@ -127,34 +128,42 @@ public class Dungeon
 
 		List<Room> candidates = new List<Room> (rooms);
 
-		int start = Random.Range (0, candidates.Count);
+		int start = Random.Range (0, candidates.Count - 1);
 		candidates[start].type = Room.Type.Start;
-		candidates.RemoveAt (start);
 		current_room = candidates[start];
 
-		int end = Random.Range(0, candidates.Count);
+		if (WIDTH * HEIGHT > start + WIDTH)
+		{
+			candidates.RemoveAt(start + WIDTH);
+		}
+		if (WIDTH * HEIGHT > start + 1)
+		{
+			candidates.RemoveAt(start + 1);
+		}
+		candidates.RemoveAt(start);
+		if (0 <= start - 1)
+		{
+			candidates.RemoveAt(start - 1);
+		}
+		if (0 <= start - WIDTH)
+		{
+			candidates.RemoveAt(start - WIDTH);
+		}
+		
+		int end = Random.Range(0, candidates.Count - 1);
 		candidates[end].type = Room.Type.Exit;
 		candidates.RemoveAt(end);
 
 		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
 			"SELECT monster_id FROM meta_monster where monster_level<=" + dungeonLevel
 		);
-		List<string> monsterIDs = new List<string>();
+
+		monster_ids = new List<string>();
 		while (true == reader.Read())
 		{
-			monsterIDs.Add(reader.GetString("monster_id"));
+			monster_ids.Add(reader.GetString("monster_id"));
 		}
-
-		if (0 < monsterIDs.Count)
-		{
-			int monsterCount = Random.Range(6, 10);
-			for (int i = 0; i < monsterCount; i++)
-			{
-				int index = Random.Range(0, candidates.Count - 1);
-				candidates[index].monster_meta = MonsterManager.Instance.FindMeta(monsterIDs[Random.Range(0, monsterIDs.Count - 1)]);
-				candidates.RemoveAt(index);
-			}
-		}
+		monster_count = Random.Range(6, 10);
 	}
 
 	public Room Move(int direction)

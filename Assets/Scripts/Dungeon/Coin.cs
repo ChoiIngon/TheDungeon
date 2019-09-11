@@ -31,7 +31,10 @@ public class Coin : MonoBehaviour
 
 	public void Stop()
 	{
-		StopCoroutine (coroutine);
+		if (null != coroutine)
+		{
+			StopCoroutine(coroutine);
+		}
 		iTween.MoveTo (gameObject, GameManager.Instance.ui_coin.position, 0.1f);
         Object.Destroy(gameObject, 0.1f);
 	}
@@ -62,9 +65,10 @@ public class Coin : MonoBehaviour
 		Object.Destroy (gameObject, t);
 	}
 
-	public void OnDisable()
+	private void OnDestroy()
 	{
-		if (true == Application.isPlaying) {
+		if (true == Application.isPlaying)
+		{
 			GameManager.Instance.ui_coin.ChangeAmount (amount);
 		}
 	}

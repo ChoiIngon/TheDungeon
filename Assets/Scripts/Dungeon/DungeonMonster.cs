@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.Assertions;
 #endif
 
-public class Monster : MonoBehaviour
+public class DungeonMonster : MonoBehaviour
 {
 	public class Meta
 	{
@@ -44,7 +44,7 @@ public class Monster : MonoBehaviour
 	public GameObject dieEffectPrefab;
 
 	public Unit unit;
-	private Animator animator;
+	public Animator animator;
 	
 	void Start()
 	{
@@ -61,7 +61,7 @@ public class Monster : MonoBehaviour
 	public void Init(Meta meta)
 	{
 		unit = new Unit();
-		
+		this.meta = meta;
 		gameObject.SetActive (true);
 		ui_monster_info.gameObject.SetActive (true);
 		name.text = meta.name;
@@ -78,15 +78,15 @@ public class Monster : MonoBehaviour
 		health.current = meta.health;
 	}
 
-    /*
-	public override void Attack(Unit defender)
+	public void Attack(Unit defender)
 	{
 		animator.SetTrigger ("Attack");
-		Stat stat = GetStat ();
-		int attack = (int)Mathf.Max(1, stat.attack + Random.Range(0, stat.attack * 0.1f) - defender.stats.defense);
+		int attack = (int)Mathf.Max(1, unit.attack + Random.Range(0, unit.attack * 0.1f) - defender.defense);
 		defender.Damage (attack);
 	}
 
+
+	/*
 	public override void Damage(int damage)
 	{
         Health((int)health.current - damage);
@@ -113,7 +113,7 @@ public class Monster : MonoBehaviour
 		iTween.MoveTo(trail.gameObject, direction, 0.3f);
 		iTween.ShakePosition (gameObject, new Vector3 (0.3f, 0.3f, 0.0f), 0.1f);
 	}
-
+	
     public override void Health(int health)
     {
         StartCoroutine(this.health.DeferredValue((float)health, 0.2f));

@@ -21,7 +21,7 @@ public class SceneDungeon : SceneMain
 	private TouchInput touch_input;
 	private Vector3 touch_point = Vector3.zero;
 
-	public Monster monster;
+	public DungeonMonster monster;
 	public Text ui_monster_name;
 	public UIGaugeBar ui_monster_health;
 
@@ -32,18 +32,17 @@ public class SceneDungeon : SceneMain
     public Transform coin_spot;
     public Coin coin_prefab;
 
-	public Transform bloodmark_spot;
-	public BloodMark bloodmark_prefab;
+	public Transform player_damage_effect_spot;
+	public Effect_PlayerDamage player_damage_effect_prefab;
 
-    public float battle_speed;
+	public Transform monster_damage_effect_spot;
+	public Effect_MonsterDamage monster_damage_effect_prefab;
+
+	private float battle_speed = 2.5f;
 	/*
     public AudioSource audioWalk;
     public AudioSource audioBG;
     public AudioSource audioMonsterDie;
-
-    
-    
-    public UIDungeonPlayer player;
     
     private Config config;
     private Dungeon.LevelInfo dungeonLevelInfo;
@@ -69,8 +68,14 @@ public class SceneDungeon : SceneMain
 			yield return StartCoroutine(GameManager.Instance.Init());
 		}
 
+		dungeon = new Dungeon();
+		monster = UIUtil.FindChild<DungeonMonster>(transform, "Monster");
+		player_damage_effect_spot = UIUtil.FindChild<Transform>(transform, "UI/PlayerDamage");
+		player_damage_effect_prefab = UIUtil.FindChild<Effect_PlayerDamage>(player_damage_effect_spot, "Effect_PlayerDamage");
+		monster_damage_effect_spot = UIUtil.FindChild<Transform>(transform, "UI/PlayerDamage");
+		monster_damage_effect_prefab = UIUtil.FindChild<Effect_MonsterDamage>(monster_damage_effect_spot, "Effect_MonsterDamage");
+
 		rooms = UIUtil.FindChild<Transform>(transform, "Rooms");
-		
 		current_room = UIUtil.FindChild<Room>(rooms, "Current");
 		next_rooms[Dungeon.North] = UIUtil.FindChild<Room>(rooms, "North");
 		next_rooms[Dungeon.North].transform.position = new Vector3(0.0f, 0.0f, room_size);
@@ -87,7 +92,7 @@ public class SceneDungeon : SceneMain
 			GameManager.Instance.ui_inventory.SetActive(true);
 		};
 		main_buttons.actions[1] += () => {
-			Debug.Log("touch ui");
+			CreateCoins(500);
 		};
 		main_buttons.buttons[2].gameObject.SetActive(false);
 		main_buttons.buttons[3].gameObject.SetActive(false);
@@ -95,7 +100,6 @@ public class SceneDungeon : SceneMain
 		battle_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "UI/Main/BattleButtonGroup");
 		battle_buttons.Init();
 
-		monster = UIUtil.FindChild<Monster>(transform, "Monster");
 		mini_map = UIUtil.FindChild<UIMiniMap>(transform, "UI/UIMiniMap");
 		ui_dungeon_level = UIUtil.FindChild<Text>(transform, "UI/DungeonLevel");
 
@@ -107,7 +111,7 @@ public class SceneDungeon : SceneMain
 		{
 			throw new System.Exception("can not find component 'TouchInput'");
 		}
-		touch_input.touchBlockCount = 1;
+		touch_input.AddBlockCount();
 		touch_input.onTouchDown += (Vector3 position) => 
 		{
 			touch_point = position;
@@ -148,53 +152,41 @@ public class SceneDungeon : SceneMain
 			touch_point = Vector3.zero;
 		};
 
-		dungeon = new Dungeon();
-
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object> { });
 		/*
-		
-		GameObject commonUI = GameObject.Find ("CommonUI");
-		inventory.transform.SetParent (commonUI.transform);
-															   
-		
-		uiMain.position = Camera.main.WorldToScreenPoint(monster.transform.position);
-     
-		
-		battleButtonGroup.Init ();
-		battleButtonGroup.gameObject.SetActive (false);
-		battleButtonGroup.actions [0] += () => {
-			for(int i=0; i<Inventory.MAX_SLOT_COUNT; i++)
-			{
-				HealingPotionItem item = Player.Instance.inventory.GetItem<HealingPotionItem>(i);
-				if(null != item)
-				{
-					item.Use(player);
-					inventory.Pull(i);
-					battleButtonGroup.names [0].text = "Heal(" + Player.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
-					break;
-				}
-			}
-		};
-
         completeQuests = new List<QuestData> ();
 		StartCoroutine (Init ());
 		*/
 		Init();
 
-		Util.EventSystem.Subscribe(EventID.Inventory_Open, OnTouchInputBlock);
-		Util.EventSystem.Subscribe(EventID.Inventory_Close, OnTouchInputRelease);
-		Util.EventSystem.Subscribe(EventID.Dialog_Open, OnTouchInputBlock);
-		Util.EventSystem.Subscribe(EventID.Dialog_Close, OnTouchInputRelease);
-		touch_input.touchBlockCount = 0;
+		Util.EventSystem.Subscribe(EventID.Inventory_Open, touch_input.AddBlockCount);
+		Util.EventSystem.Subscribe(EventID.Inventory_Close, touch_input.ReleaseBlockCount);
+
+		Util.EventSystem.Subscribe(EventID.Dialog_Open, touch_input.AddBlockCount);
+		Util.EventSystem.Subscribe(EventID.Dialog_Close, touch_input.ReleaseBlockCount);
+
+		Util.EventSystem.Subscribe(EventID.Dungeon_Battle_Start, touch_input.AddBlockCount);
+		Util.EventSystem.Subscribe(EventID.Dungeon_Battle_Finish, touch_input.ReleaseBlockCount);
+		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Start, touch_input.AddBlockCount);
+		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, touch_input.ReleaseBlockCount);
+
+		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, InitRooms);
+
+		touch_input.ReleaseBlockCount();
 		Debug.Log("init complete dungeon");
 	}
 
 	private void OnDestroy()
 	{
-		Util.EventSystem.Unsubscribe(EventID.Inventory_Open, OnTouchInputBlock);
-		Util.EventSystem.Unsubscribe(EventID.Inventory_Close, OnTouchInputRelease);
-		Util.EventSystem.Unsubscribe(EventID.Dialog_Open, OnTouchInputBlock);
-		Util.EventSystem.Unsubscribe(EventID.Dialog_Close, OnTouchInputRelease);
+		Util.EventSystem.Unsubscribe(EventID.Inventory_Open, touch_input.AddBlockCount);
+		Util.EventSystem.Unsubscribe(EventID.Inventory_Close, touch_input.ReleaseBlockCount);
+		Util.EventSystem.Unsubscribe(EventID.Dialog_Open, touch_input.AddBlockCount);
+		Util.EventSystem.Unsubscribe(EventID.Dialog_Close, touch_input.ReleaseBlockCount);
+		Util.EventSystem.Unsubscribe(EventID.Dungeon_Battle_Start, touch_input.AddBlockCount);
+		Util.EventSystem.Unsubscribe(EventID.Dungeon_Battle_Finish, touch_input.ReleaseBlockCount);
+		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Start, touch_input.AddBlockCount);
+		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish, touch_input.ReleaseBlockCount);
+		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish, InitRooms);
 	}
 	void Init()
 	{
@@ -257,98 +249,18 @@ public class SceneDungeon : SceneMain
 		mini_map.CurrentPosition (dungeon.current_room.id);
 	}
 
-	/*
-	IEnumerator Move(int direction)
-	{
-		state = State.Move;
-		Dungeon.Room room = Dungeon.Instance.current;
-		Dungeon.Room next = room.GetNext (direction);
-		if (null == next) {
-			switch (direction) {
-			case Dungeon.North:
-				iTween.PunchPosition (rooms.gameObject, new Vector3 (0.0f, 0.0f, 1.0f), 0.5f);
-				break;
-			case Dungeon.East:
-				iTween.PunchPosition (rooms.gameObject, new Vector3 (1.0f, 0.0f, 0.0f), 0.5f);
-				break;
-			case Dungeon.South:
-				iTween.PunchPosition (rooms.gameObject, new Vector3 (0.0f, 0.0f, -1.0f), 0.5f);
-				break;
-			case Dungeon.West:
-				iTween.PunchPosition (rooms.gameObject, new Vector3 (-1.0f, 0.0f, 0.5f), 0.5f);
-				break;
-			default :
-				break;
-			}
-			state = State.Idle;
-			yield break;
-		} 
-
-		if(0 < coins.childCount) {
-            for(int i=0; i<coins.childCount; i++)
-            {
-                Coin coin = coins.GetChild(i).GetComponent<Coin>();
-                coin.Stop();
-            }
-			while (0 < coins.childCount) {
-                yield return null;
-			}
-		}
-			
-		Vector3 position = Vector3.zero;
-		switch (direction) {
-		case Dungeon.North:
-			position = new Vector3 (rooms.position.x, rooms.position.y, rooms.position.z - walkDistance);
-			break;
-		case Dungeon.East :
-			position = new Vector3 (rooms.position.x - walkDistance, rooms.position.y, rooms.position.z);
-			break;
-		case Dungeon.South :
-			position = new Vector3 (rooms.position.x, rooms.position.y, rooms.position.z + walkDistance);
-			break;
-		case Dungeon.West:
-			position = new Vector3 (rooms.position.x + walkDistance, rooms.position.y, rooms.position.z);
-			break;
-		default :
-			break;
-		}
-        audioWalk.Play();
-		yield return StartCoroutine(MoveTo(rooms.gameObject, iTween.Hash ("position", position, "time", walkDistance/walkSpeed, "easetype", iTween.EaseType.easeInQuad), true));
-		Dungeon.Instance.Move (direction);
-		InitRooms ();
-        audioWalk.Stop();
-
-		if (null != Dungeon.Instance.current.monster) {
-            state = State.Battle;
-            monster.Init (Dungeon.Instance.current.monster);
-			yield return StartCoroutine (Battle ());
-		} 
-	
-		if (Dungeon.Room.Type.Exit == Dungeon.Instance.current.type) {
-            state = State.Popup;
-            bool goDown = false;
-			UIDialogBox.Instance.onSubmit += () =>  {
-				goDown = true;
-			};
-			yield return StartCoroutine(UIDialogBox.Instance.Write("Do you want to go down the stair?"));
-			if (true == goDown) {
-				yield return StartCoroutine (GoDown ());
-				InitDungeon ();
-				yield return new WaitForSeconds (1.0f);
-			}
-		}
-
-		state = State.Idle;
-	}
-	*/
 	IEnumerator Battle()
 	{
+		Util.EventSystem.Publish(EventID.Dungeon_Battle_Start);
 		//battle_buttons.names [0].text = "Heal(" + GamePlayer.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
-		yield return StartCoroutine(mini_map.Hide(1.0f));
-		yield return StartCoroutine(monster.Show(1.0f));
+		main_buttons.gameObject.SetActive(false);
+		battle_buttons.gameObject.SetActive(true);
+
+		yield return StartCoroutine(mini_map.Hide(0.5f));
+		yield return StartCoroutine(monster.Show(0.5f));
 
 		// attack per second
-		float playerAPS = GameManager.Instance.player.speed/monster.meta.speed; 
+		float playerAPS = GameManager.Instance.player.speed/monster.unit.speed; 
 		float monsterAPS = 1.0f;
 		float playerTurn = playerAPS;
 		float monsterTurn = monsterAPS;
@@ -375,20 +287,32 @@ public class SceneDungeon : SceneMain
 
 				for (int i = 0; i < attackCount; i++)
 				{
-					GameManager.Instance.player.Attack(monster.unit);
-					yield return new WaitForSeconds (waitTime);
+					int attack = (int)Mathf.Max(1, GameManager.Instance.player.attack + Random.Range(-GameManager.Instance.player.attack * 0.1f, GameManager.Instance.player.attack * 0.1f) - monster.unit.defense);
+					if (GameManager.Instance.player.critcal >= Random.Range(0.0f, 100.0f))
+					{
+						attack *= 3;
+						// critical effect
+					}
+					Effect_MonsterDamage effect = GameObject.Instantiate<Effect_MonsterDamage>(monster_damage_effect_prefab);
+					effect.damage = attack;
+					effect.gameObject.SetActive(true);
+					monster.unit.cur_health -= attack;
+					monster.health.current -= attack;
 				}
 				monsterTurn += monsterAPS + Random.Range(0, monsterAPS * 0.1f);
 			}
 			else 
 			{
-				monster.unit.Attack (GameManager.Instance.player);
+				monster.Attack (GameManager.Instance.player);
+				monster.animator.SetTrigger("Attack");
+				int attack = (int)Mathf.Max(1, monster.unit.attack + Random.Range(0, monster.unit.attack * 0.1f) - GameManager.Instance.player.defense);
 
-                //StartCoroutine(CameraFadeFrom(Color.white, iTween.Hash("amount", 0.1f, "time", 0.1f)));
-                iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
+				//StartCoroutine(CameraFadeFrom(Color.white, iTween.Hash("amount", 0.1f, "time", 0.1f)));
+				iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
 
-                BloodMark bloodMark = GameObject.Instantiate<BloodMark>(bloodmark_prefab);
-                bloodMark.transform.SetParent(bloodmark_spot.transform, false);
+                Effect_PlayerDamage bloodMark = GameObject.Instantiate<Effect_PlayerDamage>(player_damage_effect_prefab);
+				bloodMark.gameObject.SetActive(true);
+                bloodMark.transform.SetParent(player_damage_effect_spot, false);
                 bloodMark.transform.position = new Vector3(
                     Random.Range(Screen.width / 2 - Screen.width / 2 * 0.85f, Screen.width / 2 + Screen.width / 2 * 0.9f),
                     Random.Range(Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
@@ -408,13 +332,18 @@ public class SceneDungeon : SceneMain
 		{
 			GameObject.Instantiate<GameObject> (monster.dieEffectPrefab);
 			monster.gameObject.SetActive (false);
+			monster.ui_monster_info.gameObject.SetActive(false);
 			yield return StartCoroutine (Win (monster.meta));
 			yield return StartCoroutine (mini_map.Show (0.5f));
-			dungeon.current_room.monster_meta = null;
+			//dungeon.current_room.monster_meta = null;
 		}
+
+		main_buttons.gameObject.SetActive(true);
+		battle_buttons.gameObject.SetActive(false);
+		Util.EventSystem.Publish(EventID.Dungeon_Battle_Finish);
     }
 		
-	IEnumerator Win(Monster.Meta meta)
+	IEnumerator Win(DungeonMonster.Meta meta)
 	{
 		// audioMonsterDie.Play();
 		string text = "";
@@ -444,11 +373,13 @@ public class SceneDungeon : SceneMain
 		}
 		*/
 
+		/*
 		if (10 >= Random.Range(0, 100)) {
 			Item item = ItemManager.Instance.CreateItem("ITEM_POTION_HEALING");
 			GameManager.Instance.player.inventory.Add(item);
 			text += "You got a " + item.meta.name;
 		}
+		*/
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
 		/*
 		QuestManager.Instance.Update("KillMonster", info.id);
@@ -523,14 +454,16 @@ public class SceneDungeon : SceneMain
         float scale = 1.0f;
         
 		while (0 < total) {
-			int countCount = Random.Range (1, 10);
+			int countCount = Random.Range (5, 10);
 			for (int i = 0; i < countCount; i++) {
 				Coin coin = GameObject.Instantiate<Coin> (coin_prefab);
 				coin.amount = Mathf.Min(total, multiply);
-				coin.transform.SetParent (coin_spot, false);
-				coin.transform.localScale = new Vector3 (scale, scale, 1.0f);
+				coin.transform.SetParent(coin_spot, false);
+				coin.transform.localScale = new Vector3(scale, scale, 1.0f);
 				coin.transform.localPosition = Vector3.zero;
+				coin.gameObject.SetActive(true);
 				iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
+
 				total -= coin.amount;
 				if (0 >= total) {
 					return;
@@ -543,9 +476,8 @@ public class SceneDungeon : SceneMain
 
 	IEnumerator Move(int direction)
 	{
-		touch_input.touchBlockCount++;
-		Dungeon.Room current_room = dungeon.current_room;
-		Dungeon.Room next_room = current_room.GetNext(direction);
+		Util.EventSystem.Publish(EventID.Dungeon_Move_Start);
+		Dungeon.Room next_room = dungeon.current_room.GetNext(direction);
 
 		if (null == next_room)
 		{
@@ -566,11 +498,10 @@ public class SceneDungeon : SceneMain
 				default:
 					break;
 			}
-			touch_input.touchBlockCount--;
+			Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
 			yield break;
 		}
 
-		Util.EventSystem.Publish(EventID.Dungeon_Move_Start);
 		Vector3 position = Vector3.zero;
 		switch (direction)
 		{
@@ -591,37 +522,20 @@ public class SceneDungeon : SceneMain
 		}
 
 		dungeon.Move(direction);
+		//	audioWalk.Play();
 		yield return StartCoroutine(MoveTo(rooms.gameObject, iTween.Hash("position", position, "time", room_size / room_move_speed, "easetype", iTween.EaseType.easeInQuad), true));
+		//	audioWalk.Stop();
+
 		InitRooms();
-		Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
-		/*
-		if (0 < coins.childCount)
+		if (33 > Random.Range(0, 100) && Dungeon.Room.Type.Normal == dungeon.current_room.type && 0 < dungeon.monster_count)
 		{
-			for (int i = 0; i < coins.childCount; i++)
-			{
-				Coin coin = coins.GetChild(i).GetComponent<Coin>();
-				coin.Stop();
-			}
-			while (0 < coins.childCount)
-			{
-				yield return null;
-			}
+			string monsterID = dungeon.monster_ids[Random.Range(0, dungeon.monster_ids.Count - 1)];
+			DungeonMonster.Meta meta = MonsterManager.Instance.FindMeta(monsterID);
+			monster.Init(meta);
+			dungeon.monster_count--;
+			StartCoroutine(Battle());
 		}
 
-		
-		audioWalk.Play();
-		
-		InitRooms();
-		audioWalk.Stop();
-		*/
-		/*
-		if (null != dungeon.current_room.monster_meta)
-		{
-			monster.Init(dungeon.current_room.monster_meta);
-			yield return StartCoroutine(Battle());
-		}
-		*/
-		
 		if (Dungeon.Room.Type.Exit == dungeon.current_room.type)
 		{
 			bool goDown = false;
@@ -636,26 +550,6 @@ public class SceneDungeon : SceneMain
 				yield return new WaitForSeconds(1.0f);
 			}
 		}
-		touch_input.touchBlockCount--;
+		Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
 	}
-
-
-	private void OnTouchInputBlock()
-	{
-		touch_input.touchBlockCount++;
-		if (0 < touch_input.touchBlockCount)
-		{
-			mini_map.Hide(1.0f);
-		}
-	}
-
-	private void OnTouchInputRelease()
-	{
-		touch_input.touchBlockCount--;
-		if (0 == touch_input.touchBlockCount)
-		{
-			mini_map.Show(1.0f);
-		}
-	}
-	
 }

@@ -5,8 +5,8 @@ using System.Collections.Generic;
 
 public class MonsterManager : Util.Singleton<MonsterManager>
 {
-	private Dictionary<string, Monster.Meta> metas = new Dictionary<string, Monster.Meta>();
-	private Util.WeightRandom<Monster.Meta> monster_gacha = new Util.WeightRandom<Monster.Meta>();
+	private Dictionary<string, DungeonMonster.Meta> metas = new Dictionary<string, DungeonMonster.Meta>();
+	private Util.WeightRandom<DungeonMonster.Meta> monster_gacha = new Util.WeightRandom<DungeonMonster.Meta>();
 
 	public void Init()
 	{
@@ -16,7 +16,7 @@ public class MonsterManager : Util.Singleton<MonsterManager>
 
 		while (true == reader.Read())
 		{
-			Monster.Meta meta = new Monster.Meta();
+			DungeonMonster.Meta meta = new DungeonMonster.Meta();
 			meta.id = reader.GetString("monster_id");
 			meta.name = reader.GetString("monster_name");
 			meta.level = reader.GetInt32("monster_level");
@@ -30,7 +30,7 @@ public class MonsterManager : Util.Singleton<MonsterManager>
 			metas.Add(meta.id, meta);
 		}
 	}
-	public Monster.Meta FindMeta(string id)
+	public DungeonMonster.Meta FindMeta(string id)
 	{
 		if (false == metas.ContainsKey(id))
 		{
