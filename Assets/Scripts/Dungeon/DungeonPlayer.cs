@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIDungeonPlayer : MonoBehaviour
+public class DungeonPlayer : MonoBehaviour
 {
 	public UIGaugeBar health;
 	public UIGaugeBar exp;

@@ -24,6 +24,8 @@ public class SceneDungeon : SceneMain
 	public DungeonMonster monster;
 	public Text ui_monster_name;
 	public UIGaugeBar ui_monster_health;
+	public UIGaugeBar ui_player_health;
+	public UIGaugeBar ui_player_exp;
 
 	private Dungeon dungeon;
 	public int dungeon_level = 1;
@@ -38,7 +40,7 @@ public class SceneDungeon : SceneMain
 	public Transform monster_damage_effect_spot;
 	public Effect_MonsterDamage monster_damage_effect_prefab;
 
-	private float battle_speed = 2.5f;
+	private float battle_speed = 1.5f;
 	/*
     public AudioSource audioWalk;
     public AudioSource audioBG;
@@ -70,6 +72,14 @@ public class SceneDungeon : SceneMain
 
 		dungeon = new Dungeon();
 		monster = UIUtil.FindChild<DungeonMonster>(transform, "Monster");
+
+		ui_monster_health = UIUtil.FindChild<UIGaugeBar>(transform, "UI/UIMonsterInfo/Health");
+		ui_monster_name = UIUtil.FindChild<Text>(transform, "UI/UIMonsterInfo/Name");
+		ui_player_health = UIUtil.FindChild<UIGaugeBar>(transform, "UI/Main/UIDungeonPlayer/Health");
+		ui_player_health.max = GameManager.Instance.player.max_health;
+		ui_player_health.current = GameManager.Instance.player.cur_health;
+		ui_player_exp = UIUtil.FindChild<UIGaugeBar>(transform, "UI/Main/UIDungeonPlayer/Exp");
+
 		player_damage_effect_spot = UIUtil.FindChild<Transform>(transform, "UI/PlayerDamage");
 		player_damage_effect_prefab = UIUtil.FindChild<Effect_PlayerDamage>(player_damage_effect_spot, "Effect_PlayerDamage");
 		monster_damage_effect_spot = UIUtil.FindChild<Transform>(transform, "UI/PlayerDamage");
@@ -152,6 +162,11 @@ public class SceneDungeon : SceneMain
 			touch_point = Vector3.zero;
 		};
 
+		/*
+		audioWalk = GameObject.Instantiate<AudioSource>(audioWalk);
+		audioBG = GameObject.Instantiate<AudioSource>(audioBG);
+		audioMonsterDie = GameObject.Instantiate<AudioSource>(audioMonsterDie);
+		*/
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object> { });
 		/*
         completeQuests = new List<QuestData> ();
@@ -192,27 +207,14 @@ public class SceneDungeon : SceneMain
 	{
 		dungeon_level = 1;
 		/*
-	  
-	  
-	  yield return StartCoroutine(QuestManager.Instance.Init ());
-	  QuestManager.Instance.onComplete += (QuestData data) => {
-		  completeQuests.Add(data);
-	  };
-	  yield return NetworkManager.Instance.HttpRequest ("info_dungeon.php", (string json) => {
-		  config = JsonUtility.FromJson<Config>(json);
-	  });
-
-	  #if UNITY_EDITOR
-	  Assert.AreNotEqual(0, config.level_infos.Length);
-	  #endif
-	  audioWalk = GameObject.Instantiate<AudioSource>(audioWalk);
-	  audioBG = GameObject.Instantiate<AudioSource>(audioBG);
-	  audioMonsterDie = GameObject.Instantiate<AudioSource>(audioMonsterDie);
-
-	  QuestManager.Instance.Update (QuestProgress.Type.CrrentLocation, "Dungeon");
-	  yield return StartCoroutine(CheckCompleteQuest ());
-	  */
-	  InitDungeon ();
+		yield return StartCoroutine(QuestManager.Instance.Init ());
+		QuestManager.Instance.onComplete += (QuestData data) => {
+			completeQuests.Add(data);
+		};
+		QuestManager.Instance.Update (QuestProgress.Type.CrrentLocation, "Dungeon");
+		yield return StartCoroutine(CheckCompleteQuest ());
+		*/
+		InitDungeon ();
 	}
 	void InitDungeon()
 	{
@@ -249,99 +251,7 @@ public class SceneDungeon : SceneMain
 		mini_map.CurrentPosition (dungeon.current_room.id);
 	}
 
-	IEnumerator Battle()
-	{
-		Util.EventSystem.Publish(EventID.Dungeon_Battle_Start);
-		//battle_buttons.names [0].text = "Heal(" + GamePlayer.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
-		main_buttons.gameObject.SetActive(false);
-		battle_buttons.gameObject.SetActive(true);
-
-		yield return StartCoroutine(mini_map.Hide(0.5f));
-		yield return StartCoroutine(monster.Show(0.5f));
-
-		// attack per second
-		float playerAPS = GameManager.Instance.player.speed/monster.unit.speed; 
-		float monsterAPS = 1.0f;
-		float playerTurn = playerAPS;
-		float monsterTurn = monsterAPS;
-
-		while (0.0f < monster.unit.cur_health && 0.0f < GameManager.Instance.player.cur_health)
-		{
-			float waitTime = 0.0f;
-
-			if (monsterTurn < playerTurn)
-			{
-				int attackCount = 1;
-
-				if (0 == Random.Range (0, 5))
-				{
-					attackCount = 2;
-					waitTime = 1.0f / battle_speed / 2;
-				}
-
-				if (0 == Random.Range (0, 10))
-				{
-					attackCount = 3;
-					waitTime = 1.0f / battle_speed / 3;
-                }
-
-				for (int i = 0; i < attackCount; i++)
-				{
-					int attack = (int)Mathf.Max(1, GameManager.Instance.player.attack + Random.Range(-GameManager.Instance.player.attack * 0.1f, GameManager.Instance.player.attack * 0.1f) - monster.unit.defense);
-					if (GameManager.Instance.player.critcal >= Random.Range(0.0f, 100.0f))
-					{
-						attack *= 3;
-						// critical effect
-					}
-					Effect_MonsterDamage effect = GameObject.Instantiate<Effect_MonsterDamage>(monster_damage_effect_prefab);
-					effect.damage = attack;
-					effect.gameObject.SetActive(true);
-					monster.unit.cur_health -= attack;
-					monster.health.current -= attack;
-				}
-				monsterTurn += monsterAPS + Random.Range(0, monsterAPS * 0.1f);
-			}
-			else 
-			{
-				monster.Attack (GameManager.Instance.player);
-				monster.animator.SetTrigger("Attack");
-				int attack = (int)Mathf.Max(1, monster.unit.attack + Random.Range(0, monster.unit.attack * 0.1f) - GameManager.Instance.player.defense);
-
-				//StartCoroutine(CameraFadeFrom(Color.white, iTween.Hash("amount", 0.1f, "time", 0.1f)));
-				iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
-
-                Effect_PlayerDamage bloodMark = GameObject.Instantiate<Effect_PlayerDamage>(player_damage_effect_prefab);
-				bloodMark.gameObject.SetActive(true);
-                bloodMark.transform.SetParent(player_damage_effect_spot, false);
-                bloodMark.transform.position = new Vector3(
-                    Random.Range(Screen.width / 2 - Screen.width / 2 * 0.85f, Screen.width / 2 + Screen.width / 2 * 0.9f),
-                    Random.Range(Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
-                    0.0f
-                );
-                playerTurn += playerAPS + Random.Range(0, playerAPS * 0.1f);
-			}
-			yield return new WaitForSeconds (1.0f/battle_speed);
-		}
-		
-		monster.gameObject.SetActive (false);
-		if (0.0f < monster.health.current)
-		{
-			yield return StartCoroutine (Lose ());
-		}
-		else
-		{
-			GameObject.Instantiate<GameObject> (monster.dieEffectPrefab);
-			monster.gameObject.SetActive (false);
-			monster.ui_monster_info.gameObject.SetActive(false);
-			yield return StartCoroutine (Win (monster.meta));
-			yield return StartCoroutine (mini_map.Show (0.5f));
-			//dungeon.current_room.monster_meta = null;
-		}
-
-		main_buttons.gameObject.SetActive(true);
-		battle_buttons.gameObject.SetActive(false);
-		Util.EventSystem.Publish(EventID.Dungeon_Battle_Finish);
-    }
+	
 		
 	IEnumerator Win(DungeonMonster.Meta meta)
 	{
@@ -551,5 +461,99 @@ public class SceneDungeon : SceneMain
 			}
 		}
 		Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
+	}
+
+	IEnumerator Battle()
+	{
+		Util.EventSystem.Publish(EventID.Dungeon_Battle_Start);
+		//battle_buttons.names [0].text = "Heal(" + GamePlayer.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
+		main_buttons.gameObject.SetActive(false);
+		battle_buttons.gameObject.SetActive(true);
+
+		yield return StartCoroutine(mini_map.Hide(0.5f));
+		yield return StartCoroutine(monster.Show(0.5f));
+
+		// attack per second
+		float playerAPS = GameManager.Instance.player.speed / monster.unit.speed;
+		float monsterAPS = 1.0f;
+		float playerTurn = playerAPS;
+		float monsterTurn = monsterAPS;
+
+		while (0.0f < monster.unit.cur_health && 0.0f < GameManager.Instance.player.cur_health)
+		{
+			float waitTime = 0.0f;
+			if (monsterTurn < playerTurn)
+			{
+				int attackCount = 1;
+				if (0 == Random.Range(0, 5))
+				{
+					attackCount = 2;
+					waitTime = 1.0f / battle_speed / 2;
+				}
+				if (0 == Random.Range(0, 10))
+				{
+					attackCount = 3;
+					waitTime = 1.0f / battle_speed / 3;
+				}
+
+				for (int i = 0; i < attackCount; i++)
+				{
+					int attack = (int)Mathf.Max(1, GameManager.Instance.player.attack + Random.Range(-GameManager.Instance.player.attack * 0.1f, GameManager.Instance.player.attack * 0.1f) - monster.unit.defense);
+					if (GameManager.Instance.player.critcal >= Random.Range(0.0f, 100.0f))
+					{
+						attack *= 3;
+						// critical effect
+					}
+					Effect_MonsterDamage effect = GameObject.Instantiate<Effect_MonsterDamage>(monster_damage_effect_prefab);
+					effect.damage = attack;
+					effect.gameObject.SetActive(true);
+					monster.unit.cur_health -= attack;
+					monster.health.current -= attack;
+				}
+				monsterTurn += monsterAPS + Random.Range(0, monsterAPS * 0.1f);
+			}
+			else
+			{
+				monster.animator.SetTrigger("Attack");
+				int attack = (int)Mathf.Max(1, monster.unit.attack + Random.Range(0, monster.unit.attack * 0.1f) - GameManager.Instance.player.defense);
+
+				//StartCoroutine(CameraFadeFrom(Color.white, iTween.Hash("amount", 0.1f, "time", 0.1f)));
+				iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
+
+				Effect_PlayerDamage bloodMark = GameObject.Instantiate<Effect_PlayerDamage>(player_damage_effect_prefab);
+				bloodMark.gameObject.SetActive(true);
+				bloodMark.transform.SetParent(player_damage_effect_spot, false);
+				bloodMark.transform.position = new Vector3(
+					Random.Range(Screen.width / 2 - Screen.width / 2 * 0.85f, Screen.width / 2 + Screen.width / 2 * 0.9f),
+					Random.Range(Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
+					0.0f
+				);
+				playerTurn += playerAPS + Random.Range(0, playerAPS * 0.1f);
+				GameManager.Instance.player.cur_health -= attack;
+				ui_player_health.max = GameManager.Instance.player.max_health;
+				ui_player_health.current = GameManager.Instance.player.cur_health;
+			}
+			yield return new WaitForSeconds(1.0f / battle_speed);
+		}
+
+		monster.gameObject.SetActive(false);
+		if (0.0f < monster.health.current)
+		{
+			yield return StartCoroutine(Lose());
+		}
+		else
+		{
+			GameObject dieObject = GameObject.Instantiate<GameObject>(monster.dieEffectPrefab);
+			Object.Destroy(dieObject, 1.0f);
+			monster.gameObject.SetActive(false);
+			monster.ui_monster_info.gameObject.SetActive(false);
+			yield return StartCoroutine(Win(monster.meta));
+			yield return StartCoroutine(mini_map.Show(0.5f));
+			//dungeon.current_room.monster_meta = null;
+		}
+
+		main_buttons.gameObject.SetActive(true);
+		battle_buttons.gameObject.SetActive(false);
+		Util.EventSystem.Publish(EventID.Dungeon_Battle_Finish);
 	}
 }

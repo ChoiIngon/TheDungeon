@@ -48,9 +48,9 @@ public class Player : Unit
 		Load();
 
 		stats.AddStat(new Stat.Data() { type = StatType.Health, value = 100.0f });
-		stats.AddStat(new Stat.Data() { type = StatType.Attack, value = 100.0f });
-		stats.AddStat(new Stat.Data() { type = StatType.Defense, value = 100.0f });
-		stats.AddStat(new Stat.Data() { type = StatType.Speed, value = 100.0f });
+		stats.AddStat(new Stat.Data() { type = StatType.Attack, value = 60.0f });
+		stats.AddStat(new Stat.Data() { type = StatType.Defense, value = 400.0f });
+		stats.AddStat(new Stat.Data() { type = StatType.Speed, value = 150.0f });
 		CalculateStat();
 		cur_health = stats.GetStat(StatType.Health);
 	}

@@ -85,7 +85,9 @@ public class DungeonMonster : MonoBehaviour
 		defender.Damage (attack);
 	}
 
-
+	public void Damage(int damage)
+	{
+	}
 	/*
 	public override void Damage(int damage)
 	{
@@ -131,5 +133,10 @@ public class DungeonMonster : MonoBehaviour
 			yield return null;
 		}
 		renderer.color = Color.white;
+	}
+
+	public IEnumerable Battle()
+	{
+		yield break;
 	}
 }
