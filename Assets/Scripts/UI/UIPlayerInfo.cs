@@ -19,6 +19,6 @@ public class UIPlayerInfo : MonoBehaviour {
 		text.text += "<b>atk</b> : " + GameManager.Instance.player.attack + "\t";
         text.text += "<b>def</b> : " + GameManager.Instance.player.defense + "\n";
         text.text += "<b>spd</b> : " + GameManager.Instance.player.speed + "\t";
-        text.text += "<b>cri</b> : " + GameManager.Instance.player.critcal + "%\n";
+        text.text += "<b>cri</b> : " + GameManager.Instance.player.critical + "%\n";
 	}
 }

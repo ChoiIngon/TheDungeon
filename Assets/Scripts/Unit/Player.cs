@@ -1,12 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-
-#if UNITY_EDITOR
-using UnityEngine.Assertions;
-#endif
 
 public class ItemEquipEvent
 {
@@ -104,20 +97,23 @@ public class Player : Unit
 		level_stat_meta.health = new RandomStatMeta { type = StatType.Health, min_value = 100.0f, max_value = 200.0f, interval = 10.0f };
     }
 
-	public void AddExp(int exp)
+	public void AddExp(int amount)
 	{
-		this.exp += exp;
-		while (this.exp > level)
+		exp += amount;
+		while (this.exp > GetMaxExp())
 		{
+			exp -= GetMaxExp();
 			level += 1;
-			this.exp -= level;
-
 			max_health += level_stat_meta.health.value;
-
+			cur_health = max_health;
 			//Util.EventSystem.Publish<AddExpEvent>(EventID.Player_Add_Exp, 
 		}
 	}
 
+	public int GetMaxExp()
+	{
+		return (int)Mathf.Pow(level, 1.8f);
+	}
 	/*
 	public EquipmentItem GetEquipment(EquipmentItem.Part category, int index) {
         if(equipments.ContainsKey(new Tuple<EquipmentItem.Part, int>(category, index)))

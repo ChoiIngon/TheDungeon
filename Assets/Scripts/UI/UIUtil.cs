@@ -10,7 +10,6 @@ public class UIUtil
 		if (null == child)
 		{
 			throw new System.Exception("can not find child(name:" + childName + ")");
-
 		}
 		T ret = child.GetComponent<T>();
 		if (null == ret)

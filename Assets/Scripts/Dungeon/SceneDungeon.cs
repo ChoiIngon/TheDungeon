@@ -9,7 +9,6 @@ using UnityEngine.SceneManagement;
 public class SceneDungeon : SceneMain
 {
 	public UIButtonGroup main_buttons;
-	public UIButtonGroup battle_buttons;
     public UIMiniMap mini_map;
 	
 	private float room_size = 7.2f; // walkDistance;
@@ -21,11 +20,9 @@ public class SceneDungeon : SceneMain
 	private TouchInput touch_input;
 	private Vector3 touch_point = Vector3.zero;
 
-	public DungeonMonster monster;
-	public Text ui_monster_name;
-	public UIGaugeBar ui_monster_health;
-	public UIGaugeBar ui_player_health;
-	public UIGaugeBar ui_player_exp;
+	public DungeonBattle battle;
+	public UIGaugeBar player_health;
+	public UIGaugeBar player_exp;
 
 	private Dungeon dungeon;
 	public int dungeon_level = 1;
@@ -34,13 +31,6 @@ public class SceneDungeon : SceneMain
     public Transform coin_spot;
     public Coin coin_prefab;
 
-	public Transform player_damage_effect_spot;
-	public Effect_PlayerDamage player_damage_effect_prefab;
-
-	public Transform monster_damage_effect_spot;
-	public Effect_MonsterDamage monster_damage_effect_prefab;
-
-	private float battle_speed = 1.5f;
 	/*
     public AudioSource audioWalk;
     public AudioSource audioBG;
@@ -71,20 +61,8 @@ public class SceneDungeon : SceneMain
 		}
 
 		dungeon = new Dungeon();
-		monster = UIUtil.FindChild<DungeonMonster>(transform, "Monster");
-
-		ui_monster_health = UIUtil.FindChild<UIGaugeBar>(transform, "UI/UIMonsterInfo/Health");
-		ui_monster_name = UIUtil.FindChild<Text>(transform, "UI/UIMonsterInfo/Name");
-		ui_player_health = UIUtil.FindChild<UIGaugeBar>(transform, "UI/Main/UIDungeonPlayer/Health");
-		ui_player_health.max = GameManager.Instance.player.max_health;
-		ui_player_health.current = GameManager.Instance.player.cur_health;
-		ui_player_exp = UIUtil.FindChild<UIGaugeBar>(transform, "UI/Main/UIDungeonPlayer/Exp");
-
-		player_damage_effect_spot = UIUtil.FindChild<Transform>(transform, "UI/PlayerDamage");
-		player_damage_effect_prefab = UIUtil.FindChild<Effect_PlayerDamage>(player_damage_effect_spot, "Effect_PlayerDamage");
-		monster_damage_effect_spot = UIUtil.FindChild<Transform>(transform, "UI/PlayerDamage");
-		monster_damage_effect_prefab = UIUtil.FindChild<Effect_MonsterDamage>(monster_damage_effect_spot, "Effect_MonsterDamage");
-
+		battle = UIUtil.FindChild<DungeonBattle>(transform, "Battle");
+		
 		rooms = UIUtil.FindChild<Transform>(transform, "Rooms");
 		current_room = UIUtil.FindChild<Room>(rooms, "Current");
 		next_rooms[Dungeon.North] = UIUtil.FindChild<Room>(rooms, "North");
@@ -96,26 +74,27 @@ public class SceneDungeon : SceneMain
 		next_rooms[Dungeon.West] = UIUtil.FindChild<Room>(rooms, "West");
 		next_rooms[Dungeon.West].transform.position = new Vector3(-room_size, 0.0f, 0.0f);
 
-		main_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "UI/Main/MainButtonGroup");
+		main_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "UI/Dungeon/MainButtonGroup");
 		main_buttons.Init();
 		main_buttons.actions[0] += () => {
 			GameManager.Instance.ui_inventory.SetActive(true);
 		};
+		
 		main_buttons.actions[1] += () => {
 			CreateCoins(500);
 		};
 		main_buttons.buttons[2].gameObject.SetActive(false);
 		main_buttons.buttons[3].gameObject.SetActive(false);
-		
-		battle_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "UI/Main/BattleButtonGroup");
-		battle_buttons.Init();
-
-		mini_map = UIUtil.FindChild<UIMiniMap>(transform, "UI/UIMiniMap");
-		ui_dungeon_level = UIUtil.FindChild<Text>(transform, "UI/DungeonLevel");
+						
+		mini_map = UIUtil.FindChild<UIMiniMap>(transform, "UI/Dungeon/MiniMap");
+		ui_dungeon_level = UIUtil.FindChild<Text>(transform, "UI/Dungeon/Level");
 
         coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot");
         coin_prefab = UIUtil.FindChild<Coin>(transform, "CoinSpot/Coin");
 
+		player_health = UIUtil.FindChild<UIGaugeBar>(transform, "UI/Player/Health");
+		player_exp = UIUtil.FindChild<UIGaugeBar>(transform, "UI/Player/Exp");
+		
 		touch_input = GetComponent<TouchInput>();
 		if (null == touch_input)
 		{
@@ -206,6 +185,8 @@ public class SceneDungeon : SceneMain
 	void Init()
 	{
 		dungeon_level = 1;
+		GameManager.Instance.player.level = 1;
+		GameManager.Instance.player.exp = 0;
 		/*
 		yield return StartCoroutine(QuestManager.Instance.Init ());
 		QuestManager.Instance.onComplete += (QuestData data) => {
@@ -218,6 +199,11 @@ public class SceneDungeon : SceneMain
 	}
 	void InitDungeon()
 	{
+		player_health.max = GameManager.Instance.player.max_health;
+		player_health.current = GameManager.Instance.player.cur_health;
+		player_exp.max = GameManager.Instance.player.GetMaxExp();
+		player_exp.current = GameManager.Instance.player.exp;
+		
 		dungeon.Init(dungeon_level);
 		mini_map.Init(dungeon);
 		InitRooms();
@@ -225,15 +211,17 @@ public class SceneDungeon : SceneMain
 
 		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon_level.ToString();
 
-		StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 0.0f, "time", 1.0f)));
-/*		
-		Analytics.CustomEvent("InitDungeon", new Dictionary<string, object> {
-			//{"dungeon_level", level },
-			{"player_level", GameManager.Instance.player.level},
-			//{"player_exp", GameManager.Instance.player.exp.current },
-			{"player_gold", GameManager.Instance.player.inventory.coin }
-		});
-		*/
+		//StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 0.0f, "time", 1.0f)));
+		StartCoroutine(GameManager.Instance.CameraFade(1.0f, 0.0f, 2.0f));
+
+		/*		
+				Analytics.CustomEvent("InitDungeon", new Dictionary<string, object> {
+					//{"dungeon_level", level },
+					{"player_level", GameManager.Instance.player.level},
+					//{"player_exp", GameManager.Instance.player.exp.current },
+					{"player_gold", GameManager.Instance.player.inventory.coin }
+				});
+				*/
 	}
 
 	void InitRooms()
@@ -251,59 +239,6 @@ public class SceneDungeon : SceneMain
 		mini_map.CurrentPosition (dungeon.current_room.id);
 	}
 
-	
-		
-	IEnumerator Win(DungeonMonster.Meta meta)
-	{
-		// audioMonsterDie.Play();
-		string text = "";
-		text += "You defeated \'" + meta.name + "\'\n";
-
-		Stat stat = GameManager.Instance.player.stats;
-		int rewardCoin = meta.reward.coin + (int)Random.Range(-meta.reward.coin * 0.1f, meta.reward.coin * 0.1f);
-		int bonusCoin = (int)(rewardCoin * stat.GetStat(StatType.CoinBonus) / 100.0f);
-		int rewardExp = meta.reward.exp + (int)Random.Range(-meta.reward.exp * 0.1f, meta.reward.exp * 0.1f);
-		int bonusExp = (int)(rewardExp * stat.GetStat(StatType.ExpBonus) / 100.0f);
-		text += "Coins : +" + rewardCoin + (0 < bonusCoin ? "(" + bonusCoin + " bonus)" : "") + "\n";
-		text += "Exp : +" + rewardExp + (0 < bonusExp ? "(" + bonusExp + " bonus)" : "") + "\n";
-
-		GameManager.Instance.player.inventory.coin += rewardCoin + bonusCoin;
-		GameManager.Instance.player.AddExp(rewardExp + bonusExp);
-		CreateCoins(rewardCoin + bonusCoin);
-		//StartCoroutine(player.AddExp(gainExp + expBonus));
-		int playerLevel = GameManager.Instance.player.level;
-		text += "Level : " + playerLevel + " -> " + GameManager.Instance.player.level + "\n";
-
-		/*
-		if (dungeonLevelInfo.items.chance >= Random.Range(0.0f, 1.0f))
-		{
-			Item item = ItemManager.Instance.CreateRandomItem(this.level);
-			inventory.Put(item);
-			text += "You got a " + item.name + "\n";
-		}
-		*/
-
-		/*
-		if (10 >= Random.Range(0, 100)) {
-			Item item = ItemManager.Instance.CreateItem("ITEM_POTION_HEALING");
-			GameManager.Instance.player.inventory.Add(item);
-			text += "You got a " + item.meta.name;
-		}
-		*/
-		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
-		/*
-		QuestManager.Instance.Update("KillMonster", info.id);
-		yield return StartCoroutine(CheckCompleteQuest());
-
-		Analytics.CustomEvent("Win", new Dictionary<string, object>
-		{
-			{"dungeon_level", level},
-			{"monster_id", info.id },
-			{"player_level", playerLevel}
-		});
-		*/
-	}
-	
 	IEnumerator Lose()
 	{
 		/*
@@ -325,7 +260,7 @@ public class SceneDungeon : SceneMain
 	IEnumerator GoDown()
 	{
 		Vector3 position = Camera.main.transform.position;
-		StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 1.0f, "time", 1.0f)));
+		StartCoroutine(GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f));
 		yield return StartCoroutine(MoveTo (Camera.main.gameObject, iTween.Hash(
 			"x", current_room.stair.transform.position.x,
 			"y", current_room.stair.transform.position.y,
@@ -440,10 +375,22 @@ public class SceneDungeon : SceneMain
 		if (33 > Random.Range(0, 100) && Dungeon.Room.Type.Normal == dungeon.current_room.type && 0 < dungeon.monster_count)
 		{
 			string monsterID = dungeon.monster_ids[Random.Range(0, dungeon.monster_ids.Count - 1)];
-			DungeonMonster.Meta meta = MonsterManager.Instance.FindMeta(monsterID);
-			monster.Init(meta);
+			Monster.Meta meta = MonsterManager.Instance.FindMeta(monsterID);
+
+			mini_map.Hide(0.5f);
+			main_buttons.Hide(0.5f);
+			yield return StartCoroutine(battle.BattleStart(meta));
+			main_buttons.Show(0.5f);
+			mini_map.Show(0.5f);
+			if (true == battle.battle_result)
+			{
+				yield return StartCoroutine(Win(meta));
+			}
+			else
+			{
+				yield return StartCoroutine(Lose());
+			}
 			dungeon.monster_count--;
-			StartCoroutine(Battle());
 		}
 
 		if (Dungeon.Room.Type.Exit == dungeon.current_room.type)
@@ -463,97 +410,57 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
 	}
 
-	IEnumerator Battle()
+	IEnumerator Win(Monster.Meta meta)
 	{
-		Util.EventSystem.Publish(EventID.Dungeon_Battle_Start);
-		//battle_buttons.names [0].text = "Heal(" + GamePlayer.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
-		main_buttons.gameObject.SetActive(false);
-		battle_buttons.gameObject.SetActive(true);
+		int prevPlayerLevel = GameManager.Instance.player.level;
+		Stat stat = GameManager.Instance.player.stats;
+		int rewardCoin = meta.reward.coin + (int)Random.Range(-meta.reward.coin * 0.1f, meta.reward.coin * 0.1f);
+		int bonusCoin = (int)(rewardCoin * stat.GetStat(StatType.CoinBonus) / 100.0f);
+		int rewardExp = meta.reward.exp + (int)Random.Range(-meta.reward.exp * 0.1f, meta.reward.exp * 0.1f);
+		int bonusExp = (int)(rewardExp * stat.GetStat(StatType.ExpBonus) / 100.0f);
+		GameManager.Instance.player.inventory.coin += rewardCoin + bonusCoin;
+		GameManager.Instance.player.AddExp(rewardExp + bonusExp);
 
-		yield return StartCoroutine(mini_map.Hide(0.5f));
-		yield return StartCoroutine(monster.Show(0.5f));
+		CreateCoins(rewardCoin + bonusCoin);
+		player_exp.max = GameManager.Instance.player.GetMaxExp();
+		player_exp.current = GameManager.Instance.player.exp;
+		player_health.max = GameManager.Instance.player.max_health;
+		player_health.current = GameManager.Instance.player.cur_health;
 
-		// attack per second
-		float playerAPS = GameManager.Instance.player.speed / monster.unit.speed;
-		float monsterAPS = 1.0f;
-		float playerTurn = playerAPS;
-		float monsterTurn = monsterAPS;
+		string text = "";
+		text += "You defeated \'" + meta.name + "\'\n";
+		text += "Coins : +" + rewardCoin + (0 < bonusCoin ? "(" + bonusCoin + " bonus)" : "") + "\n";
+		text += "Exp : +" + rewardExp + (0 < bonusExp ? "(" + bonusExp + " bonus)" : "") + "\n";
+		text += "Level : " + prevPlayerLevel + " -> " + GameManager.Instance.player.level + "\n";
 
-		while (0.0f < monster.unit.cur_health && 0.0f < GameManager.Instance.player.cur_health)
+		/*
+		if (dungeonLevelInfo.items.chance >= Random.Range(0.0f, 1.0f))
 		{
-			float waitTime = 0.0f;
-			if (monsterTurn < playerTurn)
-			{
-				int attackCount = 1;
-				if (0 == Random.Range(0, 5))
-				{
-					attackCount = 2;
-					waitTime = 1.0f / battle_speed / 2;
-				}
-				if (0 == Random.Range(0, 10))
-				{
-					attackCount = 3;
-					waitTime = 1.0f / battle_speed / 3;
-				}
-
-				for (int i = 0; i < attackCount; i++)
-				{
-					int attack = (int)Mathf.Max(1, GameManager.Instance.player.attack + Random.Range(-GameManager.Instance.player.attack * 0.1f, GameManager.Instance.player.attack * 0.1f) - monster.unit.defense);
-					if (GameManager.Instance.player.critcal >= Random.Range(0.0f, 100.0f))
-					{
-						attack *= 3;
-						// critical effect
-					}
-					Effect_MonsterDamage effect = GameObject.Instantiate<Effect_MonsterDamage>(monster_damage_effect_prefab);
-					effect.damage = attack;
-					effect.gameObject.SetActive(true);
-					monster.unit.cur_health -= attack;
-					monster.health.current -= attack;
-				}
-				monsterTurn += monsterAPS + Random.Range(0, monsterAPS * 0.1f);
-			}
-			else
-			{
-				monster.animator.SetTrigger("Attack");
-				int attack = (int)Mathf.Max(1, monster.unit.attack + Random.Range(0, monster.unit.attack * 0.1f) - GameManager.Instance.player.defense);
-
-				//StartCoroutine(CameraFadeFrom(Color.white, iTween.Hash("amount", 0.1f, "time", 0.1f)));
-				iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
-
-				Effect_PlayerDamage bloodMark = GameObject.Instantiate<Effect_PlayerDamage>(player_damage_effect_prefab);
-				bloodMark.gameObject.SetActive(true);
-				bloodMark.transform.SetParent(player_damage_effect_spot, false);
-				bloodMark.transform.position = new Vector3(
-					Random.Range(Screen.width / 2 - Screen.width / 2 * 0.85f, Screen.width / 2 + Screen.width / 2 * 0.9f),
-					Random.Range(Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
-					0.0f
-				);
-				playerTurn += playerAPS + Random.Range(0, playerAPS * 0.1f);
-				GameManager.Instance.player.cur_health -= attack;
-				ui_player_health.max = GameManager.Instance.player.max_health;
-				ui_player_health.current = GameManager.Instance.player.cur_health;
-			}
-			yield return new WaitForSeconds(1.0f / battle_speed);
+			Item item = ItemManager.Instance.CreateRandomItem(this.level);
+			inventory.Put(item);
+			text += "You got a " + item.name + "\n";
 		}
+		*/
 
-		monster.gameObject.SetActive(false);
-		if (0.0f < monster.health.current)
+		/*
+		if (10 >= Random.Range(0, 100)) {
+			Item item = ItemManager.Instance.CreateItem("ITEM_POTION_HEALING");
+			GameManager.Instance.player.inventory.Add(item);
+			text += "You got a " + item.meta.name;
+		}
+		*/
+
+		/*
+		QuestManager.Instance.Update("KillMonster", info.id);
+		yield return StartCoroutine(CheckCompleteQuest());
+		*/
+
+		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
+		Analytics.CustomEvent("Win", new Dictionary<string, object>
 		{
-			yield return StartCoroutine(Lose());
-		}
-		else
-		{
-			GameObject dieObject = GameObject.Instantiate<GameObject>(monster.dieEffectPrefab);
-			Object.Destroy(dieObject, 1.0f);
-			monster.gameObject.SetActive(false);
-			monster.ui_monster_info.gameObject.SetActive(false);
-			yield return StartCoroutine(Win(monster.meta));
-			yield return StartCoroutine(mini_map.Show(0.5f));
-			//dungeon.current_room.monster_meta = null;
-		}
-
-		main_buttons.gameObject.SetActive(true);
-		battle_buttons.gameObject.SetActive(false);
-		Util.EventSystem.Publish(EventID.Dungeon_Battle_Finish);
+			{"dungeon_level", dungeon_level},
+			{"monster_id", meta.id },
+			{"player_level", GameManager.Instance.player.level}
+		});
 	}
 }

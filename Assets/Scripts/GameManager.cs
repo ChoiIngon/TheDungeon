@@ -3,8 +3,7 @@ using System.IO;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Data;
-using Mono.Data.Sqlite;
+using UnityEngine.UI;
 
 public class GameManager : Util.MonoSingleton<GameManager>
 {
@@ -15,7 +14,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 	public UINpc ui_npc;
 	public UIDialogBox ui_dialogbox;
 	public UITextBox ui_textbox;
-
+	private Image camera_fade;
 	private IEnumerator Start()
 	{
 		if("Common" == SceneManager.GetActiveScene().name)
@@ -54,7 +53,10 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		ui_npc.Init();
 		ui_textbox = UIUtil.FindChild<UITextBox>(transform, "UI/UITextBox");
 		ui_textbox.Init();
-	
+
+		camera_fade = UIUtil.FindChild<Image>(transform, "UI/CameraFade");
+		camera_fade.color = Color.black;
+
 		for (int i = 0; i < 10; i++)
 		{
 			EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);
@@ -113,4 +115,74 @@ public class GameManager : Util.MonoSingleton<GameManager>
     public void Quit()
     {
     }
+
+	/*
+		Instantly changes the amount(transparency) of a camera fade and then returns it back over time.
+	*/
+	public IEnumerator CameraFade(float from, float to, float time)
+	{
+		float amount = to - from;
+		Color color = camera_fade.color;
+		camera_fade.color = new Color(color.r, color.g, color.b, from);
+		camera_fade.gameObject.SetActive(true);
+
+		float delta = 0.0f;
+		while (Mathf.Abs(delta) < Mathf.Abs(amount))
+		{
+			delta += amount * (Time.deltaTime / time);
+			camera_fade.color = new Color(color.r, color.g, color.b, from + delta);
+			yield return null;
+		}
+		camera_fade.color = new Color(color.r, color.g, color.b, to);
+		camera_fade.gameObject.SetActive(false);
+	}
+
+	public IEnumerator CameraFade(Color from, Color to, float time)
+	{
+		Color amount = Color.white;
+		amount.r = to.r - from.r;
+		amount.g = to.g - from.g;
+		amount.b = to.b - from.b;
+		amount.a = to.a - from.a;
+
+		Color color = camera_fade.color;
+		camera_fade.color = from;
+		camera_fade.gameObject.SetActive(true);
+
+		Color delta = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+		while (Mathf.Abs(delta.r) < Mathf.Abs(amount.r) || Mathf.Abs(delta.g) < Mathf.Abs(amount.g) || Mathf.Abs(delta.b) < Mathf.Abs(amount.b) || Mathf.Abs(delta.a) < Mathf.Abs(amount.a))
+		{
+			delta.r += amount.r * (Time.deltaTime / time);
+			delta.g += amount.g * (Time.deltaTime / time);
+			delta.b += amount.b * (Time.deltaTime / time);
+			delta.a += amount.a * (Time.deltaTime / time);
+			camera_fade.color = new Color(from.r + delta.r, from.g + delta.g, from.b + delta.b, from.a + delta.a);
+			yield return null;
+		}
+		camera_fade.color = to;
+		camera_fade.gameObject.SetActive(false);
+	}
+	/*
+	public IEnumerator CameraFadeIn(float time)
+	{
+		float from = 1.0f;
+		float to = 0.0f;
+		float amount = from - to;
+
+		Color color = camera_fade.color;
+		camera_fade.color = new Color(color.r, color.g, color.b, from);
+		camera_fade.gameObject.SetActive(true);
+
+		float delta = 0.0f;
+		while (Mathf.Abs(delta) < Mathf.Abs(amount))
+		{
+			delta += amount * (Time.deltaTime / time);
+			camera_fade.color = new Color(color.r, color.g, color.b, from + delta);
+			yield return null;
+		}
+		camera_fade.color = new Color(color.r, color.g, color.b, to);
+		camera_fade.gameObject.SetActive(false);
+	}
+	*/
 }
+ 
