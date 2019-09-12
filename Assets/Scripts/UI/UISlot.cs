@@ -109,9 +109,10 @@ public class UISlot : MonoBehaviour
         lhs.width *= canvas.scaleFactor;
         lhs.height *= canvas.scaleFactor;
 
-        
+		rhs.position = (Vector2)other.clone.transform.position;
+		lhs.position = (Vector2)transform.position;
 
-        return lhs.Overlaps(rhs);
+		return lhs.Overlaps(rhs);
     }
 
     public bool Contains(UISlot other)

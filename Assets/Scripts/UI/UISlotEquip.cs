@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System.Collections;
-using System.Collections.Generic;
 
 public class UISlotEquip : UISlot
 {
@@ -63,22 +60,6 @@ public class UISlotEquip : UISlot
         }
 
         SetActiveGuideArrow(true);
-        /*
-        inventory.TurnEquipGuideArrowOn(part, index);
-        inventory.itemInfo.slot = this;
-        inventory.itemInfo.stats.text = item.mainStat.value + " " + item.mainStat.description + "\n";
-        for (int i = 0; i < item.subStats.Count; i++)
-        {
-            inventory.itemInfo.stats.text += "<color=green> +" + item.subStats[i].value + " " + item.subStats[i].description + "</color>\n";
-        }
-        inventory.itemInfo.buttons[(int)UIItemInfo.Action.Drop].gameObject.SetActive(true);
-        inventory.itemInfo.actions[(int)UIItemInfo.Action.Drop] += () => {
-            Player.Instance.UnequipItem(part, index);
-            Init(null);
-            inventory.TurnEquipGuideArrowOff();
-            inventory.itemInfo.gameObject.SetActive(false);
-        };
-        */
     }
 
     public override void OnSlotReleaseNotify(UISlot other)
@@ -104,7 +85,7 @@ public class UISlotEquip : UISlot
             return;
         }
 
-        if (false == Contains(other))
+        if (false == Overlaps(other))
         {
             return;
         }

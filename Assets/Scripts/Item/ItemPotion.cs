@@ -2,6 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public class PotionItem : Item
+{
+	public enum PotionType
+	{
+		Invalid,
+		Heal
+	}
+
+	public new class Meta : Item.Meta
+	{
+		public PotionType potion_type;
+
+		public override Item CreateInstance()
+		{
+			return new PotionItem(this);
+		}
+	}
+
+	public PotionItem(PotionItem.Meta meta) : base(meta)
+	{
+	}
+}
 		/*
 public abstract class PotionItem : Item {
 	public PotionItem() : base(Item.Type.Potion) {
