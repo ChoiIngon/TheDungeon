@@ -29,6 +29,7 @@ public class UISlotEquip : UISlot
 
 	public override void OnSlotSelectNotify(UISlot other)
     {
+		SetActiveGuideArrow(false);
         if(this == other)
         {
             outline.outline = true;
@@ -50,7 +51,6 @@ public class UISlotEquip : UISlot
 
         if (part != equipItem.part)
         {
-            SetActiveGuideArrow(false);
             return;
         }
 
@@ -64,47 +64,64 @@ public class UISlotEquip : UISlot
 
     public override void OnSlotReleaseNotify(UISlot other)
     {
-        EquipItem equipItem = (EquipItem)other.item;
-        if (null == equipItem)
-        {
-            return;
-        }
+		if (false == Overlaps(other))
+		{
+			return;
+		}
 
-        if (part != equipItem.part)
-        {
-            return;
-        }
+		if (null == other.item)
+		{
+			return;
+		}
+		switch (other.item.meta.type)
+		{
+			case Item.Type.Equipment: {
+				EquipItem equipItem = (EquipItem)other.item;
+				if (null == equipItem)
+				{
+					return;
+				}
 
-        if (this == other)
-        {
-            return;
-        }
-        
-        if (null == other.clone)
-        {
-            return;
-        }
+				if (part != equipItem.part)
+				{
+					return;
+				}
 
-        if (false == Overlaps(other))
-        {
-            return;
-        }
+				if (this == other)
+				{
+					return;
+				}
 
-        Debug.Log(name + " is selected");
-        if(false == equipItem.equip)
-        {
-            GameManager.Instance.player.inventory.Remove(equipItem.slot_index);
-            Item prev = GameManager.Instance.player.Equip(equipItem, equip_index);
-            GameManager.Instance.player.inventory.Add(prev);
-        }
-        else
-        {
-            UISlotEquip equipSlot = other as UISlotEquip;
-            EquipItem a = GameManager.Instance.player.Unequip(part, equip_index);
-            EquipItem b = GameManager.Instance.player.Unequip(part, equipSlot.equip_index);
-            GameManager.Instance.player.Equip(a, equipSlot.equip_index);
-            GameManager.Instance.player.Equip(b, equip_index);
-        }
+				if (null == other.clone)
+				{
+					return;
+				}
+
+				Debug.Log(name + " is selected");
+				if (false == equipItem.equip)
+				{
+					GameManager.Instance.player.inventory.Remove(equipItem.slot_index);
+					Item prev = GameManager.Instance.player.Equip(equipItem, equip_index);
+					GameManager.Instance.player.inventory.Add(prev);
+				}
+				else
+				{
+					UISlotEquip equipSlot = other as UISlotEquip;
+					EquipItem a = GameManager.Instance.player.Unequip(part, equip_index);
+					EquipItem b = GameManager.Instance.player.Unequip(part, equipSlot.equip_index);
+					GameManager.Instance.player.Equip(a, equipSlot.equip_index);
+					GameManager.Instance.player.Equip(b, equip_index);
+				}
+			}
+			break;
+			case Item.Type.Scroll: {
+					if (null == item)
+					{
+						return;
+					}
+			}
+			break;
+		}
     }
 
     private void OnItemEquip(ItemEquipEvent evt)

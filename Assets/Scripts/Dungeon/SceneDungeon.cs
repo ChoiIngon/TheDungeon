@@ -151,7 +151,7 @@ public class SceneDungeon : SceneMain
         completeQuests = new List<QuestData> ();
 		StartCoroutine (Init ());
 		*/
-		Init();
+		InitScene();
 
 		Util.EventSystem.Subscribe(EventID.Inventory_Open, touch_input.AddBlockCount);
 		Util.EventSystem.Subscribe(EventID.Inventory_Close, touch_input.ReleaseBlockCount);
@@ -165,7 +165,7 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, touch_input.ReleaseBlockCount);
 
 		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, InitRooms);
-
+		Util.EventSystem.Subscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
 		touch_input.ReleaseBlockCount();
 		Debug.Log("init complete dungeon");
 	}
@@ -181,12 +181,23 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Start, touch_input.AddBlockCount);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish, touch_input.ReleaseBlockCount);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish, InitRooms);
+		Util.EventSystem.Unsubscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
 	}
-	void Init()
+
+	void InitScene()
 	{
-		dungeon_level = 1;
 		GameManager.Instance.player.level = 1;
 		GameManager.Instance.player.exp = 0;
+		GameManager.Instance.player.max_health = 100;
+		GameManager.Instance.player.cur_health = GameManager.Instance.player.max_health;
+
+		player_health.max = GameManager.Instance.player.max_health;
+		player_health.current = GameManager.Instance.player.cur_health;
+		player_exp.max = GameManager.Instance.player.GetMaxExp();
+		player_exp.current = GameManager.Instance.player.exp;
+
+		dungeon_level = 1;
+		InitDungeon ();
 		/*
 		yield return StartCoroutine(QuestManager.Instance.Init ());
 		QuestManager.Instance.onComplete += (QuestData data) => {
@@ -195,25 +206,15 @@ public class SceneDungeon : SceneMain
 		QuestManager.Instance.Update (QuestProgress.Type.CrrentLocation, "Dungeon");
 		yield return StartCoroutine(CheckCompleteQuest ());
 		*/
-		InitDungeon ();
 	}
 	void InitDungeon()
 	{
-		player_health.max = GameManager.Instance.player.max_health;
-		player_health.current = GameManager.Instance.player.cur_health;
-		player_exp.max = GameManager.Instance.player.GetMaxExp();
-		player_exp.current = GameManager.Instance.player.exp;
-		
+		StartCoroutine(GameManager.Instance.CameraFade(1.0f, 0.0f, 1.5f));
 		dungeon.Init(dungeon_level);
 		mini_map.Init(dungeon);
 		InitRooms();
-		rooms.gameObject.SetActive(true);
-
+		
 		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon_level.ToString();
-
-		//StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 0.0f, "time", 1.0f)));
-		StartCoroutine(GameManager.Instance.CameraFade(1.0f, 0.0f, 2.0f));
-
 		/*		
 				Analytics.CustomEvent("InitDungeon", new Dictionary<string, object> {
 					//{"dungeon_level", level },
@@ -462,5 +463,11 @@ public class SceneDungeon : SceneMain
 			{"monster_id", meta.id },
 			{"player_level", GameManager.Instance.player.level}
 		});
+	}
+
+	void OnChangePlayerHealth()
+	{
+		player_health.max = GameManager.Instance.player.max_health;
+		player_health.current = GameManager.Instance.player.cur_health;
 	}
 }

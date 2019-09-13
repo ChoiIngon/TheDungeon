@@ -23,41 +23,35 @@ public class PotionItem : Item
 	public PotionItem(PotionItem.Meta meta) : base(meta)
 	{
 	}
-}
-		/*
-public abstract class PotionItem : Item {
-	public PotionItem() : base(Item.Type.Potion) {
+
+	public virtual void Drink(Unit target)
+	{
+		throw new System.NotImplementedException();
 	}
-	public override List<string> Actions() {
-		List<string> actions = base.Actions ();
-		actions.Add ("DRINK");
-		actions.Add ("THROW");
-		return actions;
-	}
-	public abstract void Use (Unit target);
 }
 
-public class HealingPotionItem : PotionItem {
-	public override void Use(Unit target)
-	{
-		target.Health (target.GetStat().health);
-	}
-	public new class Info : PotionItem.Info
+public class HealPotionItem : PotionItem
+{
+	public new class Meta : PotionItem.Meta
 	{
 		public override Item CreateInstance()
 		{
-			HealingPotionItem item = new HealingPotionItem ();
-			item.id = id;
-			item.name = name;
-			item.icon = ResourceManager.Instance.Load<Sprite> (icon);
-			item.price = price;
-			item.grade = Item.Grade.Normal;
-			item.description = description;
-			return item;	
+			return new HealPotionItem(this);
 		}
 	}
-}
+	public HealPotionItem(HealPotionItem.Meta meta) : base(meta)
+	{
+	}
 
+	public override void Drink(Unit target)
+	{
+		target.cur_health = target.max_health;
+		Util.EventSystem.Publish(EventID.Player_Change_Health);
+	}
+
+	public override string description { get { return meta.description; } }
+}
+/*
 public class PoisonPotionItem : PotionItem {
 	public override void Use(Unit target)
 	{

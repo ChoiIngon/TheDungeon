@@ -57,30 +57,6 @@ public class Item
 		Debug.Log("create item(item_id:" + meta.id + ", item_seq:" + item_seq + ")");
 	}
 
-	public virtual void Equip(Unit unit)
-	{
-		throw new System.InvalidOperationException("can not equip item(item_id:" + meta.id + ", item_seq:" + item_seq + ")");
-	}
-
-	public virtual void Unequip()
-	{
-		throw new System.InvalidOperationException("can not unequip item(item_id:" + meta.id + ", item_seq:" + item_seq + ")");
-	}
-
-	public virtual void Delete(int count)
-	{
-		throw new System.InvalidOperationException("can not delete item(item_id:" + meta.id + ", item_seq:" + item_seq + ")");
-	}
-
-	public virtual void Sell(int count)
-	{
-		throw new System.InvalidOperationException("can not sell item(item_id:" + meta.id + ", item_seq:" + item_seq + ")");
-	}
-
-	public virtual void Use(Unit unit)
-	{
-		throw new System.InvalidOperationException("can not use item(item_id:" + meta.id + ", item_seq:" + item_seq + ")");
-	}
-    public virtual string description { get { throw new System.NotImplementedException(); } }
+	public virtual string description { get { throw new System.NotImplementedException(); } }
 }
 	

@@ -47,6 +47,7 @@ public class ItemManager : Util.Singleton<ItemManager>
 		}, 1);
 
 		InitEquipItem();
+		InitPotionItemInfo();
 	}
 
 	public Item CreateItem(string id)
@@ -95,33 +96,7 @@ public class ItemManager : Util.Singleton<ItemManager>
 	}
 
 	
-	/*
-	private void InitPotionItemInfo()
-	{
-		{
-			HealingPotionItem.Info info = new HealingPotionItem.Info ();
-			info.id = "ITEM_POTION_HEALING";
-			info.name = "Healing Potion";
-			info.price = 100;
-			info.icon = "item_potion_002";
-			info.grade = (int)Item.Grade.Normal;
-			info.description = "An elixir that will instantly return you to full health and cure poison.";
-			infos.Add (info.id, info);
-		}
-		{
-			PoisonPotionItem.Info info = new PoisonPotionItem.Info ();
-			info.id = "ITEM_POTION_POISON";
-			info.name = "Poison Potion";
-			info.price = 100;
-			info.icon = "item_potion_003";
-			info.grade = (int)Item.Grade.Normal;
-			infos.Add (info.id, info);
-		}
-	}
-
-	
-	*/
-	void InitEquipItem()
+	private void InitEquipItem()
 	{
 		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT item_id, item_name, equip_part, price, sprite_path, description, main_stat_type, base_value, rand_value FROM meta_item_equip");
 		while(true == reader.Read())
@@ -147,6 +122,21 @@ public class ItemManager : Util.Singleton<ItemManager>
             meta.sprite_path = reader.GetString("sprite_path");
             meta.description = reader.GetString("description");
             equip_item_metas.Add(meta);
+		}
+	}
+
+	private void InitPotionItemInfo()
+	{
+		{
+			HealPotionItem.Meta meta = new HealPotionItem.Meta ();
+			meta.potion_type = PotionItem.PotionType.Heal;
+			meta.type = Item.Type.Potion;
+			meta.id = "ITEM_POTION_HEALING";
+			meta.name = "Healing Potion";
+			meta.price = 100;
+			meta.sprite_path = "item_potion_002";
+			meta.description = "An elixir that will instantly return you to full health and cure poison.";
+			metas.Add (meta.id, meta);
 		}
 	}
 

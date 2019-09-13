@@ -160,12 +160,15 @@ public class DungeonBattle : MonoBehaviour
 
 	private int CalculateDamage(Unit attacker, Unit defender)
 	{
-		int attack = (int)Mathf.Max(1, attacker.attack + Random.Range(-attacker.attack * 0.1f, attacker.attack * 0.1f) - defender.defense);
+		float attack = attacker.attack + Random.Range(-attacker.attack * 0.1f, attacker.attack * 0.1f);
+		float defense = defender.defense + Random.Range(-defender.defense * 0.1f, defender.defense * 0.1f);
+		float damage = Mathf.Max(1, attack - defense);
+
 		if (attacker.critical >= Random.Range(0.0f, 100.0f))
 		{
-			attack *= 3;
+			damage *= 3;
 			// critical effect
 		}
-		return attack;
+		return (int)damage;
 	}
 }

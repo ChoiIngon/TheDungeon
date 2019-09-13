@@ -146,7 +146,25 @@ public class UIInventory : MonoBehaviour
             item_info.actions[(int)UIItemInfo.Action.Drop] = null;
             item_info.gameObject.SetActive(false);
         };
-    }
+
+		switch (slot.item.meta.type)
+		{
+			case Item.Type.Potion:
+				item_info.buttons[(int)UIItemInfo.Action.Drink].gameObject.SetActive(true);
+				item_info.actions[(int)UIItemInfo.Action.Drink] += () =>
+				{
+					PotionItem potionItem = GameManager.Instance.player.inventory.Remove(slot.item.slot_index) as PotionItem;
+					if (null == potionItem)
+					{
+						throw new System.InvalidCastException();
+					}
+					potionItem.Drink(GameManager.Instance.player);
+					item_info.actions[(int)UIItemInfo.Action.Drink] = null;
+					item_info.gameObject.SetActive(false);
+				};
+				break;
+		}
+	}
 
     private void OnSlotReleaseNotify(UISlot slot)
     {
