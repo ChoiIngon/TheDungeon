@@ -10,9 +10,10 @@ public class UIItem : MonoBehaviour
 	public Image icon = null;
 	public Image grade = null;
     public Image clone = null;
+
     public ImageOutline outline = null;
 	public RectTransform rectTransform;
-	public Transform inventory;
+	public UIInventory inventory;
 
     public Item item_data;
     private Canvas canvas = null;
@@ -83,11 +84,29 @@ public class UIItem : MonoBehaviour
 		grade.color = GetGradeColor (item.grade);
 	}
 
-	public virtual void OnEquipSlotDrop(UIEquipItemSlot slot) { }
-    public virtual void OnItemSlotDrop(UIItemSlot slot) {}
+	public virtual void OnSelect() 
+	{
+	}
+	public virtual void OnDrag() {}
+	public virtual void OnDrop() {}
+	public virtual void OnEquipSlotDrop(UIEquipSlot slot) 
+	{
+	}
+    public virtual void OnItemSlotDrop(UIItemSlot slot) 
+	{
+
+	}
 	
 	private void OnPointerDown(PointerEventData evt)
     {
+		foreach(var slot in inventory.slots)
+		{
+			if(null == slot.item)
+			{
+				continue;
+			}
+			slot.item.outline.outline = false;
+		}
         if (null == item_data)
         {
             return;
@@ -99,8 +118,7 @@ public class UIItem : MonoBehaviour
             throw new System.Exception("can not clone icon image");
         }
 
-        Transform inventory = transform.parent.parent.parent;
-        clone.transform.SetParent(inventory, false);
+        clone.transform.SetParent(inventory.transform, false);
 
         RectTransform rtClone = clone.rectTransform;
         rtClone.anchorMax = new Vector2(0.5f, 0.5f);
@@ -111,6 +129,7 @@ public class UIItem : MonoBehaviour
         clone.transform.position = transform.position;
         Util.EventSystem.Publish<UIItem>(EventID.Inventory_Slot_Select, this);
         outline.outline = true;
+		OnSelect();
     }
 
     private void OnDrag(PointerEventData evt)
@@ -130,6 +149,7 @@ public class UIItem : MonoBehaviour
         }
 
         Util.EventSystem.Publish<UIItem>(EventID.Inventory_Slot_Release, this);
+		OnDrop();
         clone.transform.SetParent(null);
         Destroy(clone.gameObject);
         clone = null;

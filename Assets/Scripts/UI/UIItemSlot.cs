@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIItemSlot : MonoBehaviour
 {
 	public UIItem item;
 	public int slot_index = -1;
 	private Canvas canvas = null;
+	private Image guide_arrow = null;
 	private RectTransform rectTransform;
 
 	public virtual void Awake()
@@ -23,6 +25,11 @@ public class UIItemSlot : MonoBehaviour
 			throw new System.Exception("can not find componernt 'RectTransform'");
 		}
 
+		guide_arrow = transform.Find("Arrow").GetComponent<Image>();
+		if (null == guide_arrow)
+		{
+			throw new System.Exception("can not find child component(name:Arrow)");
+		}
 		Util.EventSystem.Subscribe<UIItem>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
 		Util.EventSystem.Subscribe<UIItem>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
 	}
@@ -37,6 +44,11 @@ public class UIItemSlot : MonoBehaviour
 	{
 		if (null == item)
 		{
+			if(null != this.item)
+			{
+				this.item.transform.SetParent(null, false);
+				Object.Destroy(this.item);
+			}
 			this.item = null;
 			return;
 		}
@@ -132,6 +144,20 @@ public class UIItemSlot : MonoBehaviour
 			GameManager.Instance.player.inventory.Add(equipItem);
 		}
 		*/
+	}
+
+	public void SetActiveGuideArrow(bool active)
+	{
+		if (true == active)
+		{
+			iTween.MoveBy(guide_arrow.gameObject, iTween.Hash("y", 20, "easeType", "linear", "loopType", "pingPong", "delay", 0.0f, "time", 0.5f));
+		}
+		else
+		{
+			iTween.Stop(guide_arrow.gameObject);
+			guide_arrow.transform.localPosition = Vector3.zero;
+		}
+		guide_arrow.gameObject.SetActive(active);
 	}
 
 }
