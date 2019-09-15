@@ -7,30 +7,41 @@ public class UIInventory : MonoBehaviour
     public UIPlayerInfo player_info;
     public UIItemInfo item_info;
 
-	public UISlotInventory[] inventory_slots = new UISlotInventory[Inventory.MAX_SLOT_COUNT];
-	public Dictionary<Tuple<EquipItem.Part, int>, UISlotEquip> equip_slots = new Dictionary<Tuple<EquipItem.Part, int>, UISlotEquip>();
+	private List<UIItemSlot> slots = new List<UIItemSlot>();
+	public UIItemSlot[] inventory_slots = new UIItemSlot[Inventory.MAX_SLOT_COUNT];
+	public Dictionary<Tuple<EquipItem.Part, int>, UIEquipItemSlot> equip_slots = new Dictionary<Tuple<EquipItem.Part, int>, UIEquipItemSlot>();
 	public Button close;
 
+	public UIItem[] slot_prefabs = new UIItem[(int)Item.Type.Max];
     public void Init()
     {
+		slot_prefabs[(int)Item.Type.Equipment] = UIUtil.FindChild<UIEquipItem>(transform, "SlotPrefabs/EquipItemSlot");
+		slot_prefabs[(int)Item.Type.Potion] = UIUtil.FindChild<UIPotionItem>(transform, "SlotPrefabs/PotionItemSlot");
+
 		gameObject.SetActive(false);
+		
 		Transform inventorySlots = UIUtil.FindChild<Transform>(transform, "InventorySlots");
-        for (int i = 0; i < Inventory.MAX_SLOT_COUNT; i++)
+		for (int i = 0; i < Inventory.MAX_SLOT_COUNT; i++)
         {
-            UISlotInventory slot = inventorySlots.GetChild(i).GetComponent<UISlotInventory>();
+			UIItemSlot slot = inventorySlots.GetChild(i).GetComponent<UIItemSlot>();
             slot.slot_index = i;
             inventory_slots[i] = slot;
-            //slots.Add(slot);
+            slots.Add(slot);
         }
 
         Transform equipSlots = UIUtil.FindChild<Transform>(transform, "EquipmentSlots");
-        for (int i = 0; i < 7; i++)
-        {
-            UISlotEquip slot = equipSlots.GetChild(i).GetComponent<UISlotEquip>();
-            equip_slots.Add(new Tuple<EquipItem.Part, int>(slot.part, slot.equip_index), slot);
-            //slots.Add(slot);
-        }
-        
+		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Helmet, 0), UIUtil.FindChild<UIEquipItemSlot>(equipSlots, "Helmet"));
+		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Hand, 0), UIUtil.FindChild<UIEquipItemSlot>(equipSlots, "Hand_0"));
+		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Hand, 1), UIUtil.FindChild<UIEquipItemSlot>(equipSlots, "Hand_1"));
+		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Armor, 1), UIUtil.FindChild<UIEquipItemSlot>(equipSlots, "Armor"));
+		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Ring, 0), UIUtil.FindChild<UIEquipItemSlot>(equipSlots, "Ring_0"));
+		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Ring, 1), UIUtil.FindChild<UIEquipItemSlot>(equipSlots, "Ring_1"));
+		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Shoes, 1), UIUtil.FindChild<UIEquipItemSlot>(equipSlots, "Shoes"));
+		foreach (var itr in equip_slots)
+		{
+			slots.Add(itr.Value);
+		}
+		
         close = UIUtil.FindChild<Button>(transform, "Close");
         UIUtil.AddPointerUpListener(close.gameObject, () => { SetActive(false); });
         
@@ -41,27 +52,10 @@ public class UIInventory : MonoBehaviour
         player_info = UIUtil.FindChild<UIPlayerInfo>(transform, "PlayerInfo");
         player_info.Init();
 
-		foreach (var item in GameManager.Instance.player.inventory.items)
-		{
-			if (null == item)
-			{
-				continue;
-			}
-			OnItemAdd(item);
-		}
-
-		foreach (var itr in GameManager.Instance.player.equip_items)
-		{
-			if (null == itr.Value)
-			{
-				continue;
-			}
-			OnItemEquip(new ItemEquipEvent() { equip_index = itr.Key.second, item = itr.Value });	
-		}
-        Util.EventSystem.Subscribe<Item>(EventID.Inventory_Add, OnItemAdd);
+		Util.EventSystem.Subscribe<Item>(EventID.Inventory_Add, OnItemAdd);
         Util.EventSystem.Subscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
-        Util.EventSystem.Subscribe<UISlot>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
-        Util.EventSystem.Subscribe<UISlot>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
+        Util.EventSystem.Subscribe<UIItem>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
+        Util.EventSystem.Subscribe<UIItem>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
 
         Debug.Log("init complete UIInventory");
     }
@@ -70,8 +64,8 @@ public class UIInventory : MonoBehaviour
 	{
 		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Add, OnItemAdd);
 		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
-		Util.EventSystem.Unsubscribe<UISlot>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
-		Util.EventSystem.Unsubscribe<UISlot>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
+		Util.EventSystem.Unsubscribe<UIItem>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
+		Util.EventSystem.Unsubscribe<UIItem>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
 	}
 	public void SetActive(bool flag)
     {
@@ -91,21 +85,32 @@ public class UIInventory : MonoBehaviour
 		}
     }
 	
-    private void OnItemAdd(Item item)
+    private void OnItemAdd(Item itemData)
     {
-        Debug.Log("OnItemAdd(item_id:" + item.meta.id + ", item_seq:" + item.item_seq + ", slot_index:" + item.slot_index + ")");
-        inventory_slots[item.slot_index].Init(item);
+		Debug.Log("OnItemAdd(item_id:" + itemData.meta.id + ", item_seq:" + itemData.item_seq + ", slot_index:" + itemData.slot_index + ")");
+//		inventory_slots[item.slot_index].Init(item);
+
+		UIItem item = GameObject.Instantiate<UIItem>(slot_prefabs[(int)itemData.meta.type]);
+		if (null == item)
+		{
+			throw new System.Exception("can not instantiate slot object for item(item_id:" + itemData.meta.id + ", name:" + itemData.meta.name + ")");
+		}
+		item.gameObject.SetActive(true);
+		item.inventory = transform;
+		item.Init(itemData);
+		inventory_slots[itemData.slot_index].SetItem(item);
     }
 
-    private void OnItemRemove(Item item)
+    private void OnItemRemove(Item itemData)
     {
-        if(0 > item.slot_index || Inventory.MAX_SLOT_COUNT <= item.slot_index)
+        if(0 > itemData.slot_index || Inventory.MAX_SLOT_COUNT <= itemData.slot_index)
         {
-            throw new System.Exception("out of range inventory index(index:" + item.slot_index + ")");
+            throw new System.Exception("out of range inventory index(index:" + itemData.slot_index + ")");
         }
-        Debug.Log("OnItemRemove(item_id:" + item.meta.id + ", item_seq:" + item.item_seq + ", slot_index:" + item.slot_index + ")");
+        Debug.Log("OnItemRemove(item_id:" + itemData.meta.id + ", item_seq:" + itemData.item_seq + ", slot_index:" + itemData.slot_index + ")");
 
-        inventory_slots[item.slot_index].Init(null);
+		inventory_slots[itemData.slot_index].SetItem(null);
+		Object.Destroy(inventory_slots[itemData.slot_index].gameObject);
     }
 
     private void OnItemEquip(ItemEquipEvent evt)
@@ -117,11 +122,18 @@ public class UIInventory : MonoBehaviour
             throw new System.Exception("invalid item equip slot(equip_part:" + evt.item.part + ", equip_index:" + evt.item.equip_index +")");
         }
 
-        UISlotEquip slot = equip_slots[key];
-        slot.Init(evt.item);
-    }
+		UIItem item = GameObject.Instantiate<UIItem>(slot_prefabs[(int)evt.item.meta.type]);
+		if (null == item)
+		{
+			throw new System.Exception("can not instantiate slot object for item(item_id:" + evt.item.meta.id + ", name:" + evt.item.meta.name + ")");
+		}
+		item.gameObject.SetActive(true);
+		item.Init(evt.item);
 
-    private void OnItemUnequip(ItemEquipEvent evt)
+		equip_slots[key].SetItem(item);
+	}
+
+	private void OnItemUnequip(ItemEquipEvent evt)
     {
         player_info.Refresh();
         var key = new Tuple<EquipItem.Part, int>(evt.item.part, evt.equip_index);
@@ -130,30 +142,29 @@ public class UIInventory : MonoBehaviour
             throw new System.Exception("invalid item equip slot(equip_part:" + evt.item.part + ", equip_index:" + evt.item.equip_index + ")");
         }
 
-        UISlotEquip slot = equip_slots[key];
-        slot.Init(null);
+		equip_slots[key].SetItem(null);
     }
 
-    private void OnSlotSelectNotify(UISlot slot)
+    private void OnSlotSelectNotify(UIItem slot)
     {
         item_info.slot = slot;
 
-        item_info.description.text = slot.item.description;
+        item_info.description.text = slot.item_data.description;
 
         item_info.buttons[(int)UIItemInfo.Action.Drop].gameObject.SetActive(true);
         item_info.actions[(int)UIItemInfo.Action.Drop] += () => {
-            GameManager.Instance.player.inventory.Remove(slot.item.slot_index);
+            GameManager.Instance.player.inventory.Remove(slot.item_data.slot_index);
             item_info.actions[(int)UIItemInfo.Action.Drop] = null;
             item_info.gameObject.SetActive(false);
         };
 
-		switch (slot.item.meta.type)
+		switch (slot.item_data.meta.type)
 		{
 			case Item.Type.Potion:
 				item_info.buttons[(int)UIItemInfo.Action.Drink].gameObject.SetActive(true);
 				item_info.actions[(int)UIItemInfo.Action.Drink] += () =>
 				{
-					PotionItem potionItem = GameManager.Instance.player.inventory.Remove(slot.item.slot_index) as PotionItem;
+					PotionItem potionItem = GameManager.Instance.player.inventory.Remove(slot.item_data.slot_index) as PotionItem;
 					if (null == potionItem)
 					{
 						throw new System.InvalidCastException();
@@ -166,7 +177,7 @@ public class UIInventory : MonoBehaviour
 		}
 	}
 
-    private void OnSlotReleaseNotify(UISlot slot)
+    private void OnSlotReleaseNotify(UIItem slot)
     {
     }
 }

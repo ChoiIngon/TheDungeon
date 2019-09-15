@@ -41,16 +41,16 @@ public class UIItemInfo : MonoBehaviour
 		}
     }
 
-	public UISlot slot {
+	public UIItem slot {
 		set {
 			if (null == value)
 			{
 				return;
 			}
 			gameObject.SetActive (true);
-			Item item = value.item;
+			Item item = value.item_data;
 			name.text = item.meta.name;
-			grade.color = UISlot.GetGradeColor(item.grade);
+			grade.color = UIItem.GetGradeColor(item.grade);
 			description.text = item.meta.description;
 			icon.sprite = ResourceManager.Instance.Load<Sprite>(item.meta.sprite_path);
 			stats.text = "";

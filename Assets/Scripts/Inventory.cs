@@ -16,7 +16,7 @@ public class Inventory
 	}
 	private int _count = 0;
 	
-	public Item Add(Item item)
+	public void Add(Item item)
 	{
 		if (MAX_SLOT_COUNT <= _count)
 		{
@@ -25,7 +25,7 @@ public class Inventory
 
 		if (null == item)
 		{
-			return null;
+			return;
 		}
 
 		for(int i=0;i<items.Length; i++)
@@ -36,16 +36,44 @@ public class Inventory
 				items[i] = item;
 				_count += 1;
 				Util.EventSystem.Publish<Item>(EventID.Inventory_Add, item);
-				return item;
+				return;
 			}
 		}
-		return null;
 	}
+
+	public void Add(Item item, int slotIndex)
+	{
+		if (MAX_SLOT_COUNT <= _count)
+		{
+			throw new System.Exception("inventory count over");
+		}
+
+		if (0 > slotIndex || MAX_SLOT_COUNT <= slotIndex)
+		{
+			throw new System.Exception("invalid inventory index(index:" + slotIndex + ")");
+		}
+
+		if (null == item)
+		{
+			return;
+		}
+
+		if (null != items[slotIndex])
+		{
+			throw new System.Exception("duplicated inventory slot index(index:" + slotIndex + ")");
+		}
+
+		item.slot_index = slotIndex;
+		items[slotIndex] = item;
+		_count += 1;
+		Util.EventSystem.Publish<Item>(EventID.Inventory_Add, item);
+	}
+
 	public Item Remove(int index)
 	{
         if(0 > index || MAX_SLOT_COUNT <= index)
 		{
-		    throw new System.Exception("invalid inventory index(index:" + index + ")");
+			throw new System.Exception("invalid inventory index(index:" + index + ")");
 		}
 
 		if (null == items[index])

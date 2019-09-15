@@ -5,10 +5,11 @@ using System.Collections;
 using System.Collections.Generic;
 
 [System.Serializable]
-public class UISlotInventory : UISlot
+public class UIPotionItem : UIItem
 {
     public int slot_index = -1;
-    public override void OnSlotSelectNotify(UISlot other)
+        /*
+    public override void OnSlotSelectNotify(UIItem other)
     {
         if (this == other)
         {
@@ -18,7 +19,6 @@ public class UISlotInventory : UISlot
         {
             outline.outline = false;
         }
-        /*
          
 		inventory.itemInfo.buttons [(int)UIItemInfo.Action.Drop].gameObject.SetActive (true);
 		inventory.itemInfo.actions[(int)UIItemInfo.Action.Drop] += () => {
@@ -26,17 +26,16 @@ public class UISlotInventory : UISlot
 			inventory.TurnEquipGuideArrowOff();
 			inventory.itemInfo.gameObject.SetActive (false);
 		}
-        */
     }
 
-    public override void OnSlotReleaseNotify(UISlot other)
+    public override void OnSlotReleaseNotify(UIItem other)
     {
         if(this == other)
         {
             return;
         }
 
-        if(null == other.item)
+        if(null == other.item_data)
         {
             return;
         }
@@ -46,15 +45,17 @@ public class UISlotInventory : UISlot
             return;
         }
 
-        if(0 <= other.item.slot_index) // in inventory
+        if(0 <= other.item_data.slot_index) // in inventory
         {
-            GameManager.Instance.player.inventory.Swap(other.item.slot_index, slot_index);
+            GameManager.Instance.player.inventory.Swap(other.item_data.slot_index, slot_index);
         }
         else
         {
-            EquipItem equipItem = other.item as EquipItem;
+            EquipItem equipItem = other.item_data as EquipItem;
             GameManager.Instance.player.Unequip(equipItem.part, equipItem.equip_index);
             GameManager.Instance.player.inventory.Add(equipItem);
         }
+		
     }
+        */
 }

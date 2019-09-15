@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class UISlot : MonoBehaviour
+public class UIItem : MonoBehaviour
 {
 	// Image border;
 	public Image icon = null;
@@ -12,11 +12,12 @@ public class UISlot : MonoBehaviour
     public Image clone = null;
     public ImageOutline outline = null;
 	public RectTransform rectTransform;
+	public Transform inventory;
 
-    public Item item;
+    public Item item_data;
     private Canvas canvas = null;
 
-    public virtual void Start()
+    public virtual void Awake()
 	{
         canvas = FindObjectOfType<Canvas>();
         if (null == canvas)
@@ -56,21 +57,16 @@ public class UISlot : MonoBehaviour
         outline = transform.Find ("ItemIcon").GetComponent<ImageOutline> ();
 		outline.outline = false;
 
-        Init (item);
-
-        Util.EventSystem.Subscribe<UISlot>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
-        Util.EventSystem.Subscribe<UISlot>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
+        Init (item_data);
 	}
 
 	protected virtual void OnDestroy()
 	{
-		Util.EventSystem.Unsubscribe<UISlot>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
-		Util.EventSystem.Unsubscribe<UISlot>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
 	}
 
 	public virtual void Init(Item item)
 	{
-		this.item = item;
+		this.item_data = item;
 		icon.gameObject.SetActive (false);
 		grade.gameObject.SetActive (false);
         if (null == item)
@@ -87,60 +83,12 @@ public class UISlot : MonoBehaviour
 		grade.color = GetGradeColor (item.grade);
 	}
 
-    public virtual void OnSlotSelectNotify(UISlot other)
-    {
-    }
-
-    public virtual void OnSlotReleaseNotify(UISlot other) {}
+	public virtual void OnEquipSlotDrop(UIEquipItemSlot slot) { }
+    public virtual void OnItemSlotDrop(UIItemSlot slot) {}
 	
-	public bool Overlaps(UISlot other)
+	private void OnPointerDown(PointerEventData evt)
     {
-        if(this == other)
-        {
-            return true;
-        }
-
-        Rect rhs = other.clone.rectTransform.rect;
-        Rect lhs = rectTransform.rect;
-
-        rhs.width *= canvas.scaleFactor;
-        rhs.height *= canvas.scaleFactor;
-
-        lhs.width *= canvas.scaleFactor;
-        lhs.height *= canvas.scaleFactor;
-
-		rhs.position = (Vector2)other.clone.transform.position;
-		lhs.position = (Vector2)transform.position;
-
-		return lhs.Overlaps(rhs);
-    }
-
-    public bool Contains(UISlot other)
-    {
-        if(this == other)
-        {
-            return true;
-        }
-
-        Rect rhs = other.clone.rectTransform.rect;
-        Rect lhs = rectTransform.rect;
-
-        rhs.width *= canvas.scaleFactor;
-        rhs.height *= canvas.scaleFactor;
-
-        lhs.width *= canvas.scaleFactor;
-        lhs.height *= canvas.scaleFactor;
-
-        rhs.position = (Vector2)other.clone.transform.position;
-        lhs.position = (Vector2)transform.position;
-
-        Vector2 point = new Vector2(rhs.x+rhs.width/2, rhs.y + rhs.height/2);
-        return lhs.Contains(point);
-    }
-
-    private void OnPointerDown(PointerEventData evt)
-    {
-        if (null == item)
+        if (null == item_data)
         {
             return;
         }
@@ -151,7 +99,7 @@ public class UISlot : MonoBehaviour
             throw new System.Exception("can not clone icon image");
         }
 
-        Transform inventory = transform.parent.parent;
+        Transform inventory = transform.parent.parent.parent;
         clone.transform.SetParent(inventory, false);
 
         RectTransform rtClone = clone.rectTransform;
@@ -161,7 +109,7 @@ public class UISlot : MonoBehaviour
         rtClone.sizeDelta = new Vector2(100.0f, 100.0f); //rtOriginal.sizeDelta;
 
         clone.transform.position = transform.position;
-        Util.EventSystem.Publish<UISlot>(EventID.Inventory_Slot_Select, this);
+        Util.EventSystem.Publish<UIItem>(EventID.Inventory_Slot_Select, this);
         outline.outline = true;
     }
 
@@ -176,17 +124,18 @@ public class UISlot : MonoBehaviour
 
     private void OnPointerUp(PointerEventData evt)
     {
-        if (null == item)
+        if (null == item_data)
         {
             return;
         }
 
-        Util.EventSystem.Publish<UISlot>(EventID.Inventory_Slot_Release, this);
+        Util.EventSystem.Publish<UIItem>(EventID.Inventory_Slot_Release, this);
         clone.transform.SetParent(null);
         Destroy(clone.gameObject);
         clone = null;
     }
-    public static Color GetGradeColor(Item.Grade grade)
+
+	public static Color GetGradeColor(Item.Grade grade)
 	{
 		Color color = Color.white;
 		switch (grade) {
