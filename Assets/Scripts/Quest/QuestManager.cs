@@ -6,13 +6,15 @@ using UnityEngine.Assertions;
 using System.Collections;
 using System.Collections.Generic;
 
-public class CompleteQuest {
+public class CompleteQuest
+{
 	public string id;
 	public int date;
 	public int count;
 };
 
 public class QuestManager : Util.Singleton<QuestManager> {
+	/*
 	public delegate void UpdateDelegate(string key);
 	public delegate void CompleteDelegate(QuestData quests);
 	public delegate QuestTrigger CreateTriggerDelegate(string value);
@@ -49,8 +51,8 @@ public class QuestManager : Util.Singleton<QuestManager> {
 		public string name;
 		public Trigger[] triggers;
 		public Progress[] progresses;
-		public QuestData.Dialouge start_dialouge;
-		public QuestData.Dialouge complete_dialouge;
+		public QuestData.Dialogue start_dialogue;
+		public QuestData.Dialogue complete_dialogue;
 		public QuestData.Reward reward;
 	}
 
@@ -84,8 +86,8 @@ public class QuestManager : Util.Singleton<QuestManager> {
 					data.progresses.Add(new QuestProgress(progress.name, progress.type, progress.key, progress.goal));
 				}
 
-				data.startDialouge = quest.start_dialouge;
-				data.completeDialouge = quest.complete_dialouge;
+				data.startDialouge = quest.start_dialogue;
+				data.completeDialouge = quest.complete_dialogue;
 				data.reward = quest.reward;
 				quests.Add(data.id, data);
 			}
@@ -146,5 +148,5 @@ public class QuestManager : Util.Singleton<QuestManager> {
 	{
 	}
 		
-
+ */
 }

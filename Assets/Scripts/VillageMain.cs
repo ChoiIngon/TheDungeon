@@ -109,12 +109,14 @@ public class VillageMain : SceneMain {
 	IEnumerator CheckQuest()
 	{
 		{
+			/*
 			QuestData quest = ProgressManager.Instance.GetAvailableQuest ();
 			if (null != quest && null != quest.start_dialogue) {
 				state = State.Popup;
 				yield return StartCoroutine (GameManager.Instance.ui_npc.Talk (quest.start_dialogue.speaker, quest.start_dialogue.scripts));
 				state = State.Idle;
 			}
+			*/
 		}
 		/*
 		string[] texts = new string[] {
@@ -140,12 +142,14 @@ public class VillageMain : SceneMain {
 		//yield return StartCoroutine(npc.Talk(texts));
 		//state = State.Idle;
 		*/
+		yield break;
 	}
 	IEnumerator OnCompleteQuest(QuestData quest)
 	{
 		//state = State.Popup;
 		//foreach(QuestData quest in completeQuests)
 		{
+			/*
 			if (null == quest.complete_dialogue) {
 				yield break;
 			}
@@ -156,8 +160,10 @@ public class VillageMain : SceneMain {
 			state = State.Popup;
 			yield return StartCoroutine (GameManager.Instance.ui_npc.Talk (quest.complete_dialogue.speaker, quest.complete_dialogue.scripts));
 			state = State.Idle;
+			*/
 		}
-	//	completeQuests.Clear ();
+		//	completeQuests.Clear ();
 		//state = State.Idle;
+		yield break;
 	}
 }

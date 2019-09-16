@@ -34,6 +34,7 @@ public class QuestProgress
 		Assert.AreNotEqual(null, type);
 		Assert.AreNotEqual("", type);
 		#endif
+		/*
 		if (false == QuestManager.Instance.updates.ContainsKey(type))
 		{
 			QuestManager.Instance.updates[type] = this.Update;
@@ -42,15 +43,18 @@ public class QuestProgress
 		{
 			QuestManager.Instance.updates[type] += this.Update;
 		}
+		*/
 	}
 
 	public virtual bool IsComplete()
 	{
+		/*
 		if (progress >= goal)
 		{
 			QuestManager.Instance.updates[type] -= this.Update;
 			return true;
 		}
+		*/
 		return false;
 	}
 

@@ -5,6 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class QuestData
 {
+	/*
 	public enum State {
 		Invalid,
 		AccecptWait,
@@ -75,4 +76,5 @@ public class QuestData
 		state = State.Complete;
 		return true;
 	}
+	*/
 }

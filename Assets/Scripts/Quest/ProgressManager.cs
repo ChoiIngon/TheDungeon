@@ -1,54 +1,96 @@
 ﻿using UnityEngine;
-using UnityEngine.Analytics;
-using System.Collections;
 using System.Collections.Generic;
 
-public class CompleteQuest
+public abstract class Progress
 {
-	public string id;
-	public int date;
-	public int count;
-};
+	public static class Type
+	{
+		public const string KillMonster = "KillMonster";
+		public const string CollectItem = "CollectItem";
+		public const string CrrentLocation = "CurrentLocation";
+	}
+
+	public string id = "";
+	public string type = "";
+	public string key = "";
+	public int count = 0;
+	public int goal = 0;
+
+	public void Update(string key)
+	{
+		count++;
+		OnUpdate();
+		if (count >= goal)
+		{
+			OnComplete();
+		}
+	}
+
+	public abstract void OnUpdate();
+	public abstract void OnComplete();
+}
 
 public class ProgressManager : Util.Singleton<ProgressManager>
 {
-	public delegate void UpdateDelegate(string key);
-	
-	public delegate QuestTrigger CreateTriggerDelegate(string value);
-
-	public System.Action<Progress> onUpdateProgress;
-    public System.Action<QuestData>	onCompleteQuest;
-
-	private Dictionary<string, CreateTriggerDelegate> triggerFactory = new Dictionary<string, CreateTriggerDelegate>() {
-		{ "LessCompleteQuestCount",	(string value) => { return new QuestTrigger_LessCompleteQuestCount(int.Parse(value)); }},
-		{ "CompleteQuestID", 		(string value) => { return new QuestTrigger_CompleteQuestID(value); }}	
-	};
-
-    public Dictionary<string, UpdateDelegate> updates;
-	public Dictionary<string, CompleteQuest> completes;
-	
-
-	public void Update(string completeType, string completeKey)
+    private Dictionary<Tuple<string, string>, List<Progress>> progresses = new Dictionary<Tuple<string, string>, List<Progress>>();
+	/*
+	public void Init()
 	{
-		if (false == updates.ContainsKey (completeType))
+		Database.Execute(Database.Type.UserData,
+			"CREATE TABLE IF NOT EXISTS user_progress (" +
+				"progress_id TEXT NOT NULL," +
+				"progress_step INT NOT NULL DEFAULT 0," +
+				"progress_state INT NOT NULL DEFAULT 0," +
+				"progress_count INT NOT NULL DEFAULT 0," +
+				"PRIMARY KEY('achieve_id')" +
+			")"
+		);
+	}
+	*/
+	public void Add(Progress progress)
+	{
+		Tuple<string, string> key = new Tuple<string, string>(progress.type, progress.key);
+		if (false == progresses.ContainsKey(key))
 		{
+			progresses[key] = new List<Progress>();
+		}
+		progresses[key].Add(progress);
+	}
+
+	public void Remove(Progress progress)
+	{
+		Tuple<string, string> key = new Tuple<string, string>(progress.type, progress.key);
+		if (false == progresses.ContainsKey(key))
+		{
+			Debug.Log("can not find progress(tyep:" + progress.type + ", key:" + progress.key + ")");
 			return;
 		}
+		progresses[key].Remove(progress);
+	}
 
-		updates[completeType]?.Invoke(completeKey);
-		/*
-		foreach (var itr in quests)
+	public void Update(string progressType, string progressKey)
+	{
 		{
-			QuestData quest = itr.Value;
-			if (true == quest.IsComplete ())
+			Tuple<string, string> key = new Tuple<string, string>(progressType, progressKey);
+			if (true == progresses.ContainsKey(key))
 			{
-				if (null != onCompleteQuest)
+				foreach (Progress progress in progresses[key])
 				{
-					onCompleteQuest (quest);
+					progress.Update(progressKey);
 				}
 			}
 		}
-		*/
+
+		{
+			Tuple<string, string> key = new Tuple<string, string>(progressType, "");
+			if (true == progresses.ContainsKey(key))
+			{
+				foreach (Progress progress in progresses[key])
+				{
+					progress.Update(progressKey);
+				}
+			}
+		}
 	}
 
 	/*
