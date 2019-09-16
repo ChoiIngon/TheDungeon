@@ -24,8 +24,8 @@ public class UIInventory : MonoBehaviour
 		for (int i = 0; i < Inventory.MAX_SLOT_COUNT; i++)
         {
 			UIItemSlot slot = inventorySlots.GetChild(i).GetComponent<UIItemSlot>();
+			slot.inventory = this;
             slot.slot_index = i;
-
             inventory_slots[i] = slot;
             slots.Add(slot);
         }
@@ -40,8 +40,10 @@ public class UIInventory : MonoBehaviour
 		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Shoes, 1), UIUtil.FindChild<UIEquipSlot>(equipSlots, "Shoes"));
 		foreach (var itr in equip_slots)
 		{
+			itr.Value.inventory = this;
 			itr.Value.part = itr.Key.first;
 			itr.Value.equip_index = itr.Key.second;
+			itr.Value.slot_index = -1;
 			slots.Add(itr.Value);
 		}
 		
@@ -99,7 +101,6 @@ public class UIInventory : MonoBehaviour
 			throw new System.Exception("can not instantiate slot object for item(item_id:" + itemData.meta.id + ", name:" + itemData.meta.name + ")");
 		}
 
-		item.inventory = this;
 		item.gameObject.SetActive(true);
 		item.Init(itemData);
 		inventory_slots[itemData.slot_index].SetItem(item);
@@ -108,8 +109,8 @@ public class UIInventory : MonoBehaviour
     private void OnItemRemove(Item itemData)
     {
         Debug.Log("OnItemRemove(item_id:" + itemData.meta.id + ", item_seq:" + itemData.item_seq + ", slot_index:" + itemData.slot_index + ")");
+		Object.Destroy(inventory_slots[itemData.slot_index].item.gameObject);
 		inventory_slots[itemData.slot_index].SetItem(null);
-
     }
 
     private void OnItemEquip(ItemEquipEvent evt)
@@ -140,7 +141,7 @@ public class UIInventory : MonoBehaviour
         {
             throw new System.Exception("invalid item equip slot(equip_part:" + evt.item.part + ", equip_index:" + evt.item.equip_index + ")");
         }
-
+		Object.Destroy(equip_slots[key].item.gameObject);
 		equip_slots[key].SetItem(null);
     }
 

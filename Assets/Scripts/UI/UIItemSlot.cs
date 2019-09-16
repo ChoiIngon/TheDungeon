@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class UIItemSlot : MonoBehaviour
 {
-	public UIItem item;
+	public UIItem item = null;
+	public UIInventory inventory = null;
 	public int slot_index = -1;
 	private Canvas canvas = null;
 	private Image guide_arrow = null;
@@ -53,8 +54,10 @@ public class UIItemSlot : MonoBehaviour
 			return;
 		}
 		this.item = item;
+		this.item.inventory = this.inventory;
 		item.transform.SetParent(transform, false);
 		item.transform.localPosition = Vector3.zero;
+		item.rectTransform.sizeDelta = new Vector2(rectTransform.rect.width, rectTransform.rect.height);
 	}
 
 	public bool Overlaps(UIItem item)
@@ -157,6 +160,7 @@ public class UIItemSlot : MonoBehaviour
 			iTween.Stop(guide_arrow.gameObject);
 			guide_arrow.transform.localPosition = Vector3.zero;
 		}
+		Debug.Log("activate guide arrow:" + active.ToString());
 		guide_arrow.gameObject.SetActive(active);
 	}
 

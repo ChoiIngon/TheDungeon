@@ -56,7 +56,7 @@ public class UIItem : MonoBehaviour
 		icon = transform.Find ("ItemIcon").GetComponent<Image> ();
         grade = transform.Find("ItemGrade").GetComponent<Image>();
         outline = transform.Find ("ItemIcon").GetComponent<ImageOutline> ();
-		outline.outline = false;
+		outline.active = false;
 
         Init (item_data);
 	}
@@ -105,7 +105,7 @@ public class UIItem : MonoBehaviour
 			{
 				continue;
 			}
-			slot.item.outline.outline = false;
+			slot.item.outline.active = false;
 		}
         if (null == item_data)
         {
@@ -118,6 +118,7 @@ public class UIItem : MonoBehaviour
             throw new System.Exception("can not clone icon image");
         }
 
+		Debug.Log("instantiate clone for item(id:" + item_data.meta.id + ", slot_index:" + item_data.slot_index + ")");
         clone.transform.SetParent(inventory.transform, false);
 
         RectTransform rtClone = clone.rectTransform;
@@ -128,7 +129,7 @@ public class UIItem : MonoBehaviour
 
         clone.transform.position = transform.position;
         Util.EventSystem.Publish<UIItem>(EventID.Inventory_Slot_Select, this);
-        outline.outline = true;
+        outline.active = true;
 		OnSelect();
     }
 
@@ -151,7 +152,7 @@ public class UIItem : MonoBehaviour
         Util.EventSystem.Publish<UIItem>(EventID.Inventory_Slot_Release, this);
 		OnDrop();
         clone.transform.SetParent(null);
-        Destroy(clone.gameObject);
+        Object.Destroy(clone.gameObject);
         clone = null;
     }
 

@@ -3,23 +3,7 @@
 
 public class UIEquipItem : UIItem
 {
-    public override void Awake()
-    {
-        base.Awake();
-        
-
-        //Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
-        //Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
-    }
-
-	protected override void OnDestroy()
-	{
-		//Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
-		//Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
-		base.OnDestroy();
-	}
-
-	public override void OnSelect()
+    public override void OnSelect()
 	{
 		if(null == item_data)
 		{
@@ -30,14 +14,15 @@ public class UIEquipItem : UIItem
 		foreach(var itr in inventory.equip_slots)
 		{
 			UIEquipSlot slot = itr.Value;
-			slot.SetActiveGuideArrow(false);
 			if(slot.part != equipItem.part)
 			{
+				slot.SetActiveGuideArrow(false);
 				continue;
 			}
 
 			if(slot.equip_index == equipItem.equip_index)
 			{
+				slot.SetActiveGuideArrow(false);
 				continue;
 			}
 
@@ -47,6 +32,11 @@ public class UIEquipItem : UIItem
 
 	public override void OnEquipSlotDrop(UIEquipSlot slot)
 	{
+		foreach (var itr in inventory.equip_slots)
+		{
+			itr.Value.SetActiveGuideArrow(false);
+		}
+
 		EquipItem equipItem = (EquipItem)item_data;
 		if (slot.part != equipItem.part)
 		{
@@ -72,6 +62,11 @@ public class UIEquipItem : UIItem
 
 	public override void OnItemSlotDrop(UIItemSlot slot)
 	{
+		foreach (var itr in inventory.equip_slots)
+		{
+			itr.Value.SetActiveGuideArrow(false);
+		}
+
 		EquipItem equipItem = (EquipItem)item_data;
 		if (true == equipItem.equip)
 		{
