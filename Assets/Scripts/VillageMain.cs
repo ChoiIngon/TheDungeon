@@ -42,7 +42,7 @@ public class VillageMain : SceneMain {
 		};
 		yield return StartCoroutine (Init ());
 
-		QuestManager.Instance.Update (QuestProgress.Type.CrrentLocation, "Village");
+		ProgressManager.Instance.Update (Progress.Type.CrrentLocation, "Village");
 		yield return StartCoroutine (CheckQuest ());
     }
 
@@ -109,10 +109,10 @@ public class VillageMain : SceneMain {
 	IEnumerator CheckQuest()
 	{
 		{
-			QuestData quest = QuestManager.Instance.GetAvailableQuest ();
-			if (null != quest && null != quest.startDialouge) {
+			QuestData quest = ProgressManager.Instance.GetAvailableQuest ();
+			if (null != quest && null != quest.start_dialogue) {
 				state = State.Popup;
-				yield return StartCoroutine (GameManager.Instance.ui_npc.Talk (quest.startDialouge.speaker, quest.startDialouge.dialouge));
+				yield return StartCoroutine (GameManager.Instance.ui_npc.Talk (quest.start_dialogue.speaker, quest.start_dialogue.scripts));
 				state = State.Idle;
 			}
 		}
@@ -146,15 +146,15 @@ public class VillageMain : SceneMain {
 		//state = State.Popup;
 		//foreach(QuestData quest in completeQuests)
 		{
-			if (null == quest.completeDialouge) {
+			if (null == quest.complete_dialogue) {
 				yield break;
 			}
-			if (null == quest.completeDialouge.dialouge) {
+			if (null == quest.complete_dialogue.scripts) {
 				yield break;
 			}
 
 			state = State.Popup;
-			yield return StartCoroutine (GameManager.Instance.ui_npc.Talk (quest.completeDialouge.speaker, quest.completeDialouge.dialouge));
+			yield return StartCoroutine (GameManager.Instance.ui_npc.Talk (quest.complete_dialogue.speaker, quest.complete_dialogue.scripts));
 			state = State.Idle;
 		}
 	//	completeQuests.Clear ();

@@ -15,7 +15,7 @@ public class QuestTrigger_LessCompleteQuestCount : QuestTrigger {
 		this.count = count;
 	}
 	public override bool IsAvailable() {
-		if (count <= QuestManager.Instance.completes.Count) {
+		if (count <= ProgressManager.Instance.completes.Count) {
 			return true;
 		}
 		return false;
@@ -30,7 +30,7 @@ public class QuestTrigger_CompleteQuestID : QuestTrigger {
 		this.questID = questID;
 	}
 	public override bool IsAvailable() {
-		if (false == QuestManager.Instance.completes.ContainsKey (questID)) {
+		if (false == ProgressManager.Instance.completes.ContainsKey (questID)) {
 			return false;
 		}
 		return true;

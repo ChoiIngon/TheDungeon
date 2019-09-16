@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class QuestData {
+public class QuestData
+{
 	public enum State {
 		Invalid,
 		AccecptWait,
@@ -14,9 +15,10 @@ public class QuestData {
 	};
 
 	[System.Serializable]
-	public class Dialouge {
+	public class Dialogue
+	{
 		public string speaker;
-		public string[] dialouge;
+		public string[] scripts; // 대사
 	}
 
 	[System.Serializable]
@@ -24,16 +26,18 @@ public class QuestData {
 	{
 		public int coin;
 	}
+
 	public string id;
 	public string name;
 	public State state = State.Invalid;
 	public Reward reward = new Reward();
 	public List<QuestTrigger> triggers = new List<QuestTrigger> ();
-	public List<QuestProgress> progresses = new List<QuestProgress> ();
-	public Dialouge startDialouge = new Dialouge();
-	public Dialouge completeDialouge = new Dialouge();
+	public List<Progress> progresses = new List<Progress> ();
+	public Dialogue start_dialogue = new Dialogue();
+	public Dialogue complete_dialogue = new Dialogue();
 
-	public bool IsAvailable() {
+	public bool IsAvailable()
+	{
 		if (State.Invalid != state) {
 			return false;
 		}
@@ -52,7 +56,7 @@ public class QuestData {
 		if (State.AccecptWait != state) {
 			return;
 		}
-		foreach (QuestProgress progress in progresses) {
+		foreach (Progress progress in progresses) {
 			progress.Start ();
 		}
 		state = State.OnGoing;
@@ -62,7 +66,7 @@ public class QuestData {
 		if (State.OnGoing != state) {
 			return false;
 		}
-		foreach (QuestProgress progress in progresses) {
+		foreach (Progress progress in progresses) {
 			if(false == progress.IsComplete())
 			{
 				return false;
