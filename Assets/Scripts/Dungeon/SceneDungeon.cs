@@ -421,6 +421,8 @@ public class SceneDungeon : SceneMain
 		int bonusExp = (int)(rewardExp * stat.GetStat(StatType.ExpBonus) / 100.0f);
 		GameManager.Instance.player.inventory.coin += rewardCoin + bonusCoin;
 		GameManager.Instance.player.AddExp(rewardExp + bonusExp);
+		ProgressManager.Instance.Update(Achieve.AchieveType_CollectCoin, "", rewardCoin + bonusCoin);
+		ProgressManager.Instance.Update(Achieve.AchieveType_Level, "", GameManager.Instance.player.level);
 
 		CreateCoins(rewardCoin + bonusCoin);
 		player_exp.max = GameManager.Instance.player.GetMaxExp();

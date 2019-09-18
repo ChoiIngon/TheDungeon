@@ -39,6 +39,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		Database.Connect(Database.Type.UserData, Application.persistentDataPath + "/user_data.db");
 		ItemManager.Instance.Init();
 		MonsterManager.Instance.Init();
+		AchieveManager.Instance.Init();
 
 		player = new Player();
 		player.Init();

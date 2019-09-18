@@ -41,8 +41,6 @@ public class VillageMain : SceneMain {
 			StartCoroutine(ChangeScene("Dungeon", dungeon.gameObject));
 		};
 		yield return StartCoroutine (Init ());
-
-		ProgressManager.Instance.Update (Progress.Type.CrrentLocation, "Village");
 		yield return StartCoroutine (CheckQuest ());
     }
 

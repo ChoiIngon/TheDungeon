@@ -3,22 +3,32 @@ using System.Collections.Generic;
 
 public abstract class Progress
 {
-	public static class Type
+	public enum Operation
 	{
-		public const string KillMonster = "KillMonster";
-		public const string CollectItem = "CollectItem";
-		public const string CrrentLocation = "CurrentLocation";
+		Invalid,
+		Add,
+		Max
 	}
-
 	public string id = "";
 	public string type = "";
 	public string key = "";
 	public int count = 0;
 	public int goal = 0;
+	public Operation operation = Operation.Invalid;
 
-	public void Update(string key)
+	public void Update(int changedAmount)
 	{
-		count++;
+		switch (operation)
+		{
+			case Operation.Add:
+				count += changedAmount;
+				break;
+			case Operation.Max:
+				count = Mathf.Max(count, changedAmount);
+				break;
+			default:
+				throw new System.Exception("invalid progress update operation");
+		}
 		OnUpdate();
 		if (count >= goal)
 		{
@@ -33,22 +43,13 @@ public abstract class Progress
 public class ProgressManager : Util.Singleton<ProgressManager>
 {
     private Dictionary<Tuple<string, string>, List<Progress>> progresses = new Dictionary<Tuple<string, string>, List<Progress>>();
-	/*
-	public void Init()
-	{
-		Database.Execute(Database.Type.UserData,
-			"CREATE TABLE IF NOT EXISTS user_progress (" +
-				"progress_id TEXT NOT NULL," +
-				"progress_step INT NOT NULL DEFAULT 0," +
-				"progress_state INT NOT NULL DEFAULT 0," +
-				"progress_count INT NOT NULL DEFAULT 0," +
-				"PRIMARY KEY('achieve_id')" +
-			")"
-		);
-	}
-	*/
+
 	public void Add(Progress progress)
 	{
+		if (Progress.Operation.Invalid == progress.operation)
+		{
+			throw new System.Exception("invalid progress update operation(progress_type:" + progress.type + ", progress_key:" + progress.key + ")");
+		}
 		Tuple<string, string> key = new Tuple<string, string>(progress.type, progress.key);
 		if (false == progresses.ContainsKey(key))
 		{
@@ -68,15 +69,16 @@ public class ProgressManager : Util.Singleton<ProgressManager>
 		progresses[key].Remove(progress);
 	}
 
-	public void Update(string progressType, string progressKey)
+	public void Update(string progressType, string progressKey, int changedAmount)
 	{
+		if("" != progressKey)
 		{
 			Tuple<string, string> key = new Tuple<string, string>(progressType, progressKey);
 			if (true == progresses.ContainsKey(key))
 			{
 				foreach (Progress progress in progresses[key])
 				{
-					progress.Update(progressKey);
+					progress.Update(changedAmount);
 				}
 			}
 		}
@@ -87,30 +89,9 @@ public class ProgressManager : Util.Singleton<ProgressManager>
 			{
 				foreach (Progress progress in progresses[key])
 				{
-					progress.Update(progressKey);
+					progress.Update(changedAmount);
 				}
 			}
 		}
 	}
-
-	/*
-	public QuestData Find(string questID)
-	{ 
-		return quests.ContainsKey (questID) ? quests [questID] : null;
-	}
-
-	public QuestData GetAvailableQuest()
-	{
-		foreach(var v in quests)
-		{
-			QuestData quest = v.Value;
-			if(true == quest.IsAvailable())
-			{
-				quest.Start ();
-				return quest;
-			}
-		}
-		return null;
-	}
-	*/
 }

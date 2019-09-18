@@ -6,57 +6,153 @@ using System.Threading.Tasks;
 
 public class Achieve : Progress
 {
+	public const string AchieveType_CollectCoin = "CollectCoin";
+	public const string AchieveType_Level = "Level";
+	public static Dictionary<string, Progress.Operation> achieve_operations = new Dictionary<string, Progress.Operation>()
+	{
+		{ Achieve.AchieveType_CollectCoin, Progress.Operation.Add },
+		{ Achieve.AchieveType_Level, Progress.Operation.Max },
+	};
+
 	public class Meta
 	{
-		public string id;
+		public string name;
+		public string sprite_path;
+		public string type;
 		public int step;
 		public int goal;
 	}
 
-	public string name = "";
-	public int state = 0;
-	public int step = 0;
+	public int step;
+	public List<Meta> metas = new List<Meta>();
 
+	public Achieve(string type, int step, int count, int goal)
+	{
+		this.type = type;
+		this.step = step;
+		this.count = count;
+		this.goal = goal;
+		if (false == achieve_operations.ContainsKey(type))
+		{
+			throw new System.Exception("invalid progress update operation(progress_type:" + type + ", progress_key:" + key + ")");
+		}
+		this.operation = achieve_operations[type];
+	}
 	public override void OnUpdate()
 	{
 		Database.Execute(Database.Type.UserData,
-			"INSERT INTO user_achieve VALUES() ON CONFILT(achieve_id) DO UPDATE SET achieve_step=" + step + ", achieve_count=" + count
+			"UPDATE user_achieve SET achieve_count=" + count + " WHERE achieve_type='" + type + "'"
 		);
 	}
 
 	public override void OnComplete()
 	{
-	}
+		if (metas.Count >= step + 1)
+		{
+			Meta meta = metas[step];
+			step = meta.step;
+			count = count - goal;
+			goal = meta.goal;
+			Database.Execute(Database.Type.UserData,
+				"UPDATE user_achieve SET achieve_step=" + step + ", achieve_count=" + count + ", achieve_goal=" + goal + " WHERE achieve_type='" + type + "'"
+			);
 
-	public void OnReward()
-	{
+			if (count >= goal)
+			{
+				OnComplete();
+			}
+		}
 	}
 }
 
 public class AchieveManager : Util.Singleton<AchieveManager>
 {
 	private Dictionary<string, Achieve> achieves = new Dictionary<string, Achieve>();
+
 	public void Init()
 	{
-		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-			"SELECT achieve_id, achieve_name, achieve_step, goal, description FROM meta_achieve"
+		CreateAchieveTableIfNotExists();
+		LoadAchieveDatas();
+		LoadAchieveMetas();
+	}
+
+	private void CreateAchieveTableIfNotExists()
+	{
+		Database.Execute(Database.Type.UserData,
+			"CREATE TABLE IF NOT EXISTS user_achieve (" +
+				"achieve_type TEXT NOT NULL," +
+				"achieve_step INT NOT NULL DEFAULT 0," +
+				"achieve_count INT NOT NULL DEFAULT 0," +
+				"achieve_goal INT NOT NULL DEFAULT 0," +
+				"PRIMARY KEY('achieve_type')" +
+			")"
+		);
+	}
+
+	private void LoadAchieveDatas()
+	{
+		Util.Database.DataReader reader = Database.Execute(Database.Type.UserData,
+			"SELECT achieve_type, achieve_step, achieve_count, achieve_goal FROM user_achieve"
 		);
 		while (true == reader.Read())
 		{
-			Achieve achieve = new Achieve();
-			achieve.id = reader.GetString("achieve_id");
-			achieve.name = reader.GetString("achieve_name");
-			achieve.step = reader.GetInt32("achieve_step");
+			Achieve achieve = new Achieve(
+				reader.GetString("achieve_type"),
+				reader.GetInt32("achieve_step"),
+				reader.GetInt32("achieve_count"),
+				reader.GetInt32("achieve_goal")
+			);
+
+			achieves.Add(achieve.type, achieve);
+			ProgressManager.Instance.Add(achieve);
+		}
+	}
+
+	private void LoadAchieveMetas()
+	{
+		Dictionary<string, List<Achieve.Meta>> achieve_metas = new Dictionary<string, List<Achieve.Meta>>();
+		
+
+		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+			"SELECT achieve_type, achieve_step, achieve_name, achieve_goal FROM meta_achieve order by achieve_type, achieve_step"
+		);
+		while (true == reader.Read())
+		{
+			Achieve.Meta meta = new Achieve.Meta()
+			{
+				type = reader.GetString("achieve_type"),
+				step = reader.GetInt32("achieve_step"),
+				name = reader.GetString("achieve_name"),
+				goal = reader.GetInt32("achieve_goal")
+			};
+
+			if (false == achieve_metas.ContainsKey(meta.type))
+			{
+				achieve_metas[meta.type] = new List<Achieve.Meta>();
+			}
+
+			achieve_metas[meta.type].Add(meta);
 		}
 
-		Database.Execute(Database.Type.UserData,
-			"CREATE TABLE IF NOT EXISTS user_achieve (" +
-				"achieve_id TEXT NOT NULL," +
-				"achieve_step INT NOT NULL DEFAULT 0," +
-				"achieve_state INT NOT NULL DEFAULT 0," +
-				"achieve_count INT NOT NULL DEFAULT 0," +
-				"PRIMARY KEY('achieve_id')" +
-			")"
-		);
+		foreach (var itr in achieve_metas)
+		{
+			if (false == achieves.ContainsKey(itr.Key))
+			{
+				Achieve achieve = new Achieve(
+					itr.Key,
+					1,
+					0,
+					itr.Value[0].goal
+				);
+
+				Database.Execute(Database.Type.UserData,
+					"INSERT INTO user_achieve(achieve_type, achieve_step, achieve_count, achieve_goal) VALUES('" + achieve.type + "',1,0," + achieve.goal + ")"
+				);
+
+				achieves.Add(achieve.type, achieve);
+				ProgressManager.Instance.Add(achieve);
+			}
+			achieves[itr.Key].metas = itr.Value;
+		}
 	}
 }
