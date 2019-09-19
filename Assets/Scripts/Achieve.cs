@@ -154,7 +154,7 @@ public class AchieveManager : Util.Singleton<AchieveManager>
 					"INSERT INTO user_achieve(achieve_name, achieve_type, achieve_step, achieve_count, achieve_goal) VALUES('" + achieve.name + "','" + achieve.type + "',1,0," + achieve.goal + ")"
 				);
 
-				achieves[itr.Key].metas = itr.Value;
+                achieve.metas = itr.Value;
 				achieves.Add(achieve.type, achieve);
 				ProgressManager.Instance.Add(achieve);
 			}
