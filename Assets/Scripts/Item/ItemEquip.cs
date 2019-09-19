@@ -70,13 +70,14 @@ public class EquipItem : Item
     {
 		get
 		{
-			string description = "";
+			string desc = "";
+            desc += meta.description + "\n";
 			foreach (Stat.Data stat in main_stat.GetStats())
 			{
 				Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)stat.type);
 				while (true == reader.Read())
 				{
-					description += string.Format(reader.GetString("description"), stat.value) + "\n";
+					desc += string.Format(reader.GetString("description"), stat.value) + "\n";
 				}
 			}
 
@@ -85,11 +86,11 @@ public class EquipItem : Item
 				Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)stat.type);
 				while (true == reader.Read())
 				{
-					description += "<color=green> +" + string.Format(reader.GetString("description"), stat.value) + "</color>\n";
+					desc += "<color=green> +" + string.Format(reader.GetString("description"), stat.value) + "</color>\n";
 				}
 			}
 
-			return description;
+			return desc;
 		}
     }
 }
