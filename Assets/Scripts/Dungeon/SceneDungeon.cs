@@ -153,6 +153,7 @@ public class SceneDungeon : SceneMain
 		*/
 		InitScene();
 
+		ProgressManager.Instance.Update(Achieve.AchieveType_CollectCoin, "", 1000);
 		Util.EventSystem.Subscribe(EventID.Inventory_Open, touch_input.AddBlockCount);
 		Util.EventSystem.Subscribe(EventID.Inventory_Close, touch_input.ReleaseBlockCount);
 

@@ -23,11 +23,13 @@ public class Achieve : Progress
 		public int goal;
 	}
 
-	public int step;
+	public string name = "";
+	public int step = 0;
 	public List<Meta> metas = new List<Meta>();
 
-	public Achieve(string type, int step, int count, int goal)
+	public Achieve(string name, string type, int step, int count, int goal)
 	{
+		this.name = name;
 		this.type = type;
 		this.step = step;
 		this.count = count;
@@ -47,6 +49,7 @@ public class Achieve : Progress
 
 	public override void OnComplete()
 	{
+		UITicker.Instance.Write("complete achieve: " + name + " " + count + "/" + goal);
 		if (metas.Count >= step + 1)
 		{
 			Meta meta = metas[step];
@@ -80,6 +83,7 @@ public class AchieveManager : Util.Singleton<AchieveManager>
 	{
 		Database.Execute(Database.Type.UserData,
 			"CREATE TABLE IF NOT EXISTS user_achieve (" +
+				"achieve_name TEXT NOT NULL," +
 				"achieve_type TEXT NOT NULL," +
 				"achieve_step INT NOT NULL DEFAULT 0," +
 				"achieve_count INT NOT NULL DEFAULT 0," +
@@ -92,11 +96,12 @@ public class AchieveManager : Util.Singleton<AchieveManager>
 	private void LoadAchieveDatas()
 	{
 		Util.Database.DataReader reader = Database.Execute(Database.Type.UserData,
-			"SELECT achieve_type, achieve_step, achieve_count, achieve_goal FROM user_achieve"
+			"SELECT achieve_name, achieve_type, achieve_step, achieve_count, achieve_goal FROM user_achieve"
 		);
 		while (true == reader.Read())
 		{
 			Achieve achieve = new Achieve(
+				reader.GetString("achieve_name"),
 				reader.GetString("achieve_type"),
 				reader.GetInt32("achieve_step"),
 				reader.GetInt32("achieve_count"),
@@ -111,7 +116,6 @@ public class AchieveManager : Util.Singleton<AchieveManager>
 	private void LoadAchieveMetas()
 	{
 		Dictionary<string, List<Achieve.Meta>> achieve_metas = new Dictionary<string, List<Achieve.Meta>>();
-		
 
 		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
 			"SELECT achieve_type, achieve_step, achieve_name, achieve_goal FROM meta_achieve order by achieve_type, achieve_step"
@@ -139,6 +143,7 @@ public class AchieveManager : Util.Singleton<AchieveManager>
 			if (false == achieves.ContainsKey(itr.Key))
 			{
 				Achieve achieve = new Achieve(
+					itr.Value[0].name,
 					itr.Key,
 					1,
 					0,
@@ -146,13 +151,29 @@ public class AchieveManager : Util.Singleton<AchieveManager>
 				);
 
 				Database.Execute(Database.Type.UserData,
-					"INSERT INTO user_achieve(achieve_type, achieve_step, achieve_count, achieve_goal) VALUES('" + achieve.type + "',1,0," + achieve.goal + ")"
+					"INSERT INTO user_achieve(achieve_name, achieve_type, achieve_step, achieve_count, achieve_goal) VALUES('" + achieve.name + "','" + achieve.type + "',1,0," + achieve.goal + ")"
 				);
 
+				achieves[itr.Key].metas = itr.Value;
 				achieves.Add(achieve.type, achieve);
 				ProgressManager.Instance.Add(achieve);
 			}
-			achieves[itr.Key].metas = itr.Value;
+			else
+			{
+				Achieve achieve = achieves[itr.Key];
+				if (achieve.step >= itr.Value.Count)
+				{
+					if (achieve.count >= itr.Value[itr.Value.Count - 1].goal)
+					{
+						achieves.Remove(itr.Key);
+						ProgressManager.Instance.Remove(achieve);
+					}
+				}
+				if (true == achieves.ContainsKey(itr.Key))
+				{
+					achieves[itr.Key].metas = itr.Value;
+				}
+			}
 		}
 	}
 }

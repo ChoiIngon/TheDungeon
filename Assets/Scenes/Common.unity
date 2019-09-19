@@ -298,7 +298,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 766b0e95b768677479b16da45d76b718, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tickerMessagePrefab: {fileID: 0}
+  tickerMessagePrefab: {fileID: 114332674404785042, guid: 027acdbaaea8e4044ba8222e8f22bbc3,
+    type: 3}
 --- !u!1 &490226598
 GameObject:
   m_ObjectHideFlags: 0
@@ -433,6 +434,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 0}
+  inventory: {fileID: 0}
   slot_index: -1
   part: 0
   equip_index: 0
@@ -455,6 +457,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 0}
+  inventory: {fileID: 0}
   slot_index: -1
   part: 0
   equip_index: 0
@@ -2490,6 +2493,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 0}
+  inventory: {fileID: 0}
   slot_index: -1
   part: 0
   equip_index: 0
@@ -2700,42 +2704,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 0}
+  inventory: {fileID: 0}
   slot_index: -1
   part: 0
   equip_index: 0
---- !u!21 &976359678
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: ItemIcon
-  m_Shader: {fileID: 10770, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - _ColorMask: 15
-    - _Stencil: 0
-    - _StencilComp: 8
-    - _StencilOp: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
-    - _UseUIAlphaClip: 0
-    m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!21 &1045868330
 Material:
   serializedVersion: 6
@@ -2942,6 +2914,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 0}
+  inventory: {fileID: 0}
   slot_index: -1
   part: 0
   equip_index: 0
@@ -3109,6 +3082,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 0}
+  inventory: {fileID: 0}
   slot_index: -1
   part: 0
   equip_index: 0
@@ -3170,6 +3144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 0}
+  inventory: {fileID: 0}
   slot_index: -1
   part: 0
   equip_index: 0

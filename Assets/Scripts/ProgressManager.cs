@@ -67,6 +67,10 @@ public class ProgressManager : Util.Singleton<ProgressManager>
 			return;
 		}
 		progresses[key].Remove(progress);
+		if (0 == progresses[key].Count)
+		{
+			progresses.Remove(key);
+		}
 	}
 
 	public void Update(string progressType, string progressKey, int changedAmount)
