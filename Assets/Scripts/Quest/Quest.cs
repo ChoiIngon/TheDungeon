@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class QuestData
+public class Quest : Progress
 {
-	/*
-	public enum State {
+	public enum State
+	{
 		Invalid,
 		AccecptWait,
 		OnGoing,
@@ -15,25 +14,22 @@ public class QuestData
 		Max
 	};
 
-	[System.Serializable]
 	public class Dialogue
 	{
 		public string speaker;
 		public string[] scripts; // 대사
 	}
 
-	[System.Serializable]
 	public class Reward
 	{
 		public int coin;
 	}
 
-	public string id;
 	public string name;
 	public State state = State.Invalid;
 	public Reward reward = new Reward();
 	public List<QuestTrigger> triggers = new List<QuestTrigger> ();
-	public List<Progress> progresses = new List<Progress> ();
+	
 	public Dialogue start_dialogue = new Dialogue();
 	public Dialogue complete_dialogue = new Dialogue();
 
@@ -52,29 +48,17 @@ public class QuestData
 		return true;
 	}
 
-	public void Start()
+	public void OnStart()
 	{
-		if (State.AccecptWait != state) {
-			return;
-		}
-		foreach (Progress progress in progresses) {
-			progress.Start ();
-		}
-		state = State.OnGoing;
+		ProgressManager.Instance.Add(this);
+	}
+	public override void OnUpdate()
+	{
+		throw new System.NotImplementedException();
 	}
 
-	public bool IsComplete() {
-		if (State.OnGoing != state) {
-			return false;
-		}
-		foreach (Progress progress in progresses) {
-			if(false == progress.IsComplete())
-			{
-				return false;
-			}
-		}
-		state = State.Complete;
-		return true;
+	public override void OnComplete()
+	{
+		throw new System.NotImplementedException();
 	}
-	*/
 }

@@ -13,7 +13,12 @@ public class CompleteQuest
 	public int count;
 };
 
-public class QuestManager : Util.Singleton<QuestManager> {
+public class QuestManager : Util.Singleton<QuestManager>
+{
+	public void Init()
+	{
+		CreateQuestTableIfNotExists();
+	}
 	/*
 	public delegate void UpdateDelegate(string key);
 	public delegate void CompleteDelegate(QuestData quests);
@@ -56,97 +61,33 @@ public class QuestManager : Util.Singleton<QuestManager> {
 		public QuestData.Reward reward;
 	}
 
-	public class Config
+	
+*/
+	public Quest Find(string questID)
 	{
-		public QuestConfig[] quests;
-	}
-	public IEnumerator Init() {
-		onComplete = null;
-		if (null != quests) {
-			yield break;
-		}
-		updates = new Dictionary<string, UpdateDelegate>();
-		quests = new Dictionary<string, QuestData> ();
-			
-		yield return NetworkManager.Instance.HttpRequest ("info_quest.php", (string json) => {
-			Config config = JsonUtility.FromJson<Config>(json);
-			foreach(QuestConfig quest in config.quests)
-			{
-				QuestData data = new QuestData() {
-					id = quest.id, name = quest.name, state = QuestData.State.Invalid
-				};
-
-				foreach(QuestConfig.Trigger trigger in quest.triggers)
-				{
-					data.triggers.Add(triggerFactory[trigger.type](trigger.value));
-				}
-
-				foreach(QuestConfig.Progress progress in quest.progresses)
-				{
-					data.progresses.Add(new QuestProgress(progress.name, progress.type, progress.key, progress.goal));
-				}
-
-				data.startDialouge = quest.start_dialogue;
-				data.completeDialouge = quest.complete_dialogue;
-				data.reward = quest.reward;
-				quests.Add(data.id, data);
-			}
-		});
-
-		//quests["QUEST_EXAMPLE"] = new Quest_Example();
-		completes = new Dictionary<string, CompleteQuest>();
-	}
-
-	public void Update(string type, string key)
-	{
-		if (false == updates.ContainsKey (type)) {
-			return;
-		}
-		if (null == updates [type]) {
-			return;
-		}
-		updates [type] (key);
-		foreach (var itr in quests) {
-			QuestData quest = itr.Value;
-			if (true == quest.IsComplete ()) {
-				Analytics.CustomEvent("CompleteQuest", new Dictionary<string, object>
-				{
-					{"id", quest.id },
-					{"name", quest.name }
-				});
-				if (null != onComplete) {
-					onComplete (quest);
-				}
-			}
-		}
-	}
-
-	public QuestData Find(string questID)
-	{ 
-		return quests.ContainsKey (questID) ? quests [questID] : null;
-	}
-
-	public QuestData GetAvailableQuest()
-	{
-		foreach(var v in quests)
-		{
-			QuestData quest = v.Value;
-			if(true == quest.IsAvailable())
-			{
-				quest.Start ();
-				return quest;
-			}
-		}
 		return null;
 	}
-		
-	public void Save()
+	public Quest GetAvailableQuest()
 	{
+		Database.Execute(Database.Type.MetaData,
+			"SELECT quest_id FROM meta_quest"
+		);
+		return null;
 	}
 
-	public void Load()
+	private void CreateQuestTableIfNotExists()
+	{
+		Database.Execute(Database.Type.UserData,
+			"CREATE TABLE IF NOT EXISTS user_quest (" +
+				"quest_name TEXT NOT NULL," +
+				"quest_type TEXT NOT NULL," +
+				"quest_count INT NOT NULL DEFAULT 0," +
+				"quest_goal INT NOT NULL DEFAULT 0," +
+				"PRIMARY KEY('quest_type')" +
+			")"
+		);
+	}
+	private void LoadQuestDatas()
 	{
 	}
-		
- */
 }

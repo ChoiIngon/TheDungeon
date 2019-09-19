@@ -12,8 +12,8 @@ public enum StatType
 	Defense_Rate,
 	Speed,
 	Speed_Rate,
-	CriticalChance,
-	CriticalRate,
+	Critical,
+	Critical_Damage,
 	ExpBonus,
 	CoinBonus,
 }

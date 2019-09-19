@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Quest_Example : QuestData {
+public class Quest_Example : Quest {
 	public Quest_Example()
 	{
 		/*

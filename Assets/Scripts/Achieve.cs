@@ -49,7 +49,7 @@ public class Achieve : Progress
 
 	public override void OnComplete()
 	{
-		UITicker.Instance.Write("complete achieve: " + name + " " + count + "/" + goal);
+		UITicker.Instance.Write("complete achieve: " + name);
 		if (metas.Count >= step + 1)
 		{
 			Meta meta = metas[step];

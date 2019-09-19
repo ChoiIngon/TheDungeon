@@ -142,7 +142,7 @@ public class VillageMain : SceneMain {
 		*/
 		yield break;
 	}
-	IEnumerator OnCompleteQuest(QuestData quest)
+	IEnumerator OnCompleteQuest(Quest quest)
 	{
 		//state = State.Popup;
 		//foreach(QuestData quest in completeQuests)
