@@ -90,7 +90,7 @@ public class SceneDungeon : SceneMain
 		ui_dungeon_level = UIUtil.FindChild<Text>(transform, "UI/Dungeon/Level");
 
         coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot");
-        coin_prefab = UIUtil.FindChild<Coin>(transform, "CoinSpot/Coin");
+        coin_prefab = UIUtil.FindChild<Coin>(transform, "Prefabs/Coin");
 
 		player_health = UIUtil.FindChild<UIGaugeBar>(transform, "UI/Player/Health");
 		player_exp = UIUtil.FindChild<UIGaugeBar>(transform, "UI/Player/Exp");
@@ -320,6 +320,24 @@ public class SceneDungeon : SceneMain
 		}
     }
 
+	IEnumerator DestroyCoins()
+	{
+		for (int i = 0; i < coin_spot.childCount; i++)
+		{
+			Transform child = coin_spot.GetChild(i);
+			Coin coin = child.GetComponent<Coin>();
+			if (null == coin)
+			{
+				Debug.LogError("can not find component 'Coin'");
+				continue;
+			}
+			coin.Stop();
+		}
+		while (0 < coin_spot.childCount)
+		{
+			yield return null;
+		}
+	}
 	IEnumerator Move(int direction)
 	{
 		Util.EventSystem.Publish(EventID.Dungeon_Move_Start);
@@ -369,6 +387,7 @@ public class SceneDungeon : SceneMain
 
 		dungeon.Move(direction);
 		//	audioWalk.Play();
+		yield return StartCoroutine(DestroyCoins());
 		yield return StartCoroutine(MoveTo(rooms.gameObject, iTween.Hash("position", position, "time", room_size / room_move_speed, "easetype", iTween.EaseType.easeInQuad), true));
 		//	audioWalk.Stop();
 
