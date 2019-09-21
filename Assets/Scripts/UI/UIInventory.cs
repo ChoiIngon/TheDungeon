@@ -59,9 +59,6 @@ public class UIInventory : MonoBehaviour
 
 		Util.EventSystem.Subscribe<Item>(EventID.Inventory_Add, OnItemAdd);
         Util.EventSystem.Subscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
-        Util.EventSystem.Subscribe<UIItem>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
-        Util.EventSystem.Subscribe<UIItem>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
-
         Debug.Log("init complete UIInventory");
     }
 
@@ -69,8 +66,6 @@ public class UIInventory : MonoBehaviour
 	{
 		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Add, OnItemAdd);
 		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
-		Util.EventSystem.Unsubscribe<UIItem>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
-		Util.EventSystem.Unsubscribe<UIItem>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
 	}
 	public void SetActive(bool flag)
     {
@@ -143,41 +138,5 @@ public class UIInventory : MonoBehaviour
         }
 		Object.Destroy(equip_slots[key].item.gameObject);
 		equip_slots[key].SetItem(null);
-    }
-
-    private void OnSlotSelectNotify(UIItem slot)
-    {
-        item_info.slot = slot;
-
-        item_info.description.text = slot.item_data.description;
-
-        item_info.buttons[(int)UIItemInfo.Action.Drop].gameObject.SetActive(true);
-        item_info.actions[(int)UIItemInfo.Action.Drop] += () => {
-            GameManager.Instance.player.inventory.Remove(slot.item_data.slot_index);
-            item_info.actions[(int)UIItemInfo.Action.Drop] = null;
-            item_info.gameObject.SetActive(false);
-        };
-
-		switch (slot.item_data.meta.type)
-		{
-			case Item.Type.Potion:
-				item_info.buttons[(int)UIItemInfo.Action.Drink].gameObject.SetActive(true);
-				item_info.actions[(int)UIItemInfo.Action.Drink] += () =>
-				{
-					PotionItem potionItem = GameManager.Instance.player.inventory.Remove(slot.item_data.slot_index) as PotionItem;
-					if (null == potionItem)
-					{
-						throw new System.InvalidCastException();
-					}
-					potionItem.Drink(GameManager.Instance.player);
-					item_info.actions[(int)UIItemInfo.Action.Drink] = null;
-					item_info.gameObject.SetActive(false);
-				};
-				break;
-		}
-	}
-
-    private void OnSlotReleaseNotify(UIItem slot)
-    {
     }
 }

@@ -86,6 +86,7 @@ public class UIItem : MonoBehaviour
 
 	public virtual void OnSelect() 
 	{
+		
 	}
 	public virtual void OnDrag() {}
 	public virtual void OnDrop() {}
@@ -130,6 +131,15 @@ public class UIItem : MonoBehaviour
         clone.transform.position = transform.position;
         Util.EventSystem.Publish<UIItem>(EventID.Inventory_Slot_Select, this);
         outline.active = true;
+
+		inventory.item_info.slot = this;
+		inventory.item_info.description.text = item_data.description;
+		inventory.item_info.buttons[(int)UIItemInfo.Action.Drop].gameObject.SetActive(true);
+		inventory.item_info.actions[(int)UIItemInfo.Action.Drop] += () => {
+			GameManager.Instance.player.inventory.Remove(item_data.slot_index);
+			inventory.item_info.actions[(int)UIItemInfo.Action.Drop] = null;
+			inventory.item_info.gameObject.SetActive(false);
+		};
 		OnSelect();
     }
 

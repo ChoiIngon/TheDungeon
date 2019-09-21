@@ -5,11 +5,6 @@ public class UIEquipItem : UIItem
 {
     public override void OnSelect()
 	{
-		if(null == item_data)
-		{
-			return;
-		}
-
 		EquipItem equipItem = (EquipItem)item_data;
 		foreach(var itr in inventory.equip_slots)
 		{
