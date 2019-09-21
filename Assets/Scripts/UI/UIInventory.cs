@@ -34,10 +34,10 @@ public class UIInventory : MonoBehaviour
 		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Helmet, 0), UIUtil.FindChild<UIEquipSlot>(equipSlots, "Helmet"));
 		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Hand, 0), UIUtil.FindChild<UIEquipSlot>(equipSlots, "Hand_0"));
 		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Hand, 1), UIUtil.FindChild<UIEquipSlot>(equipSlots, "Hand_1"));
-		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Armor, 1), UIUtil.FindChild<UIEquipSlot>(equipSlots, "Armor"));
+		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Armor, 0), UIUtil.FindChild<UIEquipSlot>(equipSlots, "Armor"));
 		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Ring, 0), UIUtil.FindChild<UIEquipSlot>(equipSlots, "Ring_0"));
 		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Ring, 1), UIUtil.FindChild<UIEquipSlot>(equipSlots, "Ring_1"));
-		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Shoes, 1), UIUtil.FindChild<UIEquipSlot>(equipSlots, "Shoes"));
+		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Shoes, 0), UIUtil.FindChild<UIEquipSlot>(equipSlots, "Shoes"));
 		foreach (var itr in equip_slots)
 		{
 			itr.Value.inventory = this;
