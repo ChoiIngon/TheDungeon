@@ -68,14 +68,6 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		player.inventory.Add(itemMeta.CreateInstance());
 	}
 
-	public void Load()
-    {
-    }
-
-    public void Quit()
-    {
-    }
-
 	/*
 		Instantly changes the amount(transparency) of a camera fade and then returns it back over time.
 	*/
