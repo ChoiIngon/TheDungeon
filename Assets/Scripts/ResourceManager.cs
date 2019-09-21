@@ -27,6 +27,7 @@ public class ResourceManager : Util.MonoSingleton<ResourceManager> {
         }
 
 		resource = new Dictionary<string, Object> ();	
+		/*
         AssetBundles.AssetBundleManager.SetSourceAssetBundleURL(NetworkManager.Instance.host + "/AssetBundles/");
         var request = AssetBundles.AssetBundleManager.Initialize();
         if (request != null)
@@ -43,14 +44,19 @@ public class ResourceManager : Util.MonoSingleton<ResourceManager> {
 				yield return StartCoroutine (assetLoadOperation);
 			}
         }
+		*/
     }
 
-    public T Load<T>(string name) where T : Object {
-		if (true == resource.ContainsKey (name)) {
-			return resource [name] as T;
+    public T Load<T>(string path) where T : Object
+	{
+		if (true == resource.ContainsKey (path))
+		{
+			return resource [path] as T;
 		}
 
-		T asset = null;
+		T asset = Resources.Load<T>(path);
+		resource[path] = asset ?? throw new System.Exception("can not find asset(path:" + path + ")");
+		/*
 		#if UNITY_EDITOR
 		if (true == AssetBundles.AssetBundleManager.SimulateAssetBundleInEditor) {
 			string[] assetBundleNames = AssetDatabase.GetAllAssetBundleNames();
@@ -78,7 +84,7 @@ public class ResourceManager : Util.MonoSingleton<ResourceManager> {
 		if (null != asset) {
 			resource.Add (name, asset);
 		}
-
+		*/
 		return asset;
 	}
 }

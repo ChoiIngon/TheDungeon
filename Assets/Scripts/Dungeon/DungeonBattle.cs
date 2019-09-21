@@ -63,7 +63,7 @@ public class DungeonBattle : MonoBehaviour
 		monster_health.current = monster.cur_health;
 		monster_ui.gameObject.SetActive(true);
 		monster_sprite.gameObject.SetActive(true);
-
+		monster_sprite.sprite = ResourceManager.Instance.Load<Sprite>(monster_meta.sprite_path);
 		battle_buttons.gameObject.SetActive(true);
 		//battle_buttons.names [0].text = "Heal(" + GamePlayer.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
 

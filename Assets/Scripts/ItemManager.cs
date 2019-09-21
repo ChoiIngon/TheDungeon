@@ -134,7 +134,7 @@ public class ItemManager : Util.Singleton<ItemManager>
 			meta.id = "ITEM_POTION_HEALING";
 			meta.name = "Healing Potion";
 			meta.price = 100;
-			meta.sprite_path = "item_potion_002";
+			meta.sprite_path = "Item/item_potion_002";
 			meta.description = "An elixir that will instantly return you to full health and cure poison.";
 			metas.Add (meta.id, meta);
 		}
