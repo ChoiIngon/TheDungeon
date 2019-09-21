@@ -111,6 +111,7 @@ namespace Util
 
 		public void Open(string db)
 		{
+			Debug.Log("open db(path:" + db + ")");
 			if (null != conn)
 			{
 				Debug.LogWarning("alredy connected(db:" + db + ")");

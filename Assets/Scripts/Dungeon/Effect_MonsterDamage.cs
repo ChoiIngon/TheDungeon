@@ -5,7 +5,7 @@ using UnityEngine;
 public class Effect_MonsterDamage : MonoBehaviour
 {
 	public int damage = 0;
-	private float fadetime = 1.0f;
+	private float fadeout_time = 1.0f;
 	// Start is called before the first frame update
 	void Start()
     {
@@ -23,16 +23,17 @@ public class Effect_MonsterDamage : MonoBehaviour
 		trail.transform.localPosition = start;
 
 		transform.position = Vector3.Lerp(start, direction, Random.Range(0.4f, 0.6f));
+		
 		MeshRenderer renderer = UIUtil.FindChild<MeshRenderer>(transform, "Text");
 		renderer.sortingLayerName = "Effect";
 		renderer.sortingOrder = 2;
-
+		
 		TextMesh text = UIUtil.FindChild<TextMesh>(transform, "Text");
 		text.text = damage.ToString();
-		iTween.MoveTo(trail.gameObject, direction, 0.2f);
 		iTween.ShakePosition(gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.1f);
+		iTween.MoveTo(trail.gameObject, direction, 0.2f);
 
-		Destroy(gameObject, 1.0f);
+		Destroy(gameObject, fadeout_time);
 	}
 
 
