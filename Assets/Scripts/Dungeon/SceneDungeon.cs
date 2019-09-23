@@ -141,6 +141,19 @@ public class SceneDungeon : SceneMain
 			touch_point = Vector3.zero;
 		};
 
+		Util.EventSystem.Subscribe(EventID.Inventory_Open, touch_input.AddBlockCount);
+		Util.EventSystem.Subscribe(EventID.Inventory_Close, touch_input.ReleaseBlockCount);
+
+		Util.EventSystem.Subscribe(EventID.Dialog_Open, touch_input.AddBlockCount);
+		Util.EventSystem.Subscribe(EventID.Dialog_Close, touch_input.ReleaseBlockCount);
+
+		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Start, touch_input.AddBlockCount);
+		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, touch_input.ReleaseBlockCount);
+
+		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, InitRooms);
+		Util.EventSystem.Subscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
+		Util.EventSystem.Subscribe(EventID.TextBox_Close, DestroyCoins);
+
 		/*
 		audioWalk = GameObject.Instantiate<AudioSource>(audioWalk);
 		audioBG = GameObject.Instantiate<AudioSource>(audioBG);
@@ -163,19 +176,6 @@ public class SceneDungeon : SceneMain
 
 		InitScene();
 		
-		Util.EventSystem.Subscribe(EventID.Inventory_Open, touch_input.AddBlockCount);
-		Util.EventSystem.Subscribe(EventID.Inventory_Close, touch_input.ReleaseBlockCount);
-
-		Util.EventSystem.Subscribe(EventID.Dialog_Open, touch_input.AddBlockCount);
-		Util.EventSystem.Subscribe(EventID.Dialog_Close, touch_input.ReleaseBlockCount);
-
-		Util.EventSystem.Subscribe(EventID.Dungeon_Battle_Start, touch_input.AddBlockCount);
-		Util.EventSystem.Subscribe(EventID.Dungeon_Battle_Finish, touch_input.ReleaseBlockCount);
-		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Start, touch_input.AddBlockCount);
-		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, touch_input.ReleaseBlockCount);
-
-		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, InitRooms);
-		Util.EventSystem.Subscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
 		touch_input.ReleaseBlockCount();
 		Debug.Log("init complete dungeon");
 	}
@@ -186,12 +186,11 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Unsubscribe(EventID.Inventory_Close, touch_input.ReleaseBlockCount);
 		Util.EventSystem.Unsubscribe(EventID.Dialog_Open, touch_input.AddBlockCount);
 		Util.EventSystem.Unsubscribe(EventID.Dialog_Close, touch_input.ReleaseBlockCount);
-		Util.EventSystem.Unsubscribe(EventID.Dungeon_Battle_Start, touch_input.AddBlockCount);
-		Util.EventSystem.Unsubscribe(EventID.Dungeon_Battle_Finish, touch_input.ReleaseBlockCount);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Start, touch_input.AddBlockCount);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish, touch_input.ReleaseBlockCount);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish, InitRooms);
 		Util.EventSystem.Unsubscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
+		Util.EventSystem.Unsubscribe(EventID.TextBox_Close, DestroyCoins);
 	}
 
 	void InitScene()
@@ -330,7 +329,7 @@ public class SceneDungeon : SceneMain
 		}
     }
 
-	IEnumerator DestroyCoins()
+	void DestroyCoins()
 	{
 		for (int i = 0; i < coin_spot.childCount; i++)
 		{
@@ -342,10 +341,6 @@ public class SceneDungeon : SceneMain
 				continue;
 			}
 			coin.Stop();
-		}
-		while (0 < coin_spot.childCount)
-		{
-			yield return null;
 		}
 	}
 	IEnumerator Move(int direction)
@@ -376,6 +371,11 @@ public class SceneDungeon : SceneMain
 			yield break;
 		}
 
+		while (0 < coin_spot.childCount)
+		{
+			yield return null;
+		}
+
 		Vector3 position = Vector3.zero;
 		switch (direction)
 		{
@@ -397,7 +397,6 @@ public class SceneDungeon : SceneMain
 
 		dungeon.Move(direction);
 		//	audioWalk.Play();
-		yield return StartCoroutine(DestroyCoins());
 		yield return StartCoroutine(MoveTo(rooms.gameObject, iTween.Hash("position", position, "time", room_size / room_move_speed, "easetype", iTween.EaseType.easeInQuad), true));
 		//	audioWalk.Stop();
 
@@ -407,11 +406,11 @@ public class SceneDungeon : SceneMain
 			string monsterID = dungeon.monster_ids[Random.Range(0, dungeon.monster_ids.Count - 1)];
 			Monster.Meta meta = MonsterManager.Instance.FindMeta(monsterID);
 
-			mini_map.Hide(0.5f);
+			yield return StartCoroutine(mini_map.Hide(0.5f));
 			main_buttons.Hide(0.5f);
 			yield return StartCoroutine(battle.BattleStart(meta));
 			main_buttons.Show(0.5f);
-			mini_map.Show(0.5f);
+			yield return StartCoroutine(mini_map.Show(0.5f));
 			if (true == battle.battle_result)
 			{
 				yield return StartCoroutine(Win(meta));

@@ -8,6 +8,7 @@ public class UITextBox : MonoBehaviour {
 		Hide,
 		Raise,
 		Typing,
+		Next,
 		Complete
 	}
 	public State state;
@@ -29,18 +30,20 @@ public class UITextBox : MonoBehaviour {
 	private Coroutine hideCoroutine;
 	
 	public void Init () {
+		Rect parentRect = transform.parent.GetComponent<RectTransform>().rect;
+
 		fast.gameObject.SetActive (false);
-		fast.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, Screen.height);
+		fast.GetComponent<RectTransform>().sizeDelta = new Vector2(parentRect.width, parentRect.height);
 		fast.onClick.AddListener (FastForward);
 
 		next.gameObject.SetActive (false);
-		next.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, Screen.height);
+		next.GetComponent<RectTransform>().sizeDelta = new Vector2(parentRect.width, parentRect.height);
 		next.onClick.AddListener (() => {
-			state = State.Hide;
+			state = State.Next;
 		});
 
 		close.gameObject.SetActive (false);
-		close.GetComponent<RectTransform> ().sizeDelta = new Vector2(0.0f, Screen.height);
+		close.GetComponent<RectTransform>().sizeDelta = new Vector2(parentRect.width, parentRect.height);
 		close.onClick.AddListener (() => {
 			hideCoroutine = StartCoroutine(Hide (time));
 		});
@@ -53,6 +56,7 @@ public class UITextBox : MonoBehaviour {
 
 	public IEnumerator Show(float t)
 	{
+		Util.EventSystem.Publish(EventID.TextBox_Open);
 		state = State.Raise;
 		contents.text = "";
 		while (height > rectTransform.anchoredPosition.y) {
@@ -66,6 +70,7 @@ public class UITextBox : MonoBehaviour {
 
 	public IEnumerator Write(string text)
 	{
+		contents.text = "";
 		if (null != hideCoroutine) {
 			StopCoroutine (hideCoroutine);
 		}
@@ -90,10 +95,10 @@ public class UITextBox : MonoBehaviour {
 				yield return new WaitForSeconds (1.0f / charPerSecond);
 			}
 		}
-		yield return null;
+		//yield return null;
 		audioSource.Stop();
 		FastForward ();
-		while (State.Hide != state) {
+		while (State.Complete == state) {
 			yield return null;
 		}
 	}
@@ -121,6 +126,7 @@ public class UITextBox : MonoBehaviour {
 			yield return null;
 		}
 		rectTransform.anchoredPosition = new Vector3 (rectTransform.anchoredPosition.x, 0.0f, 0.0f);
+		Util.EventSystem.Publish(EventID.TextBox_Close);
 	}
 	void FastForward()
 	{

@@ -21,7 +21,8 @@ public class EventID
 
 	public const string Dialog_Open = "Dialog_Open";
 	public const string Dialog_Close = "Dialog_Close";
-
+	public const string TextBox_Open = "TextBox_Open";
+	public const string TextBox_Close = "TextBox_Close";
 	public const string Player_Add_Exp = "Player_Add_Exp";
 	public const string Player_Change_Health = "Player_Change_Health";
 }
