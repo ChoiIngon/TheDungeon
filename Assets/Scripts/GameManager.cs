@@ -4,6 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 public class GameManager : Util.MonoSingleton<GameManager>
 {
@@ -35,7 +36,28 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		DontDestroyOnLoad(ResourceManager.Instance.gameObject);
 		DontDestroyOnLoad(gameObject);
 
-		Database.Connect(Database.Type.MetaData, Application.dataPath + "/meta_data.db");
+		if (Application.platform != RuntimePlatform.Android)
+		{
+			Database.Connect(Database.Type.MetaData, Application.dataPath + "/meta_data.db");
+		}
+		else
+		{
+			string dbName = "meta_data.db";
+			string sourceDBPath = Path.Combine(Application.streamingAssetsPath, dbName);
+			string targetDBPath = Path.Combine(Application.persistentDataPath, dbName);
+
+			Debug.Log("src:" + sourceDBPath + "(modify:" + File.GetLastWriteTime(sourceDBPath) + "), target:" + targetDBPath +")" + "(modify:" + File.GetLastWriteTime(targetDBPath) + ")");
+			if (false == File.Exists(targetDBPath) || File.GetLastWriteTime(sourceDBPath) != File.GetLastWriteTime(targetDBPath))
+			{
+				UnityWebRequest request = new UnityWebRequest(Application.streamingAssetsPath + "/" + dbName);
+				request.downloadHandler = new DownloadHandlerBuffer();
+				yield return request.SendWebRequest();
+				File.WriteAllBytes(targetDBPath, request.downloadHandler.data);
+				Debug.Log("new version meta file(target path:" + targetDBPath + ")");
+			}
+
+			Database.Connect(Database.Type.MetaData, targetDBPath);
+		}
 		Database.Connect(Database.Type.UserData, Application.persistentDataPath + "/user_data.db");
 		ItemManager.Instance.Init();
 		MonsterManager.Instance.Init();

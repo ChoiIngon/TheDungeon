@@ -164,7 +164,11 @@ public class SceneDungeon : SceneMain
         completeQuests = new List<QuestData> ();
 		StartCoroutine (Init ());
 		*/
-
+		
+		InitScene();
+		
+		touch_input.ReleaseBlockCount();
+		Debug.Log("init complete dungeon");
 
 		string[] scripts = new string[] {
 			"오래전 저 성엔 부와 젊을을 위해 백성들을 악마의 제물로 바치던 피의 여왕이 살았다고 하네.",
@@ -173,11 +177,6 @@ public class SceneDungeon : SceneMain
 			"행운을 빈다네 모험가"
 		};
 		yield return StartCoroutine(GameManager.Instance.ui_npc.Talk("", scripts));
-
-		InitScene();
-		
-		touch_input.ReleaseBlockCount();
-		Debug.Log("init complete dungeon");
 	}
 
 	private void OnDestroy()
