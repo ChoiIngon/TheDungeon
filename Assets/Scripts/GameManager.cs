@@ -38,7 +38,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 
 		if (Application.platform != RuntimePlatform.Android)
 		{
-			Database.Connect(Database.Type.MetaData, Application.dataPath + "/meta_data.db");
+			Database.Connect(Database.Type.MetaData, Application.streamingAssetsPath + "/meta_data.db");
 		}
 		else
 		{
