@@ -55,6 +55,10 @@ public class DungeonBattle : MonoBehaviour
 		}
 		touch_input.onTouchDown += (Vector3 position) =>
 		{
+			if (null == monster)
+			{
+				return;
+			}
 			PlayerAttack(0.1f);
 		};
 		monster_ui.gameObject.SetActive(false);
@@ -92,25 +96,9 @@ public class DungeonBattle : MonoBehaviour
 
 		while (0.0f < monster.cur_health && 0.0f < GameManager.Instance.player.cur_health)
 		{
-			float waitTime = 0.0f;
 			if (monsterTurn < playerTurn)
 			{
-				int attackCount = 1;
-				if (0 == Random.Range(0, 5))
-				{
-					attackCount = 2;
-					waitTime = 1.0f / battle_speed / 2;
-				}
-				if (0 == Random.Range(0, 10))
-				{
-					attackCount = 3;
-					waitTime = 1.0f / battle_speed / 3;
-				}
-
-				for (int i = 0; i < attackCount; i++)
-				{
-					PlayerAttack(1.0f);
-				}
+				PlayerAttack(1.0f);
 				monsterTurn += monsterAPS + Random.Range(0, monsterAPS * 0.1f);
 			}
 			else
@@ -150,6 +138,7 @@ public class DungeonBattle : MonoBehaviour
 			monster_ui.gameObject.SetActive(false);
 			battle_result = true;
 		}
+		monster = null;
 		battle_buttons.gameObject.SetActive(false);
 	}
 

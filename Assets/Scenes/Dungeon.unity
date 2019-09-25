@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 2598113}
   - component: {fileID: 2598115}
   - component: {fileID: 2598114}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Battle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -139,7 +139,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2598111}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -2, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1562312905}
@@ -885,7 +885,7 @@ GameObject:
   m_Component:
   - component: {fileID: 559763019}
   - component: {fileID: 559763020}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2960,7 +2960,7 @@ GameObject:
   - component: {fileID: 1562312905}
   - component: {fileID: 1562312907}
   - component: {fileID: 1562312906}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Monster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2975,7 +2975,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1562312904}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 559763019}

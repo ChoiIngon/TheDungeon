@@ -5,7 +5,8 @@ public class ImageOutline : MonoBehaviour
 {
     public Color color = Color.white;
     public bool active = false;
-    //public int size = 0;
+	[Range(1, 16)]
+    public int size = 1;
 
     private Image image;
 
@@ -19,7 +20,7 @@ public class ImageOutline : MonoBehaviour
 		mat.name = name;
         mat.SetFloat("_Outline", active ? 1f : 0f);
         mat.SetColor("_OutlineColor", color);
-        //mat.SetFloat("_OutlineSize", size);
+        mat.SetFloat("_OutlineSize", size);
         image.material = mat;
-    }
+	}
 }

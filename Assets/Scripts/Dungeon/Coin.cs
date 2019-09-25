@@ -35,8 +35,8 @@ public class Coin : MonoBehaviour
 		{
 			StopCoroutine(coroutine);
 		}
-		iTween.MoveTo (gameObject, GameManager.Instance.ui_coin.position, 0.1f);
-        Object.Destroy(gameObject, 0.1f);
+		iTween.MoveTo (gameObject, GameManager.Instance.ui_coin.position, 0.5f);
+        Object.Destroy(gameObject, 0.5f);
 	}
 
 	IEnumerator Bounce ()

@@ -10,28 +10,40 @@ public class TouchInput : MonoBehaviour {
 	public void AddBlockCount()
 	{
 		touchBlockCount++;
+		if (0 < touchBlockCount)
+		{
+			touchCollider.enabled = false;
+		}
 	}
 
 	public void ReleaseBlockCount()
 	{
 		touchBlockCount--;
+		if (0 == touchBlockCount)
+		{
+			touchCollider.enabled = true;
+		}
 	}
 
 	private int touchBlockCount = 0;
 	public Vector2 size {
-		set {
+		set
+		{
 			touchCollider.size = value;
 		}
-		get {
+		get
+		{
 			return touchCollider.size;
 		}
 	}
-	public Vector3 offset {
-		
-		set {
+	public Vector3 offset
+	{
+		set
+		{
 			touchCollider.offset = value;
 		}
-		get {
+		get
+		{
 			return touchCollider.offset;
 		}
 	}
@@ -49,18 +61,15 @@ public class TouchInput : MonoBehaviour {
 
 	void OnMouseDown()
 	{
-        if (0 < touchBlockCount)
-        {
-            return;
-        }
-		isButtonDown = true;
+        isButtonDown = true;
 		lastPressPosition = Camera.main.ScreenToWorldPoint (
 			new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane)
 		);
         onTouchDown?.Invoke(lastPressPosition);
     }
-	void OnMouseDrag() {
-		if (0 < touchBlockCount || false == isButtonDown)
+	void OnMouseDrag()
+	{
+		if (false == isButtonDown)
 		{
 			return;
 		}
@@ -73,8 +82,9 @@ public class TouchInput : MonoBehaviour {
 		}
 		lastPressPosition = currentPressPosition;
 	}
-	void OnMouseUp() {
-        if (0 < touchBlockCount || false == isButtonDown)
+	void OnMouseUp()
+	{
+        if (false == isButtonDown)
         {
             return;
         }
