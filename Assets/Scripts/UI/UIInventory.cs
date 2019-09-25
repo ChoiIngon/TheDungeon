@@ -52,8 +52,7 @@ public class UIInventory : MonoBehaviour
         
         item_info = UIUtil.FindChild<UIItemInfo>(transform, "ItemInfo");
         item_info.Init();
-        item_info.gameObject.SetActive(false);
-
+        
         player_info = UIUtil.FindChild<UIPlayerInfo>(transform, "PlayerInfo");
         player_info.Init();
 
@@ -72,7 +71,6 @@ public class UIInventory : MonoBehaviour
         gameObject.SetActive(flag);
         if(true == flag)
         {
-            item_info.gameObject.SetActive(false);
             Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
             Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
 			Util.EventSystem.Publish(EventID.Inventory_Open);

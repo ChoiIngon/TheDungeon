@@ -3,22 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIPlayerInfo : MonoBehaviour {
-	public Text text;
-   
-    public void Init()
+public class UIPlayerInfo : MonoBehaviour
+{
+	public Text attack;
+	public Text critical;
+	public Text speed;
+	public Text defense;
+	public Text health;
+
+	public void Init()
 	{
-        text = UIUtil.FindChild<Text>(transform, "Text");
-        Refresh();
+        attack = UIUtil.FindChild<Text>(transform, "Attack/Value");
+		critical = UIUtil.FindChild<Text>(transform, "Critical/Value");
+		speed = UIUtil.FindChild<Text>(transform, "Speed/Value");
+		defense = UIUtil.FindChild<Text>(transform, "Defense/Value");
+		health = UIUtil.FindChild<Text>(transform, "Health/Value");
+		Refresh();
     }
 
     public void Refresh()
     {
-        text.text = "Lv. " + GameManager.Instance.player.level + "\n";
-		text.text += "hp:" + GameManager.Instance.player.cur_health + "/" + GameManager.Instance.player.max_health + "\n";
-		text.text += "<b>atk</b> : " + GameManager.Instance.player.attack + "\t";
-        text.text += "<b>def</b> : " + GameManager.Instance.player.defense + "\n";
-        text.text += "<b>spd</b> : " + GameManager.Instance.player.speed + "\t";
-        text.text += "<b>cri</b> : " + GameManager.Instance.player.critical + "%\n";
+		health.text = GameManager.Instance.player.cur_health.ToString() + "/" + GameManager.Instance.player.max_health.ToString();
+		attack.text = GameManager.Instance.player.attack.ToString();
+        critical.text = GameManager.Instance.player.critical.ToString() + "%";
+        speed.text = GameManager.Instance.player.speed.ToString();
+        defense.text = GameManager.Instance.player.defense.ToString();
 	}
 }

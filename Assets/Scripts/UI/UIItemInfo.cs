@@ -14,17 +14,15 @@ public class UIItemInfo : MonoBehaviour
 	public Image icon;
 	public Image grade;
 	public Text description;
-	public Text stats;
 	public Button[] buttons;
 	public System.Action[] actions;
 
 	public void Init()
 	{
         name = UIUtil.FindChild<Text>(transform, "ItemName");
+		description = UIUtil.FindChild<Text>(transform, "Description");
         icon = UIUtil.FindChild<Image>(transform, "Image/ItemIcon");
 		grade = UIUtil.FindChild<Image>(transform, "Image/ItemGrade");
-		description = UIUtil.FindChild<Text>(transform, "ItemDescription");
-		stats = UIUtil.FindChild<Text>(transform, "ItemStats");
 
 		buttons = new Button[(int)Action.Max];
 		buttons[(int)Action.Drink] = UIUtil.FindChild<Button>(transform, "Actions/Drink");
@@ -39,7 +37,10 @@ public class UIItemInfo : MonoBehaviour
 			entry.callback.AddListener (( data) => { actions[index]();	});
 			trigger.triggers.Add (entry);
 		}
-    }
+
+		name.text = "";
+		description.text = "";
+	}
 
 	public UIItem slot {
 		set {
@@ -53,7 +54,6 @@ public class UIItemInfo : MonoBehaviour
 			grade.color = UIItem.GetGradeColor(item.grade);
 			description.text = item.meta.description;
 			icon.sprite = ResourceManager.Instance.Load<Sprite>(item.meta.sprite_path);
-			stats.text = "";
 			for (int i = 0; i < (int)Action.Max; i++)
 			{
 				buttons [i].gameObject.SetActive (false);
