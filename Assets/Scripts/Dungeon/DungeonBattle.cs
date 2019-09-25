@@ -8,6 +8,11 @@ using UnityEngine.Assertions;
 
 public class DungeonBattle : MonoBehaviour
 {
+	public class Damage
+	{
+		public bool critical = false;
+		public float damage = 0.0f;
+	}
 	private float battle_speed = 1.5f;
 	private Monster.Meta monster_meta;
 	private Unit monster;
@@ -22,6 +27,7 @@ public class DungeonBattle : MonoBehaviour
 	private UIGaugeBar player_health;
 	private Effect_PlayerDamage player_damage_effect_prefab;
 	private UIButtonGroup battle_buttons;
+	private TouchInput touch_input;
 
 	public bool battle_result = false;
 
@@ -42,6 +48,15 @@ public class DungeonBattle : MonoBehaviour
 
 		battle_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "../UI/Battle/BattleButtonGroup");
 
+		touch_input = GetComponent<TouchInput>();
+		if (null == touch_input)
+		{
+			throw new System.Exception("can not find component 'TouchInput'");
+		}
+		touch_input.onTouchDown += (Vector3 position) =>
+		{
+			PlayerAttack(0.1f);
+		};
 		monster_ui.gameObject.SetActive(false);
 		monster_sprite.gameObject.SetActive(false);
 		battle_buttons.gameObject.SetActive(false);
@@ -94,21 +109,14 @@ public class DungeonBattle : MonoBehaviour
 
 				for (int i = 0; i < attackCount; i++)
 				{
-					iTween.ShakePosition(monster_sprite.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
-					Effect_MonsterDamage effect = GameObject.Instantiate<Effect_MonsterDamage>(monster_damage_effect_prefab);
-
-					int damage = CalculateDamage(GameManager.Instance.player, monster);
-					effect.damage = damage;
-					effect.gameObject.SetActive(true);
-					monster.cur_health -= damage;
-					monster_health.current = monster.cur_health;
+					PlayerAttack(1.0f);
 				}
 				monsterTurn += monsterAPS + Random.Range(0, monsterAPS * 0.1f);
 			}
 			else
 			{
 				monster_animator.SetTrigger("Attack");
-				int damage = CalculateDamage(monster, GameManager.Instance.player);
+				Damage damage = CalculateDamage(monster, GameManager.Instance.player);
 
 				StartCoroutine(GameManager.Instance.CameraFade(Color.white, new Color(1.0f, 1.0f, 1.0f, 0.0f), 0.1f));
 				iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
@@ -121,7 +129,7 @@ public class DungeonBattle : MonoBehaviour
 					0.0f
 				);
 				playerTurn += playerAPS + Random.Range(0, playerAPS * 0.1f);
-				GameManager.Instance.player.cur_health -= damage;
+				GameManager.Instance.player.cur_health -= damage.damage;
 				player_health.current = GameManager.Instance.player.cur_health;
 			}
 			yield return new WaitForSeconds(1.0f / battle_speed);
@@ -158,17 +166,33 @@ public class DungeonBattle : MonoBehaviour
 		yield break;
 	}
 
-	private int CalculateDamage(Unit attacker, Unit defender)
+	private Damage CalculateDamage(Unit attacker, Unit defender)
 	{
+		Damage damage = new Damage();
 		float attack = attacker.attack + Random.Range(-attacker.attack * 0.1f, attacker.attack * 0.1f);
 		float defense = defender.defense + Random.Range(-defender.defense * 0.1f, defender.defense * 0.1f);
-		float damage = Mathf.Max(1, attack - defense);
+		damage.damage = Mathf.Max(1, attack - defense);
 
 		if (attacker.critical >= Random.Range(0.0f, 100.0f))
 		{
-			damage *= 3;
+			damage.damage *= 3;
+			damage.critical = true;
 			// critical effect
 		}
-		return (int)damage;
+		return damage;
+	}
+
+	private void PlayerAttack(float damageRate)
+	{
+		iTween.ShakePosition(monster_sprite.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
+		Effect_MonsterDamage effect = GameObject.Instantiate<Effect_MonsterDamage>(monster_damage_effect_prefab);
+
+		Damage damage = CalculateDamage(GameManager.Instance.player, monster);
+		damage.damage *= damageRate;
+		effect.damage = (int)damage.damage;
+		effect.critical = damage.critical;
+		effect.gameObject.SetActive(true);
+		monster.cur_health -= (int)damage.damage;
+		monster_health.current = monster.cur_health;
 	}
 }
