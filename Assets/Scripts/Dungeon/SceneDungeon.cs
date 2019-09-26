@@ -451,6 +451,12 @@ public class SceneDungeon : SceneMain
 		ProgressManager.Instance.Update(Achieve.AchieveType_Level, "", GameManager.Instance.player.level);
 
 		CreateCoins(rewardCoin + bonusCoin);
+		for (int i = prevPlayerLevel; i < GameManager.Instance.player.level; i++)
+		{
+			yield return StartCoroutine(player_exp.SetCurrent(player_exp.max, 0.3f));
+			player_exp.max = GameManager.Instance.player.GetMaxExp(i);
+			yield return StartCoroutine(player_exp.SetCurrent(0.0f, 0.0f));
+		}
 		player_exp.max = GameManager.Instance.player.GetMaxExp();
 		player_exp.current = GameManager.Instance.player.exp;
 		player_health.max = GameManager.Instance.player.max_health;

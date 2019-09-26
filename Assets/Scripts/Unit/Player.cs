@@ -112,6 +112,11 @@ public class Player : Unit
 
 	public int GetMaxExp()
 	{
+		return GetMaxExp(level);
+	}
+
+	public int GetMaxExp(int level)
+	{
 		return (int)Mathf.Pow(level, 1.8f);
 	}
 	/*
