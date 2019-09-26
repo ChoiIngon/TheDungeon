@@ -66,6 +66,21 @@ public class DungeonBattle : MonoBehaviour
 		monster_ui.gameObject.SetActive(false);
 		monster_sprite.gameObject.SetActive(false);
 		battle_buttons.gameObject.SetActive(false);
+
+		Util.EventSystem.Subscribe<Buff_Stun>(EventID.Buff_Stun_Start, (Buff_Stun buff) =>
+		{
+			Debug.Log(buff.ToString() + " activated, target:" + buff.target.ToString());
+		});
+		Util.EventSystem.Subscribe<Buff_Stun>(EventID.Buff_Stun_Finish, (Buff_Stun buff) =>
+		{
+			Debug.Log(buff.ToString() + " finished");
+		});
+	}
+
+	private void OnDestroy()
+	{
+		Util.EventSystem.Unsubscribe<Buff_Stun>(EventID.Buff_Stun_Start);
+		Util.EventSystem.Unsubscribe<Buff_Stun>(EventID.Buff_Stun_Finish);
 	}
 
 	public IEnumerator BattleStart(Monster.Meta monsterMeta)
@@ -128,6 +143,16 @@ public class DungeonBattle : MonoBehaviour
 				GameManager.Instance.player.cur_health -= damage.damage;
 				player_health.current = GameManager.Instance.player.cur_health;
 			}
+
+			foreach (Buff buff in GameManager.Instance.player.buffs)
+			{
+				buff.OnBuff();
+			}
+
+			foreach (Buff buff in monster.buffs)
+			{
+				buff.OnBuff();
+			}
 			yield return new WaitForSeconds(1.0f / battle_speed);
 		}
 
@@ -169,6 +194,11 @@ public class DungeonBattle : MonoBehaviour
 		float defense = defender.defense + Random.Range(-defender.defense * 0.1f, defender.defense * 0.1f);
 		damage.damage = Mathf.Max(1, attack - defense);
 
+		foreach (Skill skill in attacker.skills)
+		{
+			skill.OnHit(defender);
+		}
+
 		if (attacker.critical >= Random.Range(0.0f, 100.0f))
 		{
 			damage.damage *= 3;
@@ -180,6 +210,9 @@ public class DungeonBattle : MonoBehaviour
 
 	private void PlayerAttack(float damageRate)
 	{
+		monster_sprite.color = Color.white;
+		StartCoroutine(Util.UITween.ColorFrom(monster_sprite, Color.red, 0.3f));
+
 		iTween.ShakePosition(monster_sprite.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
 		Effect_MonsterDamage effect = GameObject.Instantiate<Effect_MonsterDamage>(monster_damage_effect_prefab);
 

@@ -60,5 +60,29 @@ namespace Util
 			renderder.color = to;
 		}
 
+		public static IEnumerator ColorFrom(Image image, Color from, float time)
+		{
+			return UITween.Instance._ColorFrom(image, from, time);
+		}
+		private IEnumerator _ColorFrom(Image image, Color from, float time)
+		{
+			Color to = image.color;
+			image.color = from;
+			return _ColorTo(image, to, time);
+		}
+
+		public static IEnumerator ColorFrom(SpriteRenderer renderer, Color from, float time)
+		{
+			return UITween.Instance._ColorFrom(renderer, from, time);
+		}
+
+		private IEnumerator _ColorFrom(SpriteRenderer renderer, Color from, float time)
+		{
+			Color to = renderer.color;
+			renderer.color = from;
+			return _ColorTo(renderer, to, time);
+		}
+
+		
 	}
 }

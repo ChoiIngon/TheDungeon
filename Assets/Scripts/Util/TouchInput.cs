@@ -7,6 +7,26 @@ public class TouchInput : MonoBehaviour {
     public Action<Vector3> onTouchUp;
     public Action<Vector3> onTouchDrag;
 
+	public void SetActive(bool flag)
+	{
+		if (true == flag)
+		{
+			touchBlockCount++;
+		}
+		else
+		{
+			touchBlockCount--;
+		}
+
+		if (0 < touchBlockCount)
+		{
+			touchCollider.enabled = false;
+		}
+		else
+		{
+			touchCollider.enabled = true;
+		}
+	}
 	public void AddBlockCount()
 	{
 		touchBlockCount++;

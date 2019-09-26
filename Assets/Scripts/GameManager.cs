@@ -85,6 +85,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 			EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);
 			player.inventory.Add(item);
 		}
+		player.skills.Add(new Skill_Stun());
 
 		PotionItem.Meta itemMeta = ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_HEALING");
 		player.inventory.Add(itemMeta.CreateInstance());

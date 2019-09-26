@@ -140,14 +140,14 @@ public class SceneDungeon : SceneMain
 			touch_point = Vector3.zero;
 		};
 
-		Util.EventSystem.Subscribe(EventID.Inventory_Open, touch_input.AddBlockCount);
-		Util.EventSystem.Subscribe(EventID.Inventory_Close, touch_input.ReleaseBlockCount);
+		Util.EventSystem.Subscribe(EventID.Inventory_Open, () => { touch_input.AddBlockCount(); });
+		Util.EventSystem.Subscribe(EventID.Inventory_Close, () => { touch_input.ReleaseBlockCount(); });
 
-		Util.EventSystem.Subscribe(EventID.Dialog_Open, touch_input.AddBlockCount);
-		Util.EventSystem.Subscribe(EventID.Dialog_Close, touch_input.ReleaseBlockCount);
+		Util.EventSystem.Subscribe(EventID.Dialog_Open, () => { touch_input.AddBlockCount(); });
+		Util.EventSystem.Subscribe(EventID.Dialog_Close, () => { touch_input.ReleaseBlockCount(); });
 
-		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Start, touch_input.AddBlockCount);
-		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, touch_input.ReleaseBlockCount);
+		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Start, () => { touch_input.AddBlockCount(); });
+		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, () => { touch_input.ReleaseBlockCount(); });
 
 		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, InitRooms);
 		Util.EventSystem.Subscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
@@ -175,17 +175,19 @@ public class SceneDungeon : SceneMain
 			"하지만 아직도 여왕의 유령이 저 성 지하에서 부활할 날 만을 기다리고 있다고 하네.\n많은 모험가들이 저 성으로 들어갔지만 아무도 돌아오지 않았어.\n\n" +
 			"행운을 빈다네 모험가"
 		};
+		touch_input.AddBlockCount();
 		yield return StartCoroutine(GameManager.Instance.ui_npc.Talk("", scripts));
+		touch_input.ReleaseBlockCount();
 	}
 
 	private void OnDestroy()
 	{
-		Util.EventSystem.Unsubscribe(EventID.Inventory_Open, touch_input.AddBlockCount);
-		Util.EventSystem.Unsubscribe(EventID.Inventory_Close, touch_input.ReleaseBlockCount);
-		Util.EventSystem.Unsubscribe(EventID.Dialog_Open, touch_input.AddBlockCount);
-		Util.EventSystem.Unsubscribe(EventID.Dialog_Close, touch_input.ReleaseBlockCount);
-		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Start, touch_input.AddBlockCount);
-		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish, touch_input.ReleaseBlockCount);
+		Util.EventSystem.Unsubscribe(EventID.Inventory_Open);
+		Util.EventSystem.Unsubscribe(EventID.Inventory_Close);
+		Util.EventSystem.Unsubscribe(EventID.Dialog_Open);
+		Util.EventSystem.Unsubscribe(EventID.Dialog_Close);
+		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Start);
+		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish, InitRooms);
 		Util.EventSystem.Unsubscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
 		Util.EventSystem.Unsubscribe(EventID.TextBox_Close, DestroyCoins);

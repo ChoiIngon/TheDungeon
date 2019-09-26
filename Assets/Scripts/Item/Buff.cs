@@ -66,21 +66,20 @@ public class Buff_GrimReaper : Buff
 public class Buff_Stun : Buff
 {
     public float time;
-	private float start_time;    
     public Buff_Stun(Unit target) : base(target)
     {
         target.buffs.Add(this);
-		//start_time = 
-
+		Util.EventSystem.Publish<Buff_Stun>(EventID.Buff_Stun_Start, this);
 	}
 
     public override void OnBuff()
     {
-		//target.stats.speed = 0.0f;
-        //if (0 >= turn)
-        //{
-        //    target.buffs.Remove(this);
-        //}
+		time -= Time.deltaTime;
+		if (0.0f >= time)
+		{
+			target.buffs.Remove(this);
+			Util.EventSystem.Publish<Buff_Stun>(EventID.Buff_Stun_Finish, this);
+		}
     }
 }
 
