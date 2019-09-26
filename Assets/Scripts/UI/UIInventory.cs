@@ -71,6 +71,7 @@ public class UIInventory : MonoBehaviour
         gameObject.SetActive(flag);
         if(true == flag)
         {
+			player_info.Refresh();
             Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
             Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
 			Util.EventSystem.Publish(EventID.Inventory_Open);

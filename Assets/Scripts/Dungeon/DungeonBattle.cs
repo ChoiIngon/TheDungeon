@@ -47,6 +47,7 @@ public class DungeonBattle : MonoBehaviour
 		player_damage_effect_prefab = UIUtil.FindChild<Effect_PlayerDamage>(damage_effect_spot, "Effect_PlayerDamage");
 
 		battle_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "../UI/Battle/BattleButtonGroup");
+		battle_buttons.Init();
 
 		touch_input = GetComponent<TouchInput>();
 		if (null == touch_input)
@@ -78,15 +79,18 @@ public class DungeonBattle : MonoBehaviour
 			speed = monster_meta.speed,
 			critical = 0.0f
 		};
+		monster_name.text = monster_meta.name;
 		monster_health.max = monster.max_health;
 		monster_health.current = monster.cur_health;
 		monster_ui.gameObject.SetActive(true);
 		monster_sprite.gameObject.SetActive(true);
 		monster_sprite.sprite = ResourceManager.Instance.Load<Sprite>(monster_meta.sprite_path);
-		battle_buttons.gameObject.SetActive(true);
-		//battle_buttons.names [0].text = "Heal(" + GamePlayer.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
 
-		yield return StartCoroutine(ShowMonster(0.5f));
+		battle_buttons.gameObject.SetActive(true);
+		battle_buttons.Show(0.5f);
+		//battle_buttons.names [0].text = "Heal(" + GamePlayer.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
+		monster_sprite.color = Color.black;
+		yield return StartCoroutine(Util.UITween.ColorTo(monster_sprite, Color.white, 1.5f));
 
 		// attack per second
 		float playerAPS = GameManager.Instance.player.speed / monster_meta.speed;
@@ -139,7 +143,6 @@ public class DungeonBattle : MonoBehaviour
 			battle_result = true;
 		}
 		monster = null;
-		battle_buttons.gameObject.SetActive(false);
 	}
 
 	private IEnumerator ShowMonster(float time)

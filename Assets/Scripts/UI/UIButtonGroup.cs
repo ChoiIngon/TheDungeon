@@ -21,7 +21,7 @@ public class UIButtonGroup : MonoBehaviour {
 		{
 			int index = i;
 			//buttons [i].enabled = false;
-			images [i] = buttons [i].GetComponent<Image> ();
+			images[i] = buttons[i].GetComponent<Image>();
 			names[i] = UIUtil.FindChild<Text>(buttons[i].transform, "Text");
 			UIUtil.AddPointerUpListener(buttons[i].gameObject, () => {
 				actions[index]?.Invoke();
@@ -29,26 +29,22 @@ public class UIButtonGroup : MonoBehaviour {
 		}
 	}
 
-	public void Enable(bool flag)
-	{
-		for (int i = 0; i < buttons.Length; i++) {
-			buttons [i].enabled = flag;
-		}
-	}
-	
 	public void Show(float time = 0.5f)
 	{
-		for (int i = 0; i < buttons.Length; i++) {
+		for (int i = 0; i < buttons.Length; i++)
+		{
 			buttons [i].enabled = true;
-			iTween.ColorTo (images[i].gameObject, new Color(1.0f, 1.0f, 1.0f, 1.0f), time);
+			images[i].color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+			StartCoroutine(Util.UITween.ColorTo(images[i], new Color(1.0f, 1.0f, 1.0f, 1.0f), time));
 		}
 	}
 
 	public void Hide(float time = 0.5f)
 	{
-		for (int i = 0; i < buttons.Length; i++) {
+		for (int i = 0; i < buttons.Length; i++)
+		{
 			buttons [i].enabled = false;
-			iTween.ColorTo (images[i].gameObject, new Color(1.0f, 1.0f, 1.0f, 0.0f), time);
+			StartCoroutine(Util.UITween.ColorTo(images[i], new Color(1.0f, 1.0f, 1.0f, 0.0f), time));
 		}
 	}
 }

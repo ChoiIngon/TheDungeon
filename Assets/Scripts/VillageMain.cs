@@ -89,7 +89,7 @@ public class VillageMain : SceneMain {
 		yield return StartCoroutine(GameManager.Instance.ui_dialogbox.Write("Do you want to go into the dungeon?"));
 		if(true == isSubmit)
 		{
-			StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 1.0f, "time", 2.0f)));
+			//StartCoroutine(CameraFadeTo(Color.black, iTween.Hash("amount", 1.0f, "time", 2.0f)));
 			Vector3 position = Camera.main.transform.position;
 			yield return StartCoroutine(MoveTo (Camera.main.gameObject, iTween.Hash(
 				"x", target.transform.position.x,

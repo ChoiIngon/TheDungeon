@@ -262,7 +262,7 @@ public class SceneDungeon : SceneMain
 			"Your body will be carried to village.\n" +
 			"See you soon.."
 		));
-		yield return StartCoroutine (CameraFadeTo (Color.black, iTween.Hash ("amount", 1.0f, "time", 1.0f), true));
+		//yield return StartCoroutine (CameraFadeTo (Color.black, iTween.Hash ("amount", 1.0f, "time", 1.0f), true));
 		//SceneManager.LoadScene("Village");
 	}
 	
@@ -400,13 +400,13 @@ public class SceneDungeon : SceneMain
 		//	audioWalk.Stop();
 
 		InitRooms();
-		if (33 > Random.Range(0, 100) && Dungeon.Room.Type.Normal == dungeon.current_room.type && 0 < dungeon.monster_count)
+		if (100 > Random.Range(0, 100) && Dungeon.Room.Type.Normal == dungeon.current_room.type && 0 < dungeon.monster_count)
 		{
 			string monsterID = dungeon.monster_ids[Random.Range(0, dungeon.monster_ids.Count - 1)];
 			Monster.Meta meta = MonsterManager.Instance.FindMeta(monsterID);
 
 			yield return StartCoroutine(mini_map.Hide(0.5f));
-			main_buttons.Hide(0.5f);
+			main_buttons.Hide(0.1f);
 			yield return StartCoroutine(battle.BattleStart(meta));
 			main_buttons.Show(0.5f);
 			yield return StartCoroutine(mini_map.Show(0.5f));
