@@ -13,7 +13,9 @@ public class Unit
 	public float critical;
 	
 	public Stat stats = new Stat();
-	
+	public List<Skill> skills = new List<Skill>();
+	public List<Buff> buffs = new List<Buff>();
+
 	public virtual void CalculateStat()
 	{
 		attack = stats.GetStat(StatType.Attack) * (1.0f + stats.GetStat(StatType.Attack_Rate));

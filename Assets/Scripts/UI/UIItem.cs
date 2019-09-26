@@ -138,7 +138,7 @@ public class UIItem : MonoBehaviour
 		inventory.item_info.actions[(int)UIItemInfo.Action.Drop] += () => {
 			GameManager.Instance.player.inventory.Remove(item_data.slot_index);
 			inventory.item_info.actions[(int)UIItemInfo.Action.Drop] = null;
-			inventory.item_info.gameObject.SetActive(false);
+			inventory.item_info.Clear();
 		};
 		OnSelect();
     }

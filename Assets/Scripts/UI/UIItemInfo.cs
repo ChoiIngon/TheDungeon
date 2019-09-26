@@ -54,6 +54,7 @@ public class UIItemInfo : MonoBehaviour
 			grade.color = UIItem.GetGradeColor(item.grade);
 			description.text = item.meta.description;
 			icon.sprite = ResourceManager.Instance.Load<Sprite>(item.meta.sprite_path);
+			icon.color = Color.white;
 			for (int i = 0; i < (int)Action.Max; i++)
 			{
 				buttons [i].gameObject.SetActive (false);
@@ -62,4 +63,17 @@ public class UIItemInfo : MonoBehaviour
 		}
 	}
 
+	public void Clear()
+	{
+		name.text = "";
+		grade.color = UIItem.GetGradeColor(Item.Grade.Low);
+		description.text = "";
+		icon.color = new Color(1.0f, 1.0f, 1.0f, 0.0f) ;
+
+		for (int i = 0; i < (int)Action.Max; i++)
+		{
+			buttons[i].gameObject.SetActive(false);
+			actions[i] = null;
+		}
+	}
 }

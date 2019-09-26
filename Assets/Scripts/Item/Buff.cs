@@ -65,13 +65,14 @@ public class Buff_GrimReaper : Buff
 
 public class Buff_Stun : Buff
 {
-    public int turn;
-    public float speed;
+    public float time;
+	private float start_time;    
     public Buff_Stun(Unit target) : base(target)
     {
-        //this.speed = target.stats.speed;
-        //target.buffs.Add(this);
-    }
+        target.buffs.Add(this);
+		//start_time = 
+
+	}
 
     public override void OnBuff()
     {

@@ -31,6 +31,7 @@ public class UIItemSlot : MonoBehaviour
 		{
 			throw new System.Exception("can not find child component(name:Arrow)");
 		}
+
 		Util.EventSystem.Subscribe<UIItem>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
 		Util.EventSystem.Subscribe<UIItem>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
 	}
@@ -127,36 +128,18 @@ public class UIItemSlot : MonoBehaviour
 		}
 
 		item.OnItemSlotDrop(this);
-		/*
-		if (0 <= item.item_data.slot_index) // in inventory
-		{
-			int slotIndex = -1;
-			if (null != this.item)
-			{
-				slotIndex = this.item.item_data.slot_index;
-			}
-			else
-			{
-				GameManager.Instance
-			}
-		}
-		else
-		{
-			EquipItem equipItem = item.item_data as EquipItem;
-			GameManager.Instance.player.Unequip(equipItem.part, equipItem.equip_index);
-			GameManager.Instance.player.inventory.Add(equipItem);
-		}
-		*/
 	}
 
 	public void SetActiveGuideArrow(bool active)
 	{
 		if (true == active)
 		{
+			guide_arrow.transform.SetParent(inventory.transform);
 			iTween.MoveBy(guide_arrow.gameObject, iTween.Hash("y", 20, "easeType", "linear", "loopType", "pingPong", "delay", 0.0f, "time", 0.5f));
 		}
 		else
 		{
+			guide_arrow.transform.SetParent(transform);
 			iTween.Stop(guide_arrow.gameObject);
 			guide_arrow.transform.localPosition = Vector3.zero;
 		}

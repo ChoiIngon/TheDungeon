@@ -25,7 +25,7 @@ public class UIInventory : MonoBehaviour
         {
 			UIItemSlot slot = inventorySlots.GetChild(i).GetComponent<UIItemSlot>();
 			slot.inventory = this;
-            slot.slot_index = i;
+			slot.slot_index = i;
             inventory_slots[i] = slot;
             slots.Add(slot);
         }
