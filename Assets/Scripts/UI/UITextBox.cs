@@ -101,6 +101,8 @@ public class UITextBox : MonoBehaviour {
 		while (State.Complete == state) {
 			yield return null;
 		}
+
+		yield return hideCoroutine;
 	}
 
 	public IEnumerator Write(string[] texts)

@@ -21,6 +21,7 @@ public class SceneDungeon : SceneMain
 	private Vector3 touch_point = Vector3.zero;
 
 	public DungeonBattle battle;
+	private Transform ui_player_transform;
 	public UIGaugeBar player_health;
 	public UIGaugeBar player_exp;
 
@@ -74,26 +75,24 @@ public class SceneDungeon : SceneMain
 		next_rooms[Dungeon.West] = UIUtil.FindChild<Room>(rooms, "West");
 		next_rooms[Dungeon.West].transform.position = new Vector3(-room_size, 0.0f, 0.0f);
 
-		main_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "UI/Dungeon/MainButtonGroup");
+		mini_map = UIUtil.FindChild<UIMiniMap>(transform, "UI/Dungeon/MiniMap");
+		ui_dungeon_level = UIUtil.FindChild<Text>(transform, "UI/Dungeon/Level");
+
+		ui_player_transform = UIUtil.FindChild<Transform>(transform, "UI/Player");
+		player_health = UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Health");
+		player_exp =	UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Exp");
+		main_buttons =	UIUtil.FindChild<UIButtonGroup>(ui_player_transform, "MainButtonGroup");
+		
 		main_buttons.Init();
 		main_buttons.actions[0] += () => {
 			GameManager.Instance.ui_inventory.SetActive(true);
 		};
-		
-		main_buttons.actions[1] += () => {
-			CreateCoins(500);
-		};
+		main_buttons.buttons[1].gameObject.SetActive(false);
 		main_buttons.buttons[2].gameObject.SetActive(false);
 		main_buttons.buttons[3].gameObject.SetActive(false);
-						
-		mini_map = UIUtil.FindChild<UIMiniMap>(transform, "UI/Dungeon/MiniMap");
-		ui_dungeon_level = UIUtil.FindChild<Text>(transform, "UI/Dungeon/Level");
-
-        coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot");
-        coin_prefab = UIUtil.FindChild<Coin>(transform, "Prefabs/Coin");
-
-		player_health = UIUtil.FindChild<UIGaugeBar>(transform, "UI/Player/Health");
-		player_exp = UIUtil.FindChild<UIGaugeBar>(transform, "UI/Player/Exp");
+		
+		coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot");
+		coin_prefab = UIUtil.FindChild<Coin>(transform, "Prefabs/Coin");
 		
 		touch_input = GetComponent<TouchInput>();
 		if (null == touch_input)
@@ -485,7 +484,10 @@ public class SceneDungeon : SceneMain
 		yield return StartCoroutine(CheckCompleteQuest());
 		*/
 
+		Transform playerParent = ui_player_transform.parent;
+		ui_player_transform.SetParent(GameManager.Instance.ui_textbox.transform);
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
+		ui_player_transform.SetParent(playerParent);
 		Analytics.CustomEvent("Win", new Dictionary<string, object>
 		{
 			{"dungeon_level", dungeon_level},

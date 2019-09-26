@@ -62,6 +62,7 @@ public class DungeonBattle : MonoBehaviour
 			}
 			PlayerAttack(0.1f);
 		};
+		
 		monster_ui.gameObject.SetActive(false);
 		monster_sprite.gameObject.SetActive(false);
 		battle_buttons.gameObject.SetActive(false);
@@ -69,6 +70,7 @@ public class DungeonBattle : MonoBehaviour
 
 	public IEnumerator BattleStart(Monster.Meta monsterMeta)
 	{
+		touch_input.AddBlockCount();
 		monster_meta = monsterMeta;
 		monster = new Unit()
 		{
@@ -91,7 +93,7 @@ public class DungeonBattle : MonoBehaviour
 		//battle_buttons.names [0].text = "Heal(" + GamePlayer.Instance.inventory.GetItems<HealingPotionItem> ().Count.ToString() + ")";
 		monster_sprite.color = Color.black;
 		yield return StartCoroutine(Util.UITween.ColorTo(monster_sprite, Color.white, 1.5f));
-
+		touch_input.ReleaseBlockCount();
 		// attack per second
 		float playerAPS = GameManager.Instance.player.speed / monster_meta.speed;
 		float monsterAPS = 1.0f;
