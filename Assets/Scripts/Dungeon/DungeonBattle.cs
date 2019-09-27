@@ -39,14 +39,13 @@ public class DungeonBattle : MonoBehaviour
 		monster_sprite = UIUtil.FindChild<SpriteRenderer>(transform, "Monster");
 		monster_animator = UIUtil.FindChild<Animator>(transform, "Monster");
 
-		damage_effect_spot = UIUtil.FindChild<Transform>(transform, "../UI/Battle");
+		damage_effect_spot = UIUtil.FindChild<Transform>(transform, "../UI/BattleEffect");
 		monster_damage_effect_prefab = UIUtil.FindChild<Effect_MonsterDamage>(damage_effect_spot, "Effect_MonsterDamage");
 		monster_death_effect_prefab = UIUtil.FindChild<Transform>(damage_effect_spot, "Effect_MonsterDeath/BloodDroplets");
-
-		player_health = UIUtil.FindChild<UIGaugeBar>(transform, "../UI/Player/Health");
 		player_damage_effect_prefab = UIUtil.FindChild<Effect_PlayerDamage>(damage_effect_spot, "Effect_PlayerDamage");
 
-		battle_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "../UI/Battle/BattleButtonGroup");
+		player_health = UIUtil.FindChild<UIGaugeBar>(transform, "../UI/Player/Health");
+		battle_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "../UI/Player/BattleButtonGroup");
 		battle_buttons.Init();
 
 		touch_input = GetComponent<TouchInput>();
