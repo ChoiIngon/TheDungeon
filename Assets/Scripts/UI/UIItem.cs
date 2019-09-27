@@ -129,7 +129,6 @@ public class UIItem : MonoBehaviour
         rtClone.sizeDelta = new Vector2(100.0f, 100.0f); //rtOriginal.sizeDelta;
 
         clone.transform.position = transform.position;
-        Util.EventSystem.Publish<UIItem>(EventID.Inventory_Slot_Select, this);
         outline.active = true;
 
 		inventory.item_info.slot = this;
@@ -159,12 +158,43 @@ public class UIItem : MonoBehaviour
             return;
         }
 
-        Util.EventSystem.Publish<UIItem>(EventID.Inventory_Slot_Release, this);
-		OnDrop();
-        clone.transform.SetParent(null);
-        Object.Destroy(clone.gameObject);
-        clone = null;
-    }
+		do
+		{
+			bool overlap = false;
+			foreach (UIItemSlot slot in inventory.inventory_slots)
+			{
+				if (true == slot.Contains(this))
+				{
+					OnItemSlotDrop(slot);
+					overlap = true;
+				}
+			}
+
+			if (true == overlap)
+			{
+				break;
+			}
+			foreach (var itr in inventory.equip_slots)
+			{
+				UIEquipSlot slot = itr.Value;
+				if (true == slot.Overlaps(this))
+				{
+					OnEquipSlotDrop(slot);
+					overlap = true;
+				}
+			}
+
+			if (true == overlap)
+			{
+				break;
+			}
+			OnDrop();
+		} while (false);
+		
+		clone.transform.SetParent(null);
+		Object.Destroy(clone.gameObject);
+		clone = null;
+	}
 
 	public static Color GetGradeColor(Item.Grade grade)
 	{

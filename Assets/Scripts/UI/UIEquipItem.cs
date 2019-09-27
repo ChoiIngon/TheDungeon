@@ -84,4 +84,14 @@ public class UIEquipItem : UIItem
 			GameManager.Instance.player.inventory.Add(equipItem, slot.slot_index);
 		}
 	}
+
+	public override void OnDrop()
+	{
+		EquipItem equipItem = (EquipItem)item_data;
+		if (true == equipItem.equip)
+		{
+			GameManager.Instance.player.Unequip(equipItem.part, equipItem.equip_index);
+			GameManager.Instance.player.inventory.Add(equipItem);
+		}
+	}
 }

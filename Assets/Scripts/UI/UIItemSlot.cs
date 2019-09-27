@@ -10,7 +10,7 @@ public class UIItemSlot : MonoBehaviour
 	public int slot_index = -1;
 	private Canvas canvas = null;
 	private Image guide_arrow = null;
-	private RectTransform rectTransform;
+	public RectTransform rectTransform;
 
 	public virtual void Awake()
 	{
@@ -31,16 +31,8 @@ public class UIItemSlot : MonoBehaviour
 		{
 			throw new System.Exception("can not find child component(name:Arrow)");
 		}
-
-		Util.EventSystem.Subscribe<UIItem>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
-		Util.EventSystem.Subscribe<UIItem>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
 	}
 
-	private void OnDestroy()
-	{
-		Util.EventSystem.Unsubscribe<UIItem>(EventID.Inventory_Slot_Select, OnSlotSelectNotify);
-		Util.EventSystem.Unsubscribe<UIItem>(EventID.Inventory_Slot_Release, OnSlotReleaseNotify);
-	}
 	// Start is called before the first frame update
 	public void SetItem(UIItem item)
 	{
@@ -104,30 +96,6 @@ public class UIItemSlot : MonoBehaviour
 
 		Vector2 point = new Vector2(rhs.x + rhs.width / 2, rhs.y + rhs.height / 2);
 		return lhs.Contains(point);
-	}
-
-	public virtual void OnSlotSelectNotify(UIItem item)
-	{
-	}
-
-	public virtual void OnSlotReleaseNotify(UIItem item)
-	{
-		if (this == item)
-		{
-			return;
-		}
-
-		if (null == item.item_data)
-		{
-			return;
-		}
-
-		if (false == Contains(item))
-		{
-			return;
-		}
-
-		item.OnItemSlotDrop(this);
 	}
 
 	public void SetActiveGuideArrow(bool active)

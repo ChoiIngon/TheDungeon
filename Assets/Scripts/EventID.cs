@@ -6,8 +6,6 @@ public class EventID
     public const string CoinAmountChanged = "CoinAmountChanged";
 	public const string Inventory_Add = "Inventory_Add";
 	public const string Inventory_Remove = "Inventory_Remove";
-    public const string Inventory_Slot_Select = "Inventory_Slot_Select";
-	public const string Inventory_Slot_Release = "Inventory_Slot_Release";
 	public const string Inventory_Open = "Inventory_Open";
 	public const string Inventory_Close = "Inventory_Close";
 

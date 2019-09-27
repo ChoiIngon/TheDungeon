@@ -4,7 +4,6 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 
-[System.Serializable]
 public class UIPotionItem : UIItem
 {
     public override void OnSelect()
@@ -25,59 +24,26 @@ public class UIPotionItem : UIItem
 
 	public override void OnEquipSlotDrop(UIEquipSlot slot)
 	{
+		// do nothing
 	}
 
 	public override void OnItemSlotDrop(UIItemSlot slot)
 	{
-	}
-	/*
-public override void OnSlotSelectNotify(UIItem other)
-{
-	if (this == other)
-	{
-		outline.outline = true;
-	}
-	else
-	{
-		outline.outline = false;
-	}
-
-	inventory.itemInfo.buttons [(int)UIItemInfo.Action.Drop].gameObject.SetActive (true);
-	inventory.itemInfo.actions[(int)UIItemInfo.Action.Drop] += () => {
-		inventory.Pull (data.index);
-		inventory.TurnEquipGuideArrowOff();
-		inventory.itemInfo.gameObject.SetActive (false);
-	}
-}
-
-public override void OnSlotReleaseNotify(UIItem other)
-{
-	if(this == other)
-	{
-		return;
+		if (slot.slot_index == item_data.slot_index)
+		{
+			return;
+		}
+		int prevSlotIndex = item_data.slot_index;
+		GameManager.Instance.player.inventory.Remove(item_data.slot_index);
+		Item prev = GameManager.Instance.player.inventory.Remove(slot.slot_index);
+		if (null != prev)
+		{
+			GameManager.Instance.player.inventory.Add(prev, prevSlotIndex);
+		}
+		GameManager.Instance.player.inventory.Add(item_data, slot.slot_index);
 	}
 
-	if(null == other.item_data)
+	public override void OnDrop()
 	{
-		return;
 	}
-
-	if(false == Contains(other))
-	{
-		return;
-	}
-
-	if(0 <= other.item_data.slot_index) // in inventory
-	{
-		GameManager.Instance.player.inventory.Swap(other.item_data.slot_index, slot_index);
-	}
-	else
-	{
-		EquipItem equipItem = other.item_data as EquipItem;
-		GameManager.Instance.player.Unequip(equipItem.part, equipItem.equip_index);
-		GameManager.Instance.player.inventory.Add(equipItem);
-	}
-
-}
-	*/
 }
