@@ -42,38 +42,38 @@ public class Unit
 	public void AddSkill(Skill skill)
 	{
 		UnitSkill unitSkill = null;
-		if (false == skills.ContainsKey(skill.skill_id))
+		if (false == skills.ContainsKey(skill.meta.skill_id))
 		{
 			unitSkill = new UnitSkill();
 			unitSkill.skill_data = skill;
 			unitSkill.ref_count = 0;
-			skills.Add(skill.skill_id, unitSkill);
+			skills.Add(skill.meta.skill_id, unitSkill);
 		}
 		else
 		{
-			unitSkill = skills[skill.skill_id];
+			unitSkill = skills[skill.meta.skill_id];
 		}
 
 		unitSkill.ref_count += 1;
 
-		Debug.Log("add skill(skill_id:" + skill.skill_id + ", ref_count:" + unitSkill.ref_count + ")");
+		Debug.Log("add skill(skill_id:" + skill.meta.skill_id + ", ref_count:" + unitSkill.ref_count + ")");
 	}
 
 	public void RemoveSkill(Skill skill)
 	{
-		if (false == skills.ContainsKey(skill.skill_id))
+		if (false == skills.ContainsKey(skill.meta.skill_id))
 		{
-			Debug.LogError("can not find unit skill(skill_id:" + skill.skill_id + ")");
+			Debug.LogError("can not find unit skill(skill_id:" + skill.meta.skill_id + ")");
 			return;
 		}
-		UnitSkill unitSkill = skills[skill.skill_id];
-		Debug.Log("add skill(skill_id:" + skill.skill_id + ", ref_count:" + unitSkill.ref_count + ")");
+		UnitSkill unitSkill = skills[skill.meta.skill_id];
+		Debug.Log("add skill(skill_id:" + skill.meta.skill_id + ", ref_count:" + unitSkill.ref_count + ")");
 		unitSkill.ref_count -= 1;
 
 		if (0 >= unitSkill.ref_count)
 		{
 			Debug.Log("remove skill");
-			skills.Remove(skill.skill_id);
+			skills.Remove(skill.meta.skill_id);
 		}
 	}
 

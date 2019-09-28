@@ -6,6 +6,7 @@ public class ItemManager : Util.Singleton<ItemManager>
 {
 	private Dictionary<string, Item.Meta> metas = new Dictionary<string, Item.Meta>();
 	private List<EquipItem.Meta> equip_item_metas = new List<EquipItem.Meta>();
+	private List<Skill.Meta> skill_metas = new List<Skill.Meta>();
 	private Util.WeightRandom<Item.Grade> grade_gacha = new Util.WeightRandom<Item.Grade>();
 	private Util.WeightRandom<EquipItemStatMeta> stat_type_gacha = new Util.WeightRandom<EquipItemStatMeta>();
 
@@ -13,12 +14,12 @@ public class ItemManager : Util.Singleton<ItemManager>
 	{
 		metas = new Dictionary<string, Item.Meta>();
 
-		grade_gacha.SetWeight(Item.Grade.Low, 300);
-		grade_gacha.SetWeight(Item.Grade.Normal, 200);
-		grade_gacha.SetWeight(Item.Grade.High, 150);
-		grade_gacha.SetWeight(Item.Grade.Magic, 125);
-		grade_gacha.SetWeight(Item.Grade.Rare, 100);
-		grade_gacha.SetWeight(Item.Grade.Legendary, 030);
+		grade_gacha.SetWeight(Item.Grade.Low,		6);
+		grade_gacha.SetWeight(Item.Grade.Normal,	5);
+		grade_gacha.SetWeight(Item.Grade.High,		4);
+		grade_gacha.SetWeight(Item.Grade.Magic,		3);
+		grade_gacha.SetWeight(Item.Grade.Rare,		2);
+		grade_gacha.SetWeight(Item.Grade.Legendary, 1);
 
 		stat_type_gacha.SetWeight(new EquipItemStatMeta()
 		{
@@ -46,6 +47,7 @@ public class ItemManager : Util.Singleton<ItemManager>
 			}
 		}, 1);
 
+		skill_metas.Add(new Skill_Stun.Meta() { skill_id = "SKILL_STUN", description = "20%의 확률로 5턴 동안 대상을 기절 시킴" });
 		InitEquipItem();
 		InitPotionItemInfo();
 	}
@@ -75,6 +77,13 @@ public class ItemManager : Util.Singleton<ItemManager>
 			item.sub_stat.AddStat(CreateStat(level, stat_type_gacha.Random()));
 		}
 
+		if (0 < skill_metas.Count)
+		{
+			if (EquipItem.Grade.Rare <= item.grade)
+			{
+				item.skill = skill_metas[skill_metas.Count - 1].CreateInstance();
+			}
+		}
 		Analytics.CustomEvent("CreateItem", new Dictionary<string, object>
 		{
 			{"id", item.meta.id },
@@ -138,6 +147,19 @@ public class ItemManager : Util.Singleton<ItemManager>
 			meta.description = "An elixir that will instantly return you to full health and cure poison.";
 			metas.Add (meta.id, meta);
 		}
+
+		{
+			StranthPotionItem.Meta meta = new StranthPotionItem.Meta();
+			meta.potion_type = PotionItem.PotionType.Strength;
+			meta.type = Item.Type.Potion;
+			meta.id = "ITEM_POTION_STRENGTH";
+			meta.name = "Strength Potion";
+			meta.price = 100;
+			meta.sprite_path = "Item/item_potion_001";
+			meta.description = "An elixir that will permenently increase strength.";
+			metas.Add(meta.id, meta);
+		}
+		
 	}
 
 	private Stat.Data CreateStat(int level, EquipItemStatMeta meta)

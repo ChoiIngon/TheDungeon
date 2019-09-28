@@ -22,7 +22,7 @@ namespace Util
 				throw new System.OverflowException("total weight is over the limit");
 			}
 
-			entry.Add(new Tuple<int, T>(weight, value));
+			entry.Add(new Tuple<int, T>(total_weight, value));
 		}
 
 		public T Random()
@@ -35,7 +35,7 @@ namespace Util
 			int r = UnityEngine.Random.Range(0, total_weight);
 			foreach (var itr in entry)
 			{
-				if(r < itr.first)
+				if(r <= itr.first)
 				{
 					return itr.second;
 				}

@@ -63,6 +63,10 @@ public class Player : Unit
 
 		CalculateStat();
 
+		if (null != item.skill)
+		{
+			AddSkill(item.skill);
+		}
         Debug.Log("equip item(item_id:" + item.meta.id + ", part:" + item.part + ", equip_index:" + equip_index + ")");
         Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Equip, new ItemEquipEvent() { item = item, equip_index = equip_index } );
         return prev;
@@ -83,8 +87,12 @@ public class Player : Unit
 		stats -= item.sub_stat;
 
 		CalculateStat();
-	
-        Debug.Log("unequip item(item_id:" + item.meta.id + ", part:" + item.part + ", equip_index:" + equip_index + ")");
+
+		if (null != item.skill)
+		{
+			RemoveSkill(item.skill);
+		}
+		Debug.Log("unequip item(item_id:" + item.meta.id + ", part:" + item.part + ", equip_index:" + equip_index + ")");
         Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Unequip, new ItemEquipEvent() { item = item, equip_index = equip_index });
         return item;
 	}

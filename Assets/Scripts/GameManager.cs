@@ -32,6 +32,9 @@ public class GameManager : Util.MonoSingleton<GameManager>
 	
 	public IEnumerator Init()
 	{
+		camera_fade = UIUtil.FindChild<Image>(transform, "UI/CameraFade");
+		camera_fade.color = Color.black;
+
 		yield return ResourceManager.Instance.Init();
 		DontDestroyOnLoad(ResourceManager.Instance.gameObject);
 		DontDestroyOnLoad(gameObject);
@@ -77,18 +80,14 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		ui_textbox = UIUtil.FindChild<UITextBox>(transform, "UI/UITextBox");
 		ui_textbox.Init();
 
-		camera_fade = UIUtil.FindChild<Image>(transform, "UI/CameraFade");
-		camera_fade.color = Color.black;
-
 		for (int i = 0; i < 10; i++)
 		{
 			EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);
 			player.inventory.Add(item);
 		}
-		player.AddSkill(new Skill_Stun() { skill_id = "SKILL_STUN" });
 
-		PotionItem.Meta itemMeta = ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_HEALING");
-		player.inventory.Add(itemMeta.CreateInstance());
+		player.inventory.Add(ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_HEALING").CreateInstance());
+		player.inventory.Add(ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_STRENGTH").CreateInstance());
 	}
 
 	/*

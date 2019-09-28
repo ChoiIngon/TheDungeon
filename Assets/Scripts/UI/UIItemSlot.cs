@@ -111,7 +111,6 @@ public class UIItemSlot : MonoBehaviour
 			iTween.Stop(guide_arrow.gameObject);
 			guide_arrow.transform.localPosition = Vector3.zero;
 		}
-		Debug.Log("activate guide arrow:" + active.ToString());
 		guide_arrow.gameObject.SetActive(active);
 	}
 

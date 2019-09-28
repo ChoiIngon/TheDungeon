@@ -34,10 +34,6 @@ public class EquipItem : Item
 		}
     }
 
-	public class Encant
-	{
-	}
-
 	public int 	level = 0;
 	public Part part = Part.Invalid;
 	
@@ -50,34 +46,26 @@ public class EquipItem : Item
     public int  equip_index = -1;
 	public Stat main_stat = new Stat();
 	public Stat sub_stat = new Stat();
-	public Encant enchant = null;
+	public Skill skill;
 
 	public EquipItem(EquipItem.Meta meta) : base(meta)
 	{
 		part = meta.part;
 	}
 
-    /*
-	public override List<string> Actions() {
-		List<string> actions = base.Actions ();
-		actions.Add ("EQUIP");
-		actions.Add ("UNEQUIP");
-		return actions;
-	}
-	*/
-
     public override string description
     {
 		get
 		{
 			string desc = "";
-            desc += meta.description + "\n";
+            desc += meta.description + "\n\n";
+
 			foreach (Stat.Data stat in main_stat.GetStats())
 			{
 				Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)stat.type);
 				while (true == reader.Read())
 				{
-					desc += string.Format(reader.GetString("description"), stat.value) + "\n";
+					desc += " -" + string.Format(reader.GetString("description"), stat.value) + "\n";
 				}
 			}
 
@@ -86,10 +74,14 @@ public class EquipItem : Item
 				Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)stat.type);
 				while (true == reader.Read())
 				{
-					desc += "<color=green> +" + string.Format(reader.GetString("description"), stat.value) + "</color>\n";
+					desc += "<color=green> -" + string.Format(reader.GetString("description"), stat.value) + "</color>\n";
 				}
 			}
 
+			if (null != skill)
+			{
+				desc += "<color=red> -" + skill.meta.description + "</color>";
+			}
 			return desc;
 		}
     }
