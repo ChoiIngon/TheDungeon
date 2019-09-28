@@ -32,8 +32,8 @@ public class UIEquipItem : UIItem
 			itr.Value.SetActiveGuideArrow(false);
 		}
 
-		EquipItem equipItem = (EquipItem)item_data;
-		if (slot.part != equipItem.part)
+		EquipItem equipItemData = (EquipItem)item_data;
+		if (slot.part != equipItemData.part)
 		{
 			return;
 		}
@@ -44,13 +44,13 @@ public class UIEquipItem : UIItem
 			GameManager.Instance.player.inventory.Add(unequipItem);
 		}
 
-		if (true == equipItem.equip)
+		if (true == equipItemData.equip)
 		{
-			GameManager.Instance.player.Unequip(equipItem.part, equipItem.equip_index);
+			GameManager.Instance.player.Unequip(equipItemData.part, equipItemData.equip_index);
 		}
 		else
 		{
-			GameManager.Instance.player.inventory.Remove(equipItem.slot_index);
+			GameManager.Instance.player.inventory.Remove(equipItemData.slot_index);
 		}
 		GameManager.Instance.player.Equip((EquipItem)item_data, slot.equip_index);
 	}

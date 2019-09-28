@@ -9,7 +9,7 @@ public class UIItem : MonoBehaviour
 	// Image border;
 	public Image icon = null;
 	public Image grade = null;
-    public Image clone = null;
+    public UIItem clone = null;
 
     public ImageOutline outline = null;
 	public RectTransform rectTransform;
@@ -56,8 +56,7 @@ public class UIItem : MonoBehaviour
 		icon = transform.Find ("ItemIcon").GetComponent<Image> ();
         grade = transform.Find("ItemGrade").GetComponent<Image>();
         outline = transform.Find ("ItemIcon").GetComponent<ImageOutline> ();
-		outline.active = false;
-
+		
         Init (item_data);
 	}
 
@@ -106,6 +105,7 @@ public class UIItem : MonoBehaviour
 			{
 				continue;
 			}
+
 			slot.item.outline.active = false;
 		}
         if (null == item_data)
@@ -113,13 +113,17 @@ public class UIItem : MonoBehaviour
             return;
         }
 
-        clone = Instantiate<Image>(icon);
+        clone = Instantiate<UIItem>(this);
         if (null == clone)
         {
             throw new System.Exception("can not clone icon image");
         }
+		
 
 		Debug.Log("instantiate clone for item(id:" + item_data.meta.id + ", slot_index:" + item_data.slot_index + ")");
+		clone.grade.gameObject.SetActive(true);
+		clone.icon.gameObject.SetActive(true);
+		clone.outline.active = false;
         clone.transform.SetParent(inventory.transform, false);
 
         RectTransform rtClone = clone.rectTransform;
@@ -128,8 +132,10 @@ public class UIItem : MonoBehaviour
         rtClone.localScale = Vector3.one;
         rtClone.sizeDelta = new Vector2(100.0f, 100.0f); //rtOriginal.sizeDelta;
 
-        clone.transform.position = transform.position;
-        outline.active = true;
+		clone.transform.position = transform.position;
+
+		icon.color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+		grade.color = new Color(grade.color.r, grade.color.g, grade.color.b, 0.5f);
 
 		inventory.item_info.slot = this;
 		inventory.item_info.description.text = item_data.description;
@@ -148,15 +154,22 @@ public class UIItem : MonoBehaviour
 		{
 			return;
 		}
-        clone.transform.position = evt.position;
+
+		Vector3 clonePosition = evt.position;
+		clonePosition.y += clone.rectTransform.rect.height * canvas.scaleFactor;
+		clone.transform.position = clonePosition;
     }
 
     private void OnPointerUp(PointerEventData evt)
     {
-        if (null == item_data)
+		if (null == item_data)
         {
             return;
         }
+
+		icon.color = Color.white;
+		grade.color = GetGradeColor(item_data.grade);
+		outline.active = true;
 
 		do
 		{

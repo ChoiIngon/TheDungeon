@@ -123,7 +123,7 @@ public class UIInventory : MonoBehaviour
 		}
 		item.gameObject.SetActive(true);
 		item.Init(evt.item);
-
+		item.outline.active = true;
 		equip_slots[key].SetItem(item);
 	}
 
