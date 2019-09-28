@@ -52,13 +52,13 @@ public class SceneDungeon : SceneMain
 	{
 		if ("Dungeon" == SceneManager.GetActiveScene().name)
 		{
-			yield return StartCoroutine(GameManager.Instance.Init());
 			AsyncOperation operation = SceneManager.LoadSceneAsync("Common", LoadSceneMode.Additive);
 			while (false == operation.isDone)
 			{
 				// loading progress
 				yield return null;
 			}
+			yield return StartCoroutine(GameManager.Instance.Init());
 		}
 
 		dungeon = new Dungeon();
