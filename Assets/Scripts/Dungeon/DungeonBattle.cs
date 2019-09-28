@@ -16,6 +16,7 @@ public class DungeonBattle : MonoBehaviour
 	private float battle_speed = 1.5f;
 	private Monster.Meta monster_meta;
 	private Unit monster;
+	private Transform monster_buff;
 	private Transform monster_ui;
 	private Text monster_name;
 	private UIGaugeBar monster_health;
@@ -33,6 +34,7 @@ public class DungeonBattle : MonoBehaviour
 
 	void Start()
 	{
+		monster_buff = UIUtil.FindChild<Transform>(transform, "Monster/Buff");
 		monster_ui = UIUtil.FindChild<Transform>(transform, "../UI/Monster");
 		monster_name = UIUtil.FindChild<Text>(monster_ui, "Name");
 		monster_health = UIUtil.FindChild<UIGaugeBar>(monster_ui, "Health");
@@ -66,20 +68,14 @@ public class DungeonBattle : MonoBehaviour
 		monster_sprite.gameObject.SetActive(false);
 		battle_buttons.gameObject.SetActive(false);
 
-		Util.EventSystem.Subscribe<Buff_Stun>(EventID.Buff_Stun_Start, (Buff_Stun buff) =>
-		{
-			Debug.Log(buff.ToString() + " activated, target:" + buff.target.ToString());
-		});
-		Util.EventSystem.Subscribe<Buff_Stun>(EventID.Buff_Stun_Finish, (Buff_Stun buff) =>
-		{
-			Debug.Log(buff.ToString() + " finished");
-		});
+		Util.EventSystem.Subscribe<Buff>(EventID.Buff_Start, OnBuffStart);
+		Util.EventSystem.Subscribe<Buff>(EventID.Buff_End, OnBuffEnd);
 	}
 
 	private void OnDestroy()
 	{
-		Util.EventSystem.Unsubscribe<Buff_Stun>(EventID.Buff_Stun_Start);
-		Util.EventSystem.Unsubscribe<Buff_Stun>(EventID.Buff_Stun_Finish);
+		Util.EventSystem.Unsubscribe<Buff>(EventID.Buff_Start, OnBuffStart);
+		Util.EventSystem.Unsubscribe<Buff>(EventID.Buff_End, OnBuffEnd);
 	}
 
 	public IEnumerator BattleStart(Monster.Meta monsterMeta)
@@ -96,6 +92,7 @@ public class DungeonBattle : MonoBehaviour
 			critical = 0.0f
 		};
 
+		monster_buff.gameObject.SetActive(false);
 		monster_ui.gameObject.SetActive(true);
 		monster_sprite.gameObject.SetActive(true);
 		battle_buttons.gameObject.SetActive(true);
@@ -125,33 +122,28 @@ public class DungeonBattle : MonoBehaviour
 			}
 			else
 			{
-				monster_animator.SetTrigger("Attack");
 				Damage damage = CalculateDamage(monster, GameManager.Instance.player);
-
-				StartCoroutine(GameManager.Instance.CameraFade(Color.white, new Color(1.0f, 1.0f, 1.0f, 0.0f), 0.1f));
-				iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
-				Effect_PlayerDamage bloodMark = GameObject.Instantiate<Effect_PlayerDamage>(player_damage_effect_prefab);
-				bloodMark.gameObject.SetActive(true);
-				bloodMark.transform.SetParent(damage_effect_spot, false);
-				bloodMark.transform.position = new Vector3(
-					Random.Range(Screen.width / 2 - Screen.width / 2 * 0.85f, Screen.width / 2 + Screen.width / 2 * 0.9f),
-					Random.Range(Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
-					0.0f
-				);
+				if (0.0f < damage.damage)
+				{
+					monster_animator.SetTrigger("Attack");
+					StartCoroutine(GameManager.Instance.CameraFade(Color.white, new Color(1.0f, 1.0f, 1.0f, 0.0f), 0.1f));
+					iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
+					Effect_PlayerDamage bloodMark = GameObject.Instantiate<Effect_PlayerDamage>(player_damage_effect_prefab);
+					bloodMark.gameObject.SetActive(true);
+					bloodMark.transform.SetParent(damage_effect_spot, false);
+					bloodMark.transform.position = new Vector3(
+						Random.Range(Screen.width / 2 - Screen.width / 2 * 0.85f, Screen.width / 2 + Screen.width / 2 * 0.9f),
+						Random.Range(Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
+						0.0f
+					);
+					GameManager.Instance.player.cur_health -= damage.damage;
+					player_health.current = GameManager.Instance.player.cur_health;
+				}
 				playerTurn += playerAPS + Random.Range(0, playerAPS * 0.1f);
-				GameManager.Instance.player.cur_health -= damage.damage;
-				player_health.current = GameManager.Instance.player.cur_health;
 			}
 
-			foreach (Buff buff in GameManager.Instance.player.buffs)
-			{
-				buff.OnBuff();
-			}
-
-			foreach (Buff buff in monster.buffs)
-			{
-				buff.OnBuff();
-			}
+			GameManager.Instance.player.OnBattleTurn();
+			monster.OnBattleTurn();
 			yield return new WaitForSeconds(1.0f / battle_speed);
 		}
 
@@ -189,15 +181,18 @@ public class DungeonBattle : MonoBehaviour
 	private Damage CalculateDamage(Unit attacker, Unit defender)
 	{
 		Damage damage = new Damage();
+		if (0 < attacker.GetBuffCount(Buff.Type.Stun))
+		{
+			damage.damage = 0.0f;
+			return damage;
+		}
 		float attack = attacker.attack + Random.Range(-attacker.attack * 0.1f, attacker.attack * 0.1f);
 		float defense = defender.defense + Random.Range(-defender.defense * 0.1f, defender.defense * 0.1f);
 		damage.damage = Mathf.Max(1, attack - defense);
 
-		foreach (Skill skill in attacker.skills)
-		{
-			skill.OnHit(defender);
-		}
-
+		attacker.OnAttack(defender);
+		defender.OnDefense(attacker);
+		
 		if (attacker.critical >= Random.Range(0.0f, 100.0f))
 		{
 			damage.damage *= 3;
@@ -209,18 +204,31 @@ public class DungeonBattle : MonoBehaviour
 
 	private void PlayerAttack(float damageRate)
 	{
-		monster_sprite.color = Color.white;
-		StartCoroutine(Util.UITween.ColorFrom(monster_sprite, Color.red, 0.3f));
-
-		iTween.ShakePosition(monster_sprite.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
-		Effect_MonsterDamage effect = GameObject.Instantiate<Effect_MonsterDamage>(monster_damage_effect_prefab);
-
 		Damage damage = CalculateDamage(GameManager.Instance.player, monster);
-		damage.damage *= damageRate;
-		effect.damage = (int)damage.damage;
-		effect.critical = damage.critical;
-		effect.gameObject.SetActive(true);
-		monster.cur_health -= (int)damage.damage;
-		monster_health.current = monster.cur_health;
+		if (0.0f < damage.damage)
+		{
+			monster_sprite.color = Color.white;
+			StartCoroutine(Util.UITween.ColorFrom(monster_sprite, Color.red, 0.3f));
+
+			iTween.ShakePosition(monster_sprite.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
+			Effect_MonsterDamage effect = GameObject.Instantiate<Effect_MonsterDamage>(monster_damage_effect_prefab);
+
+			damage.damage *= damageRate;
+			effect.damage = (int)damage.damage;
+			effect.critical = damage.critical;
+			effect.gameObject.SetActive(true);
+			monster.cur_health -= (int)damage.damage;
+			monster_health.current = monster.cur_health;
+		}
+	}
+
+	private void OnBuffStart(Buff buff)
+	{
+		monster_buff.gameObject.SetActive(true);
+	}
+
+	private void OnBuffEnd(Buff buff)
+	{
+		monster_buff.gameObject.SetActive(false);
 	}
 }

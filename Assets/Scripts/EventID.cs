@@ -24,6 +24,6 @@ public class EventID
 	public const string Player_Add_Exp = "Player_Add_Exp";
 	public const string Player_Change_Health = "Player_Change_Health";
 
-	public const string Buff_Stun_Start = "Buff_Stun_Start";
-	public const string Buff_Stun_Finish = "Buff_Stun_Finish";
+	public const string Buff_Start = "Buff_Start";
+	public const string Buff_End = "Buff_End";
 }
