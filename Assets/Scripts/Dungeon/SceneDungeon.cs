@@ -41,12 +41,6 @@ public class SceneDungeon : SceneMain
     private Dungeon.LevelInfo dungeonLevelInfo;
     
     private List<QuestData> completeQuests;
-    
-	[System.Serializable]
-	public class Config
-	{
-		public Dungeon.LevelInfo[] level_infos;
-	}
 */
 	public override IEnumerator Run()
 	{

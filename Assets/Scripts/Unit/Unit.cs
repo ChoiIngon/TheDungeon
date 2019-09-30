@@ -30,6 +30,36 @@ public class Unit
 		}
 	}
 
+	public class AttackResult
+	{
+		public bool critical = false;
+		public float damage = 0.0f;
+	}
+
+	public AttackResult Attack(Unit target)
+	{
+		AttackResult result = new AttackResult();
+		if (0 < GetBuffCount(Buff.Type.Stun))
+		{
+			result.damage = 0.0f;
+			return result;
+		}
+
+		float attack = this.attack + Random.Range(-this.attack * 0.1f, this.attack * 0.1f);
+		float defense = target.defense + Random.Range(-target.defense * 0.1f, target.defense * 0.1f);
+		result.damage = Mathf.Max(1, attack - defense);
+
+		OnAttack(target);
+		target.OnDefense(this);
+
+		if (critical >= Random.Range(0.0f, 100.0f))
+		{
+			result.damage *= 3;
+			result.critical = true;
+		}
+		return result;
+	}
+
 	public virtual void CalculateStat()
 	{
 		attack = stats.GetStat(StatType.Attack) * (1.0f + stats.GetStat(StatType.Attack_Rate));
