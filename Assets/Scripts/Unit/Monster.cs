@@ -32,13 +32,18 @@ public class Monster : MonoBehaviour
 	private Transform				ui_root;
 	private Text					ui_name;
 	public UIGaugeBar				ui_health;
-	private SpriteRenderer			sprite;
+	
+	
 	public Animator					animator;
 	private Transform				damage_effect_spot;
 	public Effect_MonsterDamage		damage_effect_prefab;
 	public Transform				death_effect_prefab;
 	private Transform				buff_effect_spot;
 	private Transform[]			buff_effects;
+
+	private SpriteRenderer sprite;
+	private Shader shaderOriginal;
+	private Shader shaderWhite;
 
 	private void Start()
 	{
@@ -54,6 +59,9 @@ public class Monster : MonoBehaviour
 		{
 			throw new MissingComponentException("SpriteRenderer");
 		}
+
+		shaderOriginal = sprite.material.shader;
+		shaderWhite = Shader.Find("GUI/Text Shader");
 		animator = GetComponent<Animator>();
 		if (null == animator)
 		{
@@ -119,6 +127,21 @@ public class Monster : MonoBehaviour
 		deathEffect.gameObject.SetActive(true);
 		Object.Destroy(deathEffect.gameObject, 1.0f);
 		ui_root.gameObject.SetActive(false);
+	}
+
+	public IEnumerator OnDamage(Unit.AttackResult attackResult)
+	{
+		iTween.ShakePosition(gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
+		Effect_MonsterDamage effect = GameObject.Instantiate<Effect_MonsterDamage>(damage_effect_prefab);
+		effect.transform.SetParent(damage_effect_spot);
+		effect.damage = (int)attackResult.damage;
+		effect.critical = attackResult.critical;
+		effect.gameObject.SetActive(true);
+		data.cur_health -= (int)attackResult.damage;
+		ui_health.current = data.cur_health;
+		sprite.material.shader = shaderWhite;
+		yield return new WaitForSeconds(0.03f);
+		sprite.material.shader = shaderOriginal;
 	}
 
 	private void OnBuffStart(Buff buff)

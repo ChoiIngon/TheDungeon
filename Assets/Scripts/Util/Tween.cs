@@ -10,7 +10,6 @@ namespace Util
 		{
 			return UITween.Instance._ColorTo(image, to, time);
 		}
-
 		private IEnumerator _ColorTo(Image image, Color to, float time)
 		{
 			Color from = image.color;
@@ -37,7 +36,6 @@ namespace Util
 		{
 			return UITween.Instance._ColorTo(renderer, to, time);
 		}
-
 		private IEnumerator _ColorTo(SpriteRenderer renderder, Color to, float time)
 		{
 			Color from = renderder.color;
@@ -75,14 +73,11 @@ namespace Util
 		{
 			return UITween.Instance._ColorFrom(renderer, from, time);
 		}
-
 		private IEnumerator _ColorFrom(SpriteRenderer renderer, Color from, float time)
 		{
 			Color to = renderer.color;
 			renderer.color = from;
 			return _ColorTo(renderer, to, time);
 		}
-
-		
 	}
 }

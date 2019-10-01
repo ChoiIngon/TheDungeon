@@ -120,19 +120,10 @@ public class DungeonBattle : MonoBehaviour
 	private void PlayerAttack(float damageRate)
 	{
 		Unit.AttackResult result = GameManager.Instance.player.Attack(monster.data);
+		result.damage *= damageRate;
 		if (0.0f < result.damage)
 		{
-			StartCoroutine(monster.ColorTo(Color.red, Color.white, 0.5f));
-
-			iTween.ShakePosition(monster.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
-			Effect_MonsterDamage effect = GameObject.Instantiate<Effect_MonsterDamage>(monster.damage_effect_prefab);
-			effect.transform.SetParent(player_damage_effect_spot);
-			result.damage *= damageRate;
-			effect.damage = (int)result.damage;
-			effect.critical = result.critical;
-			effect.gameObject.SetActive(true);
-			monster.data.cur_health -= (int)result.damage;
-			monster.ui_health.current = monster.data.cur_health;
+			StartCoroutine(monster.OnDamage(result));
 		}
 	}
 }
