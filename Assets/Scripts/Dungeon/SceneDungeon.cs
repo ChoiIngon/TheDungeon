@@ -59,6 +59,7 @@ public class SceneDungeon : SceneMain
 
 		dungeon = new Dungeon();
 		battle = UIUtil.FindChild<DungeonBattle>(transform, "Battle");
+		battle.gameObject.SetActive(false);
 		box = UIUtil.FindChild<DungeonBox>(transform, "Box");		
 		rooms = UIUtil.FindChild<Transform>(transform, "Rooms");
 		current_room = UIUtil.FindChild<Room>(rooms, "Current");

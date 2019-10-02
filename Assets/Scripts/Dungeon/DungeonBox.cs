@@ -31,10 +31,10 @@ public class DungeonBox : MonoBehaviour
 
 	public IEnumerator Show()
 	{
+		close.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+		open.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
 		touch_input.ReleaseBlockCount();
 		gameObject.SetActive(true);
-		open.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
-		close.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 		complete = false;
 		while (false == complete)
 		{
@@ -45,8 +45,7 @@ public class DungeonBox : MonoBehaviour
 
 	public IEnumerator Open()
 	{
-		StartCoroutine(Util.UITween.ColorTo(close, new Color(1.0f, 1.0f, 1.0f, 0.0f), time));
-		yield return StartCoroutine(Util.UITween.ColorTo(open, new Color(1.0f, 1.0f, 1.0f, 1.0f), time));
+		yield return StartCoroutine(Util.UITween.Overlap(close, open, time));
 		string text = "아이템을 획득 했습니다";
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
 		complete = true;

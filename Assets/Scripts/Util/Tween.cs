@@ -79,5 +79,17 @@ namespace Util
 			renderer.color = from;
 			return _ColorTo(renderer, to, time);
 		}
+
+		public static IEnumerator Overlap(SpriteRenderer from, SpriteRenderer to, float time)
+		{
+			return UITween.Instance._Overlap(from, to, time);
+		}
+		private IEnumerator _Overlap(SpriteRenderer from, SpriteRenderer to, float time)
+		{
+			from.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+			to.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+			StartCoroutine(_ColorTo(from, new Color(1.0f, 1.0f, 1.0f, 0.0f), time));
+			yield return StartCoroutine(_ColorTo(to, new Color(1.0f, 1.0f, 1.0f, 1.0f), time));
+		}
 	}
 }

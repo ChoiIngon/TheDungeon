@@ -50,6 +50,7 @@ public class DungeonBattle : MonoBehaviour
 
 	public IEnumerator BattleStart(Monster.Meta monsterMeta)
 	{
+		gameObject.SetActive(true);
 		monster.gameObject.SetActive(true);
 		battle_buttons.gameObject.SetActive(true);
 		battle_buttons.Show(0.5f);
@@ -113,6 +114,7 @@ public class DungeonBattle : MonoBehaviour
 		battle_buttons.gameObject.SetActive(false);
 		monster.gameObject.SetActive(false);
 		touch_input.AddBlockCount();
+		gameObject.SetActive(false);
 	}
 
 	private void PlayerAttack(float damageRate)
