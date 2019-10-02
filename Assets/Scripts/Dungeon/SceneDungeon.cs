@@ -21,6 +21,8 @@ public class SceneDungeon : SceneMain
 	private Vector3 touch_point = Vector3.zero;
 
 	public DungeonBattle battle;
+	public DungeonBox box;
+
 	private Transform ui_player_transform;
 	public UIGaugeBar player_health;
 	public UIGaugeBar player_exp;
@@ -57,7 +59,7 @@ public class SceneDungeon : SceneMain
 
 		dungeon = new Dungeon();
 		battle = UIUtil.FindChild<DungeonBattle>(transform, "Battle");
-		
+		box = UIUtil.FindChild<DungeonBox>(transform, "Box");		
 		rooms = UIUtil.FindChild<Transform>(transform, "Rooms");
 		current_room = UIUtil.FindChild<Room>(rooms, "Current");
 		next_rooms[Dungeon.North] = UIUtil.FindChild<Room>(rooms, "North");
@@ -395,7 +397,11 @@ public class SceneDungeon : SceneMain
 		//	audioWalk.Stop();
 
 		InitRooms();
-		if (100 > Random.Range(0, 100) && Dungeon.Room.Type.Normal == dungeon.current_room.type && 0 < dungeon.monster_count)
+		if (100 > Random.Range(0, 100))
+		{
+			yield return StartCoroutine(box.Show());
+		}
+		else if (30 > Random.Range(0, 100) && Dungeon.Room.Type.Normal == dungeon.current_room.type && 0 < dungeon.monster_count)
 		{
 			string monsterID = dungeon.monster_ids[Random.Range(0, dungeon.monster_ids.Count - 1)];
 			Monster.Meta meta = MonsterManager.Instance.FindMeta(monsterID);
@@ -415,6 +421,8 @@ public class SceneDungeon : SceneMain
 			}
 			dungeon.monster_count--;
 		}
+		
+
 
 		if (Dungeon.Room.Type.Exit == dungeon.current_room.type)
 		{

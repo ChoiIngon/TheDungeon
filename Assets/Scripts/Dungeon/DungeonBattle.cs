@@ -44,14 +44,12 @@ public class DungeonBattle : MonoBehaviour
 			}
 			PlayerAttack(0.1f);
 		};
-
+		touch_input.AddBlockCount();
 		battle_buttons.gameObject.SetActive(false);
 	}
 
 	public IEnumerator BattleStart(Monster.Meta monsterMeta)
 	{
-		touch_input.AddBlockCount();
-
 		monster.gameObject.SetActive(true);
 		battle_buttons.gameObject.SetActive(true);
 		battle_buttons.Show(0.5f);
@@ -100,7 +98,6 @@ public class DungeonBattle : MonoBehaviour
 			yield return new WaitForSeconds(1.0f / battle_speed);
 		}
 
-
 		if (0.0f < monster.data.cur_health)
 		{
 			battle_result = false;
@@ -115,6 +112,7 @@ public class DungeonBattle : MonoBehaviour
 		monster.data = null;
 		battle_buttons.gameObject.SetActive(false);
 		monster.gameObject.SetActive(false);
+		touch_input.AddBlockCount();
 	}
 
 	private void PlayerAttack(float damageRate)

@@ -71,7 +71,7 @@ public class TouchInput : MonoBehaviour {
 	private BoxCollider2D touchCollider;
 	private Vector3 lastPressPosition;
 	private bool isButtonDown;
-    void Start()
+    void Awake()
     {
 		lastPressPosition = Input.mousePosition;
 		touchCollider = GetComponent<BoxCollider2D> ();
