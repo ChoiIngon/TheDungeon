@@ -85,6 +85,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 			EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);
 			player.inventory.Add(item);
 		}
+		player.stats.AddStat(new Stat.Data() { type = StatType.Critical, value = 50.0f });
 
 		player.inventory.Add(ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_HEALING").CreateInstance());
 		player.inventory.Add(ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_STRENGTH").CreateInstance());

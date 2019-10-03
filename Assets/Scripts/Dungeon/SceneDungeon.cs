@@ -59,8 +59,9 @@ public class SceneDungeon : SceneMain
 
 		dungeon = new Dungeon();
 		battle = UIUtil.FindChild<DungeonBattle>(transform, "Battle");
-		battle.gameObject.SetActive(false);
-		box = UIUtil.FindChild<DungeonBox>(transform, "Box");		
+		battle.gameObject.SetActive(true);
+		box = UIUtil.FindChild<DungeonBox>(transform, "Box");
+		box.gameObject.SetActive(true);
 		rooms = UIUtil.FindChild<Transform>(transform, "Rooms");
 		current_room = UIUtil.FindChild<Room>(rooms, "Current");
 		next_rooms[Dungeon.North] = UIUtil.FindChild<Room>(rooms, "North");
@@ -89,6 +90,7 @@ public class SceneDungeon : SceneMain
 		main_buttons.buttons[3].gameObject.SetActive(false);
 		
 		coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot");
+		coin_spot.gameObject.SetActive(true);
 		coin_prefab = UIUtil.FindChild<Coin>(transform, "Prefabs/Coin");
 		
 		touch_input = GetComponent<TouchInput>();
@@ -398,7 +400,24 @@ public class SceneDungeon : SceneMain
 		//	audioWalk.Stop();
 
 		InitRooms();
-		if (100 > Random.Range(0, 100))
+
+		if (Dungeon.Room.Type.Exit == dungeon.current_room.type)
+		{
+			bool goDown = false;
+			GameManager.Instance.ui_dialogbox.onSubmit += () => {
+				goDown = true;
+			};
+			yield return StartCoroutine(GameManager.Instance.ui_dialogbox.Write("Do you want to go down the stair?"));
+			if (true == goDown)
+			{
+				yield return StartCoroutine(current_room.stair.Open());
+				yield return new WaitForSeconds(0.2f);
+				yield return StartCoroutine(GoDown());
+				InitDungeon();
+				yield return new WaitForSeconds(1.0f);
+			}
+		}
+		else if (10 > Random.Range(0, 100))
 		{
 			yield return StartCoroutine(box.Show());
 		}
@@ -423,22 +442,6 @@ public class SceneDungeon : SceneMain
 			dungeon.monster_count--;
 		}
 		
-
-
-		if (Dungeon.Room.Type.Exit == dungeon.current_room.type)
-		{
-			bool goDown = false;
-			GameManager.Instance.ui_dialogbox.onSubmit += () => {
-				goDown = true;
-			};
-			yield return StartCoroutine(GameManager.Instance.ui_dialogbox.Write("Do you want to go down the stair?"));
-			if (true == goDown)
-			{
-				yield return StartCoroutine(GoDown());
-				InitDungeon();
-				yield return new WaitForSeconds(1.0f);
-			}
-		}
 		Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
 	}
 

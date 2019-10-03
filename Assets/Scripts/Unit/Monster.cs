@@ -139,9 +139,12 @@ public class Monster : MonoBehaviour
 		effect.gameObject.SetActive(true);
 		data.cur_health -= (int)attackResult.damage;
 		ui_health.current = data.cur_health;
-		sprite.material.shader = shaderWhite;
-		yield return new WaitForSeconds(0.03f);
-		sprite.material.shader = shaderOriginal;
+		if (true == attackResult.critical)
+		{
+			sprite.material.shader = shaderWhite;
+			yield return new WaitForSeconds(0.03f);
+			sprite.material.shader = shaderOriginal;
+		}
 	}
 
 	private void OnBuffStart(Buff buff)

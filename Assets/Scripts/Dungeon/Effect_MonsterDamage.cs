@@ -32,13 +32,15 @@ public class Effect_MonsterDamage : MonoBehaviour
 		TextMesh text = UIUtil.FindChild<TextMesh>(transform, "Text");
 		if (true == critical)
 		{
-			text.text = "<size=" + text.fontSize * 2.0f + ">" + damage.ToString() + "</size>";
+			text.text = "<size=" + text.fontSize * 3.0f + ">" + damage.ToString() + "</size>";
 		}
 		else
 		{
 			text.text = damage.ToString();
 		}
+
 		iTween.ShakePosition(gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.1f);
+		iTween.MoveTo(text.gameObject, direction * Random.Range(0.1f, 0.6f), Random.Range(0.1f, 0.3f));
 		iTween.MoveTo(trail.gameObject, direction, 0.2f);
 
 		Destroy(gameObject, fadeout_time);

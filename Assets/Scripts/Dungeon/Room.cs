@@ -6,14 +6,14 @@ using UnityEngine.Assertions;
 public class Room : MonoBehaviour
 {
 	public GameObject[] doors;
-	public GameObject stair;
+	public RoomStair stair;
 	private void Start()
 	{
 		doors = new GameObject[Dungeon.Max];
 		doors[Dungeon.North] = UIUtil.FindChild<Transform>(transform, "NorthDoor").gameObject;
 		doors[Dungeon.East] = UIUtil.FindChild<Transform>(transform, "EastDoor").gameObject;
 		doors[Dungeon.West] = UIUtil.FindChild<Transform>(transform, "WestDoor").gameObject;
-		stair = UIUtil.FindChild<Transform>(transform, "Stair").gameObject;
+		stair = UIUtil.FindChild<RoomStair>(transform, "Stair");
 	}
 	public void Init(Dungeon.Room data)
 	{
@@ -24,10 +24,10 @@ public class Room : MonoBehaviour
 				doors [i].SetActive ((bool)(null != data.next [i]));
 			}
 		}
-		stair.SetActive (false);
+		stair.gameObject.SetActive (false);
 		if (Dungeon.Room.Type.Exit == data.type)
 		{
-			stair.SetActive (true);
+			StartCoroutine(stair.Show());
 		}
 	}
 }

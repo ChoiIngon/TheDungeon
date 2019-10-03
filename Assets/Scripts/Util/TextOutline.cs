@@ -27,6 +27,7 @@ public class TextOutline : MonoBehaviour {
 			otherMeshRenderer.receiveShadows = false;
 			otherMeshRenderer.sortingLayerID = meshRenderer.sortingLayerID;
 			otherMeshRenderer.sortingLayerName = meshRenderer.sortingLayerName;
+			otherMeshRenderer.sortingOrder = meshRenderer.sortingOrder + 1;
 		}
 	}
 
