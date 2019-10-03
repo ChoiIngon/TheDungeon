@@ -108,7 +108,7 @@ public class Player : Unit
 	public void AddExp(int amount)
 	{
 		exp += amount;
-		while (this.exp > GetMaxExp())
+		while (this.exp >= GetMaxExp())
 		{
 			exp -= GetMaxExp();
 			level += 1;

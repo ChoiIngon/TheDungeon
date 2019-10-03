@@ -62,6 +62,14 @@ public class UIInventory : MonoBehaviour
         Debug.Log("init complete UIInventory");
     }
 
+	public void Clear()
+	{
+		foreach (var slot in slots)
+		{
+			slot.SetItem(null);
+		}
+	}
+
 	private void OnDestroy()
 	{
 		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Add, OnItemAdd);

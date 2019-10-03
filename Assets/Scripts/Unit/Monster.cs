@@ -83,6 +83,16 @@ public class Monster : MonoBehaviour
 		gameObject.SetActive(false);
 	}
 
+	private void OnEnable()
+	{
+		ui_root?.gameObject.SetActive(true);
+	}
+
+	private void OnDisable()
+	{
+		ui_root?.gameObject.SetActive(false);
+	}
+
 	private void OnDestroy()
 	{
 		Util.EventSystem.Unsubscribe<Buff>(EventID.Buff_Start, OnBuffStart);
@@ -107,12 +117,12 @@ public class Monster : MonoBehaviour
 		};
 
 		gameObject.SetActive(true);
-		ui_root.gameObject.SetActive(true);
 
 		ui_name.text = meta.name;
 		ui_health.max = data.max_health;
 		ui_health.current = data.cur_health;
 		sprite.sprite = ResourceManager.Instance.Load<Sprite>(meta.sprite_path);
+		sprite.material.shader = shaderOriginal;
 	}
 
 	public IEnumerator ColorTo(Color from, Color to, float time)

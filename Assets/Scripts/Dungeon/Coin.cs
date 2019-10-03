@@ -67,7 +67,7 @@ public class Coin : MonoBehaviour
 
 	private void OnDestroy()
 	{
-		if (true == Application.isPlaying)
+		if (null != GameManager.Instance.ui_coin)
 		{
 			GameManager.Instance.ui_coin.ChangeAmount (amount);
 		}

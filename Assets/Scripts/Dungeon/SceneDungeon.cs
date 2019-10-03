@@ -35,10 +35,6 @@ public class SceneDungeon : SceneMain
     public Coin coin_prefab;
 
 	/*
-    public AudioSource audioWalk;
-    public AudioSource audioBG;
-    public AudioSource audioMonsterDie;
-    
     private Config config;
     private Dungeon.LevelInfo dungeonLevelInfo;
     
@@ -148,15 +144,9 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Start, () => { touch_input.AddBlockCount(); });
 		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, () => { touch_input.ReleaseBlockCount(); });
 
-		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, InitRooms);
 		Util.EventSystem.Subscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
 		Util.EventSystem.Subscribe(EventID.TextBox_Close, DestroyCoins);
 
-		/*
-		audioWalk = GameObject.Instantiate<AudioSource>(audioWalk);
-		audioBG = GameObject.Instantiate<AudioSource>(audioBG);
-		audioMonsterDie = GameObject.Instantiate<AudioSource>(audioMonsterDie);
-		*/
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object> { });
 		/*
         completeQuests = new List<QuestData> ();
@@ -164,7 +154,8 @@ public class SceneDungeon : SceneMain
 		*/
 		
 		InitScene();
-		
+
+		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
 		touch_input.ReleaseBlockCount();
 		Debug.Log("init complete dungeon");
 
@@ -187,7 +178,6 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Unsubscribe(EventID.Dialog_Close);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Start);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish);
-		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish, InitRooms);
 		Util.EventSystem.Unsubscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
 		Util.EventSystem.Unsubscribe(EventID.TextBox_Close, DestroyCoins);
 	}
@@ -219,7 +209,7 @@ public class SceneDungeon : SceneMain
 	void InitDungeon()
 	{
 		Debug.Log("init dungeon(dungeon_level:" + dungeon_level + ")");
-		StartCoroutine(GameManager.Instance.CameraFade(1.0f, 0.0f, 1.5f));
+		StartCoroutine(GameManager.Instance.CameraFade(Color.black, new Color(0.0f, 0.0f, 0.0f, 0.0f), 1.5f));
 		dungeon.Init(dungeon_level);
 		mini_map.Init(dungeon);
 		InitRooms();
@@ -265,6 +255,12 @@ public class SceneDungeon : SceneMain
 			"Your body will be carried to village.\n" +
 			"See you soon.."
 		));
+		yield return StartCoroutine(GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f));
+
+		GameManager.Instance.player.Init();
+		GameManager.Instance.ui_inventory.Clear();
+		StartCoroutine(GameManager.Instance.ads.ShowAds());
+		InitScene();
 		//yield return StartCoroutine (CameraFadeTo (Color.black, iTween.Hash ("amount", 1.0f, "time", 1.0f), true));
 		//SceneManager.LoadScene("Village");
 	}
@@ -398,9 +394,9 @@ public class SceneDungeon : SceneMain
 		}
 
 		dungeon.Move(direction);
-		//	audioWalk.Play();
+		AudioManager.Instance.Play(AudioManager.DUNGEON_WALK, true);
 		yield return StartCoroutine(MoveTo(rooms.gameObject, iTween.Hash("position", position, "time", room_size / room_move_speed, "easetype", iTween.EaseType.easeInQuad), true));
-		//	audioWalk.Stop();
+		AudioManager.Instance.Stop(AudioManager.DUNGEON_WALK);
 
 		InitRooms();
 
@@ -422,10 +418,13 @@ public class SceneDungeon : SceneMain
 		}
 		else if (10 > Random.Range(0, 100))
 		{
+			Debug.Log("create box");
 			yield return StartCoroutine(box.Show());
 		}
 		else if (30 > Random.Range(0, 100) && Dungeon.Room.Type.Normal == dungeon.current_room.type && 0 < dungeon.monster_count)
 		{
+			AudioManager.Instance.Stop(AudioManager.DUNGEON_BGM);
+			AudioManager.Instance.Play(AudioManager.BATTLE_BGM, true);
 			string monsterID = dungeon.monster_ids[Random.Range(0, dungeon.monster_ids.Count - 1)];
 			Monster.Meta meta = MonsterManager.Instance.FindMeta(monsterID);
 
@@ -434,6 +433,8 @@ public class SceneDungeon : SceneMain
 			yield return StartCoroutine(battle.BattleStart(meta));
 			main_buttons.Show(0.5f);
 			yield return StartCoroutine(mini_map.Show(0.5f));
+			AudioManager.Instance.Stop(AudioManager.BATTLE_BGM);
+			AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
 			if (true == battle.battle_result)
 			{
 				yield return StartCoroutine(Win(meta));
@@ -444,7 +445,8 @@ public class SceneDungeon : SceneMain
 			}
 			dungeon.monster_count--;
 		}
-		
+
+		Debug.Log("Dungeon_Move_Finish");
 		Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
 	}
 

@@ -11,7 +11,7 @@ public class DungeonBox : MonoBehaviour
 	private TouchInput touch_input;
 	public string item_id;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
 		close = UIUtil.FindChild<SpriteRenderer>(transform, "Close");
 		open = UIUtil.FindChild<SpriteRenderer>(transform, "Open");
@@ -45,6 +45,7 @@ public class DungeonBox : MonoBehaviour
 
 	public IEnumerator Open()
 	{
+		AudioManager.Instance.Play(AudioManager.BOX_OPEN);
 		yield return StartCoroutine(Util.UITween.Overlap(close, open, time));
 		string text = "아이템을 획득 했습니다";
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));

@@ -15,8 +15,7 @@ public class UITextBox : MonoBehaviour {
 	public int lineCount;
 	public float charPerSecond;
 	public float time;
-	public AudioSource audioSource;
-
+	
 	public ScrollRect scrollRect;
 	public Text contents;
 	public Button fast;
@@ -48,7 +47,6 @@ public class UITextBox : MonoBehaviour {
 			hideCoroutine = StartCoroutine(Hide (time));
 		});
 
-		audioSource = GameObject.Instantiate<AudioSource> (audioSource);
 		rectTransform = GetComponent<RectTransform> ();
         height = rectTransform.rect.height;
 		state = State.Hide;
@@ -83,7 +81,7 @@ public class UITextBox : MonoBehaviour {
 		next.gameObject.SetActive (false);
 		close.gameObject.SetActive (false);
 
-		audioSource.Play();
+		AudioManager.Instance.Play("textbox_type", true);
 		foreach (char c in text)
 		{
 			contents.text += c;
@@ -95,8 +93,7 @@ public class UITextBox : MonoBehaviour {
 				yield return new WaitForSeconds (1.0f / charPerSecond);
 			}
 		}
-		//yield return null;
-		audioSource.Stop();
+		AudioManager.Instance.Stop("textbox_type");
 		FastForward ();
 		while (State.Complete == state) {
 			yield return null;

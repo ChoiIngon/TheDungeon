@@ -111,6 +111,7 @@ public class DungeonBattle : MonoBehaviour
 		}
 		monster.meta = null;
 		monster.data = null;
+		
 		battle_buttons.gameObject.SetActive(false);
 		monster.gameObject.SetActive(false);
 		touch_input.AddBlockCount();

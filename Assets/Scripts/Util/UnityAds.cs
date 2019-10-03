@@ -8,23 +8,27 @@ public class UnityAds : MonoBehaviour {
     public bool enableTestMode = false;
 //#endif
 
-    IEnumerator Start()
+    void Start()
     {
 //#if !UNITY_ADS // If the Ads service is not enabled...
         if (true == Advertisement.isSupported)
 		{ // If runtime platform is supported...
+			Debug.Log("initialize advertisement");
             Advertisement.Initialize(gameId, enableTestMode); // ...initialize.
         }
 //#endif
+	}
+
+	public IEnumerator ShowAds()
+	{
 		while (false == Advertisement.isInitialized || false == Advertisement.IsReady())
-        {
-            yield return new WaitForSeconds(0.5f);
-        }
+		{
+			yield return new WaitForSeconds(0.5f);
+		}
 
 		// Show the default ad placement.
-		//Advertisement.Show();
-		StartCoroutine(ShowBanner());
-    }
+		Advertisement.Show();
+	}
 
 	IEnumerator ShowBanner()
 	{

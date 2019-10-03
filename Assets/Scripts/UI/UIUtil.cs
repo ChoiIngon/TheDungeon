@@ -14,7 +14,7 @@ public class UIUtil
 		T ret = child.GetComponent<T>();
 		if (null == ret)
 		{
-			throw new System.Exception("can not find component(type:" + typeof(T).Name + ")");
+			throw new MissingComponentException(typeof(T).Name);
 		}
 		return ret;
 	}

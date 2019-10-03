@@ -8,14 +8,16 @@ using UnityEngine.Networking;
 
 public class GameManager : Util.MonoSingleton<GameManager>
 {
-    public const string VERSION = "1.0";
+    public const string VERSION = "1.1";
 	public Player player;
 	public UIInventory ui_inventory;
 	public UICoin ui_coin;
 	public UINpc ui_npc;
 	public UIDialogBox ui_dialogbox;
 	public UITextBox ui_textbox;
+	public UnityAds ads;
 	private Image camera_fade;
+
 	private IEnumerator Start()
 	{
 		if("Common" == SceneManager.GetActiveScene().name)
@@ -35,6 +37,12 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		camera_fade = UIUtil.FindChild<Image>(transform, "UI/CameraFade");
 		camera_fade.gameObject.SetActive(true);
 		camera_fade.color = Color.black;
+
+		ads = GetComponent<UnityAds>();
+		if (null == ads)
+		{
+			throw new MissingComponentException("UnityAds");
+		}
 
 		yield return ResourceManager.Instance.Init();
 		DontDestroyOnLoad(ResourceManager.Instance.gameObject);
@@ -66,6 +74,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		ItemManager.Instance.Init();
 		MonsterManager.Instance.Init();
 		AchieveManager.Instance.Init();
+		AudioManager.Instance.Init();
 
 		player = new Player();
 		player.Init();
@@ -89,11 +98,13 @@ public class GameManager : Util.MonoSingleton<GameManager>
 			EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);
 			player.inventory.Add(item);
 		}
-		player.stats.AddStat(new Stat.Data() { type = StatType.Critical, value = 50.0f });
-
+		
 		player.inventory.Add(ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_HEALING").CreateInstance());
 		player.inventory.Add(ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_STRENGTH").CreateInstance());
 		player.inventory.Add(ItemManager.Instance.FindMeta<KeyItem.Meta>("ITEM_KEY").CreateInstance());	
+
+		player.stats.AddStat(new Stat.Data() { type = StatType.Critical, value = 50.0f });
+		player.CalculateStat();
 	}
 
 	/*
