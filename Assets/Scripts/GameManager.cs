@@ -33,6 +33,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 	public IEnumerator Init()
 	{
 		camera_fade = UIUtil.FindChild<Image>(transform, "UI/CameraFade");
+		camera_fade.gameObject.SetActive(true);
 		camera_fade.color = Color.black;
 
 		yield return ResourceManager.Instance.Init();
@@ -72,7 +73,10 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		ui_dialogbox = UIUtil.FindChild<UIDialogBox>(transform, "UI/UIDialogBox");
 		ui_dialogbox.Init();
 		ui_inventory = UIUtil.FindChild<UIInventory>(transform, "UI/UIInventory");
+		ui_inventory.gameObject.SetActive(true);
 		ui_inventory.Init();
+		ui_inventory.gameObject.SetActive(false);
+
 		ui_coin = UIUtil.FindChild<UICoin>(transform, "UI/UICoin");
 		ui_coin.Init();
 		ui_npc = UIUtil.FindChild<UINpc>(transform, "UI/UINpc");

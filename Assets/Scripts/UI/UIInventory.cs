@@ -87,9 +87,6 @@ public class UIInventory : MonoBehaviour
 	
     private void OnItemAdd(Item itemData)
     {
-		Debug.Log("OnItemAdd(item_id:" + itemData.meta.id + ", item_seq:" + itemData.item_seq + ", slot_index:" + itemData.slot_index + ")");
-//		inventory_slots[item.slot_index].Init(item);
-
 		UIItem item = GameObject.Instantiate<UIItem>(item_prefabs[(int)itemData.meta.type]);
 		if (null == item)
 		{
@@ -103,7 +100,6 @@ public class UIInventory : MonoBehaviour
 
     private void OnItemRemove(Item itemData)
     {
-        Debug.Log("OnItemRemove(item_id:" + itemData.meta.id + ", item_seq:" + itemData.item_seq + ", slot_index:" + itemData.slot_index + ")");
 		Object.Destroy(inventory_slots[itemData.slot_index].item.gameObject);
 		inventory_slots[itemData.slot_index].SetItem(null);
     }

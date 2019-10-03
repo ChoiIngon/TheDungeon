@@ -194,6 +194,7 @@ public class SceneDungeon : SceneMain
 
 	void InitScene()
 	{
+		Debug.Log("init scene(name:" + SceneManager.GetActiveScene().name + ")");
 		GameManager.Instance.player.level = 1;
 		GameManager.Instance.player.exp = 0;
 		GameManager.Instance.player.max_health = 100;
@@ -217,6 +218,7 @@ public class SceneDungeon : SceneMain
 	}
 	void InitDungeon()
 	{
+		Debug.Log("init dungeon(dungeon_level:" + dungeon_level + ")");
 		StartCoroutine(GameManager.Instance.CameraFade(1.0f, 0.0f, 1.5f));
 		dungeon.Init(dungeon_level);
 		mini_map.Init(dungeon);
@@ -235,6 +237,7 @@ public class SceneDungeon : SceneMain
 
 	void InitRooms()
 	{
+		Debug.Log("init rooms(dungeon_level:" + dungeon_level + ")");
 		rooms.transform.position = Vector3.zero;
 		current_room.Init (dungeon.current_room);
 		for(int i=0; i<Dungeon.Max; i++)

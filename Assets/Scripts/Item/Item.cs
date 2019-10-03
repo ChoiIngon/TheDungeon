@@ -54,7 +54,6 @@ public class Item
 	{
 		_meta = meta;
 		item_seq = ITEM_SEQ++;
-		Debug.Log("create item(item_id:" + meta.id + ", item_seq:" + item_seq + ")");
 	}
 
 	public virtual string description { get { throw new System.NotImplementedException(); } }
