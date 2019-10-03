@@ -17,6 +17,7 @@ public class UIInventory : MonoBehaviour
     {
 		item_prefabs[(int)Item.Type.Equipment] = UIUtil.FindChild<UIEquipItem>(transform, "ItemPrefabs/EquipItem");
 		item_prefabs[(int)Item.Type.Potion] = UIUtil.FindChild<UIPotionItem>(transform, "ItemPrefabs/PotionItem");
+		item_prefabs[(int)Item.Type.Key] = UIUtil.FindChild<UIKeyItem>(transform, "ItemPrefabs/KeyItem");
 
 		gameObject.SetActive(false);
 		

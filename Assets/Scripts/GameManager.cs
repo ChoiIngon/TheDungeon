@@ -89,6 +89,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 
 		player.inventory.Add(ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_HEALING").CreateInstance());
 		player.inventory.Add(ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_STRENGTH").CreateInstance());
+		player.inventory.Add(ItemManager.Instance.FindMeta<KeyItem.Meta>("ITEM_KEY").CreateInstance());	
 	}
 
 	/*

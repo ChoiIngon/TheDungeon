@@ -50,6 +50,7 @@ public class ItemManager : Util.Singleton<ItemManager>
 		skill_metas.Add(new Skill_Stun.Meta() { skill_id = "SKILL_STUN", description = "20%의 확률로 5턴 동안 대상을 기절 시킴" });
 		InitEquipItem();
 		InitPotionItemInfo();
+		InitKeyItemInfo();
 	}
 
 	public Item CreateItem(string id)
@@ -159,7 +160,20 @@ public class ItemManager : Util.Singleton<ItemManager>
 			meta.description = "An elixir that will permenently increase strength.";
 			metas.Add(meta.id, meta);
 		}
-		
+	}
+
+	private void InitKeyItemInfo()
+	{
+		{
+			KeyItem.Meta meta = new KeyItem.Meta();
+			meta.type = Item.Type.Key;
+			meta.id = "ITEM_KEY";
+			meta.name = "Key";
+			meta.price = 0;
+			meta.sprite_path = "Item/item_key";
+			meta.description = "Very important for going to next dungeon levell";
+			metas.Add(meta.id, meta);
+		}
 	}
 
 	private Stat.Data CreateStat(int level, EquipItemStatMeta meta)
