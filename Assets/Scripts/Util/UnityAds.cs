@@ -5,7 +5,6 @@ using UnityEngine.Advertisements;
 public class UnityAds : MonoBehaviour {
 //#if !UNITY_ADS // If the Ads service is not enabled...
     public string gameId = "1305819"; // Set this value from the inspector.
-    public bool enableTestMode = false;
 //#endif
 
     void Start()
@@ -14,7 +13,7 @@ public class UnityAds : MonoBehaviour {
         if (true == Advertisement.isSupported)
 		{ // If runtime platform is supported...
 			Debug.Log("initialize advertisement");
-            Advertisement.Initialize(gameId, enableTestMode); // ...initialize.
+            Advertisement.Initialize(gameId); // ...initialize.
         }
 //#endif
 	}
@@ -27,7 +26,7 @@ public class UnityAds : MonoBehaviour {
 		}
 
 		// Show the default ad placement.
-		Advertisement.Show();
+		Advertisement.Show("video");
 	}
 
 	IEnumerator ShowBanner()

@@ -22,6 +22,7 @@ public class Coin : MonoBehaviour
 
 	void Awake ()
 	{
+		Util.EventSystem.Subscribe(EventID.TextBox_Close, Stop);
 		animator = UIUtil.FindChild<Animator>(transform, "Sprite");
 		animator.Play("Spin", -1, Random.Range(0.0f, 1.0f));
 		groundPos = transform.localPosition.y;
@@ -31,13 +32,15 @@ public class Coin : MonoBehaviour
 		coroutine = StartCoroutine(Bounce());
 	}
 
+	private void OnDestroy()
+	{
+		Util.EventSystem.Unsubscribe(EventID.TextBox_Close, Stop);
+	}
+
 	IEnumerator Bounce()
 	{
-		float t = Random.Range(0.7f, 1.0f);
-		while (velocity.sqrMagnitude > sleepThreshold || 0.0f < t || false == stop)
+		while (velocity.sqrMagnitude > sleepThreshold && false == stop)
 		{
-			t -= Time.deltaTime;
-
 			if (transform.localPosition.y > groundPos)
 			{
 				velocity.y += gravity * Time.deltaTime;

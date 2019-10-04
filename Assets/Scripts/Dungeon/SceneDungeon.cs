@@ -145,8 +145,7 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, () => { touch_input.ReleaseBlockCount(); });
 
 		Util.EventSystem.Subscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
-		Util.EventSystem.Subscribe(EventID.TextBox_Close, DestroyCoins);
-
+		
 		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object> { });
 		/*
         completeQuests = new List<QuestData> ();
@@ -179,7 +178,6 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Start);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish);
 		Util.EventSystem.Unsubscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
-		Util.EventSystem.Unsubscribe(EventID.TextBox_Close, DestroyCoins);
 	}
 
 	void InitScene()
@@ -327,20 +325,6 @@ public class SceneDungeon : SceneMain
 		}
     }
 
-	void DestroyCoins()
-	{
-		for (int i = 0; i < coin_spot.childCount; i++)
-		{
-			Transform child = coin_spot.GetChild(i);
-			Coin coin = child.GetComponent<Coin>();
-			if (null == coin)
-			{
-				Debug.LogError("can not find component 'Coin'");
-				continue;
-			}
-			coin.Stop();
-		}
-	}
 	IEnumerator Move(int direction)
 	{
 		Util.EventSystem.Publish(EventID.Dungeon_Move_Start);

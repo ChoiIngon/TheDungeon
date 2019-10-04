@@ -40,8 +40,8 @@ public class Player : Unit
 
 		Load();
 
-		stats.AddStat(new Stat.Data() { type = StatType.Health, value = 100.0f });
-		stats.AddStat(new Stat.Data() { type = StatType.Attack, value = 1000.0f });
+		stats.AddStat(new Stat.Data() { type = StatType.Health, value = 1.0f });
+		stats.AddStat(new Stat.Data() { type = StatType.Attack, value = 1.0f });
 		stats.AddStat(new Stat.Data() { type = StatType.Defense, value = 200.0f });
 		stats.AddStat(new Stat.Data() { type = StatType.Speed, value = 100.0f });
 		CalculateStat();
