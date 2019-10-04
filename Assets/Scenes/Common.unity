@@ -1079,7 +1079,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameId: 1305819
-  enableTestMode: 1
 --- !u!114 &1195505136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1688,7 +1687,7 @@ PrefabInstance:
     - target: {fileID: 224660283911366242, guid: ebb5f2e7f2d604940a83e114f23452cb,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000040472172
+      value: -0.000057815763
       objectReference: {fileID: 0}
     - target: {fileID: 224693995267740428, guid: ebb5f2e7f2d604940a83e114f23452cb,
         type: 3}
