@@ -2,27 +2,17 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class Effect_PlayerDamage : MonoBehaviour {
+public class Effect_PlayerDamage : MonoBehaviour
+{
 	public float fadetime = 1.0f;
 	public Sprite[] sprites;
 	private Image image;
 	// Use this for initialization
-	void Start () {
+	IEnumerator Start ()
+	{
 		image = GetComponent<Image> ();
 		image.sprite = sprites[Random.Range(0, sprites.Length)];
-		StartCoroutine (Fadeout ());
-	}
-	
-	IEnumerator Fadeout()
-	{
-		float alpha = 1.0f;
-		while (0.0f < alpha) {
-			alpha -= Time.deltaTime / fadetime;
-			Color color = image.color;
-			color.a = alpha;
-			image.color = color;
-			yield return null;
-		}
-		Destroy (gameObject);
+		yield return Util.UITween.ColorTo(image, new Color(1.0f, 1.0f, 1.0f, 0.0f), fadetime);
+		Destroy(gameObject);
 	}
 }

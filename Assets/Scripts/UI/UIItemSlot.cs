@@ -41,7 +41,7 @@ public class UIItemSlot : MonoBehaviour
 			if(null != this.item)
 			{
 				this.item.transform.SetParent(null, false);
-				Object.Destroy(this.item);
+				Object.Destroy(this.item.gameObject);
 			}
 			this.item = null;
 			return;
