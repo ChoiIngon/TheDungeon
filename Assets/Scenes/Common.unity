@@ -1065,6 +1065,7 @@ MonoBehaviour:
   ui_npc: {fileID: 0}
   ui_dialogbox: {fileID: 0}
   ui_textbox: {fileID: 0}
+  ads: {fileID: 0}
 --- !u!114 &1179034070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1687,7 +1688,7 @@ PrefabInstance:
     - target: {fileID: 224660283911366242, guid: ebb5f2e7f2d604940a83e114f23452cb,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000027623333
+      value: 0.000030908388
       objectReference: {fileID: 0}
     - target: {fileID: 224693995267740428, guid: ebb5f2e7f2d604940a83e114f23452cb,
         type: 3}

@@ -10,6 +10,8 @@ public class Coin : MonoBehaviour
 	private float gravity = -9.8f;
 	private Animator animator;
 	private Coroutine coroutine;
+	private bool complete = false;
+	private bool stop = false;
 	// Use this for initialization
 
 	public int amount;
@@ -18,7 +20,7 @@ public class Coin : MonoBehaviour
 		this.amount = amount;
 	}
 
-	void Start ()
+	void Awake ()
 	{
 		animator = UIUtil.FindChild<Animator>(transform, "Sprite");
 		animator.Play("Spin", -1, Random.Range(0.0f, 1.0f));
@@ -29,21 +31,15 @@ public class Coin : MonoBehaviour
 		coroutine = StartCoroutine(Bounce());
 	}
 
-	public void Stop()
+	IEnumerator Bounce()
 	{
-		if (null != coroutine)
+		float t = Random.Range(0.7f, 1.0f);
+		while (velocity.sqrMagnitude > sleepThreshold || 0.0f < t || false == stop)
 		{
-			StopCoroutine(coroutine);
-		}
-		iTween.MoveTo (gameObject, GameManager.Instance.ui_coin.position, 0.5f);
-        Object.Destroy(gameObject, 0.5f);
-	}
+			t -= Time.deltaTime;
 
-	IEnumerator Bounce ()
-	{
-		while ( velocity.sqrMagnitude > sleepThreshold )
-		{
-			if (transform.localPosition.y > groundPos) {
+			if (transform.localPosition.y > groundPos)
+			{
 				velocity.y += gravity * Time.deltaTime;
 			}
 			Vector3 delta = velocity * Time.deltaTime;
@@ -60,16 +56,29 @@ public class Coin : MonoBehaviour
 			yield return null;
 		}
 
-		float t = Random.Range (0.5f, 0.8f);
-		iTween.MoveTo (gameObject, GameManager.Instance.ui_coin.position, t);
-		Object.Destroy (gameObject, t);
+		iTween.MoveTo(gameObject, iTween.Hash(
+			"position", GameManager.Instance.ui_coin.position,
+			"time", 0.25f,
+			"easetype", iTween.EaseType.easeOutQuint,
+			"oncomplete", "OnComplete",
+			"oncompletetarget", gameObject)
+		);
+		while (false == complete)
+		{
+			yield return null;
+		}
+
+		yield return GameManager.Instance.ui_coin.ChangeAmount(amount);
+		Destroy(gameObject);
 	}
 
-	private void OnDestroy()
+	public void Stop()
 	{
-		if (null != GameManager.Instance.ui_coin)
-		{
-			GameManager.Instance.ui_coin.ChangeAmount (amount);
-		}
+		stop = true;
+	}
+
+	private void OnComplete()
+	{
+		complete = true;
 	}
 }
