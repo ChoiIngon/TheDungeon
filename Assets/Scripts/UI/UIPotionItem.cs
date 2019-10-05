@@ -18,7 +18,7 @@ public class UIPotionItem : UIItem
 			}
 			potionItem.Drink(GameManager.Instance.player);
 			inventory.item_info.actions[(int)UIItemInfo.Action.Drink] = null;
-			inventory.item_info.gameObject.SetActive(false);
+			inventory.item_info.Clear();
 		};
 	}
 
