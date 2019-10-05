@@ -126,13 +126,14 @@ public class Dungeon
 			group = (group + 1) % (WIDTH * HEIGHT);
 		}
 
-		int start = 0;
-		int end = 0;
+		int startRoomID = 0;
+		int exitRoomID = 0;
 		{
 			List<Room> candidates = new List<Room>(rooms);
-			start = Random.Range(0, candidates.Count);
+			int start = Random.Range(0, candidates.Count);
 			rooms[start].type = Room.Type.Start;
 			current_room = rooms[start];
+			startRoomID = rooms[start].id;
 
 			if (WIDTH * HEIGHT > start + WIDTH)
 			{
@@ -152,15 +153,16 @@ public class Dungeon
 				candidates.RemoveAt(start - WIDTH);
 			}
 
-			end = Random.Range(0, candidates.Count);
+			int end = Random.Range(0, candidates.Count);
+			exitRoomID = candidates[end].id;
 			candidates[end].type = Room.Type.Exit;
 			candidates.RemoveAt(end);
 		}
 
 		{
 			List<Room> candidates = new List<Room>(rooms);
-			candidates.RemoveAt(start);
-			candidates.RemoveAt(end);
+			candidates.RemoveAt(startRoomID);
+			candidates.RemoveAt(exitRoomID);
 
 			int monsterCount = Random.Range(candidates.Count / 7, candidates.Count / 4);
 			for (int i = 0; i < monsterCount; i++)
@@ -176,7 +178,7 @@ public class Dungeon
 			{
 				int index = Random.Range(0, candidates.Count);
 				Room room = candidates[index];
-				room.item = ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_HEALING").CreateInstance();
+				room.item = CreateRandomItem(dungeonLevel);
 				candidates.RemoveAt(index);
 			}
 		}
@@ -245,4 +247,24 @@ public class Dungeon
 			}
 		}
 	}
+	List<Item.Type> item_type_gacha = new List<Item.Type>()
+	{
+		Item.Type.Equipment,
+		Item.Type.Potion
+	};
+
+	private Item CreateRandomItem(int dungeonLevel)
+	{
+		Item.Type itemType = item_type_gacha[Random.Range(0, item_type_gacha.Count)];
+
+		switch (itemType)
+		{
+			case Item.Type.Equipment:
+				return ItemManager.Instance.CreateRandomEquipItem(dungeonLevel);
+			case Item.Type.Potion:
+				return ItemManager.Instance.CreateRandomPotionItem();
+		}
+		return null;
+	}
+
 }

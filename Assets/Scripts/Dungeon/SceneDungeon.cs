@@ -35,9 +35,8 @@ public class SceneDungeon : SceneMain
     public Transform coin_spot;
     public Coin coin_prefab;
 
-	/*
-    private List<QuestData> completeQuests;
-	*/
+    //private List<QuestData> completeQuests;
+	
 	public override IEnumerator Run()
 	{
 		if ("Dungeon" == SceneManager.GetActiveScene().name)
@@ -152,7 +151,6 @@ public class SceneDungeon : SceneMain
 
 		Util.EventSystem.Subscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
 		
-		Analytics.CustomEvent("DungeonMain", new Dictionary<string, object> { });
 		/*
         completeQuests = new List<QuestData> ();
 		StartCoroutine (Init ());
@@ -181,7 +179,7 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Unsubscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
 	}
 
-	void InitScene()
+	private void InitScene()
 	{
 		GameManager.Instance.ui_inventory.Clear();
 		GameManager.Instance.player.Init();
@@ -203,7 +201,8 @@ public class SceneDungeon : SceneMain
 		yield return StartCoroutine(CheckCompleteQuest ());
 		*/
 	}
-	void InitDungeon()
+
+	private void InitDungeon()
 	{
 		StartCoroutine(GameManager.Instance.CameraFade(Color.black, new Color(0.0f, 0.0f, 0.0f, 0.0f), 1.5f));
 		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon_level.ToString();
@@ -213,7 +212,7 @@ public class SceneDungeon : SceneMain
 		InitRooms();
 	}
 
-	void InitRooms()
+	private void InitRooms()
 	{
 		rooms.transform.position = Vector3.zero;
 		current_room.Init (dungeon.current_room);
@@ -228,7 +227,7 @@ public class SceneDungeon : SceneMain
 		mini_map.CurrentPosition (dungeon.current_room.id);
 	}
 
-	IEnumerator Lose()
+	private IEnumerator Lose()
 	{
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(
 			"You died.\n" +
@@ -242,8 +241,8 @@ public class SceneDungeon : SceneMain
 		//yield return StartCoroutine (CameraFadeTo (Color.black, iTween.Hash ("amount", 1.0f, "time", 1.0f), true));
 		//SceneManager.LoadScene("Village");
 	}
-	
-	IEnumerator GoDown()
+
+	private IEnumerator GoDown()
 	{
 		Vector3 position = Camera.main.transform.position;
 		StartCoroutine(GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f));
@@ -256,56 +255,8 @@ public class SceneDungeon : SceneMain
 		dungeon_level += 1;
 		Camera.main.transform.position = position;
 	}
-	/*
-	IEnumerator CheckCompleteQuest()
-	{
-		state = State.Popup;
-		foreach(QuestData quest in completeQuests)
-		{
-			if (null == quest.completeDialouge) {
-				continue;
-			}
-			if (null == quest.completeDialouge.dialouge) {
-				continue;
-			}
 
-			state = State.Popup;
-			yield return StartCoroutine (UINpc.Instance.Talk (quest.completeDialouge.speaker, quest.completeDialouge.dialouge));
-			state = State.Idle;
-		}
-		completeQuests.Clear ();
-		state = State.Idle;
-	}
-	*/
-	
-    void CreateCoins(int amount)
-    {
-        int total = amount;
-        int multiply = 1;
-        float scale = 1.0f;
-        
-		while (0 < total) {
-			int countCount = Random.Range (5, 10);
-			for (int i = 0; i < countCount; i++) {
-				Coin coin = GameObject.Instantiate<Coin> (coin_prefab);
-				coin.amount = Mathf.Min(total, multiply);
-				coin.transform.SetParent(coin_spot, false);
-				coin.transform.localScale = new Vector3(scale, scale, 1.0f);
-				coin.transform.localPosition = Vector3.zero;
-				coin.gameObject.SetActive(true);
-				iTween.MoveBy (coin.gameObject, new Vector3 (Random.Range (-1.5f, 1.5f), Random.Range (0.0f, 0.5f), 0.0f), 0.5f);
-
-				total -= coin.amount;
-				if (0 >= total) {
-					return;
-				}
-			}
-			multiply *= 10;
-			scale += 0.1f;
-		}
-    }
-
-	IEnumerator Move(int direction)
+	private IEnumerator Move(int direction)
 	{
 		Util.EventSystem.Publish(EventID.Dungeon_Move_Start);
 		Dungeon.Room next_room = dungeon.current_room.GetNext(direction);
@@ -423,7 +374,7 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
 	}
 
-	IEnumerator Win(Monster.Meta meta)
+	private IEnumerator Win(Monster.Meta meta)
 	{
 		string text = "";
 		text += "You defeated \'" + meta.name + "\'\n";
@@ -454,7 +405,6 @@ public class SceneDungeon : SceneMain
 			yield return StartCoroutine(player_exp.SetCurrent(0.0f, 0.0f));
 		}
 		
-
 		player_exp.max = GameManager.Instance.player.GetMaxExp();
 		player_exp.current = GameManager.Instance.player.exp;
 		player_health.max = GameManager.Instance.player.max_health;
@@ -472,23 +422,6 @@ public class SceneDungeon : SceneMain
 		}
 
 		/*
-		if (dungeonLevelInfo.items.chance >= Random.Range(0.0f, 1.0f))
-		{
-			Item item = ItemManager.Instance.CreateRandomItem(this.level);
-			inventory.Put(item);
-			text += "You got a " + item.name + "\n";
-		}
-		*/
-
-		/*
-		if (10 >= Random.Range(0, 100)) {
-			Item item = ItemManager.Instance.CreateItem("ITEM_POTION_HEALING");
-			GameManager.Instance.player.inventory.Add(item);
-			text += "You got a " + item.meta.name;
-		}
-		*/
-
-		/*
 		QuestManager.Instance.Update("KillMonster", info.id);
 		yield return StartCoroutine(CheckCompleteQuest());
 		*/
@@ -497,17 +430,63 @@ public class SceneDungeon : SceneMain
 		ui_player_transform.SetParent(GameManager.Instance.ui_textbox.transform);
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
 		ui_player_transform.SetParent(playerParent);
-		Analytics.CustomEvent("Win", new Dictionary<string, object>
-		{
-			{"dungeon_level", dungeon_level},
-			{"monster_id", meta.id },
-			{"player_level", GameManager.Instance.player.level}
-		});
 	}
 
-	void OnChangePlayerHealth()
+	private void OnChangePlayerHealth()
 	{
 		player_health.max = GameManager.Instance.player.max_health;
 		player_health.current = GameManager.Instance.player.cur_health;
 	}
+
+	private void CreateCoins(int amount)
+	{
+		int total = amount;
+		int multiply = 1;
+		float scale = 1.0f;
+
+		while (0 < total)
+		{
+			int countCount = Random.Range(5, 10);
+			for (int i = 0; i < countCount; i++)
+			{
+				Coin coin = GameObject.Instantiate<Coin>(coin_prefab);
+				coin.amount = Mathf.Min(total, multiply);
+				coin.transform.SetParent(coin_spot, false);
+				coin.transform.localScale = new Vector3(scale, scale, 1.0f);
+				coin.transform.localPosition = Vector3.zero;
+				coin.gameObject.SetActive(true);
+				iTween.MoveBy(coin.gameObject, new Vector3(Random.Range(-1.5f, 1.5f), Random.Range(0.0f, 0.5f), 0.0f), 0.5f);
+
+				total -= coin.amount;
+				if (0 >= total)
+				{
+					return;
+				}
+			}
+			multiply *= 10;
+			scale += 0.1f;
+		}
+	}
+
+	/*
+	IEnumerator CheckCompleteQuest()
+	{
+		state = State.Popup;
+		foreach(QuestData quest in completeQuests)
+		{
+			if (null == quest.completeDialouge) {
+				continue;
+			}
+			if (null == quest.completeDialouge.dialouge) {
+				continue;
+			}
+
+			state = State.Popup;
+			yield return StartCoroutine (UINpc.Instance.Talk (quest.completeDialouge.speaker, quest.completeDialouge.dialouge));
+			state = State.Idle;
+		}
+		completeQuests.Clear ();
+		state = State.Idle;
+	}
+	*/
 }

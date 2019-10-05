@@ -6,10 +6,11 @@ public class ItemManager : Util.Singleton<ItemManager>
 {
 	private Dictionary<string, Item.Meta> metas = new Dictionary<string, Item.Meta>();
 	private EquipItemManager equip_item_manager = new EquipItemManager();
-
+	private PotionItemManager potion_item_manager = new PotionItemManager();
 	public void Init()
 	{
 		equip_item_manager.Init();
+		potion_item_manager.Init();
 		InitPotionItemInfo();
 		InitKeyItemInfo();
 	}
@@ -37,6 +38,11 @@ public class ItemManager : Util.Singleton<ItemManager>
 		return equip_item_manager.CreateRandomItem(level);
 	}
 
+	public Item CreateRandomPotionItem()
+	{
+		return potion_item_manager.CreateRandomItem();
+	}
+
 	public T FindMeta<T>(string id) where T : Item.Meta
 	{
 		if (false == metas.ContainsKey(id))
@@ -48,29 +54,7 @@ public class ItemManager : Util.Singleton<ItemManager>
 
 	private void InitPotionItemInfo()
 	{
-		{
-			HealPotionItem.Meta meta = new HealPotionItem.Meta ();
-			meta.potion_type = PotionItem.PotionType.Heal;
-			meta.type = Item.Type.Potion;
-			meta.id = "ITEM_POTION_HEALING";
-			meta.name = "Healing Potion";
-			meta.price = 100;
-			meta.sprite_path = "Item/item_potion_002";
-			meta.description = "An elixir that will instantly return you to full health and cure poison.";
-			metas.Add (meta.id, meta);
-		}
-
-		{
-			StranthPotionItem.Meta meta = new StranthPotionItem.Meta();
-			meta.potion_type = PotionItem.PotionType.Strength;
-			meta.type = Item.Type.Potion;
-			meta.id = "ITEM_POTION_STRENGTH";
-			meta.name = "Strength Potion";
-			meta.price = 100;
-			meta.sprite_path = "Item/item_potion_001";
-			meta.description = "An elixir that will permenently increase strength.";
-			metas.Add(meta.id, meta);
-		}
+		
 	}
 
 	private void InitKeyItemInfo()

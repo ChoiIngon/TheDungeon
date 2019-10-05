@@ -72,3 +72,45 @@ public class StranthPotionItem : PotionItem {
 
 	public override string description { get { return meta.description; } }
 }
+
+public class PotionItemManager
+{
+	private List<PotionItem.Meta> item_metas = new List<PotionItem.Meta>();
+	public void Init()
+	{
+		{
+			HealPotionItem.Meta meta = new HealPotionItem.Meta();
+			meta.potion_type = PotionItem.PotionType.Heal;
+			meta.type = Item.Type.Potion;
+			meta.id = "ITEM_POTION_HEALING";
+			meta.name = "Healing Potion";
+			meta.price = 100;
+			meta.sprite_path = "Item/item_potion_002";
+			meta.description = "An elixir that will instantly return you to full health and cure poison.";
+			item_metas.Add(meta);
+			ItemManager.Instance.AddItemMeta(meta);
+		}
+
+		{
+			StranthPotionItem.Meta meta = new StranthPotionItem.Meta();
+			meta.potion_type = PotionItem.PotionType.Strength;
+			meta.type = Item.Type.Potion;
+			meta.id = "ITEM_POTION_STRENGTH";
+			meta.name = "Strength Potion";
+			meta.price = 100;
+			meta.sprite_path = "Item/item_potion_001";
+			meta.description = "An elixir that will permenently increase strength.";
+			item_metas.Add(meta);
+			ItemManager.Instance.AddItemMeta(meta);
+		}
+	}
+
+	public Item CreateRandomItem()
+	{
+		if (0 == item_metas.Count)
+		{
+			throw new System.Exception("no potion item info");
+		}
+		return item_metas[Random.Range(0, item_metas.Count)].CreateInstance();
+	}
+}

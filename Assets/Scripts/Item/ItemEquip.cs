@@ -89,7 +89,7 @@ public class EquipItem : Item
 
 public class EquipItemManager
 {
-	private List<EquipItem.Meta> equip_item_metas = new List<EquipItem.Meta>();
+	private List<EquipItem.Meta> item_metas = new List<EquipItem.Meta>();
 	private List<Skill.Meta> skill_metas = new List<Skill.Meta>();
 	private Util.WeightRandom<Item.Grade> grade_gacha = new Util.WeightRandom<Item.Grade>();
 	private Util.WeightRandom<EquipItemStatMeta> sub_stat_gacha = new Util.WeightRandom<EquipItemStatMeta>();
@@ -119,7 +119,7 @@ public class EquipItemManager
 			meta.price = reader.GetInt32("price");
 			meta.sprite_path = reader.GetString("sprite_path");
 			meta.description = reader.GetString("description");
-			equip_item_metas.Add(meta);
+			item_metas.Add(meta);
 			ItemManager.Instance.AddItemMeta(meta);
 		}
 
@@ -136,7 +136,7 @@ public class EquipItemManager
 
 	public EquipItem CreateRandomItem(int level)
 	{
-		EquipItem.Meta meta = equip_item_metas[Random.Range(0, equip_item_metas.Count)];
+		EquipItem.Meta meta = item_metas[Random.Range(0, item_metas.Count)];
 		EquipItem item = meta.CreateInstance() as EquipItem;
 		item.grade = grade_gacha.Random();
 		item.level = level;
