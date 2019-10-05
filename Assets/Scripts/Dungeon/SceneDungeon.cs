@@ -12,7 +12,7 @@ public class SceneDungeon : SceneMain
     public UIMiniMap mini_map;
 	
 	private float room_size = 7.2f; // walkDistance;
-	private float room_move_speed = 22.0f;
+	private float room_move_speed = 17.0f;
 	private Transform rooms;
 	private Room current_room;
 	private readonly Room[] next_rooms = new Room[Dungeon.Max];
@@ -358,18 +358,23 @@ public class SceneDungeon : SceneMain
 		}
 
 		Vector3 position = Vector3.zero;
+		iTween.EaseType easeType = iTween.EaseType.easeInOutExpo;
 		switch (direction)
 		{
 			case Dungeon.North:
+				easeType = iTween.EaseType.easeInQuart;
 				position = new Vector3(rooms.position.x, rooms.position.y, rooms.position.z - room_size);
 				break;
 			case Dungeon.East:
+				easeType = iTween.EaseType.easeInOutExpo;
 				position = new Vector3(rooms.position.x - room_size, rooms.position.y, rooms.position.z);
 				break;
 			case Dungeon.South:
+				easeType = iTween.EaseType.easeInQuart;
 				position = new Vector3(rooms.position.x, rooms.position.y, rooms.position.z + room_size);
 				break;
 			case Dungeon.West:
+				easeType = iTween.EaseType.easeInOutExpo;
 				position = new Vector3(rooms.position.x + room_size, rooms.position.y, rooms.position.z);
 				break;
 			default:
@@ -378,7 +383,8 @@ public class SceneDungeon : SceneMain
 
 		dungeon.Move(direction);
 		AudioManager.Instance.Play(AudioManager.DUNGEON_WALK, true);
-		yield return StartCoroutine(MoveTo(rooms.gameObject, iTween.Hash("position", position, "time", room_size / room_move_speed, "easetype", iTween.EaseType.easeInQuad), true));
+		
+		yield return StartCoroutine(MoveTo(rooms.gameObject, iTween.Hash("position", position, "time", room_size / room_move_speed, "easetype", easeType), true));
 		AudioManager.Instance.Stop(AudioManager.DUNGEON_WALK);
 
 		InitRooms();
