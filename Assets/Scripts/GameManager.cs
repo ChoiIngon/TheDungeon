@@ -77,7 +77,6 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		AudioManager.Instance.Init();
 
 		player = new Player();
-		player.Init();
 
 		ui_dialogbox = UIUtil.FindChild<UIDialogBox>(transform, "UI/UIDialogBox");
 		ui_dialogbox.Init();
@@ -92,19 +91,6 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		ui_npc.Init();
 		ui_textbox = UIUtil.FindChild<UITextBox>(transform, "UI/UITextBox");
 		ui_textbox.Init();
-
-		for (int i = 0; i < 10; i++)
-		{
-			EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);
-			player.inventory.Add(item);
-		}
-		
-		player.inventory.Add(ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_HEALING").CreateInstance());
-		player.inventory.Add(ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_STRENGTH").CreateInstance());
-		player.inventory.Add(ItemManager.Instance.FindMeta<KeyItem.Meta>("ITEM_KEY").CreateInstance());	
-
-		player.stats.AddStat(new Stat.Data() { type = StatType.Critical, value = 50.0f });
-		player.CalculateStat();
 	}
 
 	/*

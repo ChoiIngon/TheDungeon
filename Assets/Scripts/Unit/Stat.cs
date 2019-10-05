@@ -29,7 +29,7 @@ public class RandomStatMeta
 		get
 		{
 			float rand = Random.Range(min_value, max_value);
-			return interval * (int)(rand / interval);
+			return Mathf.Round(interval * (int)(rand / interval));
 		}
 	}
 

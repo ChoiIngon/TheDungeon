@@ -20,14 +20,27 @@ public class Player : Unit
 	{
 		public RandomStatMeta health;
 	}
+
+	private LevelStatMeta level_stat_meta = new LevelStatMeta()
+	{
+		health = new RandomStatMeta { type = StatType.Health, min_value = 100.0f, max_value = 200.0f, interval = 10.0f }
+	};
+
+	private RandomStatMeta base_health = new RandomStatMeta() { type = StatType.Health, max_value = 2700, min_value = 2300, interval = 50 };
+	private RandomStatMeta base_attack = new RandomStatMeta() { type = StatType.Attack, max_value = 1100, min_value = 900, interval = 10 };
+	private RandomStatMeta base_defense = new RandomStatMeta() { type = StatType.Defense, max_value = 400, min_value = 600, interval = 5 };
+	private RandomStatMeta base_speed = new RandomStatMeta() { type = StatType.Speed, max_value = 150, min_value = 50, interval = 5 };
+	private RandomStatMeta base_critical = new RandomStatMeta() { type = StatType.Critical, max_value = 1.0f, min_value = 5.0f, interval = 0.1f };
+
 	public Dictionary<Tuple<EquipItem.Part, int>, EquipItem> equip_items;
 	public Inventory inventory;
 	public int level;
 	public int exp;
-	public LevelStatMeta level_stat_meta = new LevelStatMeta();
 
-	public void Init()
+	public override void Init()
 	{
+		base.Init();
+
 		equip_items = new Dictionary<Tuple<EquipItem.Part, int>, EquipItem>();
 		equip_items.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Helmet, 0), null);
 		equip_items.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Hand, 0), null);
@@ -39,13 +52,6 @@ public class Player : Unit
 		inventory = new Inventory();
 
 		Load();
-
-		stats.AddStat(new Stat.Data() { type = StatType.Health, value = 1.0f });
-		stats.AddStat(new Stat.Data() { type = StatType.Attack, value = 1.0f });
-		stats.AddStat(new Stat.Data() { type = StatType.Defense, value = 1.0f });
-		stats.AddStat(new Stat.Data() { type = StatType.Speed, value = 100.0f });
-		CalculateStat();
-		cur_health = stats.GetStat(StatType.Health);
 	}
     
 	public EquipItem Equip(EquipItem item, int equip_index = 0)
@@ -100,9 +106,18 @@ public class Player : Unit
 	public void Load()
 	{
 		Debug.Log("data path:" + Application.persistentDataPath);
-		LoadEquipItem();        
+		LoadEquipItem();
 
-		level_stat_meta.health = new RandomStatMeta { type = StatType.Health, min_value = 100.0f, max_value = 200.0f, interval = 10.0f };
+		stats.AddStat(base_health.CreateInstance());
+		stats.AddStat(base_attack.CreateInstance());
+		stats.AddStat(base_defense.CreateInstance());
+		stats.AddStat(base_speed.CreateInstance());
+		stats.AddStat(base_critical.CreateInstance());
+		CalculateStat();
+
+		level = 1;
+		exp = 0;
+		cur_health = max_health;
     }
 
 	public void AddExp(int amount)

@@ -183,18 +183,28 @@ public class SceneDungeon : SceneMain
 	void InitScene()
 	{
 		Debug.Log("init scene(name:" + SceneManager.GetActiveScene().name + ")");
-		GameManager.Instance.player.level = 1;
-		GameManager.Instance.player.exp = 0;
-		GameManager.Instance.player.max_health = 100;
-		GameManager.Instance.player.cur_health = GameManager.Instance.player.max_health;
+		dungeon_level = 1;
+
+		GameManager.Instance.player.Init();
+		GameManager.Instance.ui_inventory.Clear();
 
 		player_health.max = GameManager.Instance.player.max_health;
 		player_health.current = GameManager.Instance.player.cur_health;
 		player_exp.max = GameManager.Instance.player.GetMaxExp();
 		player_exp.current = GameManager.Instance.player.exp;
 
-		dungeon_level = 1;
-		InitDungeon ();
+		InitDungeon();
+
+		for (int i = 0; i < 10; i++)
+		{
+			EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);
+			GameManager.Instance.player.inventory.Add(item);
+		}
+
+		GameManager.Instance.player.inventory.Add(ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_HEALING").CreateInstance());
+		GameManager.Instance.player.inventory.Add(ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_STRENGTH").CreateInstance());
+		GameManager.Instance.player.inventory.Add(ItemManager.Instance.FindMeta<KeyItem.Meta>("ITEM_KEY").CreateInstance());
+
 		/*
 		yield return StartCoroutine(QuestManager.Instance.Init ());
 		QuestManager.Instance.onComplete += (QuestData data) => {
@@ -254,9 +264,7 @@ public class SceneDungeon : SceneMain
 			"See you soon.."
 		));
 		yield return StartCoroutine(GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f));
-
-		GameManager.Instance.player.Init();
-		GameManager.Instance.ui_inventory.Clear();
+				
 		StartCoroutine(GameManager.Instance.ads.ShowAds());
 		InitScene();
 		//yield return StartCoroutine (CameraFadeTo (Color.black, iTween.Hash ("amount", 1.0f, "time", 1.0f), true));

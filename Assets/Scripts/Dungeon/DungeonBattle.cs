@@ -18,6 +18,7 @@ public class DungeonBattle : MonoBehaviour
 
 	private UIButtonGroup		battle_buttons;
 	private float				battle_speed = 1.5f;
+	private float				wait_time_for_next_turn = 0.0f;
 	public bool					battle_result = false;
 
 	void Start()
@@ -42,7 +43,7 @@ public class DungeonBattle : MonoBehaviour
 			{
 				return;
 			}
-			PlayerAttack(0.1f);
+			wait_time_for_next_turn = 0.0f;
 		};
 		touch_input.AddBlockCount();
 		battle_buttons.gameObject.SetActive(false);
@@ -96,7 +97,12 @@ public class DungeonBattle : MonoBehaviour
 
 			GameManager.Instance.player.OnBattleTurn();
 			monster.data.OnBattleTurn();
-			yield return new WaitForSeconds(1.0f / battle_speed);
+			wait_time_for_next_turn = 1.0f / battle_speed;
+			while (0.0f < wait_time_for_next_turn)
+			{
+				wait_time_for_next_turn -= Time.deltaTime;
+				yield return null;
+			}
 		}
 
 		if (0.0f < monster.data.cur_health)

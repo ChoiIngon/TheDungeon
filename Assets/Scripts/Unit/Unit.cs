@@ -12,28 +12,44 @@ public class Unit
 	public float speed;
 	public float critical;
 
-	public Stat stats = new Stat();
+	public Stat stats;
 
 	public class UnitSkill
 	{
 		public int ref_count;
 		public Skill skill_data;
 	}
-	private Dictionary<string, UnitSkill> skills = new Dictionary<string, UnitSkill>();
+	private Dictionary<string, UnitSkill> skills;
 	public List<Buff>[] buffs = new List<Buff>[(int)Buff.Type.Max];
-
-	public Unit()
-	{
-		for (int i = 0; i < buffs.Length; i++)
-		{
-			buffs[i] = new List<Buff>();
-		}
-	}
 
 	public class AttackResult
 	{
 		public bool critical = false;
 		public float damage = 0.0f;
+	}
+
+	public Unit()
+	{
+		Init();
+	}
+
+
+	public virtual void Init()
+	{
+		max_health = 0.0f;
+		cur_health = 0.0f;
+
+		attack = 0.0f;
+		defense = 0.0f;
+		speed = 0.0f;
+		critical = 0.0f;
+
+		stats = new Stat();
+		skills = new Dictionary<string, UnitSkill>();
+		for (int i = 0; i < buffs.Length; i++)
+		{
+			buffs[i] = new List<Buff>();
+		}
 	}
 
 	public AttackResult Attack(Unit target)

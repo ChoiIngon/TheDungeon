@@ -31,7 +31,7 @@ public class Skill_Stun : Skill
 		if (20 >= Random.Range(0, 100) && 0 == target.GetBuffCount(Buff.Type.Stun))
 		{
 			Buff_Stun buff = new Buff_Stun(target);
-			buff.turn = 7;
+			buff.turn = 2;
 			target.AddBuff(buff);
 		}
 	}
