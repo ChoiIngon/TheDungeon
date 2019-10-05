@@ -9,7 +9,7 @@ public class DungeonBox : MonoBehaviour
 	private bool complete = false;
 	private float time = 0.2f;
 	private TouchInput touch_input;
-	public string item_id;
+	public Item item;
     // Start is called before the first frame update
     void Awake()
     {
@@ -47,7 +47,8 @@ public class DungeonBox : MonoBehaviour
 	{
 		AudioManager.Instance.Play(AudioManager.BOX_OPEN);
 		yield return StartCoroutine(Util.UITween.Overlap(close, open, time));
-		string text = "아이템을 획득 했습니다";
+		GameManager.Instance.player.inventory.Add(item);
+		string text = item.meta.name + " 아이템을 획득 했습니다.";
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
 		complete = true;
 	}

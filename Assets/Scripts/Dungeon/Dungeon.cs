@@ -39,6 +39,7 @@ public class Dungeon
 		public bool visit = false;
 		public Type type = Type.Normal;
 		public Item item = null;
+		public Monster.Meta monster = null;
 		public Room[] next = new Room[Max];
 		
 		public Room GetNext(int direction)
@@ -53,8 +54,7 @@ public class Dungeon
 
 	public Room current_room = null;
 	public Room[] rooms = new Room[WIDTH * HEIGHT];
-	public List<string> monster_ids = null;
-	public int monster_count;
+		
 	// Use this for initialization
 	public void Init(int dungeonLevel)
 	{
@@ -126,44 +126,60 @@ public class Dungeon
 			group = (group + 1) % (WIDTH * HEIGHT);
 		}
 
-		List<Room> candidates = new List<Room> (rooms);
+		int start = 0;
+		int end = 0;
+		{
+			List<Room> candidates = new List<Room>(rooms);
+			start = Random.Range(0, candidates.Count);
+			rooms[start].type = Room.Type.Start;
+			current_room = rooms[start];
 
-		int start = Random.Range (0, candidates.Count - 1);
-		candidates[start].type = Room.Type.Start;
-		current_room = candidates[start];
+			if (WIDTH * HEIGHT > start + WIDTH)
+			{
+				candidates.RemoveAt(start + WIDTH);
+			}
+			if (WIDTH * HEIGHT > start + 1)
+			{
+				candidates.RemoveAt(start + 1);
+			}
+			candidates.RemoveAt(start);
+			if (0 <= start - 1)
+			{
+				candidates.RemoveAt(start - 1);
+			}
+			if (0 <= start - WIDTH)
+			{
+				candidates.RemoveAt(start - WIDTH);
+			}
 
-		if (WIDTH * HEIGHT > start + WIDTH)
-		{
-			candidates.RemoveAt(start + WIDTH);
+			end = Random.Range(0, candidates.Count);
+			candidates[end].type = Room.Type.Exit;
+			candidates.RemoveAt(end);
 		}
-		if (WIDTH * HEIGHT > start + 1)
-		{
-			candidates.RemoveAt(start + 1);
-		}
-		candidates.RemoveAt(start);
-		if (0 <= start - 1)
-		{
-			candidates.RemoveAt(start - 1);
-		}
-		if (0 <= start - WIDTH)
-		{
-			candidates.RemoveAt(start - WIDTH);
-		}
-		
-		int end = Random.Range(0, candidates.Count - 1);
-		candidates[end].type = Room.Type.Exit;
-		candidates.RemoveAt(end);
 
-		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-			"SELECT monster_id FROM meta_monster where monster_level<=" + dungeonLevel
-		);
-
-		monster_ids = new List<string>();
-		while (true == reader.Read())
 		{
-			monster_ids.Add(reader.GetString("monster_id"));
+			List<Room> candidates = new List<Room>(rooms);
+			candidates.RemoveAt(start);
+			candidates.RemoveAt(end);
+
+			int monsterCount = Random.Range(candidates.Count / 7, candidates.Count / 4);
+			for (int i = 0; i < monsterCount; i++)
+			{
+				int index = Random.Range(0, candidates.Count);
+				Room room = candidates[index];
+				room.monster = MonsterManager.Instance.GetRandomMonster(dungeonLevel);
+				candidates.RemoveAt(index);
+			}
+
+			int itemBoxCount = Random.Range(0, 4);
+			for (int i = 0; i < monsterCount; i++)
+			{
+				int index = Random.Range(0, candidates.Count);
+				Room room = candidates[index];
+				room.item = ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_HEALING").CreateInstance();
+				candidates.RemoveAt(index);
+			}
 		}
-		monster_count = Random.Range(6, 10);
 	}
 
 	public Room Move(int direction)

@@ -17,17 +17,16 @@ public class RoomStair : MonoBehaviour
 
 	public IEnumerator Show()
 	{
-		Debug.Log("show room stair");
+		complete = false;
 		close.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 		open.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+
 		gameObject.SetActive(true);
-		Debug.Log("active room stair");
-		complete = false;
+
 		while (false == complete)
 		{
 			yield return null;
 		}
-		
 	}
 
 	public IEnumerator Open()

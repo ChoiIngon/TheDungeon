@@ -161,7 +161,7 @@ public class SceneDungeon : SceneMain
 		string[] scripts = new string[] {
 			"오래전 이 던전엔 자신의 부와 젊음을 위해 백성들을 악마의 제물로 바쳤다는 피의 여왕이 살았다고 하네. ",
 			"시간이 지나 이젠 전설이 되었지만 한가지 확실한건 저 곳엔 여왕이 남긴 엄청난 보물이 있다는 거야.",
-			"하지만 지금까지 저 성으로 들어서 무사히 돌아나온 사람은 없다는군."
+			"하지만 지금까지 저곳으로 들어서 무사히 돌아나온 사람은 없다는군."
 		};
 		touch_input.AddBlockCount();
 		yield return StartCoroutine(GameManager.Instance.ui_npc.Talk("", scripts));
@@ -397,34 +397,37 @@ public class SceneDungeon : SceneMain
 				yield return new WaitForSeconds(1.0f);
 			}
 		}
-		else if (10 > Random.Range(0, 100))
+
+		if (null != dungeon.current_room.item)
 		{
-			Debug.Log("create box");
+			box.item = dungeon.current_room.item;
 			yield return StartCoroutine(box.Show());
+			dungeon.current_room.item = null;
 		}
-		else if (30 > Random.Range(0, 100) && Dungeon.Room.Type.Normal == dungeon.current_room.type && 0 < dungeon.monster_count)
+
+		if (null != dungeon.current_room.monster)
 		{
 			AudioManager.Instance.Stop(AudioManager.DUNGEON_BGM);
 			AudioManager.Instance.Play(AudioManager.BATTLE_BGM, true);
-			string monsterID = dungeon.monster_ids[Random.Range(0, dungeon.monster_ids.Count - 1)];
-			Monster.Meta meta = MonsterManager.Instance.FindMeta(monsterID);
-
-			yield return StartCoroutine(mini_map.Hide(0.5f));
+			
 			main_buttons.Hide(0.1f);
-			yield return StartCoroutine(battle.BattleStart(meta));
+			yield return StartCoroutine(mini_map.Hide(0.5f));
+			yield return StartCoroutine(battle.BattleStart(dungeon.current_room.monster));
 			main_buttons.Show(0.5f);
 			yield return StartCoroutine(mini_map.Show(0.5f));
+
 			AudioManager.Instance.Stop(AudioManager.BATTLE_BGM);
 			AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
 			if (true == battle.battle_result)
 			{
-				yield return StartCoroutine(Win(meta));
+				yield return StartCoroutine(Win(dungeon.current_room.monster));
+				dungeon.current_room.monster = null;
 			}
 			else
 			{
 				yield return StartCoroutine(Lose());
 			}
-			dungeon.monster_count--;
+
 		}
 
 		Debug.Log("Dungeon_Move_Finish");
@@ -433,12 +436,22 @@ public class SceneDungeon : SceneMain
 
 	IEnumerator Win(Monster.Meta meta)
 	{
+		string text = "";
+		text += "You defeated \'" + meta.name + "\'\n";
+
 		int prevPlayerLevel = GameManager.Instance.player.level;
 		Stat stat = GameManager.Instance.player.stats;
 		int rewardCoin = meta.reward.coin + (int)Random.Range(-meta.reward.coin * 0.1f, meta.reward.coin * 0.1f);
 		int bonusCoin = (int)(rewardCoin * stat.GetStat(StatType.CoinBonus) / 100.0f);
 		int rewardExp = meta.reward.exp + (int)Random.Range(-meta.reward.exp * 0.1f, meta.reward.exp * 0.1f);
 		int bonusExp = (int)(rewardExp * stat.GetStat(StatType.ExpBonus) / 100.0f);
+
+		Item item = null;
+		if (meta.reward.item_chance >= Random.Range(0, 100))
+		{
+			item = ItemManager.Instance.CreateRandomEquipItem(meta.level);
+			GameManager.Instance.player.inventory.Add(item);
+		}
 		GameManager.Instance.player.coin += rewardCoin + bonusCoin;
 		GameManager.Instance.player.AddExp(rewardExp + bonusExp);
 		ProgressManager.Instance.Update(Achieve.AchieveType_CollectCoin, "", rewardCoin + bonusCoin);
@@ -451,16 +464,23 @@ public class SceneDungeon : SceneMain
 			player_exp.max = GameManager.Instance.player.GetMaxExp(i);
 			yield return StartCoroutine(player_exp.SetCurrent(0.0f, 0.0f));
 		}
+		
+
 		player_exp.max = GameManager.Instance.player.GetMaxExp();
 		player_exp.current = GameManager.Instance.player.exp;
 		player_health.max = GameManager.Instance.player.max_health;
 		player_health.current = GameManager.Instance.player.cur_health;
 
-		string text = "";
-		text += "You defeated \'" + meta.name + "\'\n";
 		text += "Coins : +" + rewardCoin + (0 < bonusCoin ? "(" + bonusCoin + " bonus)" : "") + "\n";
 		text += "Exp : +" + rewardExp + (0 < bonusExp ? "(" + bonusExp + " bonus)" : "") + "\n";
-		text += "Level : " + prevPlayerLevel + " -> " + GameManager.Instance.player.level + "\n";
+		if (prevPlayerLevel < GameManager.Instance.player.level)
+		{
+			text += "Level : " + prevPlayerLevel + " -> " + GameManager.Instance.player.level + "\n";
+		}
+		if (null != item)
+		{
+			text += "Item : " + item.meta.name + "\n";
+		}
 
 		/*
 		if (dungeonLevelInfo.items.chance >= Random.Range(0.0f, 1.0f))

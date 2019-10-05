@@ -15,7 +15,6 @@ public class Room : MonoBehaviour
 	}
 	public void Init(Dungeon.Room data)
 	{
-		Debug.Log("room init(id:" + data.id + ")");
 		for (int i = 0; i < doors.Length; i++)
 		{
 			if (null != doors [i])
@@ -23,7 +22,7 @@ public class Room : MonoBehaviour
 				doors [i].SetActive ((bool)(null != data.next [i]));
 			}
 		}
-		Debug.Log("turn stair off");
+
 		stair.gameObject.SetActive (false);
 		if (Dungeon.Room.Type.Exit == data.type)
 		{

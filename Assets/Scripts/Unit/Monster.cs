@@ -10,6 +10,7 @@ public class Monster : MonoBehaviour
 		{
 			public int coin;
 			public int exp;
+			public float item_chance;
 		}
 		public string id;
 		public string name;
@@ -32,7 +33,6 @@ public class Monster : MonoBehaviour
 	private Transform				ui_root;
 	private Text					ui_name;
 	public UIGaugeBar				ui_health;
-	
 	
 	public Animator					animator;
 	private Transform				damage_effect_spot;
