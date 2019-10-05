@@ -106,7 +106,7 @@ public class SceneDungeon : SceneMain
 
 			float distance = Vector3.Distance(touch_point, position);
 
-			if (0.02f > distance)
+			if (0.01f > distance)
 			{
 				Debug.Log("not enough drag distance(" + distance + ")");
 				return;
