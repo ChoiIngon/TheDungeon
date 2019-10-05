@@ -12,13 +12,14 @@ public class SceneDungeon : SceneMain
     public UIMiniMap mini_map;
 	
 	private float room_size = 7.2f; // walkDistance;
-	private float room_move_speed = 15.0f;
+	private float room_move_speed = 22.0f;
 	private Transform rooms;
 	private Room current_room;
 	private readonly Room[] next_rooms = new Room[Dungeon.Max];
 
 	private TouchInput touch_input;
 	private Vector3 touch_point = Vector3.zero;
+	private bool touch_finish = false;
 
 	public DungeonBattle battle;
 	public DungeonBox box;
@@ -95,16 +96,24 @@ public class SceneDungeon : SceneMain
 		touch_input.onTouchDown += (Vector3 position) => 
 		{
 			touch_point = position;
+			touch_finish = false;
 		};
-		touch_input.onTouchUp += (Vector3 position) => 
+		touch_input.onTouchDrag += (Vector3 position) =>
 		{
+			if (true == touch_finish)
+			{
+				return;
+			}
+
 			float distance = Vector3.Distance(touch_point, position);
-			
+
 			if (0.02f > distance)
 			{
 				Debug.Log("not enough drag distance(" + distance + ")");
 				return;
 			}
+
+			touch_finish = true;
 			Vector3 delta = position - touch_point;
 
 			if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
