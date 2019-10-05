@@ -159,10 +159,9 @@ public class SceneDungeon : SceneMain
 		Debug.Log("init complete dungeon");
 
 		string[] scripts = new string[] {
-			"오래전 저 성엔 부와 젊을을 위해 백성들을 악마의 제물로 바치던 피의 여왕이 살았다고 하네.",
-			"이젠 전설이 되어 아는 사람이 별로 남지 않았지만 확실한건 저 성엔 여왕이 남긴 엄청난 보물이 있다는 거지.",
-			"하지만 아직도 여왕의 유령이 저 성 지하에서 부활할 날 만을 기다리고 있다고 하네.\n많은 모험가들이 저 성으로 들어갔지만 아무도 돌아오지 않았어.\n\n" +
-			"행운을 빈다네 모험가"
+			"오래전 이 던전엔 자신의 부와 젊음을 위해 백성들을 악마의 제물로 바쳤다는 피의 여왕이 살았다고 하네. ",
+			"시간이 지나 이젠 전설이 되었지만 한가지 확실한건 저 곳엔 여왕이 남긴 엄청난 보물이 있다는 거야.",
+			"하지만 지금까지 저 성으로 들어서 무사히 돌아나온 사람은 없다는군."
 		};
 		touch_input.AddBlockCount();
 		yield return StartCoroutine(GameManager.Instance.ui_npc.Talk("", scripts));
@@ -185,8 +184,8 @@ public class SceneDungeon : SceneMain
 		Debug.Log("init scene(name:" + SceneManager.GetActiveScene().name + ")");
 		dungeon_level = 1;
 
-		GameManager.Instance.player.Init();
 		GameManager.Instance.ui_inventory.Clear();
+		GameManager.Instance.player.Init();
 
 		player_health.max = GameManager.Instance.player.max_health;
 		player_health.current = GameManager.Instance.player.cur_health;
@@ -194,16 +193,6 @@ public class SceneDungeon : SceneMain
 		player_exp.current = GameManager.Instance.player.exp;
 
 		InitDungeon();
-
-		for (int i = 0; i < 10; i++)
-		{
-			EquipItem item = ItemManager.Instance.CreateRandomEquipItem(150);
-			GameManager.Instance.player.inventory.Add(item);
-		}
-
-		GameManager.Instance.player.inventory.Add(ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_HEALING").CreateInstance());
-		GameManager.Instance.player.inventory.Add(ItemManager.Instance.FindMeta<PotionItem.Meta>("ITEM_POTION_STRENGTH").CreateInstance());
-		GameManager.Instance.player.inventory.Add(ItemManager.Instance.FindMeta<KeyItem.Meta>("ITEM_KEY").CreateInstance());
 
 		/*
 		yield return StartCoroutine(QuestManager.Instance.Init ());
@@ -450,7 +439,7 @@ public class SceneDungeon : SceneMain
 		int bonusCoin = (int)(rewardCoin * stat.GetStat(StatType.CoinBonus) / 100.0f);
 		int rewardExp = meta.reward.exp + (int)Random.Range(-meta.reward.exp * 0.1f, meta.reward.exp * 0.1f);
 		int bonusExp = (int)(rewardExp * stat.GetStat(StatType.ExpBonus) / 100.0f);
-		GameManager.Instance.player.inventory.coin += rewardCoin + bonusCoin;
+		GameManager.Instance.player.coin += rewardCoin + bonusCoin;
 		GameManager.Instance.player.AddExp(rewardExp + bonusExp);
 		ProgressManager.Instance.Update(Achieve.AchieveType_CollectCoin, "", rewardCoin + bonusCoin);
 		ProgressManager.Instance.Update(Achieve.AchieveType_Level, "", GameManager.Instance.player.level);

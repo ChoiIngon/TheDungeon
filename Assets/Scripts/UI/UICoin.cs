@@ -21,13 +21,13 @@ public class UICoin : MonoBehaviour
 
 	public IEnumerator ChangeAmount(int amount)
 	{
-		current_amount = GameManager.Instance.player.inventory.coin - amount;
+		current_amount = GameManager.Instance.player.coin - amount;
 		int increase = amount / 10;
-		while (0 < increase && current_amount < GameManager.Instance.player.inventory.coin) {
+		while (0 < increase && current_amount < GameManager.Instance.player.coin) {
 			current_amount += increase;
 			text.text = current_amount.ToString ();
 			yield return new WaitForSeconds (0.1f);
 		}
-		text.text = GameManager.Instance.player.inventory.coin.ToString ();
+		text.text = GameManager.Instance.player.coin.ToString ();
 	}
 }

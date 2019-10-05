@@ -6,7 +6,6 @@ public class Inventory
 {
 	public const int MAX_SLOT_COUNT = 15;
 	public Item[] items = new Item[MAX_SLOT_COUNT];
-	public int coin = 0;
 	public int count
 	{
 		get

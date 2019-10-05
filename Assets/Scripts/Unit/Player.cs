@@ -36,6 +36,8 @@ public class Player : Unit
 	public Inventory inventory;
 	public int level;
 	public int exp;
+	public int coin = 0;
+	public int start_item_count = 1;
 
 	public override void Init()
 	{
@@ -106,19 +108,29 @@ public class Player : Unit
 	public void Load()
 	{
 		Debug.Log("data path:" + Application.persistentDataPath);
-		LoadEquipItem();
+		//if(data exists) {
+		//	LoadEquipItem();
+		//}
+		//else 
+		{
+			stats.AddStat(base_health.CreateInstance());
+			stats.AddStat(base_attack.CreateInstance());
+			stats.AddStat(base_defense.CreateInstance());
+			stats.AddStat(base_speed.CreateInstance());
+			stats.AddStat(base_critical.CreateInstance());
+			CalculateStat();
 
-		stats.AddStat(base_health.CreateInstance());
-		stats.AddStat(base_attack.CreateInstance());
-		stats.AddStat(base_defense.CreateInstance());
-		stats.AddStat(base_speed.CreateInstance());
-		stats.AddStat(base_critical.CreateInstance());
-		CalculateStat();
+			level = 1;
+			exp = 0;
+			cur_health = max_health;
 
-		level = 1;
-		exp = 0;
-		cur_health = max_health;
-    }
+			for (int i = 0; i < start_item_count; i++)
+			{
+				EquipItem item = ItemManager.Instance.CreateRandomEquipItem(level);
+				inventory.Add(item);
+			}
+		}
+	}
 
 	public void AddExp(int amount)
 	{
