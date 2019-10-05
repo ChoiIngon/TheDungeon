@@ -183,9 +183,6 @@ public class SceneDungeon : SceneMain
 
 	void InitScene()
 	{
-		Debug.Log("init scene(name:" + SceneManager.GetActiveScene().name + ")");
-		dungeon_level = 1;
-
 		GameManager.Instance.ui_inventory.Clear();
 		GameManager.Instance.player.Init();
 
@@ -194,6 +191,7 @@ public class SceneDungeon : SceneMain
 		player_exp.max = GameManager.Instance.player.GetMaxExp();
 		player_exp.current = GameManager.Instance.player.exp;
 
+		dungeon_level = 1;
 		InitDungeon();
 
 		/*
@@ -207,26 +205,16 @@ public class SceneDungeon : SceneMain
 	}
 	void InitDungeon()
 	{
-		Debug.Log("init dungeon(dungeon_level:" + dungeon_level + ")");
 		StartCoroutine(GameManager.Instance.CameraFade(Color.black, new Color(0.0f, 0.0f, 0.0f, 0.0f), 1.5f));
+		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon_level.ToString();
+
 		dungeon.Init(dungeon_level);
 		mini_map.Init(dungeon);
 		InitRooms();
-		
-		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon_level.ToString();
-		/*		
-				Analytics.CustomEvent("InitDungeon", new Dictionary<string, object> {
-					//{"dungeon_level", level },
-					{"player_level", GameManager.Instance.player.level},
-					//{"player_exp", GameManager.Instance.player.exp.current },
-					{"player_gold", GameManager.Instance.player.inventory.coin }
-				});
-				*/
 	}
 
 	void InitRooms()
 	{
-		Debug.Log("init rooms(dungeon_level:" + dungeon_level + ")");
 		rooms.transform.position = Vector3.zero;
 		current_room.Init (dungeon.current_room);
 		for(int i=0; i<Dungeon.Max; i++)
@@ -242,13 +230,6 @@ public class SceneDungeon : SceneMain
 
 	IEnumerator Lose()
 	{
-		/*
-		Analytics.CustomEvent("Lose", new Dictionary<string, object>
-		{
-			{"dungeon_level", level },
-			{"player_level", player.level}
-		});
-		*/
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(
 			"You died.\n" +
 			"Your body will be carried to village.\n" +
