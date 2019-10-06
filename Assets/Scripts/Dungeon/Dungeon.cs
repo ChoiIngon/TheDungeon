@@ -11,6 +11,7 @@ public class Dungeon
 	public const int South = 2;
 	public const int West = 3;
 	public const int Max = 4;
+	private const int EXIT_LOCK_CHANCE = 100;
 
 	[System.Serializable]
 	public class LevelInfo
@@ -54,6 +55,7 @@ public class Dungeon
 
 	public Room current_room = null;
 	public Room[] rooms = new Room[WIDTH * HEIGHT];
+	public bool exit_lock = false;
 		
 	// Use this for initialization
 	public void Init(int dungeonLevel)
@@ -65,7 +67,12 @@ public class Dungeon
 			room.group = i;
 			rooms [i] = room;
 		}
-			
+
+		if (EXIT_LOCK_CHANCE >= Random.Range(0, 100))
+		{
+			exit_lock = true;
+		}
+
 		int group = 0;
 		while (true)
 		{
@@ -144,7 +151,8 @@ public class Dungeon
 		candidates.RemoveAll(room => room.id == current_room.id - WIDTH);
 
 		int end = Random.Range(0, candidates.Count);
-		candidates[end].type = Room.Type.Exit;
+		Room exit = candidates[end];
+		exit.type = Room.Type.Exit;
 		candidates.RemoveAt(end);
 
 		for (int i = 0; i < monsterCount; i++)
@@ -168,6 +176,14 @@ public class Dungeon
 			int index = Random.Range(0, candidates.Count);
 			Room room = candidates[index];
 			room.item = CreateRandomItem(dungeonLevel);
+			candidates.RemoveAt(index);
+		}
+
+		if(true == exit_lock)
+		{
+			exit.type = Dungeon.Room.Type.Lock;
+			int index = Random.Range(0, candidates.Count);
+			candidates[index].item = ItemManager.Instance.CreateItem("ITEM_KEY");
 			candidates.RemoveAt(index);
 		}
 	}

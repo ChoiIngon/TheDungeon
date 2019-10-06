@@ -6,10 +6,10 @@ public class DungeonBox : MonoBehaviour
 {
 	private SpriteRenderer close;
 	private SpriteRenderer open;
-	private bool complete = false;
 	private float time = 0.2f;
 	private TouchInput touch_input;
-	public Item item;
+	private BoxCollider2D box_collier;
+	private Dungeon.Room room;
     // Start is called before the first frame update
     void Awake()
     {
@@ -20,36 +20,35 @@ public class DungeonBox : MonoBehaviour
 		{
 			throw new MissingComponentException("TouchInput");
 		}
-		touch_input.onTouchDown += (Vector3 position) => 
+		box_collier = GetComponent<BoxCollider2D>();
+		touch_input.onTouchUp += (Vector3 position) => 
 		{
-			touch_input.AddBlockCount();
+			Debug.Log("show box touch input");
+			box_collier.enabled = false;
 			StartCoroutine(Open());
 		};
-		touch_input.AddBlockCount();
+		
 		gameObject.SetActive(false);
 	}
 
-	public IEnumerator Show()
+	public void Show(Dungeon.Room room)
 	{
+		Debug.Log("show box");
+		this.room = room;
 		close.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 		open.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
-		touch_input.ReleaseBlockCount();
+		box_collier.enabled = true;		
 		gameObject.SetActive(true);
-		complete = false;
-		while (false == complete)
-		{
-			yield return null;
-		}
-		gameObject.SetActive(false);
 	}
 
 	public IEnumerator Open()
 	{
 		AudioManager.Instance.Play(AudioManager.BOX_OPEN);
 		yield return StartCoroutine(Util.UITween.Overlap(close, open, time));
-		GameManager.Instance.player.inventory.Add(item);
-		string text = item.meta.name + " 아이템을 획득 했습니다.";
+		GameManager.Instance.player.inventory.Add(room.item);
+		string text = room.item.meta.name + " 아이템을 획득 했습니다.";
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
-		complete = true;
+		gameObject.SetActive(false);
+		room.item = null;
 	}
 }

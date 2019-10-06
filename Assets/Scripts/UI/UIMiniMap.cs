@@ -60,7 +60,7 @@ public class UIMiniMap : MonoBehaviour
 					miniRoom.next [i].gameObject.SetActive ((bool)(null != room.next [i]));
 				}
 				miniRoom.room.sprite = roomSprite;
-				if (Dungeon.Room.Type.Exit == room.type)
+				if (Dungeon.Room.Type.Exit == room.type || Dungeon.Room.Type.Lock == room.type)
 				{
 					miniRoom.room.sprite = stairSprite;
 				}

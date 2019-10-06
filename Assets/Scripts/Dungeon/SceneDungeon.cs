@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.UI;
-using UnityEngine.Assertions;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
 public class SceneDungeon : SceneMain
@@ -145,9 +142,14 @@ public class SceneDungeon : SceneMain
 
 		Util.EventSystem.Subscribe(EventID.Dialog_Open, () => { touch_input.AddBlockCount(); });
 		Util.EventSystem.Subscribe(EventID.Dialog_Close, () => { touch_input.ReleaseBlockCount(); });
+		Util.EventSystem.Subscribe(EventID.TextBox_Open, () => { touch_input.AddBlockCount(); });
+		Util.EventSystem.Subscribe(EventID.TextBox_Close, () => { touch_input.ReleaseBlockCount(); });
 
 		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Start, () => { touch_input.AddBlockCount(); });
 		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, () => { touch_input.ReleaseBlockCount(); });
+		Util.EventSystem.Subscribe(EventID.Dungeon_Exit_Unlock, () =>	{
+			StartCoroutine(OnExitUnlock());
+		});
 
 		Util.EventSystem.Subscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
 		
@@ -174,8 +176,12 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Unsubscribe(EventID.Inventory_Close);
 		Util.EventSystem.Unsubscribe(EventID.Dialog_Open);
 		Util.EventSystem.Unsubscribe(EventID.Dialog_Close);
+		Util.EventSystem.Unsubscribe(EventID.TextBox_Open);
+		Util.EventSystem.Unsubscribe(EventID.TextBox_Close);
+
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Start);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish);
+		Util.EventSystem.Unsubscribe(EventID.Dungeon_Exit_Unlock);
 		Util.EventSystem.Unsubscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
 	}
 
@@ -206,7 +212,6 @@ public class SceneDungeon : SceneMain
 	{
 		StartCoroutine(GameManager.Instance.CameraFade(Color.black, new Color(0.0f, 0.0f, 0.0f, 0.0f), 1.5f));
 		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon_level.ToString();
-
 		dungeon.Init(dungeon_level);
 		mini_map.Init(dungeon);
 		InitRooms();
@@ -215,16 +220,16 @@ public class SceneDungeon : SceneMain
 	private void InitRooms()
 	{
 		rooms.transform.position = Vector3.zero;
-		current_room.Init (dungeon.current_room);
 		for(int i=0; i<Dungeon.Max; i++)
 		{
 			Dungeon.Room room = dungeon.current_room.next [i];
 			if (null != room)
 			{
-				next_rooms [i].Init (room);
+				next_rooms[i].Init (room);
 			}
 		}
 		mini_map.CurrentPosition (dungeon.current_room.id);
+		current_room.Init(dungeon.current_room);
 	}
 
 	private IEnumerator Lose()
@@ -258,6 +263,13 @@ public class SceneDungeon : SceneMain
 
 	private IEnumerator Move(int direction)
 	{
+		while (0 < coin_spot.childCount)
+		{
+			yield return null;
+		}
+
+		box.gameObject.SetActive(false);
+
 		Util.EventSystem.Publish(EventID.Dungeon_Move_Start);
 		Dungeon.Room next_room = dungeon.current_room.GetNext(direction);
 
@@ -282,11 +294,6 @@ public class SceneDungeon : SceneMain
 			}
 			Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
 			yield break;
-		}
-
-		while (0 < coin_spot.childCount)
-		{
-			yield return null;
 		}
 
 		Vector3 position = Vector3.zero;
@@ -316,33 +323,16 @@ public class SceneDungeon : SceneMain
 		dungeon.Move(direction);
 		AudioManager.Instance.Play(AudioManager.DUNGEON_WALK, true);
 		
-		yield return StartCoroutine(MoveTo(rooms.gameObject, iTween.Hash("position", position, "time", room_size / room_move_speed, "easetype", easeType), true));
+		yield return MoveTo(rooms.gameObject, iTween.Hash("position", position, "time", room_size / room_move_speed, "easetype", easeType), true);
 		AudioManager.Instance.Stop(AudioManager.DUNGEON_WALK);
 
 		InitRooms();
 
-		if (Dungeon.Room.Type.Exit == dungeon.current_room.type)
-		{
-			bool goDown = false;
-			GameManager.Instance.ui_dialogbox.onSubmit += () => {
-				goDown = true;
-			};
-			yield return StartCoroutine(GameManager.Instance.ui_dialogbox.Write("Do you want to go down the stair?"));
-			if (true == goDown)
-			{
-				yield return StartCoroutine(current_room.stair.Open());
-				yield return new WaitForSeconds(0.2f);
-				yield return StartCoroutine(GoDown());
-				InitDungeon();
-				yield return new WaitForSeconds(1.0f);
-			}
-		}
+		yield return OnExitUnlock();
 
 		if (null != dungeon.current_room.item)
 		{
-			box.item = dungeon.current_room.item;
-			yield return StartCoroutine(box.Show());
-			dungeon.current_room.item = null;
+			box.Show(dungeon.current_room);
 		}
 
 		if (null != dungeon.current_room.monster)
@@ -367,7 +357,6 @@ public class SceneDungeon : SceneMain
 			{
 				yield return StartCoroutine(Lose());
 			}
-
 		}
 
 		Debug.Log("Dungeon_Move_Finish");
@@ -436,6 +425,25 @@ public class SceneDungeon : SceneMain
 	{
 		player_health.max = GameManager.Instance.player.max_health;
 		player_health.current = GameManager.Instance.player.cur_health;
+	}
+
+	private IEnumerator OnExitUnlock()
+	{
+		if (Dungeon.Room.Type.Exit == dungeon.current_room.type)
+		{
+			touch_input.AddBlockCount();
+			bool goDown = false;
+			GameManager.Instance.ui_dialogbox.onSubmit += () => {
+				goDown = true;
+			};
+			yield return StartCoroutine(GameManager.Instance.ui_dialogbox.Write("Do you want to go down the stair?"));
+			if (true == goDown)
+			{
+				yield return StartCoroutine(GoDown());
+				InitDungeon();
+			}
+			touch_input.ReleaseBlockCount();
+		}
 	}
 
 	private void CreateCoins(int amount)

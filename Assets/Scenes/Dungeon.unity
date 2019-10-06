@@ -2221,7 +2221,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 853393679}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -2.97, z: 0}
+  m_LocalPosition: {x: 0, y: -2.97, z: -0.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1682422730}
@@ -2369,7 +2369,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ab873c002d3b43318fbde72f178063b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isComplete: 0
   main_buttons: {fileID: 0}
   mini_map: {fileID: 0}
   battle: {fileID: 0}
@@ -4253,6 +4252,11 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 1144193612816726378, guid: 463e3afe06e0b48be90138d316741612,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 24
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 463e3afe06e0b48be90138d316741612, type: 3}
 --- !u!4 &1799939636 stripped
@@ -4728,6 +4732,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SortingOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1144193612816726378, guid: 463e3afe06e0b48be90138d316741612,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 463e3afe06e0b48be90138d316741612, type: 3}

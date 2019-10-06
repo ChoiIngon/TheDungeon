@@ -125,10 +125,10 @@ public class Inventory
 		}
 		return items[index] as T;
 	}
-    /*
+    
 	public List<T> GetItems<T>() where T : Item
 	{
-		List<T> items = new List<T> ();
+		List<T> result = new List<T> ();
 		for (int i = 0; i < MAX_SLOT_COUNT; i++)
 		{
 			if (null == items[i])
@@ -140,9 +140,8 @@ public class Inventory
 			{
 				continue;
 			}
-			items.Add (item);
+			result.Add (item);
 		}
-		return items;
+		return result;
 	}
-    */
 }

@@ -1,10 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
-using System.Collections.Generic;
-#if UNITY_EDITOR
-using UnityEngine.Assertions;
-#endif
 
 public class DungeonBattle : MonoBehaviour
 {

@@ -54,6 +54,7 @@ public class UITextBox : MonoBehaviour {
 
 	public IEnumerator Show(float t)
 	{
+		Debug.Log("publish text box open event");
 		Util.EventSystem.Publish(EventID.TextBox_Open);
 		state = State.Raise;
 		contents.text = "";
@@ -126,6 +127,7 @@ public class UITextBox : MonoBehaviour {
 		}
 		rectTransform.anchoredPosition = new Vector3 (rectTransform.anchoredPosition.x, 0.0f, 0.0f);
 		Util.EventSystem.Publish(EventID.TextBox_Close);
+		Debug.Log("publish text box close event");
 	}
 	void FastForward()
 	{
