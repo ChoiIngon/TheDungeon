@@ -126,61 +126,49 @@ public class Dungeon
 			group = (group + 1) % (WIDTH * HEIGHT);
 		}
 
-		int startRoomID = 0;
-		int exitRoomID = 0;
+		List<Room> candidates = new List<Room>(rooms);
+		int monsterCount = Random.Range(candidates.Count / 5, candidates.Count / 3);
+		int itemBoxCount = Random.Range(0, 4);
+		if (2 + monsterCount + itemBoxCount > candidates.Count)
 		{
-			List<Room> candidates = new List<Room>(rooms);
-			int start = Random.Range(0, candidates.Count);
-			rooms[start].type = Room.Type.Start;
-			current_room = rooms[start];
-			startRoomID = rooms[start].id;
-
-			if (WIDTH * HEIGHT > start + WIDTH)
-			{
-				candidates.RemoveAt(start + WIDTH);
-			}
-			if (WIDTH * HEIGHT > start + 1)
-			{
-				candidates.RemoveAt(start + 1);
-			}
-			candidates.RemoveAt(start);
-			if (0 <= start - 1)
-			{
-				candidates.RemoveAt(start - 1);
-			}
-			if (0 <= start - WIDTH)
-			{
-				candidates.RemoveAt(start - WIDTH);
-			}
-
-			int end = Random.Range(0, candidates.Count);
-			exitRoomID = candidates[end].id;
-			candidates[end].type = Room.Type.Exit;
-			candidates.RemoveAt(end);
+			throw new System.IndexOutOfRangeException();
 		}
 
+		int start = Random.Range(0, candidates.Count);
+		rooms[start].type = Room.Type.Start;
+		current_room = rooms[start];
+		candidates.RemoveAt(start);
+		candidates.RemoveAll(room => room.id == current_room.id + WIDTH);
+		candidates.RemoveAll(room => room.id == current_room.id + 1);
+		candidates.RemoveAll(room => room.id == current_room.id - 1);
+		candidates.RemoveAll(room => room.id == current_room.id - WIDTH);
+
+		int end = Random.Range(0, candidates.Count);
+		candidates[end].type = Room.Type.Exit;
+		candidates.RemoveAt(end);
+
+		for (int i = 0; i < monsterCount; i++)
 		{
-			List<Room> candidates = new List<Room>(rooms);
-			candidates.RemoveAt(startRoomID);
-			candidates.RemoveAt(exitRoomID);
-
-			int monsterCount = Random.Range(candidates.Count / 7, candidates.Count / 4);
-			for (int i = 0; i < monsterCount; i++)
+			if (0 == candidates.Count)
 			{
-				int index = Random.Range(0, candidates.Count);
-				Room room = candidates[index];
-				room.monster = MonsterManager.Instance.GetRandomMonster(dungeonLevel);
-				candidates.RemoveAt(index);
+				break;
 			}
+			int index = Random.Range(0, candidates.Count);
+			Room room = candidates[index];
+			room.monster = MonsterManager.Instance.GetRandomMonster(dungeonLevel);
+			candidates.RemoveAt(index);
+		}
 
-			int itemBoxCount = Random.Range(0, 4);
-			for (int i = 0; i < monsterCount; i++)
+		for (int i = 0; i < itemBoxCount; i++)
+		{
+			if (0 == candidates.Count)
 			{
-				int index = Random.Range(0, candidates.Count);
-				Room room = candidates[index];
-				room.item = CreateRandomItem(dungeonLevel);
-				candidates.RemoveAt(index);
+				break;
 			}
+			int index = Random.Range(0, candidates.Count);
+			Room room = candidates[index];
+			room.item = CreateRandomItem(dungeonLevel);
+			candidates.RemoveAt(index);
 		}
 	}
 
