@@ -118,9 +118,7 @@ public class UIItem : MonoBehaviour
         {
             throw new System.Exception("can not clone icon image");
         }
-		
 
-		Debug.Log("instantiate clone for item(id:" + item_data.meta.id + ", slot_index:" + item_data.slot_index + ")");
 		clone.grade.gameObject.SetActive(true);
 		clone.icon.gameObject.SetActive(true);
 		clone.outline.active = false;
@@ -137,14 +135,6 @@ public class UIItem : MonoBehaviour
 		icon.color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
 		grade.color = new Color(grade.color.r, grade.color.g, grade.color.b, 0.5f);
 
-		inventory.item_info.slot = this;
-		inventory.item_info.description.text = item_data.description;
-		inventory.item_info.buttons[(int)UIItemInfo.Action.Drop].gameObject.SetActive(true);
-		inventory.item_info.actions[(int)UIItemInfo.Action.Drop] += () => {
-			GameManager.Instance.player.inventory.Remove(item_data.slot_index);
-			inventory.item_info.actions[(int)UIItemInfo.Action.Drop] = null;
-			inventory.item_info.Clear();
-		};
 		OnSelect();
     }
 

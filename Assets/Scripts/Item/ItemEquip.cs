@@ -52,39 +52,6 @@ public class EquipItem : Item
 	{
 		part = meta.part;
 	}
-
-    public override string description
-    {
-		get
-		{
-			string desc = "";
-            desc += meta.description + "\n\n";
-
-			foreach (Stat.Data stat in main_stat.GetStats())
-			{
-				Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)stat.type);
-				while (true == reader.Read())
-				{
-					desc += " -" + string.Format(reader.GetString("description"), stat.value) + "\n";
-				}
-			}
-
-			foreach (Stat.Data stat in sub_stat.GetStats())
-			{
-				Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)stat.type);
-				while (true == reader.Read())
-				{
-					desc += "<color=green> -" + string.Format(reader.GetString("description"), stat.value) + "</color>\n";
-				}
-			}
-
-			if (null != skill)
-			{
-				desc += "<color=red> -" + skill.meta.description + "</color>";
-			}
-			return desc;
-		}
-    }
 }
 
 public class EquipItemManager

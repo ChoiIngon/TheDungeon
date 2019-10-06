@@ -15,7 +15,5 @@ public class KeyItem : Item
 	public KeyItem(Meta meta) : base(meta)
 	{
 	}
-
-	public override string description { get { return meta.description; } }
 }
 

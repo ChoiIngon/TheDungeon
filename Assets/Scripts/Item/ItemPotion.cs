@@ -49,8 +49,6 @@ public class HealPotionItem : PotionItem
 		target.cur_health = target.max_health;
 		Util.EventSystem.Publish(EventID.Player_Change_Health);
 	}
-
-	public override string description { get { return meta.description; } }
 }
 
 public class StranthPotionItem : PotionItem {
@@ -69,8 +67,6 @@ public class StranthPotionItem : PotionItem {
 	{
 		target.attack += 1;
 	}
-
-	public override string description { get { return meta.description; } }
 }
 
 public class PotionItemManager

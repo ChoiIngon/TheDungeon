@@ -23,6 +23,43 @@ public class UIEquipItem : UIItem
 
 			slot.SetActiveGuideArrow(true);
 		}
+
+		inventory.item_info.Clear();
+		inventory.item_info.SetItemIcon(this);
+		inventory.item_info.SetItemName(item_data.meta.name + "\n" + "<size=" + (inventory.item_info.name.fontSize * 0.8) + ">Lv." + equipItem.level + "</size>");
+
+		string description = item_data.meta.description + "\n\n";
+
+		foreach (Stat.Data stat in equipItem.main_stat.GetStats())
+		{
+			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)stat.type);
+			while (true == reader.Read())
+			{
+				description += "<color=white> -" + string.Format(reader.GetString("description"), stat.value) + "</color>\n";
+			}
+		}
+
+		foreach (Stat.Data stat in equipItem.sub_stat.GetStats())
+		{
+			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)stat.type);
+			while (true == reader.Read())
+			{
+				description += "<color=green> -" + string.Format(reader.GetString("description"), stat.value) + "</color>\n";
+			}
+		}
+
+		if (null != equipItem.skill)
+		{
+			description += "<color=red> -" + equipItem.skill.meta.description + "</color>";
+		}
+		inventory.item_info.SetDescription(description);
+		//inventory.item_info.description.text = item_data.description;
+		inventory.item_info.SetButtonListener(UIItemInfo.Action.Drop, () =>
+		{
+			GameManager.Instance.player.inventory.Remove(item_data.slot_index);
+			inventory.item_info.Clear();
+		});
+
 	}
 
 	public override void OnEquipSlotDrop(UIEquipSlot slot)

@@ -55,7 +55,5 @@ public class Item
 		_meta = meta;
 		item_seq = ITEM_SEQ++;
 	}
-
-	public virtual string description { get { throw new System.NotImplementedException(); } }
 }
 	

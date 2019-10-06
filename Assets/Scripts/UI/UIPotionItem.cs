@@ -8,8 +8,16 @@ public class UIPotionItem : UIItem
 {
     public override void OnSelect()
 	{
-		inventory.item_info.buttons[(int)UIItemInfo.Action.Drink].gameObject.SetActive(true);
-		inventory.item_info.actions[(int)UIItemInfo.Action.Drink] += () =>
+		inventory.item_info.Clear();
+		inventory.item_info.SetItemIcon(this);
+		inventory.item_info.SetItemName(item_data.meta.name);
+		inventory.item_info.SetDescription(item_data.meta.description);
+		inventory.item_info.SetButtonListener(UIItemInfo.Action.Drop, () =>
+		{
+			GameManager.Instance.player.inventory.Remove(item_data.slot_index);
+			inventory.item_info.Clear();
+		});
+		inventory.item_info.SetButtonListener(UIItemInfo.Action.Drink, () =>
 		{
 			PotionItem potionItem = GameManager.Instance.player.inventory.Remove(item_data.slot_index) as PotionItem;
 			if (null == potionItem)
@@ -17,9 +25,8 @@ public class UIPotionItem : UIItem
 				throw new System.InvalidCastException();
 			}
 			potionItem.Drink(GameManager.Instance.player);
-			inventory.item_info.actions[(int)UIItemInfo.Action.Drink] = null;
 			inventory.item_info.Clear();
-		};
+		});
 	}
 
 	public override void OnEquipSlotDrop(UIEquipSlot slot)

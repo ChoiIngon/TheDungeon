@@ -38,29 +38,30 @@ public class UIItemInfo : MonoBehaviour
 			trigger.triggers.Add (entry);
 		}
 
-		name.text = "";
-		description.text = "";
+		Clear();
 	}
 
-	public UIItem slot {
-		set {
-			if (null == value)
-			{
-				return;
-			}
-			gameObject.SetActive (true);
-			Item item = value.item_data;
-			name.text = item.meta.name;
-			grade.color = UIItem.GetGradeColor(item.grade);
-			description.text = item.meta.description;
-			icon.sprite = ResourceManager.Instance.Load<Sprite>(item.meta.sprite_path);
-			icon.color = Color.white;
-			for (int i = 0; i < (int)Action.Max; i++)
-			{
-				buttons [i].gameObject.SetActive (false);
-				actions [i] = null;
-			}
-		}
+	public void SetItemIcon(UIItem item)
+	{
+		grade.color = UIItem.GetGradeColor(item.item_data.grade);
+		icon.color = Color.white;
+		icon.sprite = ResourceManager.Instance.Load<Sprite>(item.item_data.meta.sprite_path);
+	}
+
+	public void SetItemName(string name)
+	{
+		this.name.text = name;
+	}
+
+	public void SetDescription(string description)
+	{
+		this.description.text = description;
+	}
+
+	public void SetButtonListener(UIItemInfo.Action action, System.Action listener)
+	{
+		buttons[(int)action].gameObject.SetActive(true);
+		actions[(int)action] += listener;
 	}
 
 	public void Clear()
