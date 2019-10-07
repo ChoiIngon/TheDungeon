@@ -13,7 +13,6 @@ public class Room : MonoBehaviour
 		doors[Dungeon.East] = UIUtil.FindChild<Transform>(transform, "EastDoor").gameObject;
 		doors[Dungeon.West] = UIUtil.FindChild<Transform>(transform, "WestDoor").gameObject;
 		stair = UIUtil.FindChild<RoomStair>(transform, "Stair");
-		stair.gameObject.SetActive(false);
 	}
 
 	public void Init(Dungeon.Room data)
