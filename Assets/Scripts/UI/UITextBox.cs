@@ -25,30 +25,30 @@ public class UITextBox : MonoBehaviour {
 	private string copied;
 	private float height;
 	private RectTransform rectTransform;
+	private Vector3 position;
 	private int paragraph;
 	private Coroutine hideCoroutine;
 	
-	public void Init () {
+	public void Init ()
+	{
+		rectTransform = GetComponent<RectTransform>();
+		height = rectTransform.rect.height;
+
 		Rect parentRect = transform.parent.GetComponent<RectTransform>().rect;
 
 		fast.gameObject.SetActive (false);
-		fast.GetComponent<RectTransform>().sizeDelta = new Vector2(parentRect.width, parentRect.height);
-		fast.onClick.AddListener (FastForward);
-
 		next.gameObject.SetActive (false);
-		next.GetComponent<RectTransform>().sizeDelta = new Vector2(parentRect.width, parentRect.height);
-		next.onClick.AddListener (() => {
-			state = State.Next;
-		});
-
 		close.gameObject.SetActive (false);
-		close.GetComponent<RectTransform>().sizeDelta = new Vector2(parentRect.width, parentRect.height);
-		close.onClick.AddListener (() => {
-			hideCoroutine = StartCoroutine(Hide (time));
-		});
 
-		rectTransform = GetComponent<RectTransform> ();
-        height = rectTransform.rect.height;
+		fast.GetComponent<RectTransform>().sizeDelta = new Vector2(0.0f, parentRect.height);
+		next.GetComponent<RectTransform>().sizeDelta = new Vector2(0.0f, parentRect.height);
+		close.GetComponent<RectTransform>().sizeDelta = new Vector2(0.0f, parentRect.height);
+
+		fast.onClick.AddListener (FastForward);
+		next.onClick.AddListener (() => { state = State.Next; });
+		close.onClick.AddListener (() => { hideCoroutine = StartCoroutine(Hide (time)); });
+
+		position = rectTransform.position;
 		state = State.Hide;
 	}
 

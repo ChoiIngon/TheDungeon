@@ -248,7 +248,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 640, y: 1136}
+  m_ReferenceResolution: {x: 720, y: 1280}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -319,7 +319,7 @@ PrefabInstance:
     - target: {fileID: 1465431494777066836, guid: 4781a020309784540a92ac53df9aa92a,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.96
+      value: 2.52
       objectReference: {fileID: 0}
     - target: {fileID: 1465431494777066836, guid: 4781a020309784540a92ac53df9aa92a,
         type: 3}
@@ -2312,7 +2312,7 @@ PrefabInstance:
     - target: {fileID: 3724911613854138342, guid: 98d4a6c16f9ed954e8a59049592bc336,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2.52
       objectReference: {fileID: 0}
     - target: {fileID: 3724911613854138342, guid: 98d4a6c16f9ed954e8a59049592bc336,
         type: 3}
@@ -2924,7 +2924,7 @@ PrefabInstance:
     - target: {fileID: 6276257093049849347, guid: 3db441b9403f3b44f8012bffa565267e,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2.52
       objectReference: {fileID: 0}
     - target: {fileID: 6276257093049849347, guid: 3db441b9403f3b44f8012bffa565267e,
         type: 3}
