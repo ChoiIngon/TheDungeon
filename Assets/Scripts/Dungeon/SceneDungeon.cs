@@ -343,7 +343,7 @@ public class SceneDungeon : SceneMain
 
 			AudioManager.Instance.Stop(AudioManager.BATTLE_BGM);
 			AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
-			if (true == battle.battle_result)
+			if (DungeonBattle.BattleResult.Win == battle.battle_result)
 			{
 				yield return StartCoroutine(Win(dungeon.current_room.monster));
 				dungeon.current_room.monster = null;

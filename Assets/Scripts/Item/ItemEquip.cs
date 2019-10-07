@@ -57,7 +57,6 @@ public class EquipItem : Item
 public class EquipItemManager
 {
 	private List<EquipItem.Meta> item_metas = new List<EquipItem.Meta>();
-	private List<Skill.Meta> skill_metas = new List<Skill.Meta>();
 	private Util.WeightRandom<Item.Grade> grade_gacha = new Util.WeightRandom<Item.Grade>();
 	private Util.WeightRandom<EquipItemStatMeta> sub_stat_gacha = new Util.WeightRandom<EquipItemStatMeta>();
 
@@ -98,7 +97,6 @@ public class EquipItemManager
 		grade_gacha.SetWeight(Item.Grade.Legendary, 1);
 
 		InitStatGacha();
-		InitSkillGacha();
 	}
 
 	public EquipItem CreateRandomItem(int level)
@@ -113,12 +111,9 @@ public class EquipItemManager
 			item.sub_stat.AddStat(CreateStat(level, sub_stat_gacha.Random()));
 		}
 
-		if (0 < skill_metas.Count)
+		if (EquipItem.Grade.Rare <= item.grade)
 		{
-			if (EquipItem.Grade.Rare <= item.grade)
-			{
-				item.skill = skill_metas[skill_metas.Count - 1].CreateInstance();
-			}
+			item.skill = SkillManager.Instance.CreateRandomInstance();
 		}
 
 		Analytics.CustomEvent("CreateItem", new Dictionary<string, object>
@@ -159,11 +154,6 @@ public class EquipItemManager
 				interval = 0.01f
 			}
 		}, 1);
-	}
-
-	private void InitSkillGacha()
-	{
-		skill_metas.Add(new Skill_Stun.Meta() { skill_id = "SKILL_STUN", description = "20%의 확률로 5턴 동안 대상을 기절 시킴" });
 	}
 
 	private Stat.Data CreateStat(int level, EquipItemStatMeta meta)

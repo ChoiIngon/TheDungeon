@@ -61,6 +61,12 @@ public class Unit
 			return result;
 		}
 
+		if (0 < GetBuffCount(Buff.Type.Fear))
+		{
+			result.damage = 0.0f;
+			return result;
+		}
+
 		float attack = this.attack + Random.Range(-this.attack * 0.1f, this.attack * 0.1f);
 		float defense = target.defense + Random.Range(-target.defense * 0.1f, target.defense * 0.1f);
 		result.damage = Mathf.Max(1, attack - defense);
@@ -150,11 +156,13 @@ public class Unit
 	{
 		Debug.Log("add buff(buff_id:" + buff.buff_id + ")");
 		buffs[(int)buff.buff_type - 1].Add(buff);
+		Util.EventSystem.Publish<Buff>(EventID.Buff_Start, buff);
 	}
 
 	public void RemoveBuff(Buff buff)
 	{
 		buffs[(int)buff.buff_type - 1].Remove(buff);
+		Util.EventSystem.Publish<Buff>(EventID.Buff_End, buff);
 		Debug.Log("remove buff(buff_id:" + buff.buff_id + ")");
 	}
 

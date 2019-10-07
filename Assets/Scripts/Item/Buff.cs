@@ -49,22 +49,21 @@ public class Buff_Blaze : Buff
     }
 }
 
-public class Buff_Venom : Buff
+public class Buff_Bleeding : Buff
 {
     public int turn;
-    public Buff_Venom(Unit target) : base(target, Type.Invalid)
+    public Buff_Bleeding(Unit target) : base(target, Type.Bleeding)
     {
-        //target.buffs.Add(this);
     }
 
     public override void OnBuff()
     {
-        //target.Damage(0);
-        //if (0 >= turn)
-        //{
-        //    target.buffs.Remove(this);
-        //}
-    }
+		turn--;
+		if (0 >= turn)
+		{
+			active = false;
+		}
+	}
 }
 
 public class Buff_GrimReaper : Buff
@@ -86,17 +85,14 @@ public class Buff_Stun : Buff
     public int turn;
     public Buff_Stun(Unit target) : base(target, Type.Stun)
     {
-		Util.EventSystem.Publish<Buff_Stun>(EventID.Buff_Start, this);
 	}
 
     public override void OnBuff()
     {
 		turn--;
-		Debug.Log("on buff(remain_turn:" + turn + ")");
 		if (0 >= turn)
 		{
 			active = false;
-			Util.EventSystem.Publish<Buff_Stun>(EventID.Buff_End, this);
 		}
     }
 }
@@ -142,24 +138,21 @@ public class Buff_Unstable : Buff
     }
 }
 
-public class Buff_Terror : Buff
+public class Buff_Fear : Buff
 {
-    public int turn;
-    public float speed;
-    public Buff_Terror(Unit target) : base(target, Type.Invalid)
-    {
-		//this.speed = target.stats.speed;
-        //target.buffs.Add(this);
-    }
+	public int turn;
+	public Buff_Fear(Unit target) : base(target, Type.Fear)
+	{
+	}
 
-    public override void OnBuff()
-    {
-		//target.stats.speed = 0.0f;
-        //if (0 >= turn)
-        //{
-        //    target.buffs.Remove(this);
-        //}
-    }
+	public override void OnBuff()
+	{
+		turn--;
+		if (0 >= turn)
+		{
+			active = false;
+		}
+	}
 }
 
 public class Buff_Luck : Buff
@@ -180,4 +173,21 @@ public class Buff_Luck : Buff
         //    target.buffs.Remove(this);
         //}
     }
+}
+
+public class Buff_Blindness : Buff
+{
+	public int turn;
+	public Buff_Blindness(Unit target) : base(target, Type.Blind)
+	{
+	}
+
+	public override void OnBuff()
+	{
+		turn--;
+		if (0 >= turn)
+		{
+			active = false;
+		}
+	}
 }

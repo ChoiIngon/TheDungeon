@@ -139,6 +139,10 @@ public class Monster : MonoBehaviour
 		ui_root.gameObject.SetActive(false);
 	}
 
+	public void Runaway()
+	{
+	}
+
 	public IEnumerator OnDamage(Unit.AttackResult attackResult)
 	{
 		iTween.ShakePosition(gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);

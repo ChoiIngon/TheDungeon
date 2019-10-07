@@ -14,7 +14,14 @@ public class DungeonBattle : MonoBehaviour
 	private UIButtonGroup		battle_buttons;
 	private float				battle_speed = 1.5f;
 	private float				wait_time_for_next_turn = 0.0f;
-	public bool					battle_result = false;
+
+	public enum BattleResult
+	{
+		Lose = 0,
+		Win = 1,
+		Draw = 2
+	}
+	public BattleResult			battle_result = BattleResult.Lose; // 0 : lose, 1 : win, 2 : draw
 
 	void Start()
 	{
@@ -102,13 +109,13 @@ public class DungeonBattle : MonoBehaviour
 
 		if (0.0f < monster.data.cur_health)
 		{
-			battle_result = false;
+			battle_result = BattleResult.Lose;
 			// return to main
 		}
 		else
 		{
 			monster.Die();
-			battle_result = true;
+			battle_result = BattleResult.Win;
 		}
 		monster.meta = null;
 		monster.data = null;
