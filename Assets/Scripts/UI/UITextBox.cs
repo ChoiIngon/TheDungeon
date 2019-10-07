@@ -48,7 +48,6 @@ public class UITextBox : MonoBehaviour {
 		next.onClick.AddListener (() => { state = State.Next; });
 		close.onClick.AddListener (() => { hideCoroutine = StartCoroutine(Hide (time)); });
 
-		position = rectTransform.position;
 		state = State.Hide;
 	}
 
