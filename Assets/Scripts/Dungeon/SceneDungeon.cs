@@ -19,7 +19,6 @@ public class SceneDungeon : SceneMain
 	private bool touch_finish = false;
 
 	public DungeonBattle battle;
-	public DungeonBox box;
 
 	private Transform ui_player_transform;
 	public UIGaugeBar player_health;
@@ -50,8 +49,6 @@ public class SceneDungeon : SceneMain
 		dungeon = new Dungeon();
 		battle = UIUtil.FindChild<DungeonBattle>(transform, "Battle");
 		battle.gameObject.SetActive(true);
-		box = UIUtil.FindChild<DungeonBox>(transform, "Box");
-		box.gameObject.SetActive(true);
 		rooms = UIUtil.FindChild<Transform>(transform, "Rooms");
 		current_room = UIUtil.FindChild<Room>(rooms, "Current");
 		next_rooms[Dungeon.North] = UIUtil.FindChild<Room>(rooms, "North");
@@ -268,8 +265,6 @@ public class SceneDungeon : SceneMain
 			yield return null;
 		}
 
-		box.gameObject.SetActive(false);
-
 		Util.EventSystem.Publish(EventID.Dungeon_Move_Start);
 		Dungeon.Room next_room = dungeon.current_room.GetNext(direction);
 
@@ -329,12 +324,7 @@ public class SceneDungeon : SceneMain
 		InitRooms();
 
 		yield return OnExitUnlock();
-
-		if (null != dungeon.current_room.item)
-		{
-			box.Show(dungeon.current_room);
-		}
-
+		
 		if (null != dungeon.current_room.monster)
 		{
 			AudioManager.Instance.Stop(AudioManager.DUNGEON_BGM);

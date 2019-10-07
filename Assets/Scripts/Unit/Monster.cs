@@ -45,29 +45,23 @@ public class Monster : MonoBehaviour
 	private Shader shaderOriginal;
 	private Shader shaderWhite;
 
-	private void Start()
+	private void Awake()
 	{
 		meta = null;
 		data = null;
-
 		ui_root = UIUtil.FindChild<Transform>(transform, "../../UI/Monster");
 		ui_name = UIUtil.FindChild<Text>(ui_root, "Name");
 		ui_health = UIUtil.FindChild<UIGaugeBar>(ui_root, "Health");
-
 		sprite = GetComponent<SpriteRenderer>();
 		if (null == sprite)
 		{
 			throw new MissingComponentException("SpriteRenderer");
 		}
-
-		shaderOriginal = sprite.material.shader;
-		shaderWhite = Shader.Find("GUI/Text Shader");
 		animator = GetComponent<Animator>();
 		if (null == animator)
 		{
 			throw new MissingComponentException("Animator");
 		}
-
 		buff_effect_spot = UIUtil.FindChild<Transform>(transform, "Buff");
 		buff_effects = new Transform[(int)Buff.Type.Max];
 		buff_effects[(int)Buff.Type.Stun - 1] = UIUtil.FindChild<Transform>(buff_effect_spot, "Effect_MonsterStun");
@@ -75,12 +69,15 @@ public class Monster : MonoBehaviour
 		damage_effect_spot = UIUtil.FindChild<Transform>(transform, "../../UI/BattleEffect");
 		damage_effect_prefab = UIUtil.FindChild<Effect_MonsterDamage>(damage_effect_spot, "Effect_MonsterDamage");
 		death_effect_prefab = UIUtil.FindChild<Transform>(damage_effect_spot, "Effect_MonsterDeath/BloodDroplets");
-		
-		ui_root.gameObject.SetActive(false);
+	}
 
+	private void Start()
+	{
+		shaderOriginal = sprite.material.shader;
+		shaderWhite = Shader.Find("GUI/Text Shader");
+		gameObject.SetActive(false);
 		Util.EventSystem.Subscribe<Buff>(EventID.Buff_Start, OnBuffStart);
 		Util.EventSystem.Subscribe<Buff>(EventID.Buff_End, OnBuffEnd);
-		gameObject.SetActive(false);
 	}
 
 	private void OnEnable()

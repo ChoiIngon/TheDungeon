@@ -38,6 +38,10 @@ public class RoomStair : MonoBehaviour
 			}
 			StartCoroutine(Open());
 		};
+	}
+
+	private void Start()
+	{
 		touch_input.AddBlockCount();
 	}
 
