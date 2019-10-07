@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7097163498962371875}
   - component: {fileID: 8162510056290828403}
   m_Layer: 0
-  m_Name: bleeding (2)
+  m_Name: Bleeding_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4768,7 +4768,7 @@ GameObject:
   - component: {fileID: 8087638476294750249}
   - component: {fileID: 694471333836144070}
   m_Layer: 0
-  m_Name: Effect_Monsterbleeding
+  m_Name: Effect_MonsterBleeding
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9470,7 +9470,7 @@ GameObject:
   - component: {fileID: 275052458358485010}
   - component: {fileID: 5966718110261333916}
   m_Layer: 0
-  m_Name: bleeding (3)
+  m_Name: Bleeding_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14226,7 +14226,7 @@ GameObject:
   - component: {fileID: 4061100171681308722}
   - component: {fileID: 6029605882812355296}
   m_Layer: 0
-  m_Name: bleeding
+  m_Name: Bleeding_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18982,7 +18982,7 @@ GameObject:
   - component: {fileID: 6960564927480194034}
   - component: {fileID: 6154617691390361611}
   m_Layer: 0
-  m_Name: bleeding (1)
+  m_Name: Bleeding_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

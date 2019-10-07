@@ -7,7 +7,10 @@ public class Buff
 	{
 		Invalid,
 		Stun = 1,
-		Max	= 1
+		Blind = 2,
+		Fear = 3,
+		Bleeding = 4,
+		Max	= 4
 	}
 
 	public string buff_id;

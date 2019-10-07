@@ -51,14 +51,19 @@ public class SceneDungeon : SceneMain
 		battle.gameObject.SetActive(true);
 		rooms = UIUtil.FindChild<Transform>(transform, "Rooms");
 		current_room = UIUtil.FindChild<Room>(rooms, "Current");
+		current_room.Init(null);
 		next_rooms[Dungeon.North] = UIUtil.FindChild<Room>(rooms, "North");
 		next_rooms[Dungeon.North].transform.position = new Vector3(0.0f, 0.0f, room_size);
+		next_rooms[Dungeon.North].Init(null);
 		next_rooms[Dungeon.East] = UIUtil.FindChild<Room>(rooms, "East");
 		next_rooms[Dungeon.East].transform.position = new Vector3(room_size, 0.0f, 0.0f);
+		next_rooms[Dungeon.East].Init(null);
 		next_rooms[Dungeon.South] = UIUtil.FindChild<Room>(rooms, "South");
 		next_rooms[Dungeon.South].transform.position = new Vector3(0.0f, 0.0f, -room_size);
+		next_rooms[Dungeon.South].Init(null);
 		next_rooms[Dungeon.West] = UIUtil.FindChild<Room>(rooms, "West");
 		next_rooms[Dungeon.West].transform.position = new Vector3(-room_size, 0.0f, 0.0f);
+		next_rooms[Dungeon.West].Init(null);
 
 		mini_map = UIUtil.FindChild<UIMiniMap>(transform, "UI/Dungeon/MiniMap");
 		ui_dungeon_level = UIUtil.FindChild<Text>(transform, "UI/Dungeon/Level");

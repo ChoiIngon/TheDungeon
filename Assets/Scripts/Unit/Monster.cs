@@ -65,6 +65,9 @@ public class Monster : MonoBehaviour
 		buff_effect_spot = UIUtil.FindChild<Transform>(transform, "Buff");
 		buff_effects = new Transform[(int)Buff.Type.Max];
 		buff_effects[(int)Buff.Type.Stun - 1] = UIUtil.FindChild<Transform>(buff_effect_spot, "Effect_MonsterStun");
+		buff_effects[(int)Buff.Type.Blind - 1] = UIUtil.FindChild<Transform>(buff_effect_spot, "Effect_MonsterBlindness");
+		buff_effects[(int)Buff.Type.Fear - 1] = UIUtil.FindChild<Transform>(buff_effect_spot, "Effect_MonsterFear");
+		buff_effects[(int)Buff.Type.Bleeding - 1] = UIUtil.FindChild<Transform>(buff_effect_spot, "Effect_MonsterBleeding");
 
 		damage_effect_spot = UIUtil.FindChild<Transform>(transform, "../../UI/BattleEffect");
 		damage_effect_prefab = UIUtil.FindChild<Effect_MonsterDamage>(damage_effect_spot, "Effect_MonsterDamage");

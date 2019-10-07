@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8137383711260337673}
   - component: {fileID: 4070155242953435422}
   m_Layer: 0
-  m_Name: fear (2)
+  m_Name: Fear_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4768,7 +4768,7 @@ GameObject:
   - component: {fileID: 8722146184243255669}
   - component: {fileID: 5119967268563919044}
   m_Layer: 0
-  m_Name: fear (1)
+  m_Name: Fear_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9524,7 +9524,7 @@ GameObject:
   - component: {fileID: 1783771649267966671}
   - component: {fileID: 2118610145966905278}
   m_Layer: 0
-  m_Name: Effect_Monsterfear
+  m_Name: Effect_MonsterFear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14225,7 +14225,7 @@ GameObject:
   - component: {fileID: 8384284553558633365}
   - component: {fileID: 1935156708531015408}
   m_Layer: 0
-  m_Name: fear
+  m_Name: Fear_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DungeonBox : MonoBehaviour
@@ -21,14 +20,17 @@ public class DungeonBox : MonoBehaviour
 			throw new MissingComponentException("TouchInput");
 		}
 		box_collier = GetComponent<BoxCollider2D>();
-		touch_input.onTouchUp += (Vector3 position) => 
+		
+	}
+
+	private void Start()
+	{
+		touch_input.onTouchUp += (Vector3 position) =>
 		{
 			Debug.Log("show box touch input");
 			box_collier.enabled = false;
 			StartCoroutine(Open());
 		};
-		
-		gameObject.SetActive(false);
 	}
 
 	public void Show(Dungeon.Room room)
