@@ -4,14 +4,20 @@ using System.Collections;
 
 public class UIMiniMap : MonoBehaviour
 {
-	public float ROOM_SIZE = 50.0f;
 	public UIMiniMapRoom roomPrefab;
-	public Sprite stairSprite;
-	public Sprite roomSprite;
+	private float ROOM_SIZE = 50.0f;
+	public Sprite stair;
+	public Sprite room;
+	public Sprite monster;
+	public Sprite box;
+
 	private UIMiniMapRoom[] rooms;
 	private int current_room_id;
 	private Color ROOM_ACTIVATE_COLOR = new Color (1.0f, 1.0f, 1.0f, 1.0f);
 	private Color ROOM_DEACTIVATE_COLOR = new Color(1.0f, 1.0f, 1.0f, 0.2f);
+	private Color ROOM_MONSTER_COLOR = new Color(1.0f, 0.0f, 1.0f, 1.0f);
+	private Color ROOM_BOX_COLOR = new Color(0.0f, 1.0f, 1.0f, 1.0f);
+	private Dungeon dungeon;
 
 	void Awake()
 	{
@@ -49,6 +55,7 @@ public class UIMiniMap : MonoBehaviour
 
 	public void Init (Dungeon dungeon)
 	{
+		this.dungeon = dungeon;
 		for (int y = 0; y < Dungeon.HEIGHT; y++)
 		{
 			for (int x = 0; x < Dungeon.WIDTH; x++)
@@ -59,16 +66,18 @@ public class UIMiniMap : MonoBehaviour
 				{
 					miniRoom.next [i].gameObject.SetActive ((bool)(null != room.next [i]));
 				}
-				miniRoom.room.sprite = roomSprite;
+				miniRoom.room.sprite = this.room;
 				if (Dungeon.Room.Type.Exit == room.type || Dungeon.Room.Type.Lock == room.type)
 				{
-					miniRoom.room.sprite = stairSprite;
+					miniRoom.room.sprite = stair;
 				}
 				miniRoom.gameObject.SetActive (false);
 			}
 		}
 		current_room_id = dungeon.current_room.id;
 		CurrentPosition(current_room_id);
+
+		RevealBox();
 	}
 
 	public void CurrentPosition (int id)
@@ -79,7 +88,16 @@ public class UIMiniMap : MonoBehaviour
 		current_room_id = id;
 	}
 
-    public IEnumerator Hide(float time)
+	public void RevealBox()
+	{
+		foreach (Dungeon.Room room in dungeon.rooms)
+		{
+			if (null != room.item)
+			{
+			}
+		}
+	}
+	public IEnumerator Hide(float time)
     {
         float alpha = 1.0f;
         while (0.0f < alpha)

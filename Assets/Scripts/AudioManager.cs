@@ -29,6 +29,7 @@ public class AudioManager : Util.MonoSingleton<AudioManager>
 			audioSource.playOnAwake = false;
 			audio_sources[audio.name] = audioSource;
 		}
+		DontDestroyOnLoad(AudioManager.Instance.gameObject);
 	}
 
 	public void Play(string name, bool loop = false)

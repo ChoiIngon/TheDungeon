@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public abstract class SceneMain : MonoBehaviour {
+public abstract class SceneMain : MonoBehaviour
+{
 	private bool complete = false;
 	
 	void Start ()
@@ -31,5 +32,24 @@ public abstract class SceneMain : MonoBehaviour {
 	
 	void OnComplete() {
 		complete = true;
+	}
+
+	protected IEnumerator AsyncLoadScene(string sceneName)
+	{
+		AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+		while (false == operation.isDone)
+		{
+			// loading progress
+			yield return null;
+		}
+	}
+	protected IEnumerator AsyncUnloadScene(string sceneName)
+	{
+		AsyncOperation operation = SceneManager.UnloadSceneAsync(sceneName);
+		while (false == operation.isDone)
+		{
+			// loading progress
+			yield return null;
+		}
 	}
 }

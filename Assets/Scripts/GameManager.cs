@@ -23,17 +23,20 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		if("Common" == SceneManager.GetActiveScene().name)
 		{
 			yield return StartCoroutine(Init());
-			AsyncOperation operation = SceneManager.LoadSceneAsync("Dungeon", LoadSceneMode.Additive);
+			AsyncOperation operation = SceneManager.LoadSceneAsync("Start", LoadSceneMode.Additive);
 			while (false == operation.isDone)
 			{
 				// loading progress
 				yield return null;
 			}
+			SceneManager.SetActiveScene(SceneManager.GetSceneByName("Start"));
 		}
 	}
 	
 	public IEnumerator Init()
 	{
+		DontDestroyOnLoad(gameObject);
+
 		camera_fade = UIUtil.FindChild<Image>(transform, "UI/CameraFade");
 		camera_fade.gameObject.SetActive(true);
 		camera_fade.color = Color.black;
@@ -43,10 +46,6 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		{
 			throw new MissingComponentException("UnityAds");
 		}
-
-		yield return ResourceManager.Instance.Init();
-		DontDestroyOnLoad(ResourceManager.Instance.gameObject);
-		DontDestroyOnLoad(gameObject);
 
 		if (Application.platform != RuntimePlatform.Android)
 		{
@@ -71,6 +70,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 			Database.Connect(Database.Type.MetaData, targetDBPath);
 		}
 		Database.Connect(Database.Type.UserData, Application.persistentDataPath + "/user_data.db");
+		ResourceManager.Instance.Init();
 		ItemManager.Instance.Init();
 		MonsterManager.Instance.Init();
 		SkillManager.Instance.Init();

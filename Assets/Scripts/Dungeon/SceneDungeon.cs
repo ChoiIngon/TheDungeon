@@ -163,12 +163,8 @@ public class SceneDungeon : SceneMain
 		InitScene();
 
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
-		string[] scripts = new string[] {
-			"오래전 이 던전엔 자신의 부와 젊음을 위해 백성들을 악마의 제물로 바쳤다는 피의 여왕이 살았다고 하네. ",
-			"시간이 지나 이젠 전설이 되었지만 한가지 확실한건 저 곳엔 여왕이 남긴 엄청난 보물이 있다는 거야.",
-			"하지만 지금까지 저곳으로 들어서 무사히 돌아나온 사람은 없다는군."
-		};
-		yield return StartCoroutine(GameManager.Instance.ui_npc.Talk("", scripts));
+		
+		
 		touch_input.ReleaseBlockCount();
 	}
 
@@ -241,12 +237,13 @@ public class SceneDungeon : SceneMain
 			"Your body will be carried to village.\n" +
 			"See you soon.."
 		));
-		yield return StartCoroutine(GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f));
+		yield return GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f);
 				
 		StartCoroutine(GameManager.Instance.ads.ShowAds());
-		InitScene();
-		//yield return StartCoroutine (CameraFadeTo (Color.black, iTween.Hash ("amount", 1.0f, "time", 1.0f), true));
-		//SceneManager.LoadScene("Village");
+		//InitScene();
+
+		yield return AsyncLoadScene("Start");
+		yield return AsyncUnloadScene("Dungeon");
 	}
 
 	private IEnumerator GoDown()
@@ -492,4 +489,23 @@ public class SceneDungeon : SceneMain
 		state = State.Idle;
 	}
 	*/
+
+	void RevealMap()
+	{
+	}
+
+	void RevealBox()
+	{
+	}
+
+	void RevealMonster()
+	{
+		foreach (Dungeon.Room room in dungeon.rooms)
+		{
+			if (null != room.monster)
+			{
+				
+			}
+		}
+	}
 }
