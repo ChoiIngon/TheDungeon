@@ -15,8 +15,6 @@ public class UIMiniMap : MonoBehaviour
 	private int current_room_id;
 	private Color ROOM_ACTIVATE_COLOR = new Color (1.0f, 1.0f, 1.0f, 1.0f);
 	private Color ROOM_DEACTIVATE_COLOR = new Color(1.0f, 1.0f, 1.0f, 0.2f);
-	private Color ROOM_MONSTER_COLOR = new Color(1.0f, 0.0f, 1.0f, 1.0f);
-	private Color ROOM_BOX_COLOR = new Color(0.0f, 1.0f, 1.0f, 1.0f);
 	private Dungeon dungeon;
 
 	void Awake()
@@ -56,44 +54,115 @@ public class UIMiniMap : MonoBehaviour
 	public void Init (Dungeon dungeon)
 	{
 		this.dungeon = dungeon;
-		for (int y = 0; y < Dungeon.HEIGHT; y++)
+		foreach (Dungeon.Room room in dungeon.rooms)
 		{
-			for (int x = 0; x < Dungeon.WIDTH; x++)
+			UIMiniMapRoom miniRoom = rooms[room.id];
+
+			if (Dungeon.Room.Type.Exit == room.type || Dungeon.Room.Type.Lock == room.type)
 			{
-				UIMiniMapRoom miniRoom = rooms [y * Dungeon.WIDTH + x];
-				Dungeon.Room room = dungeon.rooms [y * Dungeon.WIDTH + x];
-				for (int i = 0; i < Dungeon.Max; i++)
-				{
-					miniRoom.next [i].gameObject.SetActive ((bool)(null != room.next [i]));
-				}
-				miniRoom.room.sprite = this.room;
-				if (Dungeon.Room.Type.Exit == room.type || Dungeon.Room.Type.Lock == room.type)
-				{
-					miniRoom.room.sprite = stair;
-				}
-				miniRoom.gameObject.SetActive (false);
+				miniRoom.room.sprite = stair;
 			}
+			else if (null != room.monster)
+			{
+				miniRoom.room.sprite = monster;
+			}
+			else if (null != room.item)
+			{
+				miniRoom.room.sprite = box;
+			}
+			else
+			{
+				miniRoom.room.sprite = this.room;
+			}
+			miniRoom.gameObject.SetActive(false);
 		}
+
 		current_room_id = dungeon.current_room.id;
 		CurrentPosition(current_room_id);
-
 		RevealBox();
 	}
 
 	public void CurrentPosition (int id)
 	{
-		rooms [current_room_id].color = ROOM_DEACTIVATE_COLOR;
-		rooms [id].color = ROOM_ACTIVATE_COLOR;
-		rooms [id].gameObject.SetActive (true);
+		UIMiniMapRoom minimapRoom = rooms[current_room_id];
+		if (null != dungeon.rooms[current_room_id].monster)
+		{
+			minimapRoom.room.sprite = monster;
+		}
+		else if (null != dungeon.rooms[current_room_id].item)
+		{
+			minimapRoom.room.sprite = box;
+		}
+		else
+		{
+			minimapRoom.room.sprite = this.room;
+		}
+		minimapRoom.color = ROOM_DEACTIVATE_COLOR;
+
+		RevealRoom(id, ROOM_ACTIVATE_COLOR);
+
 		current_room_id = id;
 	}
 
+	private void RevealRoom(int id, Color color)
+	{
+		UIMiniMapRoom minimapRoom = rooms[id];
+		minimapRoom.color = color;
+		minimapRoom.gameObject.SetActive(true);
+		for (int i = 0; i < Dungeon.Max; i++)
+		{
+			minimapRoom.next[i].gameObject.SetActive((bool)(null != dungeon.rooms[id].next[i]));
+		}
+	}
+	public void RevealMap()
+	{
+		foreach (Dungeon.Room room in dungeon.rooms)
+		{
+			if (true == room.visit)
+			{
+				continue;
+			}
+			RevealRoom(room.id, ROOM_DEACTIVATE_COLOR);
+		}
+	}
 	public void RevealBox()
 	{
 		foreach (Dungeon.Room room in dungeon.rooms)
 		{
-			if (null != room.item)
+			if (true == room.visit)
 			{
+				continue;
+			}
+
+			if (null == room.item)
+			{
+				continue;
+			}
+
+			RevealRoom(room.id, ROOM_DEACTIVATE_COLOR);
+			for (int i = 0; i < Dungeon.Max; i++)
+			{
+				rooms[room.id].next[i].gameObject.SetActive(false);
+			}
+		}
+	}
+	public void RevealMonster()
+	{
+		foreach (Dungeon.Room room in dungeon.rooms)
+		{
+			if (true == room.visit)
+			{
+				continue;
+			}
+			if (null == room.monster)
+			{
+				continue;
+			}
+
+			RevealRoom(room.id, ROOM_DEACTIVATE_COLOR);
+			for (int i = 0; i < Dungeon.Max; i++)
+			{
+				rooms[room.id].next[i].gameObject.SetActive(false);
 			}
 		}
 	}

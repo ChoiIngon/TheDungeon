@@ -213,6 +213,9 @@ public class SceneDungeon : SceneMain
 		dungeon.Init(dungeon_level);
 		mini_map.Init(dungeon);
 		InitRooms();
+		mini_map.RevealMap();
+		mini_map.RevealBox();
+		mini_map.RevealMonster();
 	}
 
 	private void InitRooms()

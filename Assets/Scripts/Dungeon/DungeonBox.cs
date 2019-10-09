@@ -7,7 +7,7 @@ public class DungeonBox : MonoBehaviour
 	private SpriteRenderer open;
 	private float time = 0.2f;
 	private TouchInput touch_input;
-	private BoxCollider2D box_collier;
+	private BoxCollider2D touch_collider;
 	private Dungeon.Room room;
     // Start is called before the first frame update
     void Awake()
@@ -19,8 +19,11 @@ public class DungeonBox : MonoBehaviour
 		{
 			throw new MissingComponentException("TouchInput");
 		}
-		box_collier = GetComponent<BoxCollider2D>();
-		
+		touch_collider = GetComponent<BoxCollider2D>();
+		if (null == touch_collider)
+		{
+			throw new MissingComponentException("BoxCollider2D");
+		}
 	}
 
 	private void Start()
@@ -28,7 +31,7 @@ public class DungeonBox : MonoBehaviour
 		touch_input.onTouchUp += (Vector3 position) =>
 		{
 			Debug.Log("show box touch input");
-			box_collier.enabled = false;
+			touch_collider.enabled = false;
 			StartCoroutine(Open());
 		};
 	}
@@ -39,7 +42,7 @@ public class DungeonBox : MonoBehaviour
 		this.room = room;
 		close.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 		open.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
-		box_collier.enabled = true;		
+		touch_collider.enabled = true;		
 		gameObject.SetActive(true);
 	}
 

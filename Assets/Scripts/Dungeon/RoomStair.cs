@@ -8,6 +8,7 @@ public class RoomStair : MonoBehaviour
 	private SpriteRenderer lock_icon;
 	private float time = 1.0f;
 	private TouchInput touch_input;
+	private BoxCollider2D touch_collider;
 	private Dungeon.Room room;
 	private Coroutine textbox_coroutine;
 	// Start is called before the first frame update
@@ -21,9 +22,20 @@ public class RoomStair : MonoBehaviour
 		{
 			throw new MissingComponentException("TouchInput");
 		}
+		touch_collider = lock_icon.GetComponent<BoxCollider2D>();
+		if (null == touch_collider)
+		{
+			throw new MissingComponentException("BoxCollider2D");
+		}
+
+		
+	}
+
+	private void Start()
+	{
 		touch_input.onTouchUp += (Vector3 position) =>
 		{
-			touch_input.AddBlockCount();
+			touch_collider.enabled = false;
 			if (Dungeon.Room.Type.Lock == room.type)
 			{
 				if (0 == GameManager.Instance.player.inventory.GetItems<KeyItem>().Count)
@@ -40,14 +52,8 @@ public class RoomStair : MonoBehaviour
 		};
 	}
 
-	private void Start()
-	{
-		touch_input.AddBlockCount();
-	}
-
 	public void Show(Dungeon.Room room)
 	{
-		touch_input.ReleaseBlockCount();
 		this.room = room;
 		if (Dungeon.Room.Type.Lock == room.type)
 		{
@@ -61,6 +67,7 @@ public class RoomStair : MonoBehaviour
 			open.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 			lock_icon.gameObject.SetActive(false);
 		}
+		touch_collider.enabled = true;
 		gameObject.SetActive(true);
 	}
 

@@ -16,7 +16,6 @@ public class UnityAds : MonoBehaviour {
             Advertisement.Initialize(gameId); // ...initialize.
         }
 		//#endif
-		StartCoroutine(ShowBanner());
 	}
 
 	public IEnumerator ShowAds()
@@ -29,20 +28,7 @@ public class UnityAds : MonoBehaviour {
 		// Show the default ad placement.
 		Advertisement.Show("video");
 	}
-
-	IEnumerator ShowBanner()
-	{
-		Debug.Log("check ready for bannder");
-		const string placementID = "bottomBanner";
-		while (false == Advertisement.IsReady(placementID))
-		{
-			yield return new WaitForSeconds(0.5f);
-		}
-		Debug.Log("show bannder");
-		Advertisement.Banner.SetPosition(BannerPosition.TOP_CENTER);
-		Advertisement.Banner.Show(placementID);
-	}
-
+	
     public void ShowRewardedAd()
     {
         if(Advertisement.IsReady("rewardedVideo"))

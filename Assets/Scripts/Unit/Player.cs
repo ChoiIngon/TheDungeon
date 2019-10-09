@@ -38,7 +38,7 @@ public class Player : Unit
 	public int level;
 	public int exp;
 	public int coin = 0;
-	public int start_item_count = 10;
+	public int start_item_count = 1;
 
 	public override void Init()
 	{

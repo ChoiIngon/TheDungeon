@@ -14,7 +14,7 @@ public class UIMiniMapRoom : MonoBehaviour
 			room.color = value;
 			for (int i = 0; i < Dungeon.Max; i++)
 			{
-				next [i].color = value;
+				next[i].color = value;
 			}
 		}
         get
