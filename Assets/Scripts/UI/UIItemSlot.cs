@@ -8,18 +8,11 @@ public class UIItemSlot : MonoBehaviour
 	public UIItem item = null;
 	public UIInventory inventory = null;
 	public int slot_index = -1;
-	private Canvas canvas = null;
 	private Image guide_arrow = null;
 	public RectTransform rectTransform;
 
 	public virtual void Awake()
 	{
-		canvas = FindObjectOfType<Canvas>();
-		if (null == canvas)
-		{
-			throw new System.Exception("can not find child component(name:Canvas)");
-		}
-
 		rectTransform = GetComponent<RectTransform>();
 		if (null == rectTransform)
 		{
@@ -63,11 +56,11 @@ public class UIItemSlot : MonoBehaviour
 		Rect rhs = item.clone.rectTransform.rect;
 		Rect lhs = rectTransform.rect;
 
-		rhs.width *= canvas.scaleFactor;
-		rhs.height *= canvas.scaleFactor;
+		rhs.width *= GameManager.Instance.canvas.scaleFactor;
+		rhs.height *= GameManager.Instance.canvas.scaleFactor;
 
-		lhs.width *= canvas.scaleFactor;
-		lhs.height *= canvas.scaleFactor;
+		lhs.width *= GameManager.Instance.canvas.scaleFactor;
+		lhs.height *= GameManager.Instance.canvas.scaleFactor;
 
 		rhs.position = (Vector2)item.clone.transform.position;
 		lhs.position = (Vector2)transform.position;
@@ -85,11 +78,11 @@ public class UIItemSlot : MonoBehaviour
 		Rect rhs = item.clone.rectTransform.rect;
 		Rect lhs = rectTransform.rect;
 
-		rhs.width *= canvas.scaleFactor;
-		rhs.height *= canvas.scaleFactor;
+		rhs.width *= GameManager.Instance.canvas.scaleFactor;
+		rhs.height *= GameManager.Instance.canvas.scaleFactor;
 
-		lhs.width *= canvas.scaleFactor;
-		lhs.height *= canvas.scaleFactor;
+		lhs.width *= GameManager.Instance.canvas.scaleFactor;
+		lhs.height *= GameManager.Instance.canvas.scaleFactor;
 
 		rhs.position = (Vector2)item.clone.transform.position;
 		lhs.position = (Vector2)transform.position;

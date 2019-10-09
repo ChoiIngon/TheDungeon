@@ -16,16 +16,9 @@ public class UIItem : MonoBehaviour
 	public UIInventory inventory;
 
     public Item item_data;
-    private Canvas canvas = null;
 
     public virtual void Awake()
 	{
-        canvas = FindObjectOfType<Canvas>();
-        if (null == canvas)
-        {
-            throw new System.Exception("can not find child component(name:Canvas)");
-        }
-
         EventTrigger trigger = GetComponent<EventTrigger>( );
 		{
 			EventTrigger.Entry entry = new EventTrigger.Entry ();
@@ -56,11 +49,10 @@ public class UIItem : MonoBehaviour
 		icon = transform.Find ("ItemIcon").GetComponent<Image> ();
         grade = transform.Find("ItemGrade").GetComponent<Image>();
         outline = transform.Find ("ItemIcon").GetComponent<ImageOutline> ();
-		
         Init (item_data);
 	}
 
-	protected virtual void OnDestroy()
+	private void Start()
 	{
 	}
 
@@ -146,7 +138,7 @@ public class UIItem : MonoBehaviour
 		}
 
 		Vector3 clonePosition = evt.position;
-		clonePosition.y += clone.rectTransform.rect.height * canvas.scaleFactor;
+		clonePosition.y += clone.rectTransform.rect.height * GameManager.Instance.canvas.scaleFactor;
 		clone.transform.position = clonePosition;
     }
 

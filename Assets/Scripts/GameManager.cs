@@ -17,6 +17,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 	public UITextBox ui_textbox;
 	public UnityAds ads;
 	private Image camera_fade;
+	public Canvas canvas;
 
 	private IEnumerator Start()
 	{
@@ -37,7 +38,14 @@ public class GameManager : Util.MonoSingleton<GameManager>
 	{
 		DontDestroyOnLoad(gameObject);
 
-		camera_fade = UIUtil.FindChild<Image>(transform, "UI/CameraFade");
+		canvas = UIUtil.FindChild<Canvas>(transform, "UI");
+		camera_fade = UIUtil.FindChild<Image>(canvas.transform, "CameraFade");
+		ui_dialogbox = UIUtil.FindChild<UIDialogBox>(canvas.transform, "UIDialogBox");
+		ui_inventory = UIUtil.FindChild<UIInventory>(canvas.transform, "UIInventory");
+		ui_textbox = UIUtil.FindChild<UITextBox>(canvas.transform, "UITextBox");
+		ui_coin = UIUtil.FindChild<UICoin>(canvas.transform, "UICoin");
+		ui_npc = UIUtil.FindChild<UINpc>(canvas.transform, "UINpc");
+
 		camera_fade.gameObject.SetActive(true);
 		camera_fade.color = Color.black;
 
@@ -79,18 +87,13 @@ public class GameManager : Util.MonoSingleton<GameManager>
 
 		player = new Player();
 
-		ui_dialogbox = UIUtil.FindChild<UIDialogBox>(transform, "UI/UIDialogBox");
+		
 		ui_dialogbox.Init();
-		ui_inventory = UIUtil.FindChild<UIInventory>(transform, "UI/UIInventory");
 		ui_inventory.gameObject.SetActive(true);
 		ui_inventory.Init();
 		ui_inventory.gameObject.SetActive(false);
-
-		ui_coin = UIUtil.FindChild<UICoin>(transform, "UI/UICoin");
 		ui_coin.Init();
-		ui_npc = UIUtil.FindChild<UINpc>(transform, "UI/UINpc");
 		ui_npc.Init();
-		ui_textbox = UIUtil.FindChild<UITextBox>(transform, "UI/UITextBox");
 		ui_textbox.Init();
 	}
 
