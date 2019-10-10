@@ -76,30 +76,7 @@ public class SceneDungeon : SceneMain
 		ui_player_transform = UIUtil.FindChild<Transform>(transform, "UI/Player");
 		player_health = UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Health");
 		player_exp =	UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Exp");
-		/*
-		main_buttons =	UIUtil.FindChild<UIButtonGroup>(ui_player_transform, "MainButtonGroup");
-		
-		main_buttons.Init();
-		main_buttons.buttons[0].action += () => {
-			GameManager.Instance.ui_inventory.SetActive(true);
-		};
-		main_buttons.buttons[0].title = "Bag";
-		main_buttons.buttons[1].action += () =>
-		{
-			mini_map.RevealMap();
-		};
-		main_buttons.buttons[1].title = "Map";
-		main_buttons.buttons[2].action += () =>
-		{
-			mini_map.RevealMonster();
-		};
-		main_buttons.buttons[2].title = "Monster";
-		main_buttons.buttons[3].action += () =>
-		{
-			mini_map.RevealBox();
-		};
-		main_buttons.buttons[3].title = "Box";
-		*/
+
 		coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot");
 		coin_spot.gameObject.SetActive(true);
 		coin_prefab = UIUtil.FindChild<Coin>(transform, "Prefabs/Coin");
@@ -250,14 +227,14 @@ public class SceneDungeon : SceneMain
 
 	private IEnumerator Lose()
 	{
-		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(
+		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(
 			"You died.\n" +
 			"Your body will be carried to village.\n" +
 			"See you soon.."
 		));
 		yield return GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f);
 				
-		StartCoroutine(GameManager.Instance.ads.ShowAds());
+		StartCoroutine(GameManager.Instance.advertisement.ShowAds());
 		//InitScene();
 
 		yield return AsyncLoadScene("Start");
@@ -280,6 +257,7 @@ public class SceneDungeon : SceneMain
 
 	private IEnumerator Move(int direction)
 	{
+		Debug.Log("Dungeon_Move_Start");
 		while (0 < coin_spot.childCount)
 		{
 			yield return null;
@@ -308,6 +286,7 @@ public class SceneDungeon : SceneMain
 					break;
 			}
 			Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
+			Debug.Log("Dungeon_Move_Finish");
 			yield break;
 		}
 
@@ -344,11 +323,11 @@ public class SceneDungeon : SceneMain
 			AudioManager.Instance.Stop(AudioManager.DUNGEON_BGM);
 			AudioManager.Instance.Play(AudioManager.BATTLE_BGM, true);
 			
-			//main_buttons.Hide(0.1f);
 			StartCoroutine(mini_map.Hide(0.5f));
+			button_inventory.gameObject.SetActive(false);
 			yield return StartCoroutine(battle.BattleStart(dungeon.current_room.monster));
-			//main_buttons.Show(0.5f);
 			StartCoroutine(mini_map.Show(0.5f));
+			button_inventory.gameObject.SetActive(true);
 
 			AudioManager.Instance.Stop(AudioManager.BATTLE_BGM);
 			AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
@@ -369,8 +348,9 @@ public class SceneDungeon : SceneMain
 
 	private IEnumerator Win(Monster.Meta meta)
 	{
-		string text = "";
-		text += "You defeated \'" + meta.name + "\'\n";
+		//string text = "";
+		//text += "You defeated \'" + meta.name + "\'\n";
+		GameManager.Instance.ui_textbox.LogWrite("You defeated \'" + meta.name + "\'");
 
 		int prevPlayerLevel = GameManager.Instance.player.level;
 		Stat stat = GameManager.Instance.player.stats;
@@ -403,26 +383,26 @@ public class SceneDungeon : SceneMain
 		player_health.max = GameManager.Instance.player.max_health;
 		player_health.current = GameManager.Instance.player.cur_health;
 
-		text += "Coins : +" + rewardCoin + (0 < bonusCoin ? "(" + bonusCoin + " bonus)" : "") + "\n";
-		text += "Exp : +" + rewardExp + (0 < bonusExp ? "(" + bonusExp + " bonus)" : "") + "\n";
+		//text += "Coins : +" + rewardCoin + (0 < bonusCoin ? "(" + bonusCoin + " bonus)" : "") + "\n";
+		GameManager.Instance.ui_textbox.LogWrite("Coins : +" + rewardCoin + (0 < bonusCoin ? "(" + bonusCoin + " bonus)" : ""));
+		//text += "Exp : +" + rewardExp + (0 < bonusExp ? "(" + bonusExp + " bonus)" : "") + "\n";
+		GameManager.Instance.ui_textbox.LogWrite("Exp : +" + rewardExp + (0 < bonusExp ? "(" + bonusExp + " bonus)" : ""));
 		if (prevPlayerLevel < GameManager.Instance.player.level)
 		{
-			text += "Level : " + prevPlayerLevel + " -> " + GameManager.Instance.player.level + "\n";
+			//text += "Level : " + prevPlayerLevel + " -> " + GameManager.Instance.player.level + "\n";
+			GameManager.Instance.ui_textbox.LogWrite("Level : " + prevPlayerLevel + " -> " + GameManager.Instance.player.level);
 		}
 		if (null != item)
 		{
-			text += "Item : " + item.meta.name + "\n";
+			//text += "Item : " + item.meta.name + "\n";
+			GameManager.Instance.ui_textbox.LogWrite("Item : " + item.meta.name);
 		}
-
+		GameManager.Instance.ui_textbox.LogClose();
 		/*
 		QuestManager.Instance.Update("KillMonster", info.id);
 		yield return StartCoroutine(CheckCompleteQuest());
 		*/
-
-		Transform playerParent = ui_player_transform.parent;
-		ui_player_transform.SetParent(GameManager.Instance.ui_textbox.transform);
-		yield return GameManager.Instance.ui_textbox.Write(text);
-		ui_player_transform.SetParent(playerParent);
+		//yield return GameManager.Instance.ui_textbox.TypeWrite(text);
 	}
 
 	private void OnChangePlayerHealth()
@@ -501,23 +481,4 @@ public class SceneDungeon : SceneMain
 		state = State.Idle;
 	}
 	*/
-
-	void RevealMap()
-	{
-	}
-
-	void RevealBox()
-	{
-	}
-
-	void RevealMonster()
-	{
-		foreach (Dungeon.Room room in dungeon.rooms)
-		{
-			if (null != room.monster)
-			{
-				
-			}
-		}
-	}
 }

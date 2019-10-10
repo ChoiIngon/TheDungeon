@@ -83,12 +83,14 @@ public class UIInventory : MonoBehaviour
 			player_info.Refresh();
             Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
             Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
+			GameManager.Instance.advertisement.HideBanner();
 			Util.EventSystem.Publish(EventID.Inventory_Open);
         }
         else
         {
             Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
             Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
+			GameManager.Instance.advertisement.ShowBanner();
 			Util.EventSystem.Publish(EventID.Inventory_Close);
 		}
     }

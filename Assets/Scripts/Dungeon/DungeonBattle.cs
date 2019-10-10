@@ -59,6 +59,7 @@ public class DungeonBattle : MonoBehaviour
 		battle_buttons.gameObject.SetActive(true);
 		battle_buttons.Show(0.5f);
 
+		GameManager.Instance.ui_textbox.LogWrite(monsterMeta.name + "이(가) 등장");
 		monster.Init(monsterMeta);
 		yield return StartCoroutine(monster.ColorTo(Color.black, Color.white, 1.0f));
 		
@@ -73,11 +74,17 @@ public class DungeonBattle : MonoBehaviour
 		{
 			if (monsterTurn < playerTurn)
 			{
+				GameManager.Instance.player.OnBattleTurn();
+				monster.data.OnBattleTurn();
+
 				PlayerAttack(1.0f);
 				monsterTurn += monsterAPS + Random.Range(0, monsterAPS * 0.1f);
 			}
 			else
 			{
+				monster.data.OnBattleTurn();
+				GameManager.Instance.player.OnBattleTurn();
+
 				Unit.AttackResult result = monster.data.Attack(GameManager.Instance.player);
 				if (0.0f < result.damage)
 				{
@@ -92,14 +99,13 @@ public class DungeonBattle : MonoBehaviour
 						Random.Range(Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
 						0.0f
 					);
+					GameManager.Instance.ui_textbox.LogWrite("당신의 HP " + result.damage + " 감소");
 					GameManager.Instance.player.cur_health -= result.damage;
 					player_health.current = GameManager.Instance.player.cur_health;
 				}
 				playerTurn += playerAPS + Random.Range(0, playerAPS * 0.1f);
 			}
 
-			GameManager.Instance.player.OnBattleTurn();
-			monster.data.OnBattleTurn();
 			wait_time_for_next_turn = 1.0f / battle_speed;
 			while (0.0f < wait_time_for_next_turn)
 			{
@@ -133,6 +139,7 @@ public class DungeonBattle : MonoBehaviour
 		result.damage *= damageRate;
 		if (0.0f < result.damage)
 		{
+			GameManager.Instance.ui_textbox.LogWrite(monster.meta.name + " HP " + result.damage + " 감소");
 			StartCoroutine(monster.OnDamage(result));
 		}
 	}

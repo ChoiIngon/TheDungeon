@@ -44,7 +44,7 @@ public class RoomStair : MonoBehaviour
 					{
 						StopCoroutine(textbox_coroutine);
 					}
-					textbox_coroutine = StartCoroutine(GameManager.Instance.ui_textbox.Write("you need at least one key item to unlock the door"));
+					textbox_coroutine = StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite("you need at least one key item to unlock the door"));
 					return;
 				}
 			}

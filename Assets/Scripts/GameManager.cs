@@ -15,7 +15,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 	public UINpc ui_npc;
 	public UIDialogBox ui_dialogbox;
 	public UITextBox ui_textbox;
-	public UnityAds ads;
+	public Advertisement advertisement;
 	private Image camera_fade;
 	public Canvas canvas;
 
@@ -49,8 +49,8 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		camera_fade.gameObject.SetActive(true);
 		camera_fade.color = Color.black;
 
-		ads = GetComponent<UnityAds>();
-		if (null == ads)
+		advertisement = GetComponent<Advertisement>();
+		if (null == advertisement)
 		{
 			throw new MissingComponentException("UnityAds");
 		}

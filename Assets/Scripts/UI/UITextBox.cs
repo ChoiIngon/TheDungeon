@@ -28,7 +28,8 @@ public class UITextBox : MonoBehaviour {
 	private Vector3 position;
 	private int paragraph;
 	private Coroutine hideCoroutine;
-		
+
+	public System.Action on_close;
 	public void Init ()
 	{
 		rectTransform = GetComponent<RectTransform>();
@@ -45,15 +46,19 @@ public class UITextBox : MonoBehaviour {
 		next.GetComponent<RectTransform>().sizeDelta = new Vector2(0.0f, parentRect.height);
 		close.GetComponent<RectTransform>().sizeDelta = new Vector2(0.0f, parentRect.height);
 
-		fast.onClick.AddListener (FastForward);
+		fast.onClick.AddListener (ScrollDown);
 		next.onClick.AddListener (() => { state = State.Next; });
-		close.onClick.AddListener (() => { hideCoroutine = StartCoroutine(Hide()); });
+		close.onClick.AddListener (() => {
+			on_close?.Invoke();
+			hideCoroutine = StartCoroutine(Hide());
+		});
 
 		state = State.Hide;
 	}
 
-	public IEnumerator Show(float t)
+	public IEnumerator Show()
 	{
+		Debug.Log("publish text box show event");
 		Util.EventSystem.Publish(EventID.TextBox_Open);
 		state = State.Raise;
 		contents.text = "";
@@ -82,14 +87,38 @@ public class UITextBox : MonoBehaviour {
 		Util.EventSystem.Publish(EventID.TextBox_Close);
 		Debug.Log("publish text box close event");
 	}
-	public IEnumerator Write(string text)
+	public void LogWrite(string text)
+	{
+		if (null != hideCoroutine)
+		{
+			StopCoroutine(hideCoroutine);
+		}
+		if (State.Hide == state)
+		{
+			Debug.Log(text);
+			StartCoroutine(Show());
+		}
+		state = State.Typing;
+		fast.gameObject.SetActive(false);
+		next.gameObject.SetActive(false);
+		close.gameObject.SetActive(false);
+
+		contents.text += text + "\n";
+		scrollRect.verticalNormalizedPosition = 0.0f;
+		//state = State.Complete;
+	}
+	public void LogClose()
+	{
+		fast.gameObject.SetActive(true);
+	}
+	public IEnumerator TypeWrite(string text)
 	{
 		contents.text = "";
 		if (null != hideCoroutine) {
 			StopCoroutine (hideCoroutine);
 		}
 		if (State.Hide == state) {
-			yield return StartCoroutine (Show (time));
+			yield return StartCoroutine (Show());
 		}
 
 		state = State.Typing;
@@ -110,7 +139,7 @@ public class UITextBox : MonoBehaviour {
 			}
 		}
 		AudioManager.Instance.Stop("textbox_type");
-		FastForward ();
+		ScrollDown();
 		while (State.Complete == state) {
 			yield return null;
 		}
@@ -118,16 +147,16 @@ public class UITextBox : MonoBehaviour {
 		yield return hideCoroutine;
 	}
 
-	public IEnumerator Write(string[] texts)
+	public IEnumerator TypeWrite(string[] texts)
 	{
 		paragraph = texts.Length - 1;
 		foreach (string text in texts) {
-			yield return StartCoroutine (Write (text));
+			yield return StartCoroutine (TypeWrite (text));
 			paragraph = Mathf.Max(0, paragraph-1);
 		}
 	}
 	
-	void FastForward()
+	void ScrollDown()
 	{
 		scrollRect.verticalNormalizedPosition = 0.0f;
 		state = State.Complete;

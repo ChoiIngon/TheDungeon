@@ -45,6 +45,7 @@ public class TouchInput : MonoBehaviour {
 		}
 	}
 
+	[SerializeField]
 	private int touchBlockCount = 0;
 	public Vector2 size {
 		set

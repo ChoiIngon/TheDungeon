@@ -22,15 +22,23 @@ public class UINpc : MonoBehaviour {
 	public IEnumerator Talk(string text)
 	{
 		iTween.MoveBy(image.gameObject, iTween.Hash("x", image.rectTransform.rect.width * widthScale, "easeType", "easeInOutExpo"));
-		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
-		iTween.MoveTo(image.gameObject, iTween.Hash("x", 0.0f, "easeType", "easeInOutExpo", "time", 0.5f));
+		GameManager.Instance.ui_textbox.on_close += () =>
+		{
+			iTween.MoveTo(image.gameObject, iTween.Hash("x", 0.0f, "easeType", "easeInOutExpo", "time", 0.5f));
+		};
+		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(text));
+		GameManager.Instance.ui_textbox.on_close = null;
 	}
 
 	public IEnumerator Talk(string speaker, string[] text)
 	{
 		gameObject.SetActive (true);
 		iTween.MoveBy(image.gameObject, iTween.Hash("x", image.rectTransform.rect.width * widthScale, "easeType", "easeInOutExpo"));
-		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
-		iTween.MoveTo(image.gameObject, iTween.Hash("x", 0.0f, "easeType", "easeInOutExpo", "time", 0.5f));
+		GameManager.Instance.ui_textbox.on_close += () =>
+		{
+			iTween.MoveTo(image.gameObject, iTween.Hash("x", 0.0f, "easeType", "easeInOutExpo", "time", 0.5f));
+		};
+		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(text));
+		GameManager.Instance.ui_textbox.on_close = null;
 	}
 }

@@ -52,7 +52,7 @@ public class DungeonBox : MonoBehaviour
 		yield return StartCoroutine(Util.UITween.Overlap(close, open, time));
 		GameManager.Instance.player.inventory.Add(room.item);
 		string text = room.item.meta.name + " 아이템을 획득 했습니다.";
-		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
+		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(text));
 		gameObject.SetActive(false);
 		room.item = null;
 	}
