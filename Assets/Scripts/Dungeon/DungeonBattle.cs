@@ -23,22 +23,23 @@ public class DungeonBattle : MonoBehaviour
 	}
 	public BattleResult			battle_result = BattleResult.Lose; // 0 : lose, 1 : win, 2 : draw
 
-	void Start()
+	private void Awake()
 	{
 		monster = UIUtil.FindChild<Monster>(transform, "Monster");
-
 		player_damage_effect_spot = UIUtil.FindChild<Transform>(transform, "../UI/BattleEffect");
 		player_damage_effect_prefab = UIUtil.FindChild<Effect_PlayerDamage>(player_damage_effect_spot, "Effect_PlayerDamage");
 		player_health = UIUtil.FindChild<UIGaugeBar>(transform, "../UI/Player/Health");
-
-		battle_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "../UI/Player/BattleButtonGroup");
-		battle_buttons.Init();
-
+		battle_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "../UI/Monster/BattleButtonGroup");
 		touch_input = GetComponent<TouchInput>();
 		if (null == touch_input)
 		{
 			throw new MissingComponentException("TouchInput");
 		}
+	}
+	void Start()
+	{
+		battle_buttons.Init();
+
 		touch_input.onTouchDown += (Vector3 position) =>
 		{
 			if (null == monster.meta)

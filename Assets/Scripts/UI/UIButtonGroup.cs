@@ -44,7 +44,7 @@ public class UIButtonGroup : MonoBehaviour
 		for (int i = 0; i < buttons.Count; i++)
 		{
 			buttons[i].button.enabled = true;
-			buttons[i].image.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+			buttons[i].name.gameObject.SetActive(false);
 			StartCoroutine(Util.UITween.ColorTo(buttons[i].image, new Color(1.0f, 1.0f, 1.0f, 1.0f), time));
 		}
 	}
@@ -54,6 +54,7 @@ public class UIButtonGroup : MonoBehaviour
 		for (int i = 0; i < buttons.Count; i++)
 		{
 			buttons[i].button.enabled = false;
+			buttons[i].name.gameObject.SetActive(true);
 			StartCoroutine(Util.UITween.ColorTo(buttons[i].image, new Color(1.0f, 1.0f, 1.0f, 0.0f), time));
 		}
 	}

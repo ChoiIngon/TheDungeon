@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class SceneDungeon : SceneMain
 {
-	public UIButtonGroup main_buttons;
     public UIMiniMap mini_map;
 	
 	private float room_size = 7.2f; // walkDistance;
@@ -20,6 +19,7 @@ public class SceneDungeon : SceneMain
 
 	public DungeonBattle battle;
 
+	public Button button_inventory;
 	private Transform ui_player_transform;
 	public UIGaugeBar player_health;
 	public UIGaugeBar player_exp;
@@ -65,12 +65,18 @@ public class SceneDungeon : SceneMain
 		next_rooms[Dungeon.West].transform.position = new Vector3(-room_size, 0.0f, 0.0f);
 		next_rooms[Dungeon.West].Init(null);
 
-		mini_map = UIUtil.FindChild<UIMiniMap>(transform, "UI/Dungeon/MiniMap");
-		ui_dungeon_level = UIUtil.FindChild<Text>(transform, "UI/Dungeon/Level");
+		button_inventory = UIUtil.FindChild<Button>(transform,	"UI/ButtonInventory");
+		UIUtil.AddPointerUpListener(button_inventory.gameObject, () =>
+		{
+			GameManager.Instance.ui_inventory.SetActive(true);
+		});
+		mini_map = UIUtil.FindChild<UIMiniMap>(transform,		"UI/Dungeon/MiniMap");
+		ui_dungeon_level = UIUtil.FindChild<Text>(transform,	"UI/Dungeon/Level");
 
 		ui_player_transform = UIUtil.FindChild<Transform>(transform, "UI/Player");
 		player_health = UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Health");
 		player_exp =	UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Exp");
+		/*
 		main_buttons =	UIUtil.FindChild<UIButtonGroup>(ui_player_transform, "MainButtonGroup");
 		
 		main_buttons.Init();
@@ -93,6 +99,7 @@ public class SceneDungeon : SceneMain
 			mini_map.RevealBox();
 		};
 		main_buttons.buttons[3].title = "Box";
+		*/
 		coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot");
 		coin_spot.gameObject.SetActive(true);
 		coin_prefab = UIUtil.FindChild<Coin>(transform, "Prefabs/Coin");
@@ -116,13 +123,12 @@ public class SceneDungeon : SceneMain
 			}
 
 			float distance = Vector3.Distance(touch_point, position);
-
 			if (0.01f > distance)
 			{
 				Debug.Log("not enough drag distance(" + distance + ")");
 				return;
 			}
-
+			
 			touch_finish = true;
 			Vector3 delta = position - touch_point;
 
@@ -306,23 +312,18 @@ public class SceneDungeon : SceneMain
 		}
 
 		Vector3 position = Vector3.zero;
-		iTween.EaseType easeType = iTween.EaseType.easeInOutExpo;
 		switch (direction)
 		{
 			case Dungeon.North:
-				easeType = iTween.EaseType.easeInQuart;
 				position = new Vector3(rooms.position.x, rooms.position.y, rooms.position.z - room_size);
 				break;
 			case Dungeon.East:
-				easeType = iTween.EaseType.easeInOutExpo;
 				position = new Vector3(rooms.position.x - room_size, rooms.position.y, rooms.position.z);
 				break;
 			case Dungeon.South:
-				easeType = iTween.EaseType.easeInQuart;
 				position = new Vector3(rooms.position.x, rooms.position.y, rooms.position.z + room_size);
 				break;
 			case Dungeon.West:
-				easeType = iTween.EaseType.easeInOutExpo;
 				position = new Vector3(rooms.position.x + room_size, rooms.position.y, rooms.position.z);
 				break;
 			default:
@@ -331,8 +332,7 @@ public class SceneDungeon : SceneMain
 
 		dungeon.Move(direction);
 		AudioManager.Instance.Play(AudioManager.DUNGEON_WALK, true);
-		
-		yield return MoveTo(rooms.gameObject, iTween.Hash("position", position, "time", room_size / room_move_speed, "easetype", easeType), true);
+		yield return MoveTo(rooms.gameObject, iTween.Hash("position", position, "time", room_size / room_move_speed, "easetype", iTween.EaseType.linear), true);
 		AudioManager.Instance.Stop(AudioManager.DUNGEON_WALK);
 
 		InitRooms();
@@ -344,22 +344,22 @@ public class SceneDungeon : SceneMain
 			AudioManager.Instance.Stop(AudioManager.DUNGEON_BGM);
 			AudioManager.Instance.Play(AudioManager.BATTLE_BGM, true);
 			
-			main_buttons.Hide(0.1f);
-			yield return StartCoroutine(mini_map.Hide(0.5f));
+			//main_buttons.Hide(0.1f);
+			StartCoroutine(mini_map.Hide(0.5f));
 			yield return StartCoroutine(battle.BattleStart(dungeon.current_room.monster));
-			main_buttons.Show(0.5f);
-			yield return StartCoroutine(mini_map.Show(0.5f));
+			//main_buttons.Show(0.5f);
+			StartCoroutine(mini_map.Show(0.5f));
 
 			AudioManager.Instance.Stop(AudioManager.BATTLE_BGM);
 			AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
 			if (DungeonBattle.BattleResult.Win == battle.battle_result)
 			{
-				yield return StartCoroutine(Win(dungeon.current_room.monster));
+				yield return Win(dungeon.current_room.monster);
 				dungeon.current_room.monster = null;
 			}
 			else
 			{
-				yield return StartCoroutine(Lose());
+				yield return Lose();
 			}
 		}
 
@@ -421,7 +421,7 @@ public class SceneDungeon : SceneMain
 
 		Transform playerParent = ui_player_transform.parent;
 		ui_player_transform.SetParent(GameManager.Instance.ui_textbox.transform);
-		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
+		yield return GameManager.Instance.ui_textbox.Write(text);
 		ui_player_transform.SetParent(playerParent);
 	}
 

@@ -28,11 +28,12 @@ public class UITextBox : MonoBehaviour {
 	private Vector3 position;
 	private int paragraph;
 	private Coroutine hideCoroutine;
-	
+		
 	public void Init ()
 	{
 		rectTransform = GetComponent<RectTransform>();
-		height = rectTransform.rect.height;
+		height = rectTransform.rect.height + rectTransform.anchoredPosition.y;
+		position = rectTransform.anchoredPosition;
 
 		Rect parentRect = transform.parent.GetComponent<RectTransform>().rect;
 
@@ -46,26 +47,41 @@ public class UITextBox : MonoBehaviour {
 
 		fast.onClick.AddListener (FastForward);
 		next.onClick.AddListener (() => { state = State.Next; });
-		close.onClick.AddListener (() => { hideCoroutine = StartCoroutine(Hide (time)); });
+		close.onClick.AddListener (() => { hideCoroutine = StartCoroutine(Hide()); });
 
 		state = State.Hide;
 	}
 
 	public IEnumerator Show(float t)
 	{
-		Debug.Log("publish text box open event");
 		Util.EventSystem.Publish(EventID.TextBox_Open);
 		state = State.Raise;
 		contents.text = "";
 		while (height > rectTransform.anchoredPosition.y) {
 			Vector2 position = rectTransform.anchoredPosition;
-			position.y += height * Time.deltaTime / t;
+			position.y += height * (Time.deltaTime/time);
 			rectTransform.anchoredPosition = position;
 			yield return null;
 		}
 		rectTransform.anchoredPosition = new Vector2 (rectTransform.anchoredPosition.x, height);
 	}
 
+	public IEnumerator Hide()
+	{
+		close.gameObject.SetActive(false);
+		//iTween.Stop (close.gameObject);
+		state = State.Hide;
+		while (position.y < rectTransform.anchoredPosition.y)
+		{
+			Vector2 position = rectTransform.anchoredPosition;
+			position.y -= height * (Time.deltaTime/time);
+			rectTransform.anchoredPosition = position;
+			yield return null;
+		}
+		rectTransform.anchoredPosition = new Vector3(rectTransform.anchoredPosition.x, position.y, 0.0f);
+		Util.EventSystem.Publish(EventID.TextBox_Close);
+		Debug.Log("publish text box close event");
+	}
 	public IEnumerator Write(string text)
 	{
 		contents.text = "";
@@ -110,24 +126,7 @@ public class UITextBox : MonoBehaviour {
 			paragraph = Mathf.Max(0, paragraph-1);
 		}
 	}
-	public IEnumerator Hide(float t = 0.0f)
-	{
-		close.gameObject.SetActive (false);
-		//iTween.Stop (close.gameObject);
-		state = State.Hide;
-		if (0.0f == t) {
-			t = time;
-		}
-		while (0 < rectTransform.anchoredPosition.y) {
-			Vector2 position = rectTransform.anchoredPosition;
-			position.y -= height * Time.deltaTime / t;
-			rectTransform.anchoredPosition = position;
-			yield return null;
-		}
-		rectTransform.anchoredPosition = new Vector3 (rectTransform.anchoredPosition.x, 0.0f, 0.0f);
-		Util.EventSystem.Publish(EventID.TextBox_Close);
-		Debug.Log("publish text box close event");
-	}
+	
 	void FastForward()
 	{
 		scrollRect.verticalNormalizedPosition = 0.0f;
