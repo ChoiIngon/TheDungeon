@@ -7,6 +7,7 @@ public class UIMiniMapRoom : MonoBehaviour
 {
 	public Image room;
 	public Image[] next;
+	public bool reveal;
 	public Color color
 	{
 		set

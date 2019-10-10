@@ -74,13 +74,25 @@ public class SceneDungeon : SceneMain
 		main_buttons =	UIUtil.FindChild<UIButtonGroup>(ui_player_transform, "MainButtonGroup");
 		
 		main_buttons.Init();
-		main_buttons.actions[0] += () => {
+		main_buttons.buttons[0].action += () => {
 			GameManager.Instance.ui_inventory.SetActive(true);
 		};
-		main_buttons.buttons[1].gameObject.SetActive(false);
-		main_buttons.buttons[2].gameObject.SetActive(false);
-		main_buttons.buttons[3].gameObject.SetActive(false);
-		
+		main_buttons.buttons[0].title = "Bag";
+		main_buttons.buttons[1].action += () =>
+		{
+			mini_map.RevealMap();
+		};
+		main_buttons.buttons[1].title = "Map";
+		main_buttons.buttons[2].action += () =>
+		{
+			mini_map.RevealMonster();
+		};
+		main_buttons.buttons[2].title = "Monster";
+		main_buttons.buttons[3].action += () =>
+		{
+			mini_map.RevealBox();
+		};
+		main_buttons.buttons[3].title = "Box";
 		coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot");
 		coin_spot.gameObject.SetActive(true);
 		coin_prefab = UIUtil.FindChild<Coin>(transform, "Prefabs/Coin");
@@ -213,9 +225,6 @@ public class SceneDungeon : SceneMain
 		dungeon.Init(dungeon_level);
 		mini_map.Init(dungeon);
 		InitRooms();
-		mini_map.RevealMap();
-		mini_map.RevealBox();
-		mini_map.RevealMonster();
 	}
 
 	private void InitRooms()

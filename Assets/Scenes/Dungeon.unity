@@ -825,13 +825,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c623455e5bdab4eb4add212b87a49a60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttons:
-  - {fileID: 1155813416}
-  - {fileID: 1927127327}
-  - {fileID: 1697391028}
-  - {fileID: 1625948572}
-  images: []
-  names: []
 --- !u!1 &366875291
 GameObject:
   m_ObjectHideFlags: 0
@@ -1324,13 +1317,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c623455e5bdab4eb4add212b87a49a60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttons:
-  - {fileID: 765553900}
-  - {fileID: 221658019}
-  - {fileID: 366875293}
-  - {fileID: 1484042810}
-  images: []
-  names: []
 --- !u!1 &712746545
 GameObject:
   m_ObjectHideFlags: 0
@@ -3263,10 +3249,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomPrefab: {fileID: 114371766375183210, guid: 89101db0c8a814ecd95a25e81b337ef8,
     type: 3}
-  stair: {fileID: 21300000, guid: 7d89a0083f2204d1d9466bafc7c3abaf, type: 3}
-  room: {fileID: 21300000, guid: afdfa7fb6db31455e9e82ccf023548c9, type: 3}
-  monster: {fileID: 21300000, guid: afdfa7fb6db31455e9e82ccf023548c9, type: 3}
-  box: {fileID: 21300000, guid: afdfa7fb6db31455e9e82ccf023548c9, type: 3}
+  stair_mini_icon: {fileID: 21300000, guid: 7d89a0083f2204d1d9466bafc7c3abaf, type: 3}
+  room_mini_icon: {fileID: 21300000, guid: afdfa7fb6db31455e9e82ccf023548c9, type: 3}
+  monster_mini_icon: {fileID: 21300000, guid: 3b0a20ae585750240801e9a40c067828, type: 3}
+  box_mini_icon: {fileID: 21300000, guid: 56ba8bc35bc88904d8ca204879b0e9af, type: 3}
 --- !u!1 &1484042808
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,46 +5,56 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(GridLayoutGroup))]
-public class UIButtonGroup : MonoBehaviour {
-	public System.Action[] actions;
-	public Button[] buttons;
-	public Image[] images;
-	public Text[] names;
+public class UIButtonGroup : MonoBehaviour
+{
+	public class UIButton
+	{
+		public Text name;
+		public Image image;
+		public Button button;
+		public System.Action action;
+
+		public string title
+		{
+			get { return name.text; }
+			set { name.text = value; }
+		}
+	}
+	public List<UIButton> buttons;
 	// Use this for initialization
 	public void Init ()
 	{
-		actions = new System.Action[buttons.Length];
-		images = new Image[buttons.Length];
-		names = new Text[buttons.Length];
-
-		for (int i = 0; i < buttons.Length; i++)
+		buttons = new List<UIButton>();
+		for (int i = 0; i < transform.childCount; i++)
 		{
 			int index = i;
-			//buttons [i].enabled = false;
-			images[i] = buttons[i].GetComponent<Image>();
-			names[i] = UIUtil.FindChild<Text>(buttons[i].transform, "Text");
-			UIUtil.AddPointerUpListener(buttons[i].gameObject, () => {
-				actions[index]?.Invoke();
+			UIButton button = new UIButton();
+			button.image = transform.GetChild(i).GetComponent<Image>();
+			button.button = transform.GetChild(i).GetComponent<Button>();
+			button.name = UIUtil.FindChild<Text>(transform.GetChild(i).transform, "Text");
+			UIUtil.AddPointerUpListener(button.button.gameObject, () => {
+				button.action?.Invoke();
 			});
+			buttons.Add(button);
 		}
 	}
 
 	public void Show(float time = 0.5f)
 	{
-		for (int i = 0; i < buttons.Length; i++)
+		for (int i = 0; i < buttons.Count; i++)
 		{
-			buttons [i].enabled = true;
-			images[i].color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
-			StartCoroutine(Util.UITween.ColorTo(images[i], new Color(1.0f, 1.0f, 1.0f, 1.0f), time));
+			buttons[i].button.enabled = true;
+			buttons[i].image.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+			StartCoroutine(Util.UITween.ColorTo(buttons[i].image, new Color(1.0f, 1.0f, 1.0f, 1.0f), time));
 		}
 	}
 
 	public void Hide(float time = 0.5f)
 	{
-		for (int i = 0; i < buttons.Length; i++)
+		for (int i = 0; i < buttons.Count; i++)
 		{
-			buttons [i].enabled = false;
-			StartCoroutine(Util.UITween.ColorTo(images[i], new Color(1.0f, 1.0f, 1.0f, 0.0f), time));
+			buttons[i].button.enabled = false;
+			StartCoroutine(Util.UITween.ColorTo(buttons[i].image, new Color(1.0f, 1.0f, 1.0f, 0.0f), time));
 		}
 	}
 }
