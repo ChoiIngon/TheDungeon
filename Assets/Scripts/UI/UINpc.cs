@@ -27,7 +27,6 @@ public class UINpc : MonoBehaviour {
 			iTween.MoveTo(image.gameObject, iTween.Hash("x", 0.0f, "easeType", "easeInOutExpo", "time", 0.5f));
 		};
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(text));
-		GameManager.Instance.ui_textbox.on_close = null;
 	}
 
 	public IEnumerator Talk(string speaker, string[] text)
@@ -39,6 +38,5 @@ public class UINpc : MonoBehaviour {
 			iTween.MoveTo(image.gameObject, iTween.Hash("x", 0.0f, "easeType", "easeInOutExpo", "time", 0.5f));
 		};
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(text));
-		GameManager.Instance.ui_textbox.on_close = null;
 	}
 }

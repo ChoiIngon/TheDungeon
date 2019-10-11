@@ -319,7 +319,16 @@ public class SceneDungeon : SceneMain
 		InitRooms();
 
 		yield return OnExitUnlock();
-		
+
+		if(null != dungeon.current_room.item)
+		{
+			GameManager.Instance.ui_textbox.on_submit += () =>
+			{
+				StartCoroutine(current_room.box.Open());
+			};
+			yield return GameManager.Instance.ui_textbox.TypeWrite("Do you want to open box?");
+		}
+
 		if (null != dungeon.current_room.monster)
 		{
 			AudioManager.Instance.Stop(AudioManager.DUNGEON_BGM);
@@ -400,7 +409,7 @@ public class SceneDungeon : SceneMain
 		}
 
 		yield return new WaitForSeconds(0.01f);
-		GameManager.Instance.ui_textbox.LogClose();
+		GameManager.Instance.ui_textbox.AddClose();
 		/*
 		QuestManager.Instance.Update("KillMonster", info.id);
 		yield return StartCoroutine(CheckCompleteQuest());
@@ -423,7 +432,7 @@ public class SceneDungeon : SceneMain
 			GameManager.Instance.ui_dialogbox.onSubmit += () => {
 				goDown = true;
 			};
-			yield return StartCoroutine(GameManager.Instance.ui_dialogbox.Write("Do you want to go down the stair?"));
+			yield return GameManager.Instance.ui_dialogbox.Write("Do you want to go down the stair?");
 			if (true == goDown)
 			{
 				yield return StartCoroutine(GoDown());

@@ -21,6 +21,9 @@ public class UITextBox : MonoBehaviour {
 	public Button fast;
 	public Button next;
 	public Button close;
+	public Button submit;
+	public Button cancel;
+
 
 	private string copied;
 	private float height;
@@ -29,6 +32,7 @@ public class UITextBox : MonoBehaviour {
 	private int paragraph;
 	private Coroutine hideCoroutine;
 
+	public System.Action on_submit;
 	public System.Action on_close;
 	public void Init ()
 	{
@@ -41,6 +45,8 @@ public class UITextBox : MonoBehaviour {
 		fast.gameObject.SetActive (false);
 		next.gameObject.SetActive (false);
 		close.gameObject.SetActive (false);
+		submit.gameObject.SetActive(false);
+		cancel.gameObject.SetActive(false);
 
 		fast.GetComponent<RectTransform>().sizeDelta = new Vector2(0.0f, parentRect.height);
 		next.GetComponent<RectTransform>().sizeDelta = new Vector2(0.0f, parentRect.height);
@@ -49,6 +55,18 @@ public class UITextBox : MonoBehaviour {
 		fast.onClick.AddListener (ScrollDown);
 		next.onClick.AddListener (() => { state = State.Next; });
 		close.onClick.AddListener (() => {
+			on_close?.Invoke();
+			hideCoroutine = StartCoroutine(Hide());
+		});
+		submit.onClick.AddListener(() =>
+		{
+			submit.gameObject.SetActive(false);
+			cancel.gameObject.SetActive(false);
+			on_submit?.Invoke();
+			on_submit = null;
+		});
+		cancel.onClick.AddListener(() =>
+		{
 			on_close?.Invoke();
 			hideCoroutine = StartCoroutine(Hide());
 		});
@@ -107,10 +125,16 @@ public class UITextBox : MonoBehaviour {
 		scrollRect.verticalNormalizedPosition = 0.0f;
 		//state = State.Complete;
 	}
-	public void LogClose()
+	public void AddClose()
 	{
 		ScrollDown();
 	}
+
+	public void AddSubmit()
+	{
+		
+	}
+	
 	public IEnumerator TypeWrite(string text)
 	{
 		contents.text = "";
@@ -125,6 +149,8 @@ public class UITextBox : MonoBehaviour {
 		fast.gameObject.SetActive (true);
 		next.gameObject.SetActive (false);
 		close.gameObject.SetActive (false);
+		submit.gameObject.SetActive(false);
+		cancel.gameObject.SetActive(false);
 
 		AudioManager.Instance.Play("textbox_type", true);
 		foreach (char c in text)
@@ -140,10 +166,20 @@ public class UITextBox : MonoBehaviour {
 		}
 		AudioManager.Instance.Stop("textbox_type");
 		ScrollDown();
+
+		if (null != on_submit)
+		{
+			close.gameObject.SetActive(false);
+			submit.gameObject.SetActive(true);
+			cancel.gameObject.SetActive(true);
+		}
+
 		while (State.Complete == state) {
 			yield return null;
 		}
 
+		on_submit = null;
+		on_close = null;
 		yield return hideCoroutine;
 	}
 
