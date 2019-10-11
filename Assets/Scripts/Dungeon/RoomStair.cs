@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class RoomStair : MonoBehaviour
@@ -38,7 +39,8 @@ public class RoomStair : MonoBehaviour
 			touch_collider.enabled = false;
 			if (Dungeon.Room.Type.Lock == room.type)
 			{
-				if (0 == GameManager.Instance.player.inventory.GetItems<KeyItem>().Count)
+				List<KeyItem> keyItems = GameManager.Instance.player.inventory.GetItems<KeyItem>();
+				if (0 == keyItems.Count)
 				{
 					if (null != textbox_coroutine)
 					{
@@ -47,6 +49,7 @@ public class RoomStair : MonoBehaviour
 					textbox_coroutine = StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite("you need at least one key item to unlock the door"));
 					return;
 				}
+				GameManager.Instance.player.inventory.Remove(keyItems[0].slot_index);
 			}
 			StartCoroutine(Open());
 		};

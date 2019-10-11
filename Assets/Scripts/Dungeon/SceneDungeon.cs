@@ -31,6 +31,7 @@ public class SceneDungeon : SceneMain
     public Transform coin_spot;
     public Coin coin_prefab;
 
+	public Button[] move_buttons = new Button[Dungeon.Max];
     //private List<QuestData> completeQuests;
 	
 	public override IEnumerator Run()
@@ -65,6 +66,26 @@ public class SceneDungeon : SceneMain
 		next_rooms[Dungeon.West].transform.position = new Vector3(-room_size, 0.0f, 0.0f);
 		next_rooms[Dungeon.West].Init(null);
 
+		move_buttons[Dungeon.North] = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/North");
+		move_buttons[Dungeon.East] = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/East");
+		move_buttons[Dungeon.West] = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/West");
+		move_buttons[Dungeon.South] = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/South");
+		move_buttons[Dungeon.North].onClick.AddListener(() =>
+		{
+			StartCoroutine(Move(Dungeon.North));
+		});
+		move_buttons[Dungeon.East].onClick.AddListener(() =>
+		{
+			StartCoroutine(Move(Dungeon.East));
+		});
+		move_buttons[Dungeon.West].onClick.AddListener(() =>
+		{
+			StartCoroutine(Move(Dungeon.West));
+		});
+		move_buttons[Dungeon.South].onClick.AddListener(() =>
+		{
+			StartCoroutine(Move(Dungeon.South));
+		});
 		button_inventory = UIUtil.FindChild<Button>(transform,	"UI/Player/ButtonInventory");
 		UIUtil.AddPointerUpListener(button_inventory.gameObject, () =>
 		{
@@ -217,10 +238,12 @@ public class SceneDungeon : SceneMain
 		rooms.transform.position = Vector3.zero;
 		for(int i=0; i<Dungeon.Max; i++)
 		{
+			move_buttons[i].gameObject.SetActive(false);
 			Dungeon.Room room = dungeon.current_room.next [i];
 			if (null != room)
 			{
 				next_rooms[i].Init (room);
+				move_buttons[i].gameObject.SetActive(true);
 			}
 		}
 		mini_map.CurrentPosition (dungeon.current_room.id);
@@ -323,8 +346,9 @@ public class SceneDungeon : SceneMain
 			bool yes = false;
 			GameManager.Instance.ui_textbox.on_submit += () => {
 				yes = true;
+				GameManager.Instance.ui_textbox.Close();
 			};
-			yield return GameManager.Instance.ui_textbox.TypeWrite("Do you want to go down the stair?");
+			yield return GameManager.Instance.ui_textbox.TypeWrite("Do you want to open box?");
 			if (true == yes)
 			{
 				yield return current_room.box.Open();

@@ -199,33 +199,11 @@ public class UIMiniMap : MonoBehaviour
             {
                 UIMiniMapRoom miniRoom = rooms[id];
                 Color color = miniRoom.color;
-                color.a = alpha;
-                if(current_room_id == id)
-                {
-                    color.a = Mathf.Min(ROOM_ACTIVATE_COLOR.a, color.a);
-                }
-                else
-                {
-                    color.a = Mathf.Min(ROOM_DEACTIVATE_COLOR.a, color.a);
-                }
+                color.a = Mathf.Max(color.a, alpha);
                 miniRoom.color = color;
             }
             alpha += Time.deltaTime / time;
             yield return null;
-        }
-        for (int id = 0; id < Dungeon.HEIGHT * Dungeon.WIDTH; id++)
-        {
-            UIMiniMapRoom miniRoom = rooms[id];
-            Color color = miniRoom.color;
-            if (current_room_id == id)
-            {
-                color.a = ROOM_ACTIVATE_COLOR.a;
-            }
-            else
-            {
-                color.a = ROOM_DEACTIVATE_COLOR.a;
-            }
-            miniRoom.color = color;
         }
     }
 }
