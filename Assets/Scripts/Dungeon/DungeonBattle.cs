@@ -3,6 +3,9 @@ using System.Collections;
 
 public class DungeonBattle : MonoBehaviour
 {
+	private const string LANG_TEXT_HIT = "{0} hit {1}.";
+	private const string LANG_TEXT_DEFEATED = "{0} defeated {1}.";
+	private const string LANG_TEXT_ITEM = "{0} now have {1}.";
 	private TouchInput			touch_input;
 
 	private Monster				monster;
@@ -59,7 +62,6 @@ public class DungeonBattle : MonoBehaviour
 		battle_buttons.gameObject.SetActive(true);
 		battle_buttons.Show(0.5f);
 
-		GameManager.Instance.ui_textbox.LogWrite(monsterMeta.name + "이(가) 등장");
 		monster.Init(monsterMeta);
 		yield return StartCoroutine(monster.ColorTo(Color.black, Color.white, 1.0f));
 		
@@ -99,7 +101,7 @@ public class DungeonBattle : MonoBehaviour
 						Random.Range(Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
 						0.0f
 					);
-					GameManager.Instance.ui_textbox.LogWrite("당신의 HP " + result.damage + " 감소");
+					GameManager.Instance.ui_textbox.LogWrite(string.Format("<color=red>" + LANG_TEXT_HIT + "(-" + (int)result.damage + ")</color>", monster.meta.name, "You"));
 					GameManager.Instance.player.cur_health -= result.damage;
 					player_health.current = GameManager.Instance.player.cur_health;
 				}
@@ -139,7 +141,7 @@ public class DungeonBattle : MonoBehaviour
 		result.damage *= damageRate;
 		if (0.0f < result.damage)
 		{
-			GameManager.Instance.ui_textbox.LogWrite(monster.meta.name + " HP " + result.damage + " 감소");
+			GameManager.Instance.ui_textbox.LogWrite(string.Format(LANG_TEXT_HIT + "(-" + (int)result.damage + ")", "You", monster.meta.name));
 			StartCoroutine(monster.OnDamage(result));
 		}
 	}

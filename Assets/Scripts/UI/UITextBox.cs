@@ -109,7 +109,7 @@ public class UITextBox : MonoBehaviour {
 	}
 	public void LogClose()
 	{
-		fast.gameObject.SetActive(true);
+		ScrollDown();
 	}
 	public IEnumerator TypeWrite(string text)
 	{

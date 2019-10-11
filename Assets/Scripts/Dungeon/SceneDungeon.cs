@@ -373,9 +373,9 @@ public class SceneDungeon : SceneMain
 		CreateCoins(rewardCoin + bonusCoin);
 		for (int i = prevPlayerLevel; i < GameManager.Instance.player.level; i++)
 		{
-			yield return StartCoroutine(player_exp.SetCurrent(player_exp.max, 0.3f));
+			yield return player_exp.SetCurrent(player_exp.max, 0.3f);
 			player_exp.max = GameManager.Instance.player.GetMaxExp(i);
-			yield return StartCoroutine(player_exp.SetCurrent(0.0f, 0.0f));
+			yield return player_exp.SetCurrent(0.0f, 0.0f);
 		}
 		
 		player_exp.max = GameManager.Instance.player.GetMaxExp();
@@ -397,6 +397,8 @@ public class SceneDungeon : SceneMain
 			//text += "Item : " + item.meta.name + "\n";
 			GameManager.Instance.ui_textbox.LogWrite("Item : " + item.meta.name);
 		}
+
+		yield return new WaitForSeconds(0.01f);
 		GameManager.Instance.ui_textbox.LogClose();
 		/*
 		QuestManager.Instance.Update("KillMonster", info.id);
