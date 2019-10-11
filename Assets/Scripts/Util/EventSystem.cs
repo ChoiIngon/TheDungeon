@@ -179,6 +179,7 @@ namespace Util
 		}
 		private void _Publish(string eventID)
         {
+			Debug.Log("publish event(event_id:" + eventID + ")");
             if (false == event_handlers.ContainsKey(eventID))
             {
                 Debug.LogWarning("can not find event key(event_id:" + eventID + ")");

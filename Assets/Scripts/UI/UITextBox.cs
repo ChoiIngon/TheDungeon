@@ -53,34 +53,30 @@ public class UITextBox : MonoBehaviour {
 		close.GetComponent<RectTransform>().sizeDelta = new Vector2(0.0f, parentRect.height);
 
 		fast.onClick.AddListener (ScrollDown);
-		next.onClick.AddListener (() => { state = State.Next; });
-		close.onClick.AddListener (() => {
-			on_close?.Invoke();
-			hideCoroutine = StartCoroutine(Hide());
-		});
+		next.onClick.AddListener (() => { state = State.Next; Debug.Log(state.ToString()); });
+		close.onClick.AddListener(Close);
 		submit.onClick.AddListener(() =>
 		{
 			submit.gameObject.SetActive(false);
 			cancel.gameObject.SetActive(false);
+			ScrollDown();
 			on_submit?.Invoke();
 			on_submit = null;
 		});
-		cancel.onClick.AddListener(() =>
-		{
-			on_close?.Invoke();
-			hideCoroutine = StartCoroutine(Hide());
-		});
+		cancel.onClick.AddListener(Close);
 
 		state = State.Hide;
+		Debug.Log(state.ToString());
 	}
 
 	public IEnumerator Show()
 	{
-		Debug.Log("publish text box show event");
 		Util.EventSystem.Publish(EventID.TextBox_Open);
 		state = State.Raise;
+		Debug.Log(state.ToString());
 		contents.text = "";
-		while (height > rectTransform.anchoredPosition.y) {
+		while (height > rectTransform.anchoredPosition.y)
+		{
 			Vector2 position = rectTransform.anchoredPosition;
 			position.y += height * (Time.deltaTime/time);
 			rectTransform.anchoredPosition = position;
@@ -93,7 +89,9 @@ public class UITextBox : MonoBehaviour {
 	{
 		close.gameObject.SetActive(false);
 		//iTween.Stop (close.gameObject);
+		Util.EventSystem.Publish(EventID.TextBox_Close);
 		state = State.Hide;
+		Debug.Log(state.ToString());
 		while (position.y < rectTransform.anchoredPosition.y)
 		{
 			Vector2 position = rectTransform.anchoredPosition;
@@ -102,9 +100,8 @@ public class UITextBox : MonoBehaviour {
 			yield return null;
 		}
 		rectTransform.anchoredPosition = new Vector3(rectTransform.anchoredPosition.x, position.y, 0.0f);
-		Util.EventSystem.Publish(EventID.TextBox_Close);
-		Debug.Log("publish text box close event");
 	}
+
 	public void LogWrite(string text)
 	{
 		if (null != hideCoroutine)
@@ -113,45 +110,50 @@ public class UITextBox : MonoBehaviour {
 		}
 		if (State.Hide == state)
 		{
-			Debug.Log(text);
 			StartCoroutine(Show());
 		}
 		state = State.Typing;
+		Debug.Log(state.ToString());
+
 		fast.gameObject.SetActive(false);
 		next.gameObject.SetActive(false);
 		close.gameObject.SetActive(false);
 
 		contents.text += text + "\n";
 		scrollRect.verticalNormalizedPosition = 0.0f;
-		//state = State.Complete;
 	}
+
 	public void AddClose()
 	{
 		ScrollDown();
 	}
 
-	public void AddSubmit()
+	public void Close()
 	{
-		
+		on_close?.Invoke();
+		hideCoroutine = StartCoroutine(Hide());
+		on_close = null;
 	}
-	
 	public IEnumerator TypeWrite(string text)
 	{
 		contents.text = "";
 		if (null != hideCoroutine) {
 			StopCoroutine (hideCoroutine);
 		}
+
+		fast.gameObject.SetActive(true);
+		next.gameObject.SetActive(false);
+		close.gameObject.SetActive(false);
+		submit.gameObject.SetActive(false);
+		cancel.gameObject.SetActive(false);
+
+		Debug.Log("text box state:" + state);
 		if (State.Hide == state) {
 			yield return StartCoroutine (Show());
 		}
 
 		state = State.Typing;
-		fast.gameObject.SetActive (true);
-		next.gameObject.SetActive (false);
-		close.gameObject.SetActive (false);
-		submit.gameObject.SetActive(false);
-		cancel.gameObject.SetActive(false);
-
+		Debug.Log(state.ToString());
 		AudioManager.Instance.Play("textbox_type", true);
 		foreach (char c in text)
 		{
@@ -179,7 +181,6 @@ public class UITextBox : MonoBehaviour {
 		}
 
 		on_submit = null;
-		on_close = null;
 		yield return hideCoroutine;
 	}
 
@@ -196,6 +197,7 @@ public class UITextBox : MonoBehaviour {
 	{
 		scrollRect.verticalNormalizedPosition = 0.0f;
 		state = State.Complete;
+		Debug.Log(state.ToString());
 		fast.gameObject.SetActive (false);
 		if (0 == paragraph) {
 			close.gameObject.SetActive (true);

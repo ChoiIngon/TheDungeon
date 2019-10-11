@@ -259,7 +259,6 @@ public class SceneDungeon : SceneMain
 
 	private IEnumerator Move(int direction)
 	{
-		Debug.Log("Dungeon_Move_Start");
 		while (0 < coin_spot.childCount)
 		{
 			yield return null;
@@ -288,7 +287,6 @@ public class SceneDungeon : SceneMain
 					break;
 			}
 			Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
-			Debug.Log("Dungeon_Move_Finish");
 			yield break;
 		}
 
@@ -320,15 +318,27 @@ public class SceneDungeon : SceneMain
 
 		yield return OnExitUnlock();
 
-		if(null != dungeon.current_room.item)
+		if (null != dungeon.current_room.item)
 		{
-			GameManager.Instance.ui_textbox.on_submit += () =>
-			{
-				StartCoroutine(current_room.box.Open());
+			bool yes = false;
+			GameManager.Instance.ui_textbox.on_submit += () => {
+				yes = true;
 			};
-			yield return GameManager.Instance.ui_textbox.TypeWrite("Do you want to open box?");
+			yield return GameManager.Instance.ui_textbox.TypeWrite("Do you want to go down the stair?");
+			if (true == yes)
+			{
+				yield return current_room.box.Open();
+			}
 		}
 
+		if (Dungeon.Room.Type.Exit == dungeon.current_room.type || Dungeon.Room.Type.Lock == dungeon.current_room.type)
+		{
+			StartCoroutine(mini_map.Hide(0.5f));
+		}
+		else 
+		{
+			StartCoroutine(mini_map.Show(0.5f));
+		}
 		if (null != dungeon.current_room.monster)
 		{
 			AudioManager.Instance.Stop(AudioManager.DUNGEON_BGM);
@@ -346,6 +356,7 @@ public class SceneDungeon : SceneMain
 			{
 				yield return Win(dungeon.current_room.monster);
 				dungeon.current_room.monster = null;
+				mini_map.CurrentPosition(dungeon.current_room.id);
 			}
 			else
 			{
@@ -353,13 +364,11 @@ public class SceneDungeon : SceneMain
 			}
 		}
 
-		Debug.Log("Dungeon_Move_Finish");
 		Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
 	}
 
 	private IEnumerator Win(Monster.Meta meta)
 	{
-		mini_map.CurrentPosition(dungeon.current_room.id);
 		GameManager.Instance.ui_textbox.LogWrite("You defeated \'" + meta.name + "\'");
 
 		int prevPlayerLevel = GameManager.Instance.player.level;
@@ -393,18 +402,14 @@ public class SceneDungeon : SceneMain
 		player_health.max = GameManager.Instance.player.max_health;
 		player_health.current = GameManager.Instance.player.cur_health;
 
-		//text += "Coins : +" + rewardCoin + (0 < bonusCoin ? "(" + bonusCoin + " bonus)" : "") + "\n";
 		GameManager.Instance.ui_textbox.LogWrite("Coins : +" + rewardCoin + (0 < bonusCoin ? "(" + bonusCoin + " bonus)" : ""));
-		//text += "Exp : +" + rewardExp + (0 < bonusExp ? "(" + bonusExp + " bonus)" : "") + "\n";
 		GameManager.Instance.ui_textbox.LogWrite("Exp : +" + rewardExp + (0 < bonusExp ? "(" + bonusExp + " bonus)" : ""));
 		if (prevPlayerLevel < GameManager.Instance.player.level)
 		{
-			//text += "Level : " + prevPlayerLevel + " -> " + GameManager.Instance.player.level + "\n";
 			GameManager.Instance.ui_textbox.LogWrite("Level : " + prevPlayerLevel + " -> " + GameManager.Instance.player.level);
 		}
 		if (null != item)
 		{
-			//text += "Item : " + item.meta.name + "\n";
 			GameManager.Instance.ui_textbox.LogWrite("Item : " + item.meta.name);
 		}
 
@@ -414,7 +419,6 @@ public class SceneDungeon : SceneMain
 		QuestManager.Instance.Update("KillMonster", info.id);
 		yield return StartCoroutine(CheckCompleteQuest());
 		*/
-		//yield return GameManager.Instance.ui_textbox.TypeWrite(text);
 	}
 
 	private void OnChangePlayerHealth()
@@ -428,12 +432,13 @@ public class SceneDungeon : SceneMain
 		if (Dungeon.Room.Type.Exit == dungeon.current_room.type)
 		{
 			touch_input.AddBlockCount();
-			bool goDown = false;
-			GameManager.Instance.ui_dialogbox.onSubmit += () => {
-				goDown = true;
+			bool yes = false;
+			GameManager.Instance.ui_textbox.on_submit += () => {
+				yes = true;
+				GameManager.Instance.ui_textbox.Close();
 			};
-			yield return GameManager.Instance.ui_dialogbox.Write("Do you want to go down the stair?");
-			if (true == goDown)
+			yield return GameManager.Instance.ui_textbox.TypeWrite("Do you want to go down the stair?");
+			if (true == yes)
 			{
 				yield return StartCoroutine(GoDown());
 				InitDungeon();

@@ -39,6 +39,10 @@ public class TouchInput : MonoBehaviour {
 	public void ReleaseBlockCount()
 	{
 		touchBlockCount--;
+		if (0 > touchBlockCount)
+		{
+			throw new System.Exception("under zero touch block count");
+		}
 		if (0 == touchBlockCount)
 		{
 			touchCollider.enabled = true;
