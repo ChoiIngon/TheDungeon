@@ -28,7 +28,7 @@ public class Player : Unit
 
 	private RandomStatMeta base_health = new RandomStatMeta() { type = StatType.Health, max_value = 2700, min_value = 2300, interval = 50 };
 	//private RandomStatMeta base_health = new RandomStatMeta() { type = StatType.Health, max_value = 1, min_value = 10, interval = 1 };
-	private RandomStatMeta base_attack = new RandomStatMeta() { type = StatType.Attack, max_value = 1100, min_value = 900, interval = 10 };
+	private RandomStatMeta base_attack = new RandomStatMeta() { type = StatType.Attack, max_value = 650, min_value = 550, interval = 10 };
 	private RandomStatMeta base_defense = new RandomStatMeta() { type = StatType.Defense, max_value = 400, min_value = 600, interval = 5 };
 	private RandomStatMeta base_speed = new RandomStatMeta() { type = StatType.Speed, max_value = 150, min_value = 50, interval = 5 };
 	private RandomStatMeta base_critical = new RandomStatMeta() { type = StatType.Critical, max_value = 1.0f, min_value = 5.0f, interval = 0.1f };

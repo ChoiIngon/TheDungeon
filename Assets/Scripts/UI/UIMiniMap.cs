@@ -14,7 +14,7 @@ public class UIMiniMap : MonoBehaviour
 	private UIMiniMapRoom[] rooms;
 	private int current_room_id;
 	private Color ROOM_ACTIVATE_COLOR = new Color (1.0f, 1.0f, 1.0f, 1.0f);
-	private Color ROOM_DEACTIVATE_COLOR = new Color(1.0f, 1.0f, 1.0f, 0.2f);
+	private Color ROOM_DEACTIVATE_COLOR = new Color(0.5f, 0.5f, 0.5f, 1.0f);
 	private Dungeon dungeon;
 
 	void Awake()

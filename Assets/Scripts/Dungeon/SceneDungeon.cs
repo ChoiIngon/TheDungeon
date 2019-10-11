@@ -65,7 +65,7 @@ public class SceneDungeon : SceneMain
 		next_rooms[Dungeon.West].transform.position = new Vector3(-room_size, 0.0f, 0.0f);
 		next_rooms[Dungeon.West].Init(null);
 
-		button_inventory = UIUtil.FindChild<Button>(transform,	"UI/ButtonInventory");
+		button_inventory = UIUtil.FindChild<Button>(transform,	"UI/Player/ButtonInventory");
 		UIUtil.AddPointerUpListener(button_inventory.gameObject, () =>
 		{
 			GameManager.Instance.ui_inventory.SetActive(true);
@@ -208,6 +208,8 @@ public class SceneDungeon : SceneMain
 		dungeon.Init(dungeon_level);
 		mini_map.Init(dungeon);
 		InitRooms();
+
+		StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite("Welcome to the level " + dungeon_level + " of dungeon."));
 	}
 
 	private void InitRooms()
@@ -348,8 +350,7 @@ public class SceneDungeon : SceneMain
 
 	private IEnumerator Win(Monster.Meta meta)
 	{
-		//string text = "";
-		//text += "You defeated \'" + meta.name + "\'\n";
+		mini_map.CurrentPosition(dungeon.current_room.id);
 		GameManager.Instance.ui_textbox.LogWrite("You defeated \'" + meta.name + "\'");
 
 		int prevPlayerLevel = GameManager.Instance.player.level;

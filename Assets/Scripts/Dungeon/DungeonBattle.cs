@@ -32,7 +32,7 @@ public class DungeonBattle : MonoBehaviour
 		player_damage_effect_spot = UIUtil.FindChild<Transform>(transform, "../UI/BattleEffect");
 		player_damage_effect_prefab = UIUtil.FindChild<Effect_PlayerDamage>(player_damage_effect_spot, "Effect_PlayerDamage");
 		player_health = UIUtil.FindChild<UIGaugeBar>(transform, "../UI/Player/Health");
-		battle_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "../UI/Monster/BattleButtonGroup");
+		battle_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "../UI/Battle/SkillButtons");
 		touch_input = GetComponent<TouchInput>();
 		if (null == touch_input)
 		{

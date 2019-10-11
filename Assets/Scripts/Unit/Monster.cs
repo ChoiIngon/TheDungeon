@@ -49,9 +49,9 @@ public class Monster : MonoBehaviour
 	{
 		meta = null;
 		data = null;
-		ui_root = UIUtil.FindChild<Transform>(transform, "../../UI/Monster");
-		ui_name = UIUtil.FindChild<Text>(ui_root, "Name");
-		ui_health = UIUtil.FindChild<UIGaugeBar>(ui_root, "Health");
+		ui_root = UIUtil.FindChild<Transform>(transform, "../../UI/Battle");
+		ui_name = UIUtil.FindChild<Text>(ui_root, "MonsterName");
+		ui_health = UIUtil.FindChild<UIGaugeBar>(ui_root, "MonsterHealth");
 		sprite = GetComponent<SpriteRenderer>();
 		if (null == sprite)
 		{
