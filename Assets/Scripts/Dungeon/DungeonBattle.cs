@@ -101,7 +101,7 @@ public class DungeonBattle : MonoBehaviour
 						Random.Range(Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
 						0.0f
 					);
-					GameManager.Instance.ui_textbox.LogWrite(string.Format("<color=red>" + LANG_TEXT_HIT + "(-" + (int)result.damage + ")</color>", monster.meta.name, "You"));
+					yield return GameManager.Instance.ui_textbox.LogWrite(string.Format("<color=red>" + LANG_TEXT_HIT + "(-" + (int)result.damage + ")</color>", monster.meta.name, "You"));
 					GameManager.Instance.player.cur_health -= result.damage;
 					player_health.current = GameManager.Instance.player.cur_health;
 				}
@@ -141,7 +141,7 @@ public class DungeonBattle : MonoBehaviour
 		result.damage *= damageRate;
 		if (0.0f < result.damage)
 		{
-			GameManager.Instance.ui_textbox.LogWrite(string.Format(LANG_TEXT_HIT + "(-" + (int)result.damage + ")", "You", monster.meta.name));
+			StartCoroutine(GameManager.Instance.ui_textbox.LogWrite(string.Format(LANG_TEXT_HIT + "(-" + (int)result.damage + ")", "You", monster.meta.name)));
 			StartCoroutine(monster.OnDamage(result));
 		}
 	}

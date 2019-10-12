@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class DungeonMoveButtons : MonoBehaviour
@@ -22,8 +20,6 @@ public class DungeonMoveButtons : MonoBehaviour
 		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, OnMoveFinish);
 		Util.EventSystem.Subscribe(EventID.Inventory_Open, () => { touch_input.AddBlockCount(); });
 		Util.EventSystem.Subscribe(EventID.Inventory_Close, () => { touch_input.ReleaseBlockCount(); });
-		Util.EventSystem.Subscribe(EventID.Dialog_Open, () => { touch_input.AddBlockCount(); });
-		Util.EventSystem.Subscribe(EventID.Dialog_Close, () => { touch_input.ReleaseBlockCount(); });
 		Util.EventSystem.Subscribe(EventID.TextBox_Open, () => { touch_input.AddBlockCount(); });
 		Util.EventSystem.Subscribe(EventID.TextBox_Close, () => { touch_input.ReleaseBlockCount(); });
 	}
@@ -46,12 +42,6 @@ public class DungeonMoveButtons : MonoBehaviour
 		{
 			Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Dungeon.South);
 		});
-
-		for (int i = 0; i < Dungeon.Max; i++)
-		{
-			buttons[i].enabled = false;
-			buttons[i].image.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
-		}
 
 		touch_input.AddBlockCount();
 		touch_input.onTouchDown += (Vector3 position) =>
@@ -109,8 +99,6 @@ public class DungeonMoveButtons : MonoBehaviour
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish, OnMoveFinish);
 		Util.EventSystem.Unsubscribe(EventID.Inventory_Open);
 		Util.EventSystem.Unsubscribe(EventID.Inventory_Close);
-		Util.EventSystem.Unsubscribe(EventID.Dialog_Open);
-		Util.EventSystem.Unsubscribe(EventID.Dialog_Close);
 		Util.EventSystem.Unsubscribe(EventID.TextBox_Open);
 		Util.EventSystem.Unsubscribe(EventID.TextBox_Close);
 	}

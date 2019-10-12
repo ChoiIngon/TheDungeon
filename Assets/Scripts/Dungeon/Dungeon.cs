@@ -56,10 +56,11 @@ public class Dungeon
 	public Room current_room = null;
 	public Room[] rooms = new Room[WIDTH * HEIGHT];
 	public bool exit_lock = false;
-		
+	public int level = 1;	
 	// Use this for initialization
 	public void Init(int dungeonLevel)
 	{
+		level = dungeonLevel;
 		for(int i=0; i<WIDTH*HEIGHT; i++)
 		{
 			Room room = new Room ();

@@ -2,21 +2,22 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class UITextBox : MonoBehaviour {
+public class UITextBox : MonoBehaviour
+{
 	public enum State
 	{
-		Hide,
-		Raise,
-		Typing,
-		Next,
-		Complete
+		Idle,       // 텍스트 박스가 숨어 있는 상태
+		Raise,      // 디스플레이를 위해 텍스트 박스가 떠 오르고 있는 상태
+		Typing,     // 글자를 한자씩 치고 있는 상태
+		Complete,   // 타이핑 완료 상태, raise에서 한번에 글자를 모두 출력 하고 complete 상태로 가는 것 가틍
+		Hide
 	}
+
 	public State state;
-	public int lineCount;
 	public float charPerSecond;
 	public float time;
-	
-	public ScrollRect scrollRect;
+
+	public ScrollRect scroll_rect;
 	public Text contents;
 	public Button fast;
 	public Button next;
@@ -24,181 +25,173 @@ public class UITextBox : MonoBehaviour {
 	public Button submit;
 	public Button cancel;
 
-
-	private string copied;
 	private float height;
 	private RectTransform rectTransform;
 	private Vector3 position;
 	private int paragraph;
-	private Coroutine hideCoroutine;
+	private Coroutine hide_coroutine;
 
 	public System.Action on_submit;
 	public System.Action on_close;
-	public void Init ()
+
+	public void Init()
 	{
 		rectTransform = GetComponent<RectTransform>();
 		height = rectTransform.rect.height + rectTransform.anchoredPosition.y;
 		position = rectTransform.anchoredPosition;
 
-
-		fast.gameObject.SetActive (false);
-		next.gameObject.SetActive (false);
-		close.gameObject.SetActive (false);
-		submit.gameObject.SetActive(false);
-		cancel.gameObject.SetActive(false);
-
-		//Rect parentRect = transform.parent.GetComponent<RectTransform>().rect;
-		//fast.GetComponent<RectTransform>().sizeDelta = new Vector2(0.0f, parentRect.height);
-		//next.GetComponent<RectTransform>().sizeDelta = new Vector2(0.0f, parentRect.height);
-		//close.GetComponent<RectTransform>().sizeDelta = new Vector2(0.0f, parentRect.height);
-
-		fast.onClick.AddListener (ScrollDown);
-		next.onClick.AddListener (() => { state = State.Next; Debug.Log(state.ToString()); });
+		fast.onClick.AddListener(FastForward);
+		next.onClick.AddListener(() => { state = State.Hide; });
 		close.onClick.AddListener(Close);
+		cancel.onClick.AddListener(Close);
 		submit.onClick.AddListener(() =>
 		{
 			submit.gameObject.SetActive(false);
 			cancel.gameObject.SetActive(false);
-			ScrollDown();
+			FastForward();
 			on_submit?.Invoke();
 			on_submit = null;
 		});
-		cancel.onClick.AddListener(Close);
 
-		state = State.Hide;
-	}
-
-	public IEnumerator Show()
-	{
-		Util.EventSystem.Publish(EventID.TextBox_Open);
-		state = State.Raise;
-		contents.text = "";
-		while (height > rectTransform.anchoredPosition.y)
-		{
-			Vector2 position = rectTransform.anchoredPosition;
-			position.y += height * (Time.deltaTime/time);
-			rectTransform.anchoredPosition = position;
-			yield return null;
-		}
-		rectTransform.anchoredPosition = new Vector2 (rectTransform.anchoredPosition.x, height);
-	}
-
-	public IEnumerator Hide()
-	{
-		close.gameObject.SetActive(false);
-		//iTween.Stop (close.gameObject);
-		Util.EventSystem.Publish(EventID.TextBox_Close);
-		state = State.Hide;
-		while (position.y < rectTransform.anchoredPosition.y)
-		{
-			Vector2 position = rectTransform.anchoredPosition;
-			position.y -= height * (Time.deltaTime/time);
-			rectTransform.anchoredPosition = position;
-			yield return null;
-		}
-		rectTransform.anchoredPosition = new Vector3(rectTransform.anchoredPosition.x, position.y, 0.0f);
-	}
-
-	public void LogWrite(string text)
-	{
-		if (null != hideCoroutine)
-		{
-			StopCoroutine(hideCoroutine);
-		}
-		if (State.Hide == state)
-		{
-			StartCoroutine(Show());
-		}
-		state = State.Typing;
-
-		fast.gameObject.SetActive(true);
+		state = State.Idle;
+		fast.gameObject.SetActive(false);
 		next.gameObject.SetActive(false);
 		close.gameObject.SetActive(false);
 		submit.gameObject.SetActive(false);
 		cancel.gameObject.SetActive(false);
-
-		contents.text += text + "\n";
-		scrollRect.verticalNormalizedPosition = 0.0f;
-	}
-
-	public void AddClose()
-	{
-		ScrollDown();
-	}
-
-	public void Close()
-	{
-		on_close?.Invoke();
-		hideCoroutine = StartCoroutine(Hide());
-		on_close = null;
-	}
-	public IEnumerator TypeWrite(string text)
-	{
-		contents.text = "";
-		if (null != hideCoroutine) {
-			StopCoroutine (hideCoroutine);
-		}
-
-		fast.gameObject.SetActive(true);
-		next.gameObject.SetActive(false);
-		close.gameObject.SetActive(false);
-		submit.gameObject.SetActive(false);
-		cancel.gameObject.SetActive(false);
-
-		if (State.Hide == state)
-		{
-			yield return StartCoroutine (Show());
-		}
-
-		state = State.Typing;
-		AudioManager.Instance.Play("textbox_type", true);
-		foreach (char c in text)
-		{
-			contents.text += c;
-			if(null != scrollRect)
-			{
-				scrollRect.verticalNormalizedPosition = 0.0f;
-			}
-			if (State.Complete != state) {
-				yield return new WaitForSeconds (1.0f / charPerSecond);
-			}
-		}
-		AudioManager.Instance.Stop("textbox_type");
-		ScrollDown();
-
-		if (null != on_submit)
-		{
-			close.gameObject.SetActive(false);
-			submit.gameObject.SetActive(true);
-			cancel.gameObject.SetActive(true);
-		}
-
-		while (State.Complete == state) {
-			yield return null;
-		}
-
-		on_submit = null;
-		yield return hideCoroutine;
 	}
 
 	public IEnumerator TypeWrite(string[] texts)
 	{
 		paragraph = texts.Length - 1;
-		foreach (string text in texts) {
-			yield return StartCoroutine (TypeWrite (text));
-			paragraph = Mathf.Max(0, paragraph-1);
+		foreach (string text in texts)
+		{
+			yield return TypeWrite(text);
+			paragraph = Mathf.Max(0, paragraph - 1);
 		}
 	}
-	
-	void ScrollDown()
+	public IEnumerator TypeWrite(string text)
 	{
-		scrollRect.verticalNormalizedPosition = 0.0f;
+		contents.text = "";
+		if (State.Idle == state || State.Hide == state)
+		{
+			yield return StartCoroutine(Show());
+		}
+
+		state = State.Typing;
+		fast.gameObject.SetActive(true);
+		next.gameObject.SetActive(false);
+		close.gameObject.SetActive(false);
+		submit.gameObject.SetActive(false);
+		cancel.gameObject.SetActive(false);
+
+		AudioManager.Instance.Play("textbox_type", true);
+		foreach (char c in text)
+		{
+			contents.text += c;
+			scroll_rect.verticalNormalizedPosition = 0.0f;
+			if (State.Typing == state)	// can be changed to State.Complete for fast forward
+			{
+				yield return new WaitForSeconds(1.0f / charPerSecond);
+			}
+		}
+		AudioManager.Instance.Stop("textbox_type");
+		FastForward();
+
+		if (null != on_submit)
+		{
+			fast.gameObject.SetActive(false);
+			next.gameObject.SetActive(false);
+			close.gameObject.SetActive(false);
+			submit.gameObject.SetActive(true);
+			cancel.gameObject.SetActive(true);
+		}
+
+		while (State.Complete == state)
+		{
+			yield return null;
+		}
+		on_submit = null;
+		yield return hide_coroutine;
+	}
+	public IEnumerator LogWrite(string text)
+	{
+		if (State.Idle == state || State.Hide == state)
+		{
+			yield return StartCoroutine(Show());
+		}
+
+		state = State.Typing;
+		fast.gameObject.SetActive(false);
+		next.gameObject.SetActive(false);
+		close.gameObject.SetActive(false);
+		submit.gameObject.SetActive(false);
+		cancel.gameObject.SetActive(false);
+		contents.text += text + "\n";
+		scroll_rect.verticalNormalizedPosition = 0.0f;
+	}
+	private IEnumerator Show()
+	{
+		if (State.Hide == state && null != hide_coroutine)
+		{
+			Debug.Log("try to change state(Hide->Raise)");
+			StopCoroutine(hide_coroutine);
+			hide_coroutine = null;
+		}
+
+		state = State.Raise;
+		Util.EventSystem.Publish(EventID.TextBox_Open);
+
+		while (height > rectTransform.anchoredPosition.y)
+		{
+			Vector2 position = rectTransform.anchoredPosition;
+			position.y += height * (Time.deltaTime / time);
+			rectTransform.anchoredPosition = position;
+			yield return null;
+		}
+		rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x, height);
+	}
+	private IEnumerator Hide()
+	{
+		close.gameObject.SetActive(false);
+		Util.EventSystem.Publish(EventID.TextBox_Close);
+		state = State.Hide;
+		while (position.y < rectTransform.anchoredPosition.y)
+		{
+			Vector2 position = rectTransform.anchoredPosition;
+			position.y -= height * (Time.deltaTime / time);
+			rectTransform.anchoredPosition = position;
+			yield return null;
+		}
+		rectTransform.anchoredPosition = new Vector3(rectTransform.anchoredPosition.x, position.y, 0.0f);
+		state = State.Idle;
+		contents.text = "";
+	}
+
+	public void ActiveCloseButton()
+	{
+		FastForward();
+	}
+
+	public void Close()
+	{
+		on_close?.Invoke();
+		hide_coroutine = StartCoroutine(Hide());
+		on_close = null;
+	}
+
+	public void FastForward()
+	{
+		scroll_rect.verticalNormalizedPosition = 0.0f;
 		state = State.Complete;
-		fast.gameObject.SetActive (false);
-		if (0 == paragraph) {
-			close.gameObject.SetActive (true);
-		} else {
-			next.gameObject.SetActive (true);
+		fast.gameObject.SetActive(false);
+		if (0 == paragraph)
+		{
+			close.gameObject.SetActive(true);
+		}
+		else
+		{
+			next.gameObject.SetActive(true);
 		}
 		//iTween.MoveBy(close.gameObject, iTween.Hash("y", 20.0f, "easeType", "easeInQuad", "loopType", "pingPong"));
 	}

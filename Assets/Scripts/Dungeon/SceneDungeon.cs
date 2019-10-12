@@ -21,8 +21,7 @@ public class SceneDungeon : SceneMain
 	public UIGaugeBar player_health;
 	public UIGaugeBar player_exp;
 
-	private Dungeon dungeon;
-	private int dungeon_level = 1;
+	private Dungeon dungeon;	
     private Text ui_dungeon_level;
 
     private Transform coin_spot;
@@ -107,19 +106,19 @@ public class SceneDungeon : SceneMain
 		player_exp.max = GameManager.Instance.player.GetMaxExp();
 		player_exp.current = GameManager.Instance.player.exp;
 
-		dungeon_level = 1;
+		dungeon.level = 0;
 		InitDungeon();
 	}
 
 	private void InitDungeon()
 	{
-		dungeon.Init(dungeon_level);
+		dungeon.Init(++dungeon.level);
 
 		StartCoroutine(GameManager.Instance.CameraFade(Color.black, new Color(0.0f, 0.0f, 0.0f, 0.0f), 1.5f));
-		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon_level.ToString();
+		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon.level.ToString();
 		mini_map.Init(dungeon);
 		InitRooms();
-		StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite("Welcome to the level " + dungeon_level + " of dungeon."));
+		StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite("Welcome to the level " + dungeon.level + " of dungeon."));
 	}
 
 	private void InitRooms()
@@ -251,7 +250,7 @@ public class SceneDungeon : SceneMain
 
 	private IEnumerator Win(Monster.Meta meta)
 	{
-		GameManager.Instance.ui_textbox.LogWrite("You defeated \'" + meta.name + "\'");
+		yield return GameManager.Instance.ui_textbox.LogWrite("You defeated \'" + meta.name + "\'");
 
 		int prevPlayerLevel = GameManager.Instance.player.level;
 		Stat stat = GameManager.Instance.player.stats;
@@ -284,19 +283,18 @@ public class SceneDungeon : SceneMain
 		player_health.max = GameManager.Instance.player.max_health;
 		player_health.current = GameManager.Instance.player.cur_health;
 
-		GameManager.Instance.ui_textbox.LogWrite("Coins : +" + rewardCoin + (0 < bonusCoin ? "(" + bonusCoin + " bonus)" : ""));
-		GameManager.Instance.ui_textbox.LogWrite("Exp : +" + rewardExp + (0 < bonusExp ? "(" + bonusExp + " bonus)" : ""));
+		yield return GameManager.Instance.ui_textbox.LogWrite("Coins : +" + rewardCoin + (0 < bonusCoin ? "(" + bonusCoin + " bonus)" : ""));
+		yield return GameManager.Instance.ui_textbox.LogWrite("Exp : +" + rewardExp + (0 < bonusExp ? "(" + bonusExp + " bonus)" : ""));
 		if (prevPlayerLevel < GameManager.Instance.player.level)
 		{
-			GameManager.Instance.ui_textbox.LogWrite("Level : " + prevPlayerLevel + " -> " + GameManager.Instance.player.level);
+			yield return GameManager.Instance.ui_textbox.LogWrite("Level : " + prevPlayerLevel + " -> " + GameManager.Instance.player.level);
 		}
 		if (null != item)
 		{
-			GameManager.Instance.ui_textbox.LogWrite("Item : " + item.meta.name);
+			yield return GameManager.Instance.ui_textbox.LogWrite("Item : " + item.meta.name);
 		}
 
-		yield return new WaitForSeconds(0.01f);
-		GameManager.Instance.ui_textbox.AddClose();
+		GameManager.Instance.ui_textbox.ActiveCloseButton();
 		/*
 		QuestManager.Instance.Update("KillMonster", info.id);
 		yield return StartCoroutine(CheckCompleteQuest());
@@ -329,7 +327,7 @@ public class SceneDungeon : SceneMain
 			"z", current_room.stair.transform.position.z - 0.5f,
 			"time", 1.0f
 		), true));
-		dungeon_level += 1;
+		InitDungeon();
 		Camera.main.transform.position = position;
 	}
 
@@ -347,7 +345,6 @@ public class SceneDungeon : SceneMain
 			if (true == yes)
 			{
 				yield return StartCoroutine(GoDown());
-				InitDungeon();
 			}
 			move_buttons.touch_input.ReleaseBlockCount();
 		}
