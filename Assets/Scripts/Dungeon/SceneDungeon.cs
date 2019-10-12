@@ -14,10 +14,6 @@ public class SceneDungeon : SceneMain
 	private Room current_room;
 	private readonly Room[] next_rooms = new Room[Dungeon.Max];
 
-	private TouchInput touch_input;
-	private Vector3 touch_point = Vector3.zero;
-	private bool touch_finish = false;
-
 	public DungeonBattle battle;
 
 	public Button button_inventory;
@@ -26,13 +22,12 @@ public class SceneDungeon : SceneMain
 	public UIGaugeBar player_exp;
 
 	private Dungeon dungeon;
-	public int dungeon_level = 1;
-    public Text ui_dungeon_level;
+	private int dungeon_level = 1;
+    private Text ui_dungeon_level;
 
-    public Transform coin_spot;
-    public Coin coin_prefab;
-
-	public DungeonMoveButtons move_buttons;
+    private Transform coin_spot;
+    private Coin coin_prefab;
+	private DungeonMoveButtons move_buttons;
 	
     //private List<QuestData> completeQuests;
 	
@@ -69,27 +64,7 @@ public class SceneDungeon : SceneMain
 		next_rooms[Dungeon.West].Init(null);
 
 		move_buttons = UIUtil.FindChild<DungeonMoveButtons>(transform, "UI/MoveButtons");
-		Button moveToNorth = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/North");
-		UIUtil.AddPointerUpListener(moveToNorth.gameObject, () =>
-		{
-			StartCoroutine(Move(Dungeon.North));
-		});
-		Button moveToEast = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/East");
-		UIUtil.AddPointerUpListener(moveToEast.gameObject, () =>
-		{
-			StartCoroutine(Move(Dungeon.East));
-		});
-		Button moveToWest = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/West");
-		UIUtil.AddPointerUpListener(moveToWest.gameObject, () =>
-		{
-			StartCoroutine(Move(Dungeon.West));
-		});
-		Button moveToSouth = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/South");
-		UIUtil.AddPointerUpListener(moveToSouth.gameObject, () =>
-		{
-			StartCoroutine(Move(Dungeon.South));
-		});
-
+		
 		button_inventory = UIUtil.FindChild<Button>(transform, "UI/Player/ButtonInventory");
 		UIUtil.AddPointerUpListener(button_inventory.gameObject, () =>
 		{
@@ -107,103 +82,17 @@ public class SceneDungeon : SceneMain
 		coin_spot.gameObject.SetActive(true);
 		coin_prefab = UIUtil.FindChild<Coin>(transform, "Prefabs/Coin");
 		
-		touch_input = GetComponent<TouchInput>();
-		if (null == touch_input)
-		{
-			throw new System.Exception("can not find component 'TouchInput'");
-		}
-		touch_input.AddBlockCount();
-		touch_input.onTouchDown += (Vector3 position) => 
-		{
-			touch_point = position;
-			touch_finish = false;
-		};
-		touch_input.onTouchDrag += (Vector3 position) =>
-		{
-			if (true == touch_finish)
-			{
-				return;
-			}
-
-			float distance = Vector3.Distance(touch_point, position);
-			if (0.01f > distance)
-			{
-				Debug.Log("not enough drag distance(" + distance + ")");
-				return;
-			}
-			
-			touch_finish = true;
-			Vector3 delta = position - touch_point;
-
-			if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
-			{
-				if (0.0f > delta.x)
-				{
-					StartCoroutine(Move(Dungeon.East));
-				}
-				else
-				{
-					StartCoroutine(Move(Dungeon.West));
-				}
-			}
-			else
-			{
-				if (0.0f > delta.y)
-				{
-					StartCoroutine(Move(Dungeon.North));
-				}
-				else
-				{
-					StartCoroutine(Move(Dungeon.South));
-				}
-			}
-			touch_point = Vector3.zero;
-		};
-
-		Util.EventSystem.Subscribe(EventID.Inventory_Open, () => { touch_input.AddBlockCount(); });
-		Util.EventSystem.Subscribe(EventID.Inventory_Close, () => { touch_input.ReleaseBlockCount(); });
-
-		Util.EventSystem.Subscribe(EventID.Dialog_Open, () => { touch_input.AddBlockCount(); });
-		Util.EventSystem.Subscribe(EventID.Dialog_Close, () => { touch_input.ReleaseBlockCount(); });
-		Util.EventSystem.Subscribe(EventID.TextBox_Open, () => { touch_input.AddBlockCount(); });
-		Util.EventSystem.Subscribe(EventID.TextBox_Close, () => { touch_input.ReleaseBlockCount(); });
-
-		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Start, () => {
-			touch_input.AddBlockCount();
-		});
-		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, () => {
-			touch_input.ReleaseBlockCount();
-		});
-		Util.EventSystem.Subscribe(EventID.Dungeon_Exit_Unlock, () =>	{
-			StartCoroutine(OnExitUnlock());
-		});
-
+		Util.EventSystem.Subscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
+		Util.EventSystem.Subscribe(EventID.Dungeon_Exit_Unlock, () => { StartCoroutine(OnExitUnlock()); });
 		Util.EventSystem.Subscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
 		
-		/*
-        completeQuests = new List<QuestData> ();
-		StartCoroutine (Init ());
-		*/
-		
-		InitScene();
-
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
-		
-		
-		touch_input.ReleaseBlockCount();
+		InitScene();
 	}
 
 	private void OnDestroy()
 	{
-		Util.EventSystem.Unsubscribe(EventID.Inventory_Open);
-		Util.EventSystem.Unsubscribe(EventID.Inventory_Close);
-		Util.EventSystem.Unsubscribe(EventID.Dialog_Open);
-		Util.EventSystem.Unsubscribe(EventID.Dialog_Close);
-		Util.EventSystem.Unsubscribe(EventID.TextBox_Open);
-		Util.EventSystem.Unsubscribe(EventID.TextBox_Close);
-
-		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Start);
-		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish);
+		Util.EventSystem.Unsubscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Exit_Unlock);
 		Util.EventSystem.Unsubscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
 	}
@@ -220,25 +109,16 @@ public class SceneDungeon : SceneMain
 
 		dungeon_level = 1;
 		InitDungeon();
-
-		/*
-		yield return StartCoroutine(QuestManager.Instance.Init ());
-		QuestManager.Instance.onComplete += (QuestData data) => {
-			completeQuests.Add(data);
-		};
-		QuestManager.Instance.Update (QuestProgress.Type.CrrentLocation, "Dungeon");
-		yield return StartCoroutine(CheckCompleteQuest ());
-		*/
 	}
 
 	private void InitDungeon()
 	{
+		dungeon.Init(dungeon_level);
+
 		StartCoroutine(GameManager.Instance.CameraFade(Color.black, new Color(0.0f, 0.0f, 0.0f, 0.0f), 1.5f));
 		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon_level.ToString();
-		dungeon.Init(dungeon_level);
 		mini_map.Init(dungeon);
 		InitRooms();
-
 		StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite("Welcome to the level " + dungeon_level + " of dungeon."));
 	}
 
@@ -258,36 +138,6 @@ public class SceneDungeon : SceneMain
 		move_buttons.Init(dungeon.current_room);
 	}
 
-	private IEnumerator Lose()
-	{
-		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(
-			"You died.\n" +
-			"Your body will be carried to village.\n" +
-			"See you soon.."
-		));
-		yield return GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f);
-				
-		StartCoroutine(GameManager.Instance.advertisement.ShowAds());
-		//InitScene();
-
-		yield return AsyncLoadScene("Start");
-		yield return AsyncUnloadScene("Dungeon");
-	}
-
-	private IEnumerator GoDown()
-	{
-		Vector3 position = Camera.main.transform.position;
-		StartCoroutine(GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f));
-		yield return StartCoroutine(MoveTo (Camera.main.gameObject, iTween.Hash(
-			"x", current_room.stair.transform.position.x,
-			"y", current_room.stair.transform.position.y,
-			"z", current_room.stair.transform.position.z-0.5f,
-			"time", 1.0f
-		), true));
-		dungeon_level += 1;
-		Camera.main.transform.position = position;
-	}
-
 	private IEnumerator Move(int direction)
 	{
 		while (0 < coin_spot.childCount)
@@ -295,7 +145,6 @@ public class SceneDungeon : SceneMain
 			yield return null;
 		}
 
-		Util.EventSystem.Publish(EventID.Dungeon_Move_Start);
 		Dungeon.Room next_room = dungeon.current_room.GetNext(direction);
 
 		if (null == next_room)
@@ -371,6 +220,7 @@ public class SceneDungeon : SceneMain
 		{
 			StartCoroutine(mini_map.Show(0.5f));
 		}
+
 		if (null != dungeon.current_room.monster)
 		{
 			AudioManager.Instance.Stop(AudioManager.DUNGEON_BGM);
@@ -453,17 +303,41 @@ public class SceneDungeon : SceneMain
 		*/
 	}
 
-	private void OnChangePlayerHealth()
+	private IEnumerator Lose()
 	{
-		player_health.max = GameManager.Instance.player.max_health;
-		player_health.current = GameManager.Instance.player.cur_health;
+		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(
+			"You died.\n" +
+			"Your body will be carried to village.\n" +
+			"See you soon.."
+		));
+		yield return GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f);
+
+		StartCoroutine(GameManager.Instance.advertisement.ShowAds());
+		//InitScene();
+
+		yield return AsyncLoadScene("Start");
+		yield return AsyncUnloadScene("Dungeon");
+	}
+
+	private IEnumerator GoDown()
+	{
+		Vector3 position = Camera.main.transform.position;
+		StartCoroutine(GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f));
+		yield return StartCoroutine(MoveTo(Camera.main.gameObject, iTween.Hash(
+			"x", current_room.stair.transform.position.x,
+			"y", current_room.stair.transform.position.y,
+			"z", current_room.stair.transform.position.z - 0.5f,
+			"time", 1.0f
+		), true));
+		dungeon_level += 1;
+		Camera.main.transform.position = position;
 	}
 
 	private IEnumerator OnExitUnlock()
 	{
 		if (Dungeon.Room.Type.Exit == dungeon.current_room.type)
 		{
-			touch_input.AddBlockCount();
+			move_buttons.touch_input.AddBlockCount();
 			bool yes = false;
 			GameManager.Instance.ui_textbox.on_submit += () => {
 				yes = true;
@@ -475,10 +349,16 @@ public class SceneDungeon : SceneMain
 				yield return StartCoroutine(GoDown());
 				InitDungeon();
 			}
-			touch_input.ReleaseBlockCount();
+			move_buttons.touch_input.ReleaseBlockCount();
 		}
 	}
 
+	private void OnChangePlayerHealth()
+	{
+		player_health.max = GameManager.Instance.player.max_health;
+		player_health.current = GameManager.Instance.player.cur_health;
+	}
+	
 	private void CreateCoins(int amount)
 	{
 		int total = amount;
@@ -509,25 +389,8 @@ public class SceneDungeon : SceneMain
 		}
 	}
 
-	/*
-	IEnumerator CheckCompleteQuest()
+	private void OnMoveStart(int direction)
 	{
-		state = State.Popup;
-		foreach(QuestData quest in completeQuests)
-		{
-			if (null == quest.completeDialouge) {
-				continue;
-			}
-			if (null == quest.completeDialouge.dialouge) {
-				continue;
-			}
-
-			state = State.Popup;
-			yield return StartCoroutine (UINpc.Instance.Talk (quest.completeDialouge.speaker, quest.completeDialouge.dialouge));
-			state = State.Idle;
-		}
-		completeQuests.Clear ();
-		state = State.Idle;
+		StartCoroutine(Move(direction));
 	}
-	*/
 }

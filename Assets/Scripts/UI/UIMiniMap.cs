@@ -59,9 +59,7 @@ public class UIMiniMap : MonoBehaviour
 			UIMiniMapRoom miniRoom = rooms[room.id];
 			miniRoom.gameObject.SetActive(false);
 		}
-
 		current_room_id = dungeon.current_room.id;
-		CurrentPosition(current_room_id);
 	}
 
 	public void CurrentPosition (int id)
