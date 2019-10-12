@@ -5,10 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class SceneDungeon : SceneMain
 {
-    public UIMiniMap mini_map;
+	private const float ROOM_SIZE = 7.2f; // walkDistance;
+	private const float ROOM_MOVE_SPEED = 17.0f;
+
+	public UIMiniMap mini_map;
 	
-	private float room_size = 7.2f; // walkDistance;
-	private float room_move_speed = 17.0f;
 	private Transform rooms;
 	private Room current_room;
 	private readonly Room[] next_rooms = new Room[Dungeon.Max];
@@ -31,7 +32,8 @@ public class SceneDungeon : SceneMain
     public Transform coin_spot;
     public Coin coin_prefab;
 
-	public Button[] move_buttons = new Button[Dungeon.Max];
+	public DungeonMoveButtons move_buttons;
+	
     //private List<QuestData> completeQuests;
 	
 	public override IEnumerator Run()
@@ -54,43 +56,46 @@ public class SceneDungeon : SceneMain
 		current_room = UIUtil.FindChild<Room>(rooms, "Current");
 		current_room.Init(null);
 		next_rooms[Dungeon.North] = UIUtil.FindChild<Room>(rooms, "North");
-		next_rooms[Dungeon.North].transform.position = new Vector3(0.0f, 0.0f, room_size);
+		next_rooms[Dungeon.North].transform.position = new Vector3(0.0f, 0.0f, ROOM_SIZE);
 		next_rooms[Dungeon.North].Init(null);
 		next_rooms[Dungeon.East] = UIUtil.FindChild<Room>(rooms, "East");
-		next_rooms[Dungeon.East].transform.position = new Vector3(room_size, 0.0f, 0.0f);
+		next_rooms[Dungeon.East].transform.position = new Vector3(ROOM_SIZE, 0.0f, 0.0f);
 		next_rooms[Dungeon.East].Init(null);
 		next_rooms[Dungeon.South] = UIUtil.FindChild<Room>(rooms, "South");
-		next_rooms[Dungeon.South].transform.position = new Vector3(0.0f, 0.0f, -room_size);
+		next_rooms[Dungeon.South].transform.position = new Vector3(0.0f, 0.0f, -ROOM_SIZE);
 		next_rooms[Dungeon.South].Init(null);
 		next_rooms[Dungeon.West] = UIUtil.FindChild<Room>(rooms, "West");
-		next_rooms[Dungeon.West].transform.position = new Vector3(-room_size, 0.0f, 0.0f);
+		next_rooms[Dungeon.West].transform.position = new Vector3(-ROOM_SIZE, 0.0f, 0.0f);
 		next_rooms[Dungeon.West].Init(null);
 
-		move_buttons[Dungeon.North] = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/North");
-		move_buttons[Dungeon.East] = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/East");
-		move_buttons[Dungeon.West] = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/West");
-		move_buttons[Dungeon.South] = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/South");
-		move_buttons[Dungeon.North].onClick.AddListener(() =>
+		move_buttons = UIUtil.FindChild<DungeonMoveButtons>(transform, "UI/MoveButtons");
+		Button moveToNorth = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/North");
+		UIUtil.AddPointerUpListener(moveToNorth.gameObject, () =>
 		{
 			StartCoroutine(Move(Dungeon.North));
 		});
-		move_buttons[Dungeon.East].onClick.AddListener(() =>
+		Button moveToEast = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/East");
+		UIUtil.AddPointerUpListener(moveToEast.gameObject, () =>
 		{
 			StartCoroutine(Move(Dungeon.East));
 		});
-		move_buttons[Dungeon.West].onClick.AddListener(() =>
+		Button moveToWest = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/West");
+		UIUtil.AddPointerUpListener(moveToWest.gameObject, () =>
 		{
 			StartCoroutine(Move(Dungeon.West));
 		});
-		move_buttons[Dungeon.South].onClick.AddListener(() =>
+		Button moveToSouth = UIUtil.FindChild<Button>(transform, "UI/MoveButtons/South");
+		UIUtil.AddPointerUpListener(moveToSouth.gameObject, () =>
 		{
 			StartCoroutine(Move(Dungeon.South));
 		});
-		button_inventory = UIUtil.FindChild<Button>(transform,	"UI/Player/ButtonInventory");
+
+		button_inventory = UIUtil.FindChild<Button>(transform, "UI/Player/ButtonInventory");
 		UIUtil.AddPointerUpListener(button_inventory.gameObject, () =>
 		{
 			GameManager.Instance.ui_inventory.SetActive(true);
 		});
+
 		mini_map = UIUtil.FindChild<UIMiniMap>(transform,		"UI/Dungeon/MiniMap");
 		ui_dungeon_level = UIUtil.FindChild<Text>(transform,	"UI/Dungeon/Level");
 
@@ -163,8 +168,12 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Subscribe(EventID.TextBox_Open, () => { touch_input.AddBlockCount(); });
 		Util.EventSystem.Subscribe(EventID.TextBox_Close, () => { touch_input.ReleaseBlockCount(); });
 
-		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Start, () => { touch_input.AddBlockCount(); });
-		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, () => { touch_input.ReleaseBlockCount(); });
+		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Start, () => {
+			touch_input.AddBlockCount();
+		});
+		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, () => {
+			touch_input.ReleaseBlockCount();
+		});
 		Util.EventSystem.Subscribe(EventID.Dungeon_Exit_Unlock, () =>	{
 			StartCoroutine(OnExitUnlock());
 		});
@@ -238,16 +247,15 @@ public class SceneDungeon : SceneMain
 		rooms.transform.position = Vector3.zero;
 		for(int i=0; i<Dungeon.Max; i++)
 		{
-			move_buttons[i].gameObject.SetActive(false);
 			Dungeon.Room room = dungeon.current_room.next [i];
 			if (null != room)
 			{
 				next_rooms[i].Init (room);
-				move_buttons[i].gameObject.SetActive(true);
 			}
 		}
 		mini_map.CurrentPosition (dungeon.current_room.id);
 		current_room.Init(dungeon.current_room);
+		move_buttons.Init(dungeon.current_room);
 	}
 
 	private IEnumerator Lose()
@@ -317,16 +325,16 @@ public class SceneDungeon : SceneMain
 		switch (direction)
 		{
 			case Dungeon.North:
-				position = new Vector3(rooms.position.x, rooms.position.y, rooms.position.z - room_size);
+				position = new Vector3(rooms.position.x, rooms.position.y, rooms.position.z - ROOM_SIZE);
 				break;
 			case Dungeon.East:
-				position = new Vector3(rooms.position.x - room_size, rooms.position.y, rooms.position.z);
+				position = new Vector3(rooms.position.x - ROOM_SIZE, rooms.position.y, rooms.position.z);
 				break;
 			case Dungeon.South:
-				position = new Vector3(rooms.position.x, rooms.position.y, rooms.position.z + room_size);
+				position = new Vector3(rooms.position.x, rooms.position.y, rooms.position.z + ROOM_SIZE);
 				break;
 			case Dungeon.West:
-				position = new Vector3(rooms.position.x + room_size, rooms.position.y, rooms.position.z);
+				position = new Vector3(rooms.position.x + ROOM_SIZE, rooms.position.y, rooms.position.z);
 				break;
 			default:
 				break;
@@ -334,7 +342,7 @@ public class SceneDungeon : SceneMain
 
 		dungeon.Move(direction);
 		AudioManager.Instance.Play(AudioManager.DUNGEON_WALK, true);
-		yield return MoveTo(rooms.gameObject, iTween.Hash("position", position, "time", room_size / room_move_speed, "easetype", iTween.EaseType.linear), true);
+		yield return MoveTo(rooms.gameObject, iTween.Hash("position", position, "time", ROOM_SIZE / ROOM_MOVE_SPEED, "easetype", iTween.EaseType.linear), true);
 		AudioManager.Instance.Stop(AudioManager.DUNGEON_WALK);
 
 		InitRooms();
