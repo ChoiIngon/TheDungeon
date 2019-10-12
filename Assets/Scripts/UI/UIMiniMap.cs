@@ -126,7 +126,7 @@ public class UIMiniMap : MonoBehaviour
 		}
 		RevealRoom(current_room_id, ROOM_ACTIVATE_COLOR);
 	}
-	public void RevealBox()
+	public void RevealTreasure()
 	{
 		foreach (Dungeon.Room room in dungeon.rooms)
 		{

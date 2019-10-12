@@ -83,8 +83,10 @@ public class SceneDungeon : SceneMain
 		
 		Util.EventSystem.Subscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
 		Util.EventSystem.Subscribe(EventID.Dungeon_Exit_Unlock, () => { StartCoroutine(OnExitUnlock()); });
-		Util.EventSystem.Subscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
-		
+		Util.EventSystem.Subscribe(EventID.Dungeon_Map_Reveal, () => { mini_map.RevealMap(); });
+		Util.EventSystem.Subscribe(EventID.Dungeon_Monster_Reveal, () => { mini_map.RevealMonster(); });
+		Util.EventSystem.Subscribe(EventID.Dungeon_Treasure_Reveal, () => { mini_map.RevealTreasure(); });
+		Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnChangePlayerHealth);
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
 		InitScene();
 	}
@@ -93,7 +95,10 @@ public class SceneDungeon : SceneMain
 	{
 		Util.EventSystem.Unsubscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Exit_Unlock);
-		Util.EventSystem.Unsubscribe(EventID.Player_Change_Health, OnChangePlayerHealth);
+		Util.EventSystem.Unsubscribe(EventID.Player_Stat_Change, OnChangePlayerHealth);
+		Util.EventSystem.Unsubscribe(EventID.Dungeon_Map_Reveal);
+		Util.EventSystem.Unsubscribe(EventID.Dungeon_Monster_Reveal);
+		Util.EventSystem.Unsubscribe(EventID.Dungeon_Treasure_Reveal);
 	}
 
 	private void InitScene()
@@ -108,6 +113,7 @@ public class SceneDungeon : SceneMain
 
 		dungeon.level = 0;
 		InitDungeon();
+
 	}
 
 	private void InitDungeon()
@@ -118,7 +124,7 @@ public class SceneDungeon : SceneMain
 		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon.level.ToString();
 		mini_map.Init(dungeon);
 		InitRooms();
-		StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite("Welcome to the level " + dungeon.level + " of dungeon."));
+		StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(GameText.GetText("DUNGEON/WELCOME", dungeon.level)));
 	}
 
 	private void InitRooms()
@@ -208,6 +214,7 @@ public class SceneDungeon : SceneMain
 			if (true == yes)
 			{
 				yield return current_room.box.Open();
+				mini_map.CurrentPosition(dungeon.current_room.id);
 			}
 		}
 
@@ -250,7 +257,7 @@ public class SceneDungeon : SceneMain
 
 	private IEnumerator Win(Monster.Meta meta)
 	{
-		yield return GameManager.Instance.ui_textbox.LogWrite("You defeated \'" + meta.name + "\'");
+		yield return GameManager.Instance.ui_textbox.LogWrite(GameText.GetText("DUNGEON/BATTLE/DEFEATED", "You", meta.name));
 
 		int prevPlayerLevel = GameManager.Instance.player.level;
 		Stat stat = GameManager.Instance.player.stats;
@@ -291,7 +298,7 @@ public class SceneDungeon : SceneMain
 		}
 		if (null != item)
 		{
-			yield return GameManager.Instance.ui_textbox.LogWrite("Item : " + item.meta.name);
+			yield return GameManager.Instance.ui_textbox.LogWrite(GameText.GetText("DUNGEON/HAVE_ITEM", "You", item.meta.name));
 		}
 
 		GameManager.Instance.ui_textbox.ActiveCloseButton();
@@ -303,11 +310,18 @@ public class SceneDungeon : SceneMain
 
 	private IEnumerator Lose()
 	{
+		ProgressManager.Instance.Update(Achieve.AchieveType_DieCount, "", 1);
+
+		Rect prev = GameManager.Instance.ui_textbox.Resize(1000 /*Screen.currentResolution.height * GameManager.Instance.canvas.scaleFactor * 0.8f*/);
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(
 			"You died.\n" +
 			"Your body will be carried to village.\n" +
-			"See you soon.."
+			"See you soon..\n" +
+			"Kill monster count : 100\n" +
+			"item count : 100\n" +
+			"turn : 100\n"
 		));
+		GameManager.Instance.ui_textbox.Resize(prev.height);
 		yield return GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f);
 
 		StartCoroutine(GameManager.Instance.advertisement.ShowAds());

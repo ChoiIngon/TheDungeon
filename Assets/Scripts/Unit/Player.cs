@@ -130,6 +130,11 @@ public class Player : Unit
 				EquipItem item = ItemManager.Instance.CreateRandomEquipItem(level);
 				inventory.Add(item);
 			}
+
+			for (int i = 0; i < 10; i++)
+			{
+				inventory.Add(ItemManager.Instance.CreateRandomExpendableItem());
+			}
 		}
 	}
 

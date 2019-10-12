@@ -6,7 +6,7 @@ public class Item
 	{
 		Invalid,
 		Equipment,
-		Potion,
+		Expendable,
 		Key,
 		Scroll,
 		Max

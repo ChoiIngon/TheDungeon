@@ -130,6 +130,22 @@ public class UITextBox : MonoBehaviour
 		contents.text += text + "\n";
 		scroll_rect.verticalNormalizedPosition = 0.0f;
 	}
+
+	public Rect Resize(float h)
+	{
+		Rect prev = rectTransform.rect;
+		iTween.ValueTo(gameObject, iTween.Hash("from", 0, "to", h, "time", 0.5f, "onupdate", "OnUpdate"));
+		return prev;
+	}
+
+	private void OnUpdate(float value)
+	{
+		
+		Vector2 delta = new Vector2(0.0f, value);
+		rectTransform.sizeDelta = delta;
+		Debug.Log(value);
+	}
+
 	private IEnumerator Show()
 	{
 		if (State.Hide == state && null != hide_coroutine)
@@ -145,7 +161,7 @@ public class UITextBox : MonoBehaviour
 		while (height > rectTransform.anchoredPosition.y)
 		{
 			Vector2 position = rectTransform.anchoredPosition;
-			position.y += height * (Time.deltaTime / time);
+			position.y += rectTransform.rect.height * (Time.deltaTime / time);
 			rectTransform.anchoredPosition = position;
 			yield return null;
 		}
@@ -159,7 +175,7 @@ public class UITextBox : MonoBehaviour
 		while (position.y < rectTransform.anchoredPosition.y)
 		{
 			Vector2 position = rectTransform.anchoredPosition;
-			position.y -= height * (Time.deltaTime / time);
+			position.y -= rectTransform.rect.height * (Time.deltaTime / time);
 			rectTransform.anchoredPosition = position;
 			yield return null;
 		}

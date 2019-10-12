@@ -69,7 +69,7 @@ public class Unit
 
 		float attack = this.attack + Random.Range(-this.attack * 0.1f, this.attack * 0.1f);
 		float defense = target.defense + Random.Range(-target.defense * 0.1f, target.defense * 0.1f);
-		result.damage = Mathf.Max(1, attack - defense);
+		result.damage = Mathf.Min(attack, attack * (attack/defense));
 
 		OnAttack(target);
 		target.OnDefense(this);
@@ -84,11 +84,11 @@ public class Unit
 
 	public virtual void CalculateStat()
 	{
-		attack = stats.GetStat(StatType.Attack) * (1.0f + stats.GetStat(StatType.Attack_Rate));
-		defense = stats.GetStat(StatType.Defense) * (1.0f + stats.GetStat(StatType.Defense_Rate));
-		speed = stats.GetStat(StatType.Speed) * (1.0f + stats.GetStat(StatType.Speed_Rate));
+		attack = stats.GetStat(StatType.Attack) + (stats.GetStat(StatType.Attack) * stats.GetStat(StatType.Attack_Rate) / 100);
+		defense = stats.GetStat(StatType.Defense) + (stats.GetStat(StatType.Defense) * stats.GetStat(StatType.Defense_Rate) / 100);
+		speed = stats.GetStat(StatType.Speed) + (stats.GetStat(StatType.Speed) * stats.GetStat(StatType.Speed_Rate) / 100);
 		critical = stats.GetStat(StatType.Critical);
-		max_health = stats.GetStat(StatType.Health) * (1.0f + stats.GetStat(StatType.Health_Rate));
+		max_health = stats.GetStat(StatType.Health) + (stats.GetStat(StatType.Health) * stats.GetStat(StatType.Health_Rate) / 100);
 	}
 
 	public void AddSkill(Skill skill)

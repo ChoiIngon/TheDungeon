@@ -19,7 +19,8 @@ public class EquipItem : Item
 		Hand,
 		Armor,
 		Ring,
-		Shoes
+		Shoes,
+		Max
 	}
 
 	[System.Serializable]
@@ -58,7 +59,7 @@ public class EquipItemManager
 {
 	private List<EquipItem.Meta> item_metas = new List<EquipItem.Meta>();
 	private Util.WeightRandom<Item.Grade> grade_gacha = new Util.WeightRandom<Item.Grade>();
-	private Util.WeightRandom<EquipItemStatMeta> sub_stat_gacha = new Util.WeightRandom<EquipItemStatMeta>();
+	private Util.WeightRandom<EquipItemStatMeta>[] sub_stat_gacha = new Util.WeightRandom<EquipItemStatMeta>[(int)EquipItem.Part.Max];
 
 	public void Init()
 	{
@@ -108,7 +109,7 @@ public class EquipItemManager
 		item.main_stat.AddStat(CreateStat(level, meta.main_stat));
 		for (int i = 0; i < (int)item.grade - (int)EquipItem.Grade.Normal; i++)
 		{
-			item.sub_stat.AddStat(CreateStat(level, sub_stat_gacha.Random()));
+			item.sub_stat.AddStat(CreateStat(level, sub_stat_gacha[(int)item.part].Random()));
 		}
 
 		if (EquipItem.Grade.Rare <= item.grade)
@@ -129,31 +130,138 @@ public class EquipItemManager
 
 	private void InitStatGacha()
 	{
-		sub_stat_gacha.SetWeight(new EquipItemStatMeta()
+		for (int i = 0; i < (int)EquipItem.Part.Max; i++)
 		{
-			type = StatType.CoinBonus,
-			base_value = 0.1f,
-			rand_stat_meta = new RandomStatMeta()
+			sub_stat_gacha[i] = new Util.WeightRandom<EquipItemStatMeta>();
+		}
+
+		// StatType.CoinBonus
+		{
+			EquipItemStatMeta itemStatMeta = new EquipItemStatMeta()
 			{
 				type = StatType.CoinBonus,
-				min_value = 0.0f,
-				max_value = 0.5f,
-				interval = 0.01f
-			}
-		}, 1);
+				base_value = 0.1f,
+				rand_stat_meta = new RandomStatMeta()
+				{
+					type = StatType.CoinBonus,
+					min_value = 0.0f,
+					max_value = 0.5f,
+					interval = 0.01f
+				}
+			};
 
-		sub_stat_gacha.SetWeight(new EquipItemStatMeta()
+			sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(itemStatMeta, 1);
+			sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(itemStatMeta, 1);
+			sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(itemStatMeta, 1);
+			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
+			sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(itemStatMeta, 1);
+		}
+		// StatType.ExpBonus 
 		{
-			type = StatType.ExpBonus,
-			base_value = 0.05f,
-			rand_stat_meta = new RandomStatMeta()
+			EquipItemStatMeta itemStatMeta = new EquipItemStatMeta()
 			{
 				type = StatType.ExpBonus,
-				min_value = 0.0f,
-				max_value = 0.1f,
-				interval = 0.01f
-			}
-		}, 1);
+				base_value = 5.0f,
+				rand_stat_meta = new RandomStatMeta()
+				{
+					type = StatType.CoinBonus,
+					min_value = 0.0f,
+					max_value = 5.0f,
+					interval = 0.1f
+				}
+			};
+			sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(itemStatMeta, 1);
+			sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(itemStatMeta, 1);
+			sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(itemStatMeta, 1);
+			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
+			sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(itemStatMeta, 1);
+		}
+		// StatType.Health_Rate
+		{
+			EquipItemStatMeta itemStatMeta = new EquipItemStatMeta()
+			{
+				type = StatType.Health_Rate,
+				base_value = 1.0f,
+				rand_stat_meta = new RandomStatMeta()
+				{
+					type = StatType.Health_Rate,
+					min_value = 0.0f,
+					max_value = 0.5f,
+					interval = 0.01f
+				}
+			};
+			sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(itemStatMeta, 1);
+			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
+		}
+		// StatType.Attack_Rate
+		{
+			EquipItemStatMeta itemStatMeta = new EquipItemStatMeta()
+			{
+				type = StatType.Attack_Rate,
+				base_value = 1.0f,
+				rand_stat_meta = new RandomStatMeta()
+				{
+					type = StatType.Attack_Rate,
+					min_value = 0.0f,
+					max_value = 0.5f,
+					interval = 0.1f
+				}
+			};
+			sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(itemStatMeta, 1);
+			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
+		}
+		// StatType.Defense_Rate
+		{
+			EquipItemStatMeta itemStatMeta = new EquipItemStatMeta()
+			{
+				type = StatType.Defense_Rate,
+				base_value = 1.0f,
+				rand_stat_meta = new RandomStatMeta()
+				{
+					type = StatType.Defense_Rate,
+					min_value = 0.0f,
+					max_value = 0.5f,
+					interval = 0.1f
+				}
+			};
+			sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(itemStatMeta, 1);
+			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
+		}
+		// StatType.Speed_Rate
+		  {
+			EquipItemStatMeta itemStatMeta = new EquipItemStatMeta()
+			{
+				type = StatType.Speed_Rate,
+				base_value = 1.0f,
+				rand_stat_meta = new RandomStatMeta()
+				{
+					type = StatType.Speed_Rate,
+					min_value = 0.0f,
+					max_value = 0.5f,
+					interval = 0.1f
+				}
+			};
+			sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(itemStatMeta, 1);
+			sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(itemStatMeta, 1);
+			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
+		}
+		{
+			EquipItemStatMeta itemStatMeta = new EquipItemStatMeta()
+			{
+				type = StatType.Critical,
+				base_value = 1.0f,
+				rand_stat_meta = new RandomStatMeta()
+				{
+					type = StatType.Critical,
+					min_value = 0.0f,
+					max_value = 0.5f,
+					interval = 0.1f
+				}
+			};
+			
+			sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(itemStatMeta, 1);
+			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
+		}
 	}
 
 	private Stat.Data CreateStat(int level, EquipItemStatMeta meta)

@@ -16,7 +16,7 @@ public class UIInventory : MonoBehaviour
     public void Init()
     {
 		item_prefabs[(int)Item.Type.Equipment] = UIUtil.FindChild<UIEquipItem>(transform, "ItemPrefabs/EquipItem");
-		item_prefabs[(int)Item.Type.Potion] = UIUtil.FindChild<UIPotionItem>(transform, "ItemPrefabs/PotionItem");
+		item_prefabs[(int)Item.Type.Expendable] = UIUtil.FindChild<UIPotionItem>(transform, "ItemPrefabs/PotionItem");
 		item_prefabs[(int)Item.Type.Key] = UIUtil.FindChild<UIKeyItem>(transform, "ItemPrefabs/KeyItem");
 
 		gameObject.SetActive(false);
@@ -83,6 +83,7 @@ public class UIInventory : MonoBehaviour
 			player_info.Refresh();
             Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
             Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
+			Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
 			GameManager.Instance.advertisement.HideBanner();
 			Util.EventSystem.Publish(EventID.Inventory_Open);
         }
@@ -90,6 +91,7 @@ public class UIInventory : MonoBehaviour
         {
             Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
             Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
+			Util.EventSystem.Unsubscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
 			GameManager.Instance.advertisement.ShowBanner();
 			Util.EventSystem.Publish(EventID.Inventory_Close);
 		}
@@ -145,4 +147,9 @@ public class UIInventory : MonoBehaviour
 		Object.Destroy(equip_slots[key].item.gameObject);
 		equip_slots[key].SetItem(null);
     }
+
+	private void OnPlayerStatChange()
+	{
+		player_info.Refresh();
+	}
 }

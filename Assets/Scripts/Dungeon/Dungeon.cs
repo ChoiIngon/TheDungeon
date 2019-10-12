@@ -176,7 +176,7 @@ public class Dungeon
 			}
 			int index = Random.Range(0, candidates.Count);
 			Room room = candidates[index];
-			room.item = CreateRandomItem(dungeonLevel);
+			room.item = ItemManager.Instance.CreateRandomExpendableItem();
 			candidates.RemoveAt(index);
 		}
 
@@ -255,7 +255,7 @@ public class Dungeon
 	List<Item.Type> item_type_gacha = new List<Item.Type>()
 	{
 		Item.Type.Equipment,
-		Item.Type.Potion
+		Item.Type.Expendable
 	};
 
 	private Item CreateRandomItem(int dungeonLevel)
@@ -266,8 +266,8 @@ public class Dungeon
 		{
 			case Item.Type.Equipment:
 				return ItemManager.Instance.CreateRandomEquipItem(dungeonLevel);
-			case Item.Type.Potion:
-				return ItemManager.Instance.CreateRandomPotionItem();
+			case Item.Type.Expendable:
+				return ItemManager.Instance.CreateRandomExpendableItem();
 		}
 		return null;
 	}

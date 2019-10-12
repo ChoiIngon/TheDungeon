@@ -14,6 +14,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 	public UICoin ui_coin;
 	public UINpc ui_npc;
 	public UITextBox ui_textbox;
+	public UITicker ui_ticker;
 	public Advertisement advertisement;
 	private Image camera_fade;
 	public Canvas canvas;
@@ -43,7 +44,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		ui_textbox = UIUtil.FindChild<UITextBox>(canvas.transform, "UITextBox");
 		ui_coin = UIUtil.FindChild<UICoin>(canvas.transform, "UICoin");
 		ui_npc = UIUtil.FindChild<UINpc>(canvas.transform, "UINpc");
-
+		ui_ticker = UIUtil.FindChild<UITicker>(canvas.transform, "UITicker");
 		camera_fade.gameObject.SetActive(true);
 		camera_fade.color = Color.black;
 

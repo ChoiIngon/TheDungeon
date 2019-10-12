@@ -30,14 +30,13 @@ public class DungeonBox : MonoBehaviour
 	{
 		if (Inventory.MAX_SLOT_COUNT <= GameManager.Instance.player.inventory.count)
 		{
-			yield return GameManager.Instance.ui_textbox.TypeWrite("인벤토리가 가득 찼습니다.");
+			yield return GameManager.Instance.ui_textbox.TypeWrite(GameText.GetText("ERROR/INVENTORY_FULL"));
 			yield break;
 		}
 		AudioManager.Instance.Play(AudioManager.BOX_OPEN);
 		yield return Util.UITween.Overlap(close, open, time);
 		GameManager.Instance.player.inventory.Add(room.item);
-		string text = room.item.meta.name + " 아이템을 획득 했습니다.";
-		yield return GameManager.Instance.ui_textbox.TypeWrite(text);
+		yield return GameManager.Instance.ui_textbox.TypeWrite(GameText.GetText("DUNGEON/HAVE_ITEM", "You", room.item.meta.name));
 		gameObject.SetActive(false);
 		room.item = null;
 	}

@@ -6,12 +6,11 @@ public class ItemManager : Util.Singleton<ItemManager>
 {
 	private Dictionary<string, Item.Meta> metas = new Dictionary<string, Item.Meta>();
 	private EquipItemManager equip_item_manager = new EquipItemManager();
-	private PotionItemManager potion_item_manager = new PotionItemManager();
+	private ExpendableItemManager expendable_item_manager = new ExpendableItemManager();
 	public void Init()
 	{
 		equip_item_manager.Init();
-		potion_item_manager.Init();
-		InitPotionItemInfo();
+		expendable_item_manager.Init();
 		InitKeyItemInfo();
 	}
 
@@ -38,9 +37,9 @@ public class ItemManager : Util.Singleton<ItemManager>
 		return equip_item_manager.CreateRandomItem(level);
 	}
 
-	public Item CreateRandomPotionItem()
+	public Item CreateRandomExpendableItem()
 	{
-		return potion_item_manager.CreateRandomItem();
+		return expendable_item_manager.CreateRandomItem();
 	}
 
 	public T FindMeta<T>(string id) where T : Item.Meta
@@ -50,11 +49,6 @@ public class ItemManager : Util.Singleton<ItemManager>
 			throw new System.Exception("can't find item meta(id:" + id + ")");
 		}
 		return metas[id] as T;
-	}
-
-	private void InitPotionItemInfo()
-	{
-		
 	}
 
 	private void InitKeyItemInfo()

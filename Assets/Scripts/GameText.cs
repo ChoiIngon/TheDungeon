@@ -10,11 +10,15 @@ class GameText : Util.Singleton<GameText>
 	}
 
 	public LanguageCode language_code = LanguageCode.English;
-	Dictionary<string, List<string>> textByLanguageCode = new Dictionary<string, List<string>>() {
-		{ "WAVE_START", new List<string> { "Wave Start", "웨이브 스타트" } },
-		{ "WAVE", new List<string> { "WAVE", "웨이브" } },
-		{ "UPGRADE_CITADEL", new List<string> { "Upgrade Citadel", "요새 업그레이드" } },
-		{ "ERROR_HERO_UNIT_DEPLOY", new List<string> { "deploy hero unit before starting wave", "마법사를 먼저 성에 배치 해주세요" } },
+	Dictionary<string, string> texts = new Dictionary<string, string>()
+	{
+		{ "ACHIEVE/COMPLETE", "Complete {0}." },
+		{ "DUNGEON/WELCOME", "Welcome to the level {0} of dungeon." },
+		{ "DUNGEON/BATTLE/HIT", "{0} hit {1}." },
+		{ "DUNGEON/BATTLE/DEFEATED", "{0} defeated {1}." },
+		{ "DUNGEON/HAVE_ITEM", "{0} now have {1} item." },
+		{ "ERROR/INVENTORY_FULL", "Inventroy is full." },
+		{ "ERROR/UNLOCK_DOOR", "You need key." },
 	};
 
 	public void SetLanguage(LanguageCode code)
@@ -22,14 +26,18 @@ class GameText : Util.Singleton<GameText>
 		language_code = code;
 	}
 
-	public string GetText(string textKey)
+	public static string GetText(string key, params object[] args)
 	{
-		if (false == textByLanguageCode.ContainsKey(textKey))
+		return Instance._GetText(key, args);
+	}
+	private string _GetText(string key, params object[] args)
+	{
+		if (false == texts.ContainsKey(key))
 		{
-			throw new System.Exception("invalid text key(text_key:" + textKey + ")");
+			throw new System.Exception("invalid text key(text_key:" + key + ")");
 		}
 
-		return textByLanguageCode[textKey][(int)language_code];
+		return string.Format(texts[key], args);
 	}
 
 }

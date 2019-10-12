@@ -63,7 +63,7 @@ public class QuestProgress
 		if ("" == this.key || this.key == key)
 		{
 			progress++;
-			UITicker.Instance.Write(name + " " + progress + "/" + goal);
+			GameManager.Instance.ui_ticker.Write(name + " " + progress + "/" + goal);
 		}
 	}
 }

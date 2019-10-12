@@ -8,10 +8,15 @@ public class Achieve : Progress
 {
 	public const string AchieveType_CollectCoin = "CollectCoin";
 	public const string AchieveType_Level = "Level";
+	public const string AchieveType_DieCount = "DieCount";
+	public const string AchieveType_Suicide = "Suicide";
+
 	public static Dictionary<string, Progress.Operation> achieve_operations = new Dictionary<string, Progress.Operation>()
 	{
 		{ Achieve.AchieveType_CollectCoin, Progress.Operation.Add },
 		{ Achieve.AchieveType_Level, Progress.Operation.Max },
+		{ Achieve.AchieveType_DieCount, Progress.Operation.Add },
+		{ Achieve.AchieveType_Suicide, Progress.Operation.Add },
 	};
 
 	public class Meta
@@ -49,7 +54,7 @@ public class Achieve : Progress
 
 	public override void OnComplete()
 	{
-		UITicker.Instance.Write("complete achieve: " + name);
+		GameManager.Instance.ui_ticker.Write(GameText.GetText("ACHIEVE/COMPLETE", name));
 		if (metas.Count >= step + 1)
 		{
 			Meta meta = metas[step];

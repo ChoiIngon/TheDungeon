@@ -19,7 +19,7 @@ public class Inventory
 	{
 		if (MAX_SLOT_COUNT <= _count)
 		{
-			throw new System.Exception("inventory count over");
+			return; // throw new System.Exception("inventory count over");
 		}
 
 		if (null == item)
@@ -81,6 +81,11 @@ public class Inventory
 		}
 
 		Item item = items[index];
+
+		if (Item.Type.Key == item.meta.type)
+		{
+			ProgressManager.Instance.Update(Achieve.AchieveType_Suicide, "SellKey", 1);
+		}
         Util.EventSystem.Publish<Item>(EventID.Inventory_Remove, item);
 
         item.slot_index = -1;

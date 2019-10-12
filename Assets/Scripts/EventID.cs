@@ -17,11 +17,14 @@ public class EventID
 	public const string Dungeon_Battle_Start = "Dungeon_Battle_Start";
 	public const string Dungeon_Battle_Finish = "Dungeon_Battle_Finish";
 	public const string Dungeon_Exit_Unlock = "Dungeon_Exit_Unlock";
+	public const string Dungeon_Map_Reveal = "Dungeon_Map_Reveal";
+	public const string Dungeon_Monster_Reveal = "Dungeon_Monster_Reveal";
+	public const string Dungeon_Treasure_Reveal = "Dungeon_Treasure_Reveal ";
 
 	public const string TextBox_Open = "TextBox_Open";
 	public const string TextBox_Close = "TextBox_Close";
 	public const string Player_Add_Exp = "Player_Add_Exp";
-	public const string Player_Change_Health = "Player_Change_Health";
+	public const string Player_Stat_Change = "Player_Stat_Change";
 
 	public const string Buff_Start = "Buff_Start";
 	public const string Buff_End = "Buff_End";

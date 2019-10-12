@@ -19,12 +19,12 @@ public class UIPotionItem : UIItem
 		});
 		inventory.item_info.SetButtonListener(UIItemInfo.Action.Drink, () =>
 		{
-			PotionItem potionItem = GameManager.Instance.player.inventory.Remove(item_data.slot_index) as PotionItem;
+			ExpendableItem potionItem = GameManager.Instance.player.inventory.Remove(item_data.slot_index) as ExpendableItem;
 			if (null == potionItem)
 			{
 				throw new System.InvalidCastException();
 			}
-			potionItem.Drink(GameManager.Instance.player);
+			potionItem.Use(GameManager.Instance.player);
 			inventory.item_info.Clear();
 		});
 	}
