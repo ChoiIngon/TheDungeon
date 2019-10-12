@@ -17,6 +17,15 @@ public class DungeonMoveButtons : MonoBehaviour
 		buttons[Dungeon.East] = UIUtil.FindChild<Button>(transform, "East");
 		buttons[Dungeon.West] = UIUtil.FindChild<Button>(transform, "West");
 		buttons[Dungeon.South] = UIUtil.FindChild<Button>(transform, "South");
+
+		Util.EventSystem.Subscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
+		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, OnMoveFinish);
+		Util.EventSystem.Subscribe(EventID.Inventory_Open, () => { touch_input.AddBlockCount(); });
+		Util.EventSystem.Subscribe(EventID.Inventory_Close, () => { touch_input.ReleaseBlockCount(); });
+		Util.EventSystem.Subscribe(EventID.Dialog_Open, () => { touch_input.AddBlockCount(); });
+		Util.EventSystem.Subscribe(EventID.Dialog_Close, () => { touch_input.ReleaseBlockCount(); });
+		Util.EventSystem.Subscribe(EventID.TextBox_Open, () => { touch_input.AddBlockCount(); });
+		Util.EventSystem.Subscribe(EventID.TextBox_Close, () => { touch_input.ReleaseBlockCount(); });
 	}
 
 	void Start()
@@ -92,14 +101,6 @@ public class DungeonMoveButtons : MonoBehaviour
 			touch_point = Vector3.zero;
 		};
 		touch_input.ReleaseBlockCount();
-		Util.EventSystem.Subscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
-		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, OnMoveFinish);
-		Util.EventSystem.Subscribe(EventID.Inventory_Open, () => { touch_input.AddBlockCount(); });
-		Util.EventSystem.Subscribe(EventID.Inventory_Close, () => { touch_input.ReleaseBlockCount(); });
-		Util.EventSystem.Subscribe(EventID.Dialog_Open, () => { touch_input.AddBlockCount(); });
-		Util.EventSystem.Subscribe(EventID.Dialog_Close, () => { touch_input.ReleaseBlockCount(); });
-		Util.EventSystem.Subscribe(EventID.TextBox_Open, () => { touch_input.AddBlockCount(); });
-		Util.EventSystem.Subscribe(EventID.TextBox_Close, () => { touch_input.ReleaseBlockCount(); });
 	}
 
 	private void OnDestroy()

@@ -1984,11 +1984,6 @@ MonoBehaviour:
   button_inventory: {fileID: 0}
   player_health: {fileID: 0}
   player_exp: {fileID: 0}
-  dungeon_level: 1
-  ui_dungeon_level: {fileID: 0}
-  coin_spot: {fileID: 0}
-  coin_prefab: {fileID: 0}
-  move_buttons: {fileID: 0}
 --- !u!1001 &890608720
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2834,7 +2829,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!20 &1301400437
 Camera:
   m_ObjectHideFlags: 0
@@ -4177,6 +4172,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b91f49b165f9d2b40bfced3712c0e2aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  touch_input: {fileID: 0}
 --- !u!1001 &2106160509
 PrefabInstance:
   m_ObjectHideFlags: 0
