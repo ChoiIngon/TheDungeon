@@ -51,7 +51,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		advertisement = GetComponent<Advertisement>();
 		if (null == advertisement)
 		{
-			throw new MissingComponentException("UnityAds");
+			throw new MissingComponentException("Advertisement");
 		}
 
 		if (Application.platform != RuntimePlatform.Android)
@@ -81,7 +81,6 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		ItemManager.Instance.Init();
 		MonsterManager.Instance.Init();
 		SkillManager.Instance.Init();
-		AchieveManager.Instance.Init();
 		AudioManager.Instance.Init();
 
 		player = new Player();

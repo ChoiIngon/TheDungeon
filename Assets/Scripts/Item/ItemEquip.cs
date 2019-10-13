@@ -63,7 +63,9 @@ public class EquipItemManager
 
 	public void Init()
 	{
-		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT item_id, item_name, equip_part, price, sprite_path, description, main_stat_type, base_value, rand_value FROM meta_item_equip");
+		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, 
+			"SELECT item_id, item_name, equip_part, price, sprite_path, description, main_stat_type, base_value, rand_value FROM meta_item_equip"
+		);
 		while (true == reader.Read())
 		{
 			EquipItem.Meta meta = new EquipItem.Meta();

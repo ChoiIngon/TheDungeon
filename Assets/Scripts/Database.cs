@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Mono.Data.Sqlite;
+
 #if UNITY_EDITOR
+using UnityEngine;
 using UnityEditor;
 #endif
 
@@ -18,16 +20,6 @@ public class Database
 	public static void Connect(Type type, string db)
 	{
 		databases[type] = new Util.Database(db);
-#if UNITY_EDITOR
-		EditorApplication.playModeStateChanged += (PlayModeStateChange state) =>
-		{
-			Type _type = type;
-			if (EditorApplication.isPaused)
-			{
-				databases[_type].Dispose();
-			}
-		};
-#endif
 	}
 
 	public static DataReader Execute(Type type, string query)
@@ -47,10 +39,21 @@ public class Database
 		}
 	}
 #if UNITY_EDITOR
-	private static void HandleOnPlayModeChanged()
+	[MenuItem("Tools/Database/Disconnect")]
+	private static void Disconnect()
 	{
-		// This method is run whenever the playmode state is changed.
-		
+		foreach (var itr in databases)
+		{
+			itr.Value.Dispose();
+		}
+		databases = null;
+	}
+
+	[MenuItem("Tools/Database/Delete User Data")]
+	private static void DeleteUserData()
+	{
+		Disconnect();
+		System.IO.File.Delete(Application.persistentDataPath + "/user_data.db");
 	}
 #endif
 }

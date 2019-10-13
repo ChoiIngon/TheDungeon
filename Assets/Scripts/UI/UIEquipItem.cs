@@ -56,7 +56,14 @@ public class UIEquipItem : UIItem
 		//inventory.item_info.description.text = item_data.description;
 		inventory.item_info.SetButtonListener(UIItemInfo.Action.Drop, () =>
 		{
-			GameManager.Instance.player.inventory.Remove(item_data.slot_index);
+			if (0 <= item_data.slot_index)
+			{
+				GameManager.Instance.player.inventory.Remove(item_data.slot_index);
+			}
+			else
+			{
+				GameManager.Instance.player.Unequip(equipItem.part, equipItem.equip_index);
+			}
 			inventory.item_info.Clear();
 		});
 

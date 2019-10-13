@@ -106,15 +106,14 @@ public class Monster : MonoBehaviour
 			buff.gameObject.SetActive(false);
 		}
 		this.meta = meta;
-		this.data = new Unit()
-		{
-			max_health = meta.health,
-			cur_health = meta.health,
-			attack = meta.attack,
-			defense = meta.defense,
-			speed = meta.speed,
-			critical = 0.0f
-		};
+		this.data = new Unit();
+		this.data.Init();
+		this.data.max_health = meta.health;
+		this.data.cur_health = meta.health;
+		this.data.attack = meta.attack;
+		this.data.defense = meta.defense;
+		this.data.speed = meta.speed;
+		this.data.critical = 0.0f;
 
 		gameObject.SetActive(true);
 

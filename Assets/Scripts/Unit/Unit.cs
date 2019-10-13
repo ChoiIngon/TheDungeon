@@ -28,12 +28,6 @@ public class Unit
 		public float damage = 0.0f;
 	}
 
-	public Unit()
-	{
-		Init();
-	}
-
-
 	public virtual void Init()
 	{
 		max_health = 0.0f;

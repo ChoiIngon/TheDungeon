@@ -82,11 +82,7 @@ public class Inventory
 
 		Item item = items[index];
 
-		if (Item.Type.Key == item.meta.type)
-		{
-			ProgressManager.Instance.Update(Achieve.AchieveType_Suicide, "SellKey", 1);
-		}
-        Util.EventSystem.Publish<Item>(EventID.Inventory_Remove, item);
+		Util.EventSystem.Publish<Item>(EventID.Inventory_Remove, item);
 
         item.slot_index = -1;
 		items[index] = null;

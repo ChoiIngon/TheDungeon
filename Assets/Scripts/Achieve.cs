@@ -1,22 +1,21 @@
-﻿using System;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 public class Achieve : Progress
 {
 	public const string AchieveType_CollectCoin = "CollectCoin";
 	public const string AchieveType_Level = "Level";
 	public const string AchieveType_DieCount = "DieCount";
-	public const string AchieveType_Suicide = "Suicide";
+	public const string AchieveType_SellKey = "SellKey";
+	public const string AchieveType_CollectItem = "CollectItem";
 
 	public static Dictionary<string, Progress.Operation> achieve_operations = new Dictionary<string, Progress.Operation>()
 	{
-		{ Achieve.AchieveType_CollectCoin, Progress.Operation.Add },
-		{ Achieve.AchieveType_Level, Progress.Operation.Max },
-		{ Achieve.AchieveType_DieCount, Progress.Operation.Add },
-		{ Achieve.AchieveType_Suicide, Progress.Operation.Add },
+		{ AchieveType_CollectCoin, Progress.Operation.Add },
+		{ AchieveType_Level, Progress.Operation.Max },
+		{ AchieveType_DieCount, Progress.Operation.Add },
+		{ AchieveType_SellKey, Progress.Operation.Add },
+		{ AchieveType_CollectItem, Progress.Operation.Add },
 	};
 
 	public class Meta
@@ -26,6 +25,7 @@ public class Achieve : Progress
 		public string type;
 		public int step;
 		public int goal;
+		public Stat.Data reward_stat;
 	}
 
 	public string name = "";
@@ -45,6 +45,7 @@ public class Achieve : Progress
 		}
 		this.operation = achieve_operations[type];
 	}
+
 	public override void OnUpdate()
 	{
 		Database.Execute(Database.Type.UserData,
@@ -70,16 +71,21 @@ public class Achieve : Progress
 				OnComplete();
 			}
 		}
+		else
+		{
+			ProgressManager.Instance.Remove(this);
+		}
 	}
 }
 
 public class AchieveManager : Util.Singleton<AchieveManager>
 {
-	private Dictionary<string, Achieve> achieves = new Dictionary<string, Achieve>();
+	private Dictionary<string, Achieve> achieves;
 
 	public void Init()
 	{
 		CreateAchieveTableIfNotExists();
+		achieves = new Dictionary<string, Achieve>();
 		LoadAchieveDatas();
 		LoadAchieveMetas();
 	}
@@ -93,7 +99,7 @@ public class AchieveManager : Util.Singleton<AchieveManager>
 				"achieve_step INT NOT NULL DEFAULT 0," +
 				"achieve_count INT NOT NULL DEFAULT 0," +
 				"achieve_goal INT NOT NULL DEFAULT 0," +
-				"PRIMARY KEY('achieve_type')" +
+				"PRIMARY KEY('achieve_type', 'achieve_step')" +
 			")"
 		);
 	}
@@ -123,7 +129,7 @@ public class AchieveManager : Util.Singleton<AchieveManager>
 		Dictionary<string, List<Achieve.Meta>> achieve_metas = new Dictionary<string, List<Achieve.Meta>>();
 
 		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-			"SELECT achieve_type, achieve_step, achieve_name, achieve_goal FROM meta_achieve order by achieve_type, achieve_step"
+			"SELECT achieve_type, achieve_step, achieve_name, achieve_goal, reward_stat_type, reward_stat_value FROM meta_achieve order by achieve_type, achieve_step"
 		);
 		while (true == reader.Read())
 		{
@@ -132,8 +138,9 @@ public class AchieveManager : Util.Singleton<AchieveManager>
 				type = reader.GetString("achieve_type"),
 				step = reader.GetInt32("achieve_step"),
 				name = reader.GetString("achieve_name"),
-				goal = reader.GetInt32("achieve_goal")
+				goal = reader.GetInt32("achieve_goal"),
 			};
+			meta.reward_stat = new Stat.Data() { type = (StatType)reader.GetInt32("reward_stat_type"), value = reader.GetFloat("reward_stat_value") };
 
 			if (false == achieve_metas.ContainsKey(meta.type))
 			{
@@ -165,18 +172,29 @@ public class AchieveManager : Util.Singleton<AchieveManager>
 			}
 			else
 			{
-				Achieve achieve = achieves[itr.Key];
-				if (achieve.step >= itr.Value.Count)
+				Achieve achieveData = achieves[itr.Key];
+
+				if (false == achieves.ContainsKey(itr.Key))
 				{
-					if (achieve.count >= itr.Value[itr.Value.Count - 1].goal)
+					Debug.LogError("invalid achievemt type(type:" + itr.Key + ")");
+					continue;
+				}
+
+				achieveData.metas = itr.Value;
+				if (achieveData.step >= achieveData.metas.Count)    // max achievement
+				{
+					Achieve.Meta lastAchieveMeta = achieveData.metas[achieveData.metas.Count - 1];
+					if (achieveData.count >= lastAchieveMeta.goal)
 					{
+						GameManager.Instance.player.stats.AddStat(lastAchieveMeta.reward_stat);
 						achieves.Remove(itr.Key);
-						ProgressManager.Instance.Remove(achieve);
+						ProgressManager.Instance.Remove(achieveData);
 					}
 				}
-				if (true == achieves.ContainsKey(itr.Key))
+				else if (1 < achieveData.step)
 				{
-					achieves[itr.Key].metas = itr.Value;
+					Achieve.Meta completedAchieveMeta = itr.Value[achieveData.step - 2];
+					GameManager.Instance.player.stats.AddStat(completedAchieveMeta.reward_stat);
 				}
 			}
 		}
