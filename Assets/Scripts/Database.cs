@@ -22,6 +22,11 @@ public class Database
 		databases[type] = new Util.Database(db);
 	}
 
+	public static void Disconnect(Type type)
+	{
+		databases[type].Dispose();
+		databases.Remove(type);
+	}
 	public static DataReader Execute(Type type, string query)
 	{
 		if (false == databases.ContainsKey(type))

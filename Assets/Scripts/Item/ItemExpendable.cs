@@ -64,7 +64,8 @@ public class StranthPotionItem : ExpendableItem {
 
 	public override void Use(Unit target)
 	{
-		target.attack += Random.Range(50, 100);
+		target.stats.AddStat(new Stat.Data() { type = StatType.Attack, value = target.stats.GetStat(StatType.Attack) * 0.01f });
+		target.CalculateStat();
 		Util.EventSystem.Publish(EventID.Player_Stat_Change);
 	}
 }
@@ -84,7 +85,8 @@ public class SpeedPotionItem : ExpendableItem
 
 	public override void Use(Unit target)
 	{
-		target.speed += Random.Range(10, 20);
+		target.stats.AddStat(new Stat.Data() { type = StatType.Speed, value = target.stats.GetStat(StatType.Speed) * 0.01f });
+		target.CalculateStat();
 		Util.EventSystem.Publish(EventID.Player_Stat_Change);
 	}
 }
@@ -201,7 +203,7 @@ public class ExpendableItemManager
 			meta.name = "scroll of map";
 			meta.price = 100;
 			meta.sprite_path = "Item/item_potion_001";
-			meta.description = "An elixir that will permenently increase speed.";
+			meta.description = "reveal map.";
 			item_metas.Add(meta);
 			ItemManager.Instance.AddItemMeta(meta);
 		}
@@ -214,7 +216,7 @@ public class ExpendableItemManager
 			meta.name = "scroll of monster";
 			meta.price = 100;
 			meta.sprite_path = "Item/item_potion_001";
-			meta.description = "An elixir that will permenently increase speed.";
+			meta.description = "detect monster";
 			item_metas.Add(meta);
 			ItemManager.Instance.AddItemMeta(meta);
 		}
@@ -227,18 +229,18 @@ public class ExpendableItemManager
 			meta.name = "scroll of treasure";
 			meta.price = 100;
 			meta.sprite_path = "Item/item_potion_001";
-			meta.description = "An elixir that will permenently increase speed.";
+			meta.description = "detect treasure";
 			item_metas.Add(meta);
 			ItemManager.Instance.AddItemMeta(meta);
 		}
 	}
 
-	public Item CreateRandomItem()
+	public ExpendableItem CreateRandomItem()
 	{
 		if (0 == item_metas.Count)
 		{
 			throw new System.Exception("no potion item info");
 		}
-		return item_metas[Random.Range(0, item_metas.Count)].CreateInstance();
+		return item_metas[Random.Range(0, item_metas.Count)].CreateInstance() as ExpendableItem;
 	}
 }

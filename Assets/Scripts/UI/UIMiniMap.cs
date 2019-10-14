@@ -164,26 +164,28 @@ public class UIMiniMap : MonoBehaviour
 			}
 		}
 	}
-	public IEnumerator Hide(float time)
+
+	public IEnumerator Hide(float time, float alpha = 0.0f)
     {
-        float alpha = 1.0f;
-        while (0.0f < alpha)
+        float delta = 1.0f;
+        while (alpha < delta)
         {
             for (int id = 0; id < Dungeon.HEIGHT * Dungeon.WIDTH; id++)
             {
                 UIMiniMapRoom miniRoom = rooms[id];
                 Color color = miniRoom.color;
-                color.a *= alpha;
+                color.a *= delta;
                 miniRoom.color = color;
             }
-            alpha = alpha - Time.deltaTime/time;
+            delta = delta - Time.deltaTime/time;
             yield return null;
         }
+
         for (int id = 0; id < Dungeon.HEIGHT * Dungeon.WIDTH; id++)
         {
             UIMiniMapRoom miniRoom = rooms[id];
             Color color = miniRoom.color;
-            color.a = 0.0f;
+            color.a = alpha;
             miniRoom.color = color;
         }
     }

@@ -16,7 +16,9 @@ public enum StatType
 	Critical_Damage = 10,
 	ExpBonus = 11,
 	CoinBonus = 12,
-	StartItemCount = 13
+	StartItemCount = 13,
+	StartItemLevel = 14,
+	Lucky = 15,
 }
 
 public class RandomStatMeta
@@ -30,7 +32,7 @@ public class RandomStatMeta
 		get
 		{
 			float rand = Random.Range(min_value, max_value);
-			return Mathf.Round(interval * (int)(rand / interval));
+			return interval * (int)(rand / interval);
 		}
 	}
 
@@ -137,6 +139,11 @@ public class Stat
 			stat.SubtractStat(new Data { type = itr.Key, value = itr.Value });
 		}
 		return stat;
+	}
+
+	static public float Truncate(float value, float trunc)
+	{
+		return trunc * (int)(value / trunc);
 	}
 }
 

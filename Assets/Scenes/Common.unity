@@ -5072,7 +5072,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1.4
-  m_Text: "123456789 1 2 3 4 5 6 7 8 9\n\uAC00\uB098\uB2E4\uB77C\uB9C8\uBC14\uC0AC\uC544\uC790\uCC28\uCE74\uD0C0\uD30C\uD558\nABCDEFGHIJKLMNOPQRSTUVWXYX\n!@#$%^&*()_+\n"
+  m_Text: "123456789 1 2 3 4 5 6 7 8 9\n\uAC00\uB098\uB2E4\uB77C\uB9C8\uBC14\uC0AC\uC544\uC790\uCC28\uCE74\uD0C0\uD30C\uD558\nABCDEFGHIJKLMNOPQRSTUVWXYX\n<color=#FF0000FF>!@#$%^&*()_+</color>\n"
 --- !u!114 &114729020327850601
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -4,18 +4,24 @@ using System.Collections.Generic;
 public class Achieve : Progress
 {
 	public const string AchieveType_CollectCoin = "CollectCoin";
-	public const string AchieveType_Level = "Level";
+	public const string AchieveType_CollectItem = "CollectItem";
+	public const string AchieveType_PlayerLevel = "PlayerLevel";
+	public const string AchieveType_DungeonLevel = "DungeonLevel";
 	public const string AchieveType_DieCount = "DieCount";
 	public const string AchieveType_SellKey = "SellKey";
-	public const string AchieveType_CollectItem = "CollectItem";
+	public const string AchieveType_EnemiesSlain = "EnemiesSlain";
+	public const string AchieveType_BossSlain = "BossSlain";
+	public const string AchieveType_UseItem = "UseItem";
+
 
 	public static Dictionary<string, Progress.Operation> achieve_operations = new Dictionary<string, Progress.Operation>()
 	{
 		{ AchieveType_CollectCoin, Progress.Operation.Add },
-		{ AchieveType_Level, Progress.Operation.Max },
+		{ AchieveType_PlayerLevel, Progress.Operation.Max },
 		{ AchieveType_DieCount, Progress.Operation.Add },
 		{ AchieveType_SellKey, Progress.Operation.Add },
 		{ AchieveType_CollectItem, Progress.Operation.Add },
+		{ AchieveType_EnemiesSlain, Progress.Operation.Add },
 	};
 
 	public class Meta

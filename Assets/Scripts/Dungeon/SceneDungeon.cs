@@ -17,6 +17,7 @@ public class SceneDungeon : SceneMain
 	public DungeonBattle battle;
 
 	public Button button_inventory;
+	public Text text_inventory;
 	private Transform ui_player_transform;
 	public UIGaugeBar player_health;
 	public UIGaugeBar player_exp;
@@ -69,7 +70,8 @@ public class SceneDungeon : SceneMain
 		{
 			GameManager.Instance.ui_inventory.SetActive(true);
 		});
-
+		text_inventory = UIUtil.FindChild<Text>(transform, "UI/ButtonInventory/Text");
+		
 		mini_map = UIUtil.FindChild<UIMiniMap>(transform,		"UI/Dungeon/MiniMap");
 		ui_dungeon_level = UIUtil.FindChild<Text>(transform,	"UI/Dungeon/Level");
 
@@ -87,6 +89,9 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Subscribe(EventID.Dungeon_Monster_Reveal, () => { mini_map.RevealMonster(); });
 		Util.EventSystem.Subscribe(EventID.Dungeon_Treasure_Reveal, () => { mini_map.RevealTreasure(); });
 		Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnChangePlayerHealth);
+		Util.EventSystem.Subscribe<Item>(EventID.Inventory_Add, OnItemAdd);
+		Util.EventSystem.Subscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
+		
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
 		InitScene();
 	}
@@ -99,6 +104,9 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Map_Reveal);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Monster_Reveal);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Treasure_Reveal);
+		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Add, OnItemAdd);
+		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
+
 	}
 
 	private void InitScene()
@@ -110,10 +118,10 @@ public class SceneDungeon : SceneMain
 		player_health.current = GameManager.Instance.player.cur_health;
 		player_exp.max = GameManager.Instance.player.GetMaxExp();
 		player_exp.current = GameManager.Instance.player.exp;
+		text_inventory.text = GameManager.Instance.player.inventory.count.ToString() + "/" + Inventory.MAX_SLOT_COUNT;
 
 		dungeon.level = 0;
 		InitDungeon();
-
 	}
 
 	private void InitDungeon()
@@ -220,7 +228,7 @@ public class SceneDungeon : SceneMain
 
 		if (Dungeon.Room.Type.Exit == dungeon.current_room.type || Dungeon.Room.Type.Lock == dungeon.current_room.type)
 		{
-			StartCoroutine(mini_map.Hide(0.5f));
+			StartCoroutine(mini_map.Hide(0.5f, 0.3f));
 		}
 		else 
 		{
@@ -269,13 +277,13 @@ public class SceneDungeon : SceneMain
 		Item item = null;
 		if (meta.reward.item_chance >= Random.Range(0, 100))
 		{
-			item = ItemManager.Instance.CreateRandomEquipItem(meta.level);
+			item = ItemManager.Instance.CreateRandomEquipItem();
 			GameManager.Instance.player.inventory.Add(item);
 		}
 		GameManager.Instance.player.coin += rewardCoin + bonusCoin;
 		GameManager.Instance.player.AddExp(rewardExp + bonusExp);
 		ProgressManager.Instance.Update(Achieve.AchieveType_CollectCoin, "", rewardCoin + bonusCoin);
-		ProgressManager.Instance.Update(Achieve.AchieveType_Level, "", GameManager.Instance.player.level);
+		ProgressManager.Instance.Update(Achieve.AchieveType_PlayerLevel, "", GameManager.Instance.player.level);
 
 		CreateCoins(rewardCoin + bonusCoin);
 		for (int i = prevPlayerLevel; i < GameManager.Instance.player.level; i++)
@@ -298,7 +306,7 @@ public class SceneDungeon : SceneMain
 		}
 		if (null != item)
 		{
-			yield return GameManager.Instance.ui_textbox.LogWrite(GameText.GetText("DUNGEON/HAVE_ITEM", "You", item.meta.name));
+			yield return GameManager.Instance.ui_textbox.LogWrite(GameText.GetText("DUNGEON/HAVE_ITEM", "You", "<color=#" + ColorUtility.ToHtmlStringRGBA(UIItem.GetGradeColor(item.grade)) +">" + item.meta.name + "</color>"));
 		}
 
 		GameManager.Instance.ui_textbox.ActiveCloseButton();
@@ -403,5 +411,24 @@ public class SceneDungeon : SceneMain
 	private void OnMoveStart(int direction)
 	{
 		StartCoroutine(Move(direction));
+	}
+
+	private void OnItemAdd(Item item)
+	{
+		string text = GameManager.Instance.player.inventory.count.ToString() + "/" + Inventory.MAX_SLOT_COUNT.ToString();
+
+		if (GameManager.Instance.player.inventory.count == Inventory.MAX_SLOT_COUNT)
+		{
+			text_inventory.text = "<color=red>" + text + "</color>";
+		}
+		else
+		{
+			text_inventory.text = text;
+		}
+	}
+
+	private void OnItemRemove(Item item)
+	{
+		text_inventory.text = GameManager.Instance.player.inventory.count.ToString() + "/" + Inventory.MAX_SLOT_COUNT.ToString();
 	}
 }

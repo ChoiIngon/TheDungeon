@@ -252,24 +252,4 @@ public class Dungeon
 			}
 		}
 	}
-	List<Item.Type> item_type_gacha = new List<Item.Type>()
-	{
-		Item.Type.Equipment,
-		Item.Type.Expendable
-	};
-
-	private Item CreateRandomItem(int dungeonLevel)
-	{
-		Item.Type itemType = item_type_gacha[Random.Range(0, item_type_gacha.Count)];
-
-		switch (itemType)
-		{
-			case Item.Type.Equipment:
-				return ItemManager.Instance.CreateRandomEquipItem(dungeonLevel);
-			case Item.Type.Expendable:
-				return ItemManager.Instance.CreateRandomExpendableItem();
-		}
-		return null;
-	}
-
 }

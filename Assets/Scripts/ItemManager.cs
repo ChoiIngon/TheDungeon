@@ -4,6 +4,11 @@ using UnityEngine.Analytics;
 
 public class ItemManager : Util.Singleton<ItemManager>
 {
+	private List<Item.Type> item_type_gacha = new List<Item.Type>()
+	{
+		Item.Type.Equipment,
+		Item.Type.Expendable
+	};
 	private Dictionary<string, Item.Meta> metas = new Dictionary<string, Item.Meta>();
 	private EquipItemManager equip_item_manager = new EquipItemManager();
 	private ExpendableItemManager expendable_item_manager = new ExpendableItemManager();
@@ -32,14 +37,28 @@ public class ItemManager : Util.Singleton<ItemManager>
 		return item;
 	}
 
-	public EquipItem CreateRandomEquipItem(int level)
+	public EquipItem CreateRandomEquipItem()
 	{
-		return equip_item_manager.CreateRandomItem(level);
+		return equip_item_manager.CreateRandomItem();
 	}
 
-	public Item CreateRandomExpendableItem()
+	public ExpendableItem CreateRandomExpendableItem()
 	{
 		return expendable_item_manager.CreateRandomItem();
+	}
+
+	public Item CreateRandomItem()
+	{
+		Item.Type itemType = item_type_gacha[Random.Range(0, item_type_gacha.Count)];
+
+		switch (itemType)
+		{
+			case Item.Type.Equipment:
+				return CreateRandomEquipItem();
+			case Item.Type.Expendable:
+				return CreateRandomExpendableItem();
+		}
+		return null;
 	}
 
 	public T FindMeta<T>(string id) where T : Item.Meta

@@ -118,7 +118,6 @@ public class Player : Unit
 	{
 		Debug.Log("data path:" + Application.persistentDataPath);
 
-		
 		AchieveManager.Instance.Init();
 		//else 
 		{
@@ -136,7 +135,7 @@ public class Player : Unit
 		}
 		for (int i = 0; i < start_item_count; i++)
 		{
-			EquipItem item = ItemManager.Instance.CreateRandomEquipItem(level);
+			EquipItem item = ItemManager.Instance.CreateRandomEquipItem();
 			Equip(item);
 		}
 	}
@@ -233,6 +232,17 @@ public class Player : Unit
 	public override void CalculateStat()
 	{
 		base.CalculateStat();
-		start_item_count = (int)stats.GetStat(StatType.StartItemCount);
+		start_item_count = (int)stats.GetStat(StatType.StartItemCount) + 1;
+		float weight = 0.0f;
+		foreach (var itr in equip_items)
+		{
+			if (null != itr.Value)
+			{
+				EquipItem.Meta meta = (EquipItem.Meta)itr.Value.meta;
+				weight += meta.weight;
+			}
+		}
+		speed = Mathf.Round(speed * 100 / (100 + weight));
+		speed = Stat.Truncate(speed, 0.01f);
 	}
 }

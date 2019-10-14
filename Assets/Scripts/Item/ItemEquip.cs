@@ -23,12 +23,12 @@ public class EquipItem : Item
 		Max
 	}
 
-	[System.Serializable]
 	public new class Meta : Item.Meta
 	{
+		public float weight;
 		public Part part = Part.Invalid;
 		public EquipItemStatMeta main_stat = new EquipItemStatMeta();
-
+		
 		public override Item CreateInstance()
 		{
 			return new EquipItem(this);
@@ -63,29 +63,30 @@ public class EquipItemManager
 
 	public void Init()
 	{
-		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, 
-			"SELECT item_id, item_name, equip_part, price, sprite_path, description, main_stat_type, base_value, rand_value FROM meta_item_equip"
+		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+			"SELECT item_id, item_name, equip_part, price, weight, main_stat_type, main_base_value, main_rand_value, sprite_path, description FROM meta_item_equip"
 		);
 		while (true == reader.Read())
 		{
 			EquipItem.Meta meta = new EquipItem.Meta();
 			meta.id = reader.GetString("item_id");
 			meta.name = reader.GetString("item_name");
+			meta.part = (EquipItem.Part)reader.GetInt32("equip_part");
+			meta.price = reader.GetInt32("price");
+			meta.weight = reader.GetFloat("weight");
 			meta.type = Item.Type.Equipment;
 			meta.main_stat = new EquipItemStatMeta()
 			{
 				type = (StatType)reader.GetInt32("main_stat_type"),
-				base_value = reader.GetFloat("base_value"),
+				base_value = reader.GetFloat("main_base_value"),
 				rand_stat_meta = new RandomStatMeta()
 				{
 					type = (StatType)reader.GetInt32("main_stat_type"),
 					min_value = 0,
-					max_value = reader.GetFloat("rand_value"),
+					max_value = reader.GetFloat("main_rand_value"),
 					interval = 0.01f
 				}
 			};
-			meta.part = (EquipItem.Part)reader.GetInt32("equip_part");
-			meta.price = reader.GetInt32("price");
 			meta.sprite_path = reader.GetString("sprite_path");
 			meta.description = reader.GetString("description");
 			item_metas.Add(meta);
@@ -102,16 +103,16 @@ public class EquipItemManager
 		InitStatGacha();
 	}
 
-	public EquipItem CreateRandomItem(int level)
+	public EquipItem CreateRandomItem()
 	{
 		EquipItem.Meta meta = item_metas[Random.Range(0, item_metas.Count)];
 		EquipItem item = meta.CreateInstance() as EquipItem;
 		item.grade = grade_gacha.Random();
-		item.level = level;
-		item.main_stat.AddStat(CreateStat(level, meta.main_stat));
+		item.level = Mathf.Max(1, Random.Range(GameManager.Instance.player.level - 5, GameManager.Instance.player.level + 2));
+		item.main_stat.AddStat(CreateStat(item.level, meta.main_stat));
 		for (int i = 0; i < (int)item.grade - (int)EquipItem.Grade.Normal; i++)
 		{
-			item.sub_stat.AddStat(CreateStat(level, sub_stat_gacha[(int)item.part].Random()));
+			item.sub_stat.AddStat(CreateStat(item.level, sub_stat_gacha[(int)item.part].Random()));
 		}
 
 		if (EquipItem.Grade.Rare <= item.grade)
@@ -142,13 +143,13 @@ public class EquipItemManager
 			EquipItemStatMeta itemStatMeta = new EquipItemStatMeta()
 			{
 				type = StatType.CoinBonus,
-				base_value = 0.1f,
+				base_value = 3.0f,
 				rand_stat_meta = new RandomStatMeta()
 				{
 					type = StatType.CoinBonus,
 					min_value = 0.0f,
 					max_value = 0.5f,
-					interval = 0.01f
+					interval = 0.1f
 				}
 			};
 

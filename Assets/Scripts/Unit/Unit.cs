@@ -83,6 +83,12 @@ public class Unit
 		speed = stats.GetStat(StatType.Speed) + (stats.GetStat(StatType.Speed) * stats.GetStat(StatType.Speed_Rate) / 100);
 		critical = stats.GetStat(StatType.Critical);
 		max_health = stats.GetStat(StatType.Health) + (stats.GetStat(StatType.Health) * stats.GetStat(StatType.Health_Rate) / 100);
+
+		attack = Stat.Truncate(attack, 0.01f);
+		defense = Stat.Truncate(defense, 0.01f);
+		speed = Stat.Truncate(speed, 0.01f);
+		critical = Stat.Truncate(critical, 0.01f);
+		max_health = Mathf.Round(max_health);
 	}
 
 	public void AddSkill(Skill skill)

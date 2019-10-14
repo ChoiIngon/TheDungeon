@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class SceneStart : SceneMain
 {
 	private Button start_button;
+	private Button continue_button;
 	public override IEnumerator Run()
 	{
 		if ("Start" == SceneManager.GetActiveScene().name)
@@ -23,9 +24,17 @@ public class SceneStart : SceneMain
 		start_button = UIUtil.FindChild<Button>(transform, "UI/StartButton");
 		UIUtil.AddPointerUpListener(start_button.gameObject, () =>
 		{
+			Database.Disconnect(Database.Type.UserData);
+			System.IO.File.Delete(Application.persistentDataPath + "/user_data.db");
+			Database.Connect(Database.Type.UserData, Application.persistentDataPath + "/user_data.db");
 			StartCoroutine(OnStart());
 		});
 
+		continue_button = UIUtil.FindChild<Button>(transform, "UI/ContinueButton");
+		UIUtil.AddPointerUpListener(continue_button.gameObject, () =>
+		{
+			StartCoroutine(OnStart());
+		});
 		yield return GameManager.Instance.CameraFade(1.0f, 0.0f, 1.0f);
 	}
 
