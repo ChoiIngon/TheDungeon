@@ -209,6 +209,7 @@ public class Player : Unit
 		}
 		*/
 	}
+	/*
 	private void LoadEquipItem()
 	{
 		string sub_stat_column = "";
@@ -274,6 +275,7 @@ public class Player : Unit
 	private void LoadExpendableItem()
 	{
 	}
+	*/
 
 	public void AddExp(int amount)
 	{

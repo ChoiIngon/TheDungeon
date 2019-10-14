@@ -28,7 +28,15 @@ public class SceneDungeon : SceneMain
     private Transform coin_spot;
     private Coin coin_prefab;
 	private DungeonMoveButtons move_buttons;
-	
+
+	private int enemy_slain_count;
+	private int collect_item_count;
+	private int collect_coin_count;
+	private int open_box_count;
+	private int move_count;
+	private int total_exp;
+	private int play_time;
+
     //private List<QuestData> completeQuests;
 	
 	public override IEnumerator Run()
@@ -111,6 +119,14 @@ public class SceneDungeon : SceneMain
 
 	private void InitScene()
 	{
+		enemy_slain_count = 0;
+		collect_item_count = 0;
+		collect_coin_count = 0;
+		move_count = 0;
+		open_box_count = 0;
+		total_exp = 0;
+		play_time = 0;
+
 		GameManager.Instance.ui_inventory.Clear();
 		GameManager.Instance.player.Init();
 		GameManager.Instance.ui_coin.Init();
@@ -184,6 +200,7 @@ public class SceneDungeon : SceneMain
 			yield break;
 		}
 
+		move_count++;
 		Vector3 position = Vector3.zero;
 		switch (direction)
 		{
@@ -222,6 +239,8 @@ public class SceneDungeon : SceneMain
 			yield return GameManager.Instance.ui_textbox.TypeWrite("Do you want to open box?");
 			if (true == yes)
 			{
+				open_box_count++;
+				collect_item_count++;
 				yield return current_room.box.Open();
 				mini_map.CurrentPosition(dungeon.current_room.id);
 			}
@@ -266,6 +285,7 @@ public class SceneDungeon : SceneMain
 
 	private IEnumerator Win(Monster.Meta meta)
 	{
+		enemy_slain_count++;
 		yield return GameManager.Instance.ui_textbox.LogWrite(GameText.GetText("DUNGEON/BATTLE/DEFEATED", "You", meta.name));
 
 		int prevPlayerLevel = GameManager.Instance.player.level;
@@ -278,11 +298,15 @@ public class SceneDungeon : SceneMain
 		Item item = null;
 		if (meta.reward.item_chance >= Random.Range(0, 100))
 		{
+			collect_item_count++;
 			item = ItemManager.Instance.CreateRandomEquipItem();
 			GameManager.Instance.player.inventory.Add(item);
 		}
 		GameManager.Instance.player.coin += rewardCoin + bonusCoin;
 		GameManager.Instance.player.AddExp(rewardExp + bonusExp);
+
+		collect_coin_count += rewardCoin + bonusCoin;
+		total_exp += rewardExp + bonusExp;
 
 		Database.Execute(Database.Type.UserData, "UPDATE user_data SET player_coin=" + GameManager.Instance.player.coin);
 		ProgressManager.Instance.Update(Achieve.AchieveType_CollectCoin, "", rewardCoin + bonusCoin);
@@ -325,12 +349,13 @@ public class SceneDungeon : SceneMain
 
 		Rect prev = GameManager.Instance.ui_textbox.Resize(1000 /*Screen.currentResolution.height * GameManager.Instance.canvas.scaleFactor * 0.8f*/);
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(
-			"You died.\n" +
-			"Your body will be carried to village.\n" +
-			"See you soon..\n" +
-			"Kill monster count : 100\n" +
-			"item count : 100\n" +
-			"turn : 100\n"
+			"You died.\n\n" +
+			"collect coin : " + collect_coin_count + "\n" +
+			"collect item : " + collect_item_count + "\n" +
+			"open box : " + open_box_count + "\n" +
+			"move : " + move_count + "\n" +
+			"level : " + GameManager.Instance.player.level + "(exp:" + total_exp + ")\n" +
+			"play time : " + play_time + "(sec)\n"
 		));
 		GameManager.Instance.ui_textbox.Resize(prev.height);
 		yield return GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f);
