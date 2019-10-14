@@ -64,7 +64,7 @@ public class SceneDungeon : SceneMain
 
 		move_buttons = UIUtil.FindChild<DungeonMoveButtons>(transform, "UI/MoveButtons");
 		
-		button_inventory = UIUtil.FindChild<Button>(transform, "UI/Player/ButtonInventory");
+		button_inventory = UIUtil.FindChild<Button>(transform, "UI/ButtonInventory");
 		UIUtil.AddPointerUpListener(button_inventory.gameObject, () =>
 		{
 			GameManager.Instance.ui_inventory.SetActive(true);

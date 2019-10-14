@@ -13,25 +13,31 @@ public class UIInventory : MonoBehaviour
 	public Button close;
 
 	public UIItem[] item_prefabs = new UIItem[(int)Item.Type.Max];
-    public void Init()
-    {
+	private void Awake()
+	{
 		item_prefabs[(int)Item.Type.Equipment] = UIUtil.FindChild<UIEquipItem>(transform, "ItemPrefabs/EquipItem");
 		item_prefabs[(int)Item.Type.Expendable] = UIUtil.FindChild<UIPotionItem>(transform, "ItemPrefabs/PotionItem");
 		item_prefabs[(int)Item.Type.Key] = UIUtil.FindChild<UIKeyItem>(transform, "ItemPrefabs/KeyItem");
 
-		gameObject.SetActive(false);
-		
-		Transform inventorySlots = UIUtil.FindChild<Transform>(transform, "ItemSlots");
+		close = UIUtil.FindChild<Button>(transform, "Close");
+		item_info = UIUtil.FindChild<UIItemInfo>(transform, "ItemInfo");
+		player_info = UIUtil.FindChild<UIPlayerInfo>(transform, "PlayerInfo");
+	}
+
+	public void Init()
+    {
+		GridLayoutGroup inventorySlots = UIUtil.FindChild<GridLayoutGroup>(transform, "ItemSlots");
 		for (int i = 0; i < Inventory.MAX_SLOT_COUNT; i++)
-        {
-			UIItemSlot slot = inventorySlots.GetChild(i).GetComponent<UIItemSlot>();
+		{
+			UIItemSlot slot = inventorySlots.transform.GetChild(i).GetComponent<UIItemSlot>();
 			slot.inventory = this;
 			slot.slot_index = i;
-            inventory_slots[i] = slot;
-            slots.Add(slot);
-        }
-
-        Transform equipSlots = UIUtil.FindChild<Transform>(transform, "EquipSlots");
+			slot.rectTransform.sizeDelta = inventorySlots.cellSize;
+			inventory_slots[i] = slot;
+			
+			slots.Add(slot);
+		}
+		Transform equipSlots = UIUtil.FindChild<Transform>(transform, "EquipSlots");
 		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Helmet, 0), UIUtil.FindChild<UIEquipSlot>(equipSlots, "Helmet"));
 		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Hand, 0), UIUtil.FindChild<UIEquipSlot>(equipSlots, "Hand_0"));
 		equip_slots.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Hand, 1), UIUtil.FindChild<UIEquipSlot>(equipSlots, "Hand_1"));
@@ -47,19 +53,15 @@ public class UIInventory : MonoBehaviour
 			itr.Value.slot_index = -1;
 			slots.Add(itr.Value);
 		}
-		
-        close = UIUtil.FindChild<Button>(transform, "Close");
-        UIUtil.AddPointerUpListener(close.gameObject, () => { SetActive(false); });
-        
-        item_info = UIUtil.FindChild<UIItemInfo>(transform, "ItemInfo");
-        item_info.Init();
-        
-        player_info = UIUtil.FindChild<UIPlayerInfo>(transform, "PlayerInfo");
-        player_info.Init();
+		UIUtil.AddPointerUpListener(close.gameObject, () => { SetActive(false); });
 
+		item_info.Init();
+        player_info.Init();
 		Util.EventSystem.Subscribe<Item>(EventID.Inventory_Add, OnItemAdd);
         Util.EventSystem.Subscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
-        Debug.Log("init complete UIInventory");
+		Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
+		Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
+		Debug.Log("init complete UIInventory");
     }
 
 	public void Clear()
@@ -74,25 +76,22 @@ public class UIInventory : MonoBehaviour
 	{
 		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Add, OnItemAdd);
 		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
+		Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
+		Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
 	}
+
 	public void SetActive(bool flag)
     {
         gameObject.SetActive(flag);
         if(true == flag)
         {
 			player_info.Refresh();
-            Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
-            Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
-			Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
-			GameManager.Instance.advertisement.HideBanner();
+            Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
 			Util.EventSystem.Publish(EventID.Inventory_Open);
         }
         else
         {
-            Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
-            Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
-			Util.EventSystem.Unsubscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
-			GameManager.Instance.advertisement.ShowBanner();
+            Util.EventSystem.Unsubscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
 			Util.EventSystem.Publish(EventID.Inventory_Close);
 		}
     }

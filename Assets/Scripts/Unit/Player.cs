@@ -109,6 +109,7 @@ public class Player : Unit
 	public void Load()
 	{
 		Debug.Log("data path:" + Application.persistentDataPath);
+		AchieveManager.Instance.Init();
 		//if(data exists) {
 		//	LoadEquipItem();
 		//}
@@ -128,16 +129,9 @@ public class Player : Unit
 			for (int i = 0; i < start_item_count; i++)
 			{
 				EquipItem item = ItemManager.Instance.CreateRandomEquipItem(level);
-				inventory.Add(item);
-			}
-
-			for (int i = 0; i < 10; i++)
-			{
-				inventory.Add(ItemManager.Instance.CreateRandomExpendableItem());
+				Equip(item);
 			}
 		}
-
-		AchieveManager.Instance.Init();
 	}
 
 	public void AddExp(int amount)
@@ -221,5 +215,11 @@ public class Player : Unit
 				item.sub_stat.AddStat(new Stat.Data() { type = (StatType)reader.GetInt32("sub_stat_type" + (i + 1)), value = reader.GetFloat("sub_stat_value_" + (i + 1)) });
 			}
 		}
+	}
+
+	public override void CalculateStat()
+	{
+		base.CalculateStat();
+		start_item_count = (int)stats.GetStat(StatType.StartItemCount);
 	}
 }

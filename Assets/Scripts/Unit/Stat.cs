@@ -5,17 +5,18 @@ public enum StatType
 {
 	Invalid,
 	Health = 1,
-	Health_Rate,
-	Attack,
-	Attack_Rate,
+	Health_Rate = 2,
+	Attack = 3,
+	Attack_Rate = 4,
 	Defense = 5,
-	Defense_Rate,
-	Speed,
-	Speed_Rate,
-	Critical,
-	Critical_Damage,
-	ExpBonus,
-	CoinBonus,
+	Defense_Rate = 6,
+	Speed = 7,
+	Speed_Rate = 8,
+	Critical = 9,
+	Critical_Damage = 10,
+	ExpBonus = 11,
+	CoinBonus = 12,
+	StartItemCount = 13
 }
 
 public class RandomStatMeta

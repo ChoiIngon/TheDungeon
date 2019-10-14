@@ -20,7 +20,7 @@ public class Advertisement : MonoBehaviour {
 		MobileAds.Initialize(initStatus => { });
 		//string adUnitID = "ca-app-pub-5331343349322603/2002078706";
 		string adUnitID = "ca-app-pub-3940256099942544/6300978111";
-		bannerView = new BannerView(adUnitID, AdSize.SmartBanner, AdPosition.Bottom);
+		bannerView = new BannerView(adUnitID, AdSize.Banner, AdPosition.Bottom);
 		// Create an empty ad request.
 		AdRequest request = new AdRequest.Builder().Build();
 

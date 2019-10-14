@@ -15,11 +15,11 @@ public class UIPlayerInfo : MonoBehaviour
 	public void Init()
 	{
 		level = UIUtil.FindChild<Text>(transform, "Level/Value");
-        attack = UIUtil.FindChild<Text>(transform, "Attack/Value");
-		critical = UIUtil.FindChild<Text>(transform, "Critical/Value");
-		speed = UIUtil.FindChild<Text>(transform, "Speed/Value");
-		defense = UIUtil.FindChild<Text>(transform, "Defense/Value");
 		health = UIUtil.FindChild<Text>(transform, "Health/Value");
+        attack = UIUtil.FindChild<Text>(transform, "Stats/Attack/Value");
+		critical = UIUtil.FindChild<Text>(transform, "Stats/Critical/Value");
+		speed = UIUtil.FindChild<Text>(transform, "Stats/Speed/Value");
+		defense = UIUtil.FindChild<Text>(transform, "Stats/Defense/Value");
 		Refresh();
     }
 
