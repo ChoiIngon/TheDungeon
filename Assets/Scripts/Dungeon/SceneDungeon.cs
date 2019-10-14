@@ -113,6 +113,7 @@ public class SceneDungeon : SceneMain
 	{
 		GameManager.Instance.ui_inventory.Clear();
 		GameManager.Instance.player.Init();
+		GameManager.Instance.ui_coin.Init();
 
 		player_health.max = GameManager.Instance.player.max_health;
 		player_health.current = GameManager.Instance.player.cur_health;
@@ -282,6 +283,8 @@ public class SceneDungeon : SceneMain
 		}
 		GameManager.Instance.player.coin += rewardCoin + bonusCoin;
 		GameManager.Instance.player.AddExp(rewardExp + bonusExp);
+
+		Database.Execute(Database.Type.UserData, "UPDATE user_data SET player_coin=" + GameManager.Instance.player.coin);
 		ProgressManager.Instance.Update(Achieve.AchieveType_CollectCoin, "", rewardCoin + bonusCoin);
 		ProgressManager.Instance.Update(Achieve.AchieveType_PlayerLevel, "", GameManager.Instance.player.level);
 

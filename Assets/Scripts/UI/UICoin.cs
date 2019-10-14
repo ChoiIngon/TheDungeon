@@ -11,7 +11,7 @@ public class UICoin : MonoBehaviour
 	public void Init()
 	{
 		text = UIUtil.FindChild<Text>(transform, "Amount");
-		text.text = "0";
+		text.text = GameManager.Instance.player.coin.ToString();
 
 		Image image = UIUtil.FindChild<Image>(transform, "Image");
         position = Camera.main.ScreenToWorldPoint(

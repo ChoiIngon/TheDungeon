@@ -52,7 +52,6 @@ public class Stat
 	}
 
 	public Dictionary<StatType, float> datas = new Dictionary<StatType, float>();
-	
 	public void SetStat(Data data)
 	{
 		datas[data.type] = data.value;
@@ -82,10 +81,12 @@ public class Stat
 		if (true == datas.ContainsKey(data.type))
 		{
 			datas[data.type] += data.value;
+			//Database.Execute(Database.Type.UserData, "UPDATE user_stats SET stat_value=" + data.value + " WHERE stat_type=" + (int)data.type);
 		}
 		else
 		{
 			datas[data.type] = data.value;
+			//Database.Execute(Database.Type.UserData, "INSERT INTO user_stats (stat_type, stat_value) VALUES (" + (int)data.type + ", " + data.value + ")");
 		}
 	}
 
@@ -104,10 +105,11 @@ public class Stat
 		}
 #endif
 		datas[data.type] -= data.value;
-
+		//Database.Execute(Database.Type.UserData, "UPDATE user_stats SET stat_value=" + data.value + " WHERE stat_type=" + (int)data.type);
 		if (EPSILON >= datas[data.type])
 		{
 			datas.Remove(data.type);
+			//Database.Execute(Database.Type.UserData, "DELETE from user_stats WHERE stat_type=" + (int)data.type);
 		}
 	}
 

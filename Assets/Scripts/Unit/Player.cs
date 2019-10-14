@@ -117,75 +117,108 @@ public class Player : Unit
 	public void Load()
 	{
 		Debug.Log("data path:" + Application.persistentDataPath);
-
 		AchieveManager.Instance.Init();
-		//else 
-		{
-			stats.AddStat(meta.base_stats[StatType.Health].CreateInstance());
-			stats.AddStat(meta.base_stats[StatType.Attack].CreateInstance());
-			stats.AddStat(meta.base_stats[StatType.Defense].CreateInstance());
-			stats.AddStat(meta.base_stats[StatType.Speed].CreateInstance());
-			stats.AddStat(meta.base_stats[StatType.Critical].CreateInstance());
-
-			CalculateStat();
-
-			level = 1;
-			exp = 0;
-			cur_health = max_health;
-		}
+		LoadPlayer();
+		//LoadEquipItem();
+		//LoadExpendableItem();
+		LoadStats();
 		for (int i = 0; i < start_item_count; i++)
 		{
 			EquipItem item = ItemManager.Instance.CreateRandomEquipItem();
 			Equip(item);
 		}
+		CalculateStat();
+		cur_health = max_health;
 	}
-
-	public void AddExp(int amount)
+	private void LoadPlayer()
 	{
-		exp += amount;
-		while (this.exp >= GetMaxExp())
-		{
-			exp -= GetMaxExp();
-			level += 1;
+		level = 1;
+		exp = 0;
+		cur_health = 0;
 
-			stats.AddStat(meta.levelup_stats[StatType.Health].CreateInstance());
-			stats.AddStat(meta.levelup_stats[StatType.Attack].CreateInstance());
-			stats.AddStat(meta.levelup_stats[StatType.Defense].CreateInstance());
-			stats.AddStat(meta.levelup_stats[StatType.Speed].CreateInstance());
-			stats.AddStat(meta.levelup_stats[StatType.Critical].CreateInstance());
-			CalculateStat();
-			cur_health = max_health;
-			//Util.EventSystem.Publish<AddExpEvent>(EventID.Player_Add_Exp, 
+		Database.Execute(Database.Type.UserData,
+			"CREATE TABLE IF NOT EXISTS user_data (" +
+				//"player_level INTEGER NOT NULL DEFAULT 0," +
+				//"player_exp INTEGER NOT NULL DEFAULT 0," +
+				//"player_current_health INTEGER NOT NULL DEFAULT 0," +
+				"player_coin INTEGER NOT NULL DEFAULT 0," +
+				//"dungeon_level INTEGER NOT NULL DEFAULT 0," +
+				"total_play_time INTEGER NOT NULL DEFAULT 0" +
+			")"
+		);
+
+		Util.Database.DataReader reader = Database.Execute(Database.Type.UserData,
+			//"SELECT player_level, player_exp, player_current_health, player_coin, dungeon_level, total_play_time FROM user_data"
+			"SELECT player_coin, total_play_time FROM user_data"
+		);
+
+		int rowCount = 0;
+		while (true == reader.Read())
+		{
+			rowCount++;
+			//level = reader.GetInt32("player_level");
+			//exp = reader.GetInt32("player_exp");
+			//cur_health = reader.GetInt32("player_current_health");
+			coin = reader.GetInt32("player_coin");
+		}
+
+		if (0 == rowCount)
+		{
+			Database.Execute(Database.Type.UserData,
+				//"INSERT INTO user_data(player_level, player_exp, player_current_health, player_coin, dungeon_level, total_play_time) VALUES (1,0, 0, 0, 1, 0)"
+				"INSERT INTO user_data(player_coin, total_play_time) VALUES (0, 0)"
+			);
+			level = 1;
+			exp = 0;
+			cur_health = 0;
+			coin = 0;
 		}
 	}
-
-	public int GetMaxExp()
+	private void LoadStats()
 	{
-		return GetMaxExp(level);
-	}
+		/*
+		Database.Execute(Database.Type.UserData,
+			"CREATE TABLE IF NOT EXISTS user_stats (" +
+				"stat_type INTEGER NOT NULL DEFAULT 0," +
+				"stat_value REAL NOT NULL DEFAULT 0," +
+				"PRIMARY KEY('stat_type')" +
+			")"
+		);
 
-	public int GetMaxExp(int level)
-	{
-		return (int)Mathf.Pow(level, 1.8f);
-	}
-	/*
-	public EquipmentItem GetEquipment(EquipmentItem.Part category, int index) {
-        if(equipments.ContainsKey(new Tuple<EquipmentItem.Part, int>(category, index)))
-        {
-            return null;
-        }
-		return equipments [new Tuple<EquipmentItem.Part, int> (category, index)];
-	}
-	*/
+		Util.Database.DataReader reader = Database.Execute(Database.Type.UserData,
+			"SELECT stat_type, stat_value FROM user_stats"
+		);
 
+		int rowCount = 0;
+		while (true == reader.Read())
+		{
+			rowCount++;
+			Stat.Data statData = new Stat.Data() { type = (StatType)reader.GetInt32("stat_type"), value = reader.GetFloat("stat_value") };
+			stats.SetStat(statData);
+		}
+
+		if (0 == rowCount)
+		{
+		*/
+			stats.AddStat(meta.base_stats[StatType.Health].CreateInstance());
+			stats.AddStat(meta.base_stats[StatType.Attack].CreateInstance());
+			stats.AddStat(meta.base_stats[StatType.Defense].CreateInstance());
+			stats.AddStat(meta.base_stats[StatType.Speed].CreateInstance());
+			stats.AddStat(meta.base_stats[StatType.Critical].CreateInstance());
+		/*
+		}
+		*/
+	}
 	private void LoadEquipItem()
 	{
 		string sub_stat_column = "";
 		for (int i = 0; i < EquipItem.MAX_SUB_STAT_COUNT; i++)
 		{
-			sub_stat_column += "sub_stat_type_" + (i + 1) + " INTEGER NOT NULL DEFAULT 0," +
+			sub_stat_column +=
+				"sub_stat_type_" + (i + 1) + " INTEGER NOT NULL DEFAULT 0," +
 				"sub_stat_value_" + (i + 1) + " REAL NOT NULL DEFAULT 0,";
 		}
+
 		Database.Execute(Database.Type.UserData,
 		   "CREATE TABLE IF NOT EXISTS user_item_equip (" +
 			   "item_seq INTEGER NOT NULL," +
@@ -216,6 +249,7 @@ public class Player : Unit
 			EquipItem.Meta meta = ItemManager.Instance.FindMeta<EquipItem.Meta>(itemID);
 			EquipItem item = meta.CreateInstance() as EquipItem;
 			item.item_seq = reader.GetInt32("item_seq");
+			item.equip_index = reader.GetInt16("equip_index");
 			item.main_stat.AddStat(new Stat.Data() { type = (StatType)reader.GetInt32("main_stat_type"), value = reader.GetFloat("main_stat_value") });
 
 			for (int i = 0; i < EquipItem.MAX_SUB_STAT_COUNT; i++)
@@ -226,9 +260,63 @@ public class Player : Unit
 				}
 				item.sub_stat.AddStat(new Stat.Data() { type = (StatType)reader.GetInt32("sub_stat_type" + (i + 1)), value = reader.GetFloat("sub_stat_value_" + (i + 1)) });
 			}
+
+			if (true == item.equip)
+			{
+				GameManager.Instance.player.Equip(item, item.equip_index);
+			}
+			else
+			{
+				GameManager.Instance.player.inventory.Add(item);
+			}
+		}
+	}
+	private void LoadExpendableItem()
+	{
+	}
+
+	public void AddExp(int amount)
+	{
+		exp += amount;
+		while (this.exp >= GetMaxExp())
+		{
+			level += 1;
+			exp -= GetMaxExp();
+
+			stats.AddStat(meta.levelup_stats[StatType.Health].CreateInstance());
+			stats.AddStat(meta.levelup_stats[StatType.Attack].CreateInstance());
+			stats.AddStat(meta.levelup_stats[StatType.Defense].CreateInstance());
+			stats.AddStat(meta.levelup_stats[StatType.Speed].CreateInstance());
+			stats.AddStat(meta.levelup_stats[StatType.Critical].CreateInstance());
+			CalculateStat();
+			cur_health = max_health;
+			//Util.Database.DataReader reader = Database.Execute(Database.Type.UserData,
+			//	"UPDATE user_data SET player_level=" + level + ", player_exp=" + exp + ",player_current_health=" + cur_health
+			//);
+			ProgressManager.Instance.Update(Achieve.AchieveType_PlayerLevel, "", level);
+			//Util.EventSystem.Publish<AddExpEvent>(EventID.Player_Add_Exp, 
 		}
 	}
 
+	public int GetMaxExp()
+	{
+		return GetMaxExp(level);
+	}
+
+	public int GetMaxExp(int level)
+	{
+		return (int)Mathf.Pow(level, 1.8f);
+	}
+	/*
+	public EquipmentItem GetEquipment(EquipmentItem.Part category, int index) {
+        if(equipments.ContainsKey(new Tuple<EquipmentItem.Part, int>(category, index)))
+        {
+            return null;
+        }
+		return equipments [new Tuple<EquipmentItem.Part, int> (category, index)];
+	}
+	*/
+	
 	public override void CalculateStat()
 	{
 		base.CalculateStat();
