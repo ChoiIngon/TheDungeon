@@ -84,6 +84,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		AudioManager.Instance.Init();
 
 		player = new Player();
+		player.meta.Init();
 
 		ui_inventory.gameObject.SetActive(true);
 		ui_inventory.Init();

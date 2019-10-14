@@ -16,22 +16,29 @@ public class AddExpEvent
 
 public class Player : Unit
 {
-	public class LevelStatMeta
+	public class Meta
 	{
-		public RandomStatMeta health;
+		public Dictionary<StatType, RandomStatMeta> base_stats = new Dictionary<StatType, RandomStatMeta>();
+		public Dictionary<StatType, RandomStatMeta> levelup_stats = new Dictionary<StatType, RandomStatMeta>();
+
+		public void Init()
+		{
+			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+				"SELECT " + 
+					"stat_type," +
+					"base_min_value,base_max_value,base_interval," +
+					"levelup_min_value,levelup_max_value,levelup_interval " +
+				"FROM meta_player_stat"
+			);
+			while (true == reader.Read())
+			{
+				StatType statType = (StatType)reader.GetInt32("stat_type");
+				base_stats.Add(statType, new RandomStatMeta() { type = statType, min_value = reader.GetFloat("base_min_value"), max_value = reader.GetFloat("base_max_value"), interval = reader.GetFloat("base_interval") });
+				levelup_stats.Add(statType, new RandomStatMeta() { type = statType, min_value = reader.GetFloat("levelup_min_value"), max_value = reader.GetFloat("levelup_max_value"), interval = reader.GetFloat("levelup_interval") });
+			}
+		}
 	}
-
-	private LevelStatMeta level_stat_meta = new LevelStatMeta()
-	{
-		health = new RandomStatMeta { type = StatType.Health, min_value = 100.0f, max_value = 200.0f, interval = 10.0f }
-	};
-
-	private RandomStatMeta base_health = new RandomStatMeta() { type = StatType.Health, max_value = 2600, min_value = 2400, interval = 50 };
-	//private RandomStatMeta base_health = new RandomStatMeta() { type = StatType.Health, max_value = 1, min_value = 10, interval = 1 };
-	private RandomStatMeta base_attack = new RandomStatMeta() { type = StatType.Attack, max_value = 700, min_value = 600, interval = 10 };
-	private RandomStatMeta base_defense = new RandomStatMeta() { type = StatType.Defense, max_value = 650, min_value = 550, interval = 5 };
-	private RandomStatMeta base_speed = new RandomStatMeta() { type = StatType.Speed, max_value = 250, min_value = 200, interval = 5 };
-	private RandomStatMeta base_critical = new RandomStatMeta() { type = StatType.Critical, max_value = 5.0f, min_value = 1.0f, interval = 0.1f };
+	
 
 	public Dictionary<Tuple<EquipItem.Part, int>, EquipItem> equip_items;
 	public Inventory inventory;
@@ -39,6 +46,7 @@ public class Player : Unit
 	public int exp;
 	public int coin = 0;
 	public int start_item_count = 1;
+	public Meta meta = new Meta();
 
 	public override void Init()
 	{
@@ -109,28 +117,27 @@ public class Player : Unit
 	public void Load()
 	{
 		Debug.Log("data path:" + Application.persistentDataPath);
+
+		
 		AchieveManager.Instance.Init();
-		//if(data exists) {
-		//	LoadEquipItem();
-		//}
 		//else 
 		{
-			stats.AddStat(base_health.CreateInstance());
-			stats.AddStat(base_attack.CreateInstance());
-			stats.AddStat(base_defense.CreateInstance());
-			stats.AddStat(base_speed.CreateInstance());
-			stats.AddStat(base_critical.CreateInstance());
+			stats.AddStat(meta.base_stats[StatType.Health].CreateInstance());
+			stats.AddStat(meta.base_stats[StatType.Attack].CreateInstance());
+			stats.AddStat(meta.base_stats[StatType.Defense].CreateInstance());
+			stats.AddStat(meta.base_stats[StatType.Speed].CreateInstance());
+			stats.AddStat(meta.base_stats[StatType.Critical].CreateInstance());
+
 			CalculateStat();
 
 			level = 1;
 			exp = 0;
 			cur_health = max_health;
-
-			for (int i = 0; i < start_item_count; i++)
-			{
-				EquipItem item = ItemManager.Instance.CreateRandomEquipItem(level);
-				Equip(item);
-			}
+		}
+		for (int i = 0; i < start_item_count; i++)
+		{
+			EquipItem item = ItemManager.Instance.CreateRandomEquipItem(level);
+			Equip(item);
 		}
 	}
 
@@ -141,7 +148,13 @@ public class Player : Unit
 		{
 			exp -= GetMaxExp();
 			level += 1;
-			max_health += level_stat_meta.health.value;
+
+			stats.AddStat(meta.levelup_stats[StatType.Health].CreateInstance());
+			stats.AddStat(meta.levelup_stats[StatType.Attack].CreateInstance());
+			stats.AddStat(meta.levelup_stats[StatType.Defense].CreateInstance());
+			stats.AddStat(meta.levelup_stats[StatType.Speed].CreateInstance());
+			stats.AddStat(meta.levelup_stats[StatType.Critical].CreateInstance());
+			CalculateStat();
 			cur_health = max_health;
 			//Util.EventSystem.Publish<AddExpEvent>(EventID.Player_Add_Exp, 
 		}
