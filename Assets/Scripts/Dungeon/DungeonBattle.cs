@@ -77,7 +77,7 @@ public class DungeonBattle : MonoBehaviour
 				monster.data.OnBattleTurn();
 
 				PlayerAttack(1.0f);
-				monsterTurn += monsterAPS + Random.Range(0, monsterAPS * 0.1f);
+				monsterTurn += monsterAPS + Random.Range(1.0f, 2.0f);
 			}
 			else
 			{
@@ -102,7 +102,7 @@ public class DungeonBattle : MonoBehaviour
 					GameManager.Instance.player.cur_health -= result.damage;
 					player_health.current = GameManager.Instance.player.cur_health;
 				}
-				playerTurn += playerAPS + Random.Range(0, playerAPS * 0.1f);
+				playerTurn += playerAPS + Random.Range(0, playerAPS);
 			}
 
 			wait_time_for_next_turn = 1.0f / battle_speed;

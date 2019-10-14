@@ -63,7 +63,7 @@ public class Unit
 
 		float attack = this.attack + Random.Range(-this.attack * 0.1f, this.attack * 0.1f);
 		float defense = target.defense + Random.Range(-target.defense * 0.1f, target.defense * 0.1f);
-		result.damage = Mathf.Min(attack, attack * (attack/defense));
+		result.damage = attack * 100 / (100 + defense);
 
 		OnAttack(target);
 		target.OnDefense(this);
