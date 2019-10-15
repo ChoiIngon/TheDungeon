@@ -7,6 +7,7 @@ public class Quest
 	public class Reward
 	{
 		public int coin;
+		public string item_id;
 	}
 
 	public class Dialogue
@@ -73,6 +74,7 @@ public class Quest
 	{
 		Util.EventSystem.Publish<Quest>(EventID.Quest_Update, this);
 	}
+
 	public void OnComplete()
 	{
 		List<QuestProgress> progressesInStep = progresses[step - 1];
@@ -94,10 +96,12 @@ public class Quest
 			}
 		}
 
-		if (null == GetReward())
-		{
+		Reward reward = GetReward();
+		if(null == reward) {
 			return;
 		}
+
+		GameManager.Instance.player.coin += reward.coin;
 		Util.EventSystem.Publish<Quest>(EventID.Quest_Complete, this);
 	}
 
@@ -152,13 +156,15 @@ public class QuestManager : Util.Singleton<QuestManager>
 		Quest quest = null;
 		{
 			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-				"SELECT quest_id, quest_name FROM meta_quest WHERE quest_id='" + questID + "'"
+				"SELECT quest_id, quest_name, reward_coin, reward_item_id FROM meta_quest WHERE quest_id='" + questID + "'"
 			);
 			while (true == reader.Read())
 			{
 				quest = new Quest();
 				quest.quest_id = reader.GetString("quest_id");
 				quest.quest_name = reader.GetString("quest_name");
+				quest.reward.coin = reader.GetInt32("reward_coin");
+				quest.reward.item_id = reader.GetString("reward_item_id");
 			}
 
 			if (null == quest)

@@ -81,13 +81,12 @@ public class Inventory
 		}
 
 		Item item = items[index];
-
+        _count -= 1;
 		Util.EventSystem.Publish<Item>(EventID.Inventory_Remove, item);
 
         item.slot_index = -1;
 		items[index] = null;
 
-        _count -= 1;
 		return item;
 	}
 	public void Swap(int from, int to)

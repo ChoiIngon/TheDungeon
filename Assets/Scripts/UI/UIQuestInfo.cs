@@ -57,6 +57,13 @@ public class UIQuestInfo : MonoBehaviour
 	private void OnQuestComplete(Quest quest)
 	{
 		contents.text = "";
+		Quest.Reward reward = quest.GetReward();
+		quest.complete_dialogues.Add(new Quest.Dialogue()
+		{
+			speaker_id = "",
+			script = "퀘스트 완료 보상\n" +
+			(reward.coin == 0 ? "" : ("Coin : " + reward.coin))
+		});
 		StartCoroutine(GameManager.Instance.ui_npc.Talk(quest.complete_dialogues));
 	}
 }
