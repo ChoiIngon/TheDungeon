@@ -77,27 +77,44 @@ public class Quest
 
 	public void OnComplete()
 	{
-		List<QuestProgress> progressesInStep = progresses[step - 1];
 		bool complete = true;
-		foreach (QuestProgress progress in progressesInStep)
 		{
-			if (progress.count < progress.goal)
+			List<QuestProgress> progressesInStep = progresses[step - 1];
+			foreach (QuestProgress progress in progressesInStep)
 			{
-				complete = false;
-				break;
+				if (progress.count < progress.goal)
+				{
+					complete = false;
+					break;
+				}
+			}
+		}
+		if (false == complete)
+		{
+			return;
+		}
+
+		{
+			List<QuestProgress> progressesInStep = progresses[step - 1];
+			foreach (QuestProgress progress in progressesInStep)
+			{
+				ProgressManager.Instance.Remove(progress);
 			}
 		}
 
-		if (true == complete)
+		if (step + 1 <= progresses.Count)
 		{
-			if (step + 1 <= progresses.Count)
+			step += 1;
+			List<QuestProgress> progressesInStep = progresses[step - 1];
+			foreach (QuestProgress progress in progressesInStep)
 			{
-				step += 1;
+				ProgressManager.Instance.Add(progress);
 			}
 		}
 
 		Reward reward = GetReward();
-		if(null == reward) {
+		if(null == reward)
+		{
 			return;
 		}
 
