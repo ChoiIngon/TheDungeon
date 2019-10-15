@@ -51,6 +51,7 @@ public class Buff_Blaze : Buff
 
 public class Buff_Bleeding : Buff
 {
+	public int damage;
     public int turn;
     public Buff_Bleeding(Unit target) : base(target, Type.Bleeding)
     {

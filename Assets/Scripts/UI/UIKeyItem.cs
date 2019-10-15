@@ -12,7 +12,7 @@ public class UIKeyItem : UIItem
 		inventory.item_info.SetDescription(item_data.meta.description);
 		inventory.item_info.SetButtonListener(UIItemInfo.Action.Drop, () =>
 		{
-			ProgressManager.Instance.Update(Achieve.AchieveType_SellKey, "", 1);
+			ProgressManager.Instance.Update(ProgressType.SellKey, "", 1);
 			GameManager.Instance.player.inventory.Remove(item_data.slot_index);
 			inventory.item_info.Clear();
 		});

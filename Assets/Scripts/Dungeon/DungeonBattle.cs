@@ -102,7 +102,7 @@ public class DungeonBattle : MonoBehaviour
 					GameManager.Instance.player.cur_health -= result.damage;
 					player_health.current = GameManager.Instance.player.cur_health;
 				}
-				playerTurn += playerAPS + Random.Range(0, playerAPS);
+				playerTurn += playerAPS;
 			}
 
 			wait_time_for_next_turn = 1.0f / battle_speed;

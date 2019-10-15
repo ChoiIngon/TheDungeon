@@ -25,7 +25,7 @@ public class SceneDungeon : SceneMain
 	private Dungeon dungeon;	
     private Text ui_dungeon_level;
 
-    private Transform coin_spot;
+	private Transform coin_spot;
     private Coin coin_prefab;
 	private DungeonMoveButtons move_buttons;
 
@@ -136,6 +136,9 @@ public class SceneDungeon : SceneMain
 		player_exp.max = GameManager.Instance.player.GetMaxExp();
 		player_exp.current = GameManager.Instance.player.exp;
 		text_inventory.text = GameManager.Instance.player.inventory.count.ToString() + "/" + Inventory.MAX_SLOT_COUNT;
+
+		Quest quest = QuestManager.Instance.GetAvailableQuest();
+		quest.Start();
 
 		dungeon.level = 0;
 		InitDungeon();
@@ -309,8 +312,9 @@ public class SceneDungeon : SceneMain
 		total_exp += rewardExp + bonusExp;
 
 		Database.Execute(Database.Type.UserData, "UPDATE user_data SET player_coin=" + GameManager.Instance.player.coin);
-		ProgressManager.Instance.Update(Achieve.AchieveType_CollectCoin, "", rewardCoin + bonusCoin);
-		ProgressManager.Instance.Update(Achieve.AchieveType_PlayerLevel, "", GameManager.Instance.player.level);
+		ProgressManager.Instance.Update(ProgressType.EnemiesSlain, meta.id, 1);
+		ProgressManager.Instance.Update(ProgressType.CollectCoin, "", rewardCoin + bonusCoin);
+		ProgressManager.Instance.Update(ProgressType.PlayerLevel, "", GameManager.Instance.player.level);
 
 		CreateCoins(rewardCoin + bonusCoin);
 		for (int i = prevPlayerLevel; i < GameManager.Instance.player.level; i++)
@@ -345,7 +349,7 @@ public class SceneDungeon : SceneMain
 
 	private IEnumerator Lose()
 	{
-		ProgressManager.Instance.Update(Achieve.AchieveType_DieCount, "", 1);
+		ProgressManager.Instance.Update(ProgressType.DieCount, "", 1);
 
 		Rect prev = GameManager.Instance.ui_textbox.Resize(1000 /*Screen.currentResolution.height * GameManager.Instance.canvas.scaleFactor * 0.8f*/);
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(
@@ -459,4 +463,6 @@ public class SceneDungeon : SceneMain
 	{
 		text_inventory.text = GameManager.Instance.player.inventory.count.ToString() + "/" + Inventory.MAX_SLOT_COUNT.ToString();
 	}
+
+	
 }

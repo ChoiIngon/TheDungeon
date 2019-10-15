@@ -1,0 +1,62 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class UIQuestInfo : MonoBehaviour
+{
+	// Start is called before the first frame update
+	private Text contents;
+	private void Awake()
+	{
+		contents = GetComponent<Text>();
+		contents.text = "";
+		Util.EventSystem.Subscribe<Quest>(EventID.Quest_Start, OnQuestStart);
+		Util.EventSystem.Subscribe<Quest>(EventID.Quest_Update, OnQuestUpdate);
+		Util.EventSystem.Subscribe<Quest>(EventID.Quest_Complete, OnQuestComplete);
+	}
+
+	private void Start()
+	{
+		
+	}
+	private void OnDestroy()
+	{
+		Util.EventSystem.Unsubscribe<Quest>(EventID.Quest_Start, OnQuestStart);
+		Util.EventSystem.Unsubscribe<Quest>(EventID.Quest_Update, OnQuestUpdate);
+		Util.EventSystem.Unsubscribe<Quest>(EventID.Quest_Complete, OnQuestComplete);
+	}
+
+	private void OnQuestStart(Quest quest)
+	{
+		contents.text = "";
+		List<QuestProgress> progresses = quest.GetQuestProgresses();
+		foreach (QuestProgress progress in progresses)
+		{
+			contents.text += progress.name + " " + progress.count + "/" + progress.goal + "\n";
+		}
+		StartCoroutine(GameManager.Instance.ui_npc.Talk(quest.start_dialogues));
+	}
+	private void OnQuestUpdate(Quest quest)
+	{
+		contents.text = "";
+		List<QuestProgress> progresses = quest.GetQuestProgresses();
+		foreach (QuestProgress progress in progresses)
+		{
+			if (progress.count >= progress.goal)
+			{
+				contents.text += "<color=#DDDDDD>" + progress.name + " 완료\n";
+			}
+			else
+			{
+				contents.text += progress.name + " " + progress.count + "/" + progress.goal + "\n";
+			}
+		}
+	}
+
+	private void OnQuestComplete(Quest quest)
+	{
+		contents.text = "";
+		StartCoroutine(GameManager.Instance.ui_npc.Talk(quest.complete_dialogues));
+	}
+}

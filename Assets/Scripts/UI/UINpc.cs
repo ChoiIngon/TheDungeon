@@ -19,8 +19,14 @@ public class UINpc : MonoBehaviour {
 		widthScale = Screen.width/canvasScaler.referenceResolution.x;
 		heightScale = Screen.height/canvasScaler.referenceResolution.y;
 	}
-	public IEnumerator Talk(string text)
+
+	public IEnumerator Talk(string speaker, string[] text)
 	{
+		while (UITextBox.State.Idle != GameManager.Instance.ui_textbox.state)
+		{
+			yield return null;
+		}
+
 		iTween.MoveBy(image.gameObject, iTween.Hash("x", image.rectTransform.rect.width * widthScale, "easeType", "easeInOutExpo"));
 		GameManager.Instance.ui_textbox.on_close += () =>
 		{
@@ -29,14 +35,45 @@ public class UINpc : MonoBehaviour {
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(text));
 	}
 
-	public IEnumerator Talk(string speaker, string[] text)
+	public IEnumerator Talk(List<Quest.Dialogue> dialogues)
 	{
-		gameObject.SetActive (true);
-		iTween.MoveBy(image.gameObject, iTween.Hash("x", image.rectTransform.rect.width * widthScale, "easeType", "easeInOutExpo"));
+		while (UITextBox.State.Idle != GameManager.Instance.ui_textbox.state)
+		{
+			yield return null;
+		}
+		
+		gameObject.SetActive(true);
+		int phaseNum = 0;
 		GameManager.Instance.ui_textbox.on_close += () =>
 		{
 			iTween.MoveTo(image.gameObject, iTween.Hash("x", 0.0f, "easeType", "easeInOutExpo", "time", 0.5f));
 		};
-		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(text));
+		GameManager.Instance.ui_textbox.on_next += () =>
+		{
+			SetSprite(dialogues[phaseNum++].speaker_id);
+		};
+
+		SetSprite(dialogues[phaseNum++].speaker_id);
+		iTween.MoveBy(image.gameObject, iTween.Hash("x", image.rectTransform.rect.width * widthScale, "easeType", "easeInOutExpo"));
+
+		List<string> scripts = new List<string>();
+		foreach (Quest.Dialogue dialogue in dialogues)
+		{
+			scripts.Add(dialogue.script);
+		}
+		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(scripts.ToArray()));
+	}
+
+	private void SetSprite(string npcID)
+	{
+		if ("" != npcID)
+		{
+			image.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+			image.sprite = ResourceManager.Instance.Load<Sprite>("Npcs/" + npcID);
+		}
+		else
+		{
+			image.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+		}
 	}
 }

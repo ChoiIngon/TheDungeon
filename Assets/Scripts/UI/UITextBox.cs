@@ -33,6 +33,7 @@ public class UITextBox : MonoBehaviour
 
 	public System.Action on_submit;
 	public System.Action on_close;
+	public System.Action on_next;
 
 	public void Init()
 	{
@@ -41,7 +42,10 @@ public class UITextBox : MonoBehaviour
 		position = rectTransform.anchoredPosition;
 
 		fast.onClick.AddListener(FastForward);
-		next.onClick.AddListener(() => { state = State.Hide; });
+		next.onClick.AddListener(() => {
+			state = State.Hide;
+			on_next?.Invoke();
+		});
 		close.onClick.AddListener(Close);
 		cancel.onClick.AddListener(Close);
 		submit.onClick.AddListener(() =>
@@ -51,6 +55,7 @@ public class UITextBox : MonoBehaviour
 			FastForward();
 			on_submit?.Invoke();
 			on_submit = null;
+			on_next = null;
 		});
 
 		state = State.Idle;
@@ -63,21 +68,41 @@ public class UITextBox : MonoBehaviour
 
 	public IEnumerator TypeWrite(string[] texts)
 	{
-		paragraph = texts.Length - 1;
-		foreach (string text in texts)
+		while (State.Idle != state)
 		{
-			yield return TypeWrite(text);
-			paragraph = Mathf.Max(0, paragraph - 1);
+			yield return null;
 		}
-	}
-	public IEnumerator TypeWrite(string text)
-	{
-		contents.text = "";
+
 		if (State.Idle == state || State.Hide == state)
 		{
 			yield return StartCoroutine(Show());
 		}
 
+		paragraph = texts.Length - 1;
+		foreach (string text in texts)
+		{
+			yield return _TypeWrite(text);
+			paragraph = Mathf.Max(0, paragraph - 1);
+		}
+	}
+	public IEnumerator TypeWrite(string text)
+	{
+		while (State.Idle != state)
+		{
+			yield return null;
+		}
+
+		if (State.Idle == state || State.Hide == state)
+		{
+			yield return StartCoroutine(Show());
+		}
+
+		yield return _TypeWrite(text);
+	}
+	private IEnumerator _TypeWrite(string text)
+	{
+		contents.text = "";
+		
 		state = State.Typing;
 		fast.gameObject.SetActive(true);
 		next.gameObject.SetActive(false);
@@ -194,6 +219,7 @@ public class UITextBox : MonoBehaviour
 		on_close?.Invoke();
 		hide_coroutine = StartCoroutine(Hide());
 		on_close = null;
+		on_next = null;
 	}
 
 	public void FastForward()

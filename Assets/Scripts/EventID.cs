@@ -28,4 +28,9 @@ public class EventID
 
 	public const string Buff_Start = "Buff_Start";
 	public const string Buff_End = "Buff_End";
+
+	public const string Quest_Start = "Quest_Start";
+	
+	public const string Quest_Update = "Quest_Update";
+	public const string Quest_Complete = "Quest_Complete";
 }

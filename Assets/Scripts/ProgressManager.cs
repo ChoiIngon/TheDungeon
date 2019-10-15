@@ -1,6 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+public class ProgressType
+{
+	public const string CollectCoin = "CollectCoin";
+	public const string CollectItem = "CollectItem";
+	public const string PlayerLevel = "PlayerLevel";
+	public const string DungeonLevel = "DungeonLevel";
+	public const string DieCount = "DieCount";
+	public const string SellKey = "SellKey";
+	public const string EnemiesSlain = "EnemiesSlain";
+	public const string BossSlain = "BossSlain";
+	public const string UseItem = "UseItem";
+
+	public static Dictionary<string, Progress.Operation> progress_operations = new Dictionary<string, Progress.Operation>()
+	{
+		{ CollectCoin, Progress.Operation.Add },
+		{ PlayerLevel, Progress.Operation.Max },
+		{ DieCount, Progress.Operation.Add },
+		{ SellKey, Progress.Operation.Add },
+		{ CollectItem, Progress.Operation.Add },
+		{ EnemiesSlain, Progress.Operation.Add },
+	};
+}
+
 public abstract class Progress
 {
 	public enum Operation
@@ -15,10 +38,15 @@ public abstract class Progress
 	public string key = "";
 	public int count = 0;
 	public int goal = 0;
-	public Operation operation = Operation.Invalid;
 
 	public void Update(int changedAmount)
 	{
+		if (false == ProgressType.progress_operations.ContainsKey(type))
+		{
+			throw new System.Exception("invalid progress update operation(progress_type:" + type + ", progress_key:" + key + ")");
+		}
+
+		Operation operation = ProgressType.progress_operations[type];
 		switch (operation)
 		{
 			case Operation.Add:
@@ -48,10 +76,6 @@ public class ProgressManager : Util.Singleton<ProgressManager>
 
 	public void Add(Progress progress)
 	{
-		if (Progress.Operation.Invalid == progress.operation)
-		{
-			throw new System.Exception("invalid progress update operation(progress_type:" + progress.type + ", progress_key:" + progress.key + ")");
-		}
 		Tuple<string, string> key = new Tuple<string, string>(progress.type, progress.key);
 		if (false == progresses.ContainsKey(key))
 		{

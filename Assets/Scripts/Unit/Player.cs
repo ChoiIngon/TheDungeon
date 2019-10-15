@@ -295,7 +295,7 @@ public class Player : Unit
 			//Util.Database.DataReader reader = Database.Execute(Database.Type.UserData,
 			//	"UPDATE user_data SET player_level=" + level + ", player_exp=" + exp + ",player_current_health=" + cur_health
 			//);
-			ProgressManager.Instance.Update(Achieve.AchieveType_PlayerLevel, "", level);
+			ProgressManager.Instance.Update(ProgressType.PlayerLevel, "", level);
 			//Util.EventSystem.Publish<AddExpEvent>(EventID.Player_Add_Exp, 
 		}
 	}

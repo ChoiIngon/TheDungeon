@@ -138,7 +138,6 @@ namespace Util
             if (null == eventHandler.onEvent)
             {
                 event_handlers.Remove(eventID);
-                Debug.Log("clear event handler container(event_id:" + eventID + ")");
             }
         }
 
@@ -163,7 +162,6 @@ namespace Util
             if (null == eventHandler.onEvent)
             {
                 event_handlers.Remove(eventID);
-                Debug.Log("clear event handler container(event_id:" + eventID + ")");
             }
         }
 
