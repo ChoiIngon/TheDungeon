@@ -342,6 +342,11 @@ public class Player : Unit
 
 	public void ChangeCoin(int amount, bool notifyEvent = true)
 	{
+		if (0 == amount)
+		{
+			return;
+		}
+
 		if (0 > amount)
 		{
 			if (coin < amount)

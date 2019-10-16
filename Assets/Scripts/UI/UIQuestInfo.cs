@@ -16,10 +16,6 @@ public class UIQuestInfo : MonoBehaviour
 		Util.EventSystem.Subscribe<Quest>(EventID.Quest_Complete, OnQuestComplete);
 	}
 
-	private void Start()
-	{
-		
-	}
 	private void OnDestroy()
 	{
 		Util.EventSystem.Unsubscribe<Quest>(EventID.Quest_Start, OnQuestStart);
@@ -30,16 +26,21 @@ public class UIQuestInfo : MonoBehaviour
 	private void OnQuestStart(Quest quest)
 	{
 		contents.text = "";
-		List<QuestProgress> progresses = quest.GetQuestProgresses();
-		foreach (QuestProgress progress in progresses)
+		GameManager.Instance.ui_textbox.on_close += () => 
 		{
-			contents.text += progress.name + " " + progress.count + "/" + progress.goal + "\n";
-		}
+			contents.text += "<B>" + quest.quest_name + "</B>\n";
+			List<QuestProgress> progresses = quest.GetQuestProgresses();
+			foreach (QuestProgress progress in progresses)
+			{
+				contents.text += progress.name + " " + progress.count + "/" + progress.goal + "\n";
+			}
+		};
 		StartCoroutine(GameManager.Instance.ui_npc.Talk(quest.start_dialogues));
 	}
 	private void OnQuestUpdate(Quest quest)
 	{
 		contents.text = "";
+		contents.text += "<B>" + quest.quest_name + "</B>\n";
 		List<QuestProgress> progresses = quest.GetQuestProgresses();
 		foreach (QuestProgress progress in progresses)
 		{

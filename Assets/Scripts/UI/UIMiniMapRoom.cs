@@ -7,7 +7,6 @@ public class UIMiniMapRoom : MonoBehaviour
 {
 	public Image room;
 	public Image[] next;
-	public bool reveal;
 	public Color color
 	{
 		set
@@ -22,5 +21,13 @@ public class UIMiniMapRoom : MonoBehaviour
         {
             return room.color;
         }
+	}
+
+	public void SetGateColor(int direction, Color color)
+	{
+		if (true == gameObject.activeSelf)
+		{
+			next[direction].color = color;
+		}
 	}
 }

@@ -16,21 +16,10 @@ public class Quest
 		public string script; // 대사
 	}
 
-	public enum State
-	{
-		Invalid,
-		AccecptWait,
-		OnGoing,
-		Complete,
-		Rewared,
-		Max
-	};
-
 	public string quest_id;
 	public string quest_name;
 	public int step;
-	public State state = State.Invalid;
-
+	
 	public List<List<QuestProgress>> progresses = new List<List<QuestProgress>>();
 	public List<Dialogue> start_dialogues = new List<Dialogue>();
 	public List<Dialogue> complete_dialogues = new List<Dialogue>();
@@ -118,7 +107,15 @@ public class Quest
 			return;
 		}
 
-		GameManager.Instance.player.ChangeCoin(reward.coin);
+		if (0 < reward.coin)
+		{
+			GameManager.Instance.player.ChangeCoin(reward.coin);
+		}
+		if ("" != reward.item_id)
+		{
+			GameManager.Instance.player.inventory.Add(ItemManager.Instance.CreateItem(reward.item_id));
+		}
+		
 		Util.EventSystem.Publish<Quest>(EventID.Quest_Complete, this);
 	}
 

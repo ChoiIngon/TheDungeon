@@ -201,7 +201,24 @@ public class UIMiniMap : MonoBehaviour
                 Color color = miniRoom.color;
                 color.a = Mathf.Max(color.a, alpha);
                 miniRoom.color = color;
-            }
+
+				if (current_room_id == id - 1)
+				{
+					miniRoom.SetGateColor(Dungeon.West, rooms[current_room_id].next[Dungeon.East].color);
+				}
+				else if (current_room_id == id + 1)
+				{
+					miniRoom.SetGateColor(Dungeon.East, rooms[current_room_id].next[Dungeon.West].color);
+				}
+				else if (current_room_id == id - Dungeon.WIDTH)
+				{
+					miniRoom.SetGateColor(Dungeon.North, rooms[current_room_id].next[Dungeon.South].color);
+				}
+				else if (current_room_id == id + Dungeon.WIDTH)
+				{
+					miniRoom.SetGateColor(Dungeon.South, rooms[current_room_id].next[Dungeon.North].color);
+				}
+			}
             alpha += Time.deltaTime / time;
             yield return null;
         }
