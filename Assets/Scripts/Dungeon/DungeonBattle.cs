@@ -11,6 +11,7 @@ public class DungeonBattle : MonoBehaviour
 	private Transform			player_damage_effect_spot;
 	private Effect_PlayerDamage player_damage_effect_prefab;
 
+	private UIBattleLog			battle_log;
 	private UIButtonGroup		battle_buttons;
 	private float				battle_speed = 1.5f;
 	private float				wait_time_for_next_turn = 0.0f;
@@ -30,6 +31,8 @@ public class DungeonBattle : MonoBehaviour
 		player_damage_effect_prefab = UIUtil.FindChild<Effect_PlayerDamage>(player_damage_effect_spot, "Effect_PlayerDamage");
 		player_health = UIUtil.FindChild<UIGaugeBar>(transform, "../UI/Player/Health");
 		battle_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "../UI/Battle/SkillButtons");
+		battle_log = UIUtil.FindChild<UIBattleLog>(transform, "../UI/Battle/BattleLog");
+
 		touch_input = GetComponent<TouchInput>();
 		if (null == touch_input)
 		{
@@ -59,9 +62,11 @@ public class DungeonBattle : MonoBehaviour
 		battle_buttons.gameObject.SetActive(true);
 		battle_buttons.Show(0.5f);
 
+		battle_log.Init();
 		monster.Init(monsterMeta);
 		yield return StartCoroutine(monster.ColorTo(Color.black, Color.white, 1.0f));
-		
+
+
 		touch_input.ReleaseBlockCount();
 		// attack per second
 		float playerAPS = GameManager.Instance.player.speed / monster.meta.speed;
@@ -98,7 +103,7 @@ public class DungeonBattle : MonoBehaviour
 						Random.Range(Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
 						0.0f
 					);
-					yield return GameManager.Instance.ui_textbox.LogWrite("<color=red>" + GameText.GetText("DUNGEON/BATTLE/HIT", monster.meta.name, "You") + "(-" + (int)result.damage + ")</color>");
+					battle_log.AsyncWrite("<color=red>" + GameText.GetText("DUNGEON/BATTLE/HIT", monster.meta.name, "You") + "(-" + (int)result.damage + ")</color>");
 					GameManager.Instance.player.cur_health -= result.damage;
 					player_health.current = GameManager.Instance.player.cur_health;
 				}
@@ -138,7 +143,7 @@ public class DungeonBattle : MonoBehaviour
 		result.damage *= damageRate;
 		if (0.0f < result.damage)
 		{
-			StartCoroutine(GameManager.Instance.ui_textbox.LogWrite(GameText.GetText("DUNGEON/BATTLE/HIT", "You", monster.meta.name) + "(-" + (int)result.damage + ")"));
+			battle_log.AsyncWrite(GameText.GetText("DUNGEON/BATTLE/HIT", "You", monster.meta.name) + "(-" + (int)result.damage + ")");
 			StartCoroutine(monster.OnDamage(result));
 		}
 	}

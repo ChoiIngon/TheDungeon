@@ -289,7 +289,6 @@ public class SceneDungeon : SceneMain
 	private IEnumerator Win(Monster.Meta meta)
 	{
 		enemy_slain_count++;
-		yield return GameManager.Instance.ui_textbox.LogWrite(GameText.GetText("DUNGEON/BATTLE/DEFEATED", "You", meta.name));
 
 		int prevPlayerLevel = GameManager.Instance.player.level;
 		Stat stat = GameManager.Instance.player.stats;
@@ -329,18 +328,20 @@ public class SceneDungeon : SceneMain
 		player_health.max = GameManager.Instance.player.max_health;
 		player_health.current = GameManager.Instance.player.cur_health;
 
-		yield return GameManager.Instance.ui_textbox.LogWrite("Coins : +" + rewardCoin + (0 < bonusCoin ? "(" + bonusCoin + " bonus)" : ""));
-		yield return GameManager.Instance.ui_textbox.LogWrite("Exp : +" + rewardExp + (0 < bonusExp ? "(" + bonusExp + " bonus)" : ""));
+		string battleResult = "";
+		battleResult += GameText.GetText("DUNGEON/BATTLE/DEFEATED", "You", meta.name) + "\n";
+		battleResult += "Coins : +" + rewardCoin + (0 < bonusCoin ? "(" + bonusCoin + " bonus)" : "") + "\n";
+		battleResult += "Exp : +" + rewardExp + (0 < bonusExp ? "(" + bonusExp + " bonus)" : "") + "\n";
 		if (prevPlayerLevel < GameManager.Instance.player.level)
 		{
-			yield return GameManager.Instance.ui_textbox.LogWrite("Level : " + prevPlayerLevel + " -> " + GameManager.Instance.player.level);
+			battleResult += "Level : " + prevPlayerLevel + " -> " + GameManager.Instance.player.level + "\n";
 		}
 		if (null != item)
 		{
-			yield return GameManager.Instance.ui_textbox.LogWrite(GameText.GetText("DUNGEON/HAVE_ITEM", "You", "<color=#" + ColorUtility.ToHtmlStringRGBA(UIItem.GetGradeColor(item.grade)) +">" + item.meta.name + "</color>"));
+			battleResult += GameText.GetText("DUNGEON/HAVE_ITEM", "You", "<color=#" + ColorUtility.ToHtmlStringRGBA(UIItem.GetGradeColor(item.grade)) +">" + item.meta.name + "</color>") + "\n";
 		}
 
-		GameManager.Instance.ui_textbox.ActiveCloseButton();
+		StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(battleResult));
 		/*
 		QuestManager.Instance.Update("KillMonster", info.id);
 		yield return StartCoroutine(CheckCompleteQuest());

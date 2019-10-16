@@ -139,23 +139,7 @@ public class UITextBox : MonoBehaviour
 		on_submit = null;
 		yield return hide_coroutine;
 	}
-	public IEnumerator LogWrite(string text)
-	{
-		if (State.Idle == state || State.Hide == state)
-		{
-			yield return StartCoroutine(Show());
-		}
-
-		state = State.Typing;
-		fast.gameObject.SetActive(false);
-		next.gameObject.SetActive(false);
-		close.gameObject.SetActive(false);
-		submit.gameObject.SetActive(false);
-		cancel.gameObject.SetActive(false);
-		contents.text += text + "\n";
-		scroll_rect.verticalNormalizedPosition = 0.0f;
-	}
-
+	
 	public Rect Resize(float h)
 	{
 		Rect prev = rectTransform.rect;
@@ -165,7 +149,6 @@ public class UITextBox : MonoBehaviour
 
 	private void OnUpdate(float value)
 	{
-		
 		Vector2 delta = new Vector2(0.0f, value);
 		rectTransform.sizeDelta = delta;
 		Debug.Log(value);
@@ -209,11 +192,6 @@ public class UITextBox : MonoBehaviour
 		contents.text = "";
 	}
 
-	public void ActiveCloseButton()
-	{
-		FastForward();
-	}
-
 	public void Close()
 	{
 		on_close?.Invoke();
@@ -221,7 +199,6 @@ public class UITextBox : MonoBehaviour
 		on_close = null;
 		on_next = null;
 	}
-
 	public void FastForward()
 	{
 		scroll_rect.verticalNormalizedPosition = 0.0f;
