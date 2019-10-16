@@ -1,5 +1,4 @@
-﻿using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
+﻿using System.IO;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,7 +7,7 @@ using UnityEngine.Networking;
 
 public class GameManager : Util.MonoSingleton<GameManager>
 {
-    public const string VERSION = "1.1";
+    public const string VERSION = "1.2";
 	public Player player;
 	public UIInventory ui_inventory;
 	public UICoin ui_coin;
@@ -89,7 +88,6 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		ui_inventory.gameObject.SetActive(true);
 		ui_inventory.Init();
 		ui_inventory.gameObject.SetActive(false);
-		ui_coin.Init();
 		ui_npc.Init();
 		ui_textbox.Init();
 	}

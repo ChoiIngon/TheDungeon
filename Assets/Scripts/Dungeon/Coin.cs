@@ -71,7 +71,7 @@ public class Coin : MonoBehaviour
 			yield return null;
 		}
 
-		yield return GameManager.Instance.ui_coin.ChangeAmount(amount);
+		yield return GameManager.Instance.ui_coin.ChangeAmount();
 		Destroy(gameObject);
 	}
 

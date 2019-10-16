@@ -38,13 +38,17 @@ public class Player : Unit
 			}
 		}
 	}
-	
 
 	public Dictionary<Tuple<EquipItem.Part, int>, EquipItem> equip_items;
 	public Inventory inventory;
 	public int level;
 	public int exp;
-	public int coin = 0;
+	private int _coin = 0;
+	public int coin
+	{
+		get { return _coin; }
+	}
+	
 	public int start_item_count = 1;
 	public Meta meta = new Meta();
 
@@ -84,7 +88,7 @@ public class Player : Unit
 		{
 			AddSkill(item.skill);
 		}
-        Debug.Log("equip item(item_id:" + item.meta.id + ", part:" + item.part + ", equip_index:" + equip_index + ")");
+        
         Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Equip, new ItemEquipEvent() { item = item, equip_index = equip_index } );
         return prev;
 	}
@@ -109,7 +113,7 @@ public class Player : Unit
 		{
 			RemoveSkill(item.skill);
 		}
-		Debug.Log("unequip item(item_id:" + item.meta.id + ", part:" + item.part + ", equip_index:" + equip_index + ")");
+		
         Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Unequip, new ItemEquipEvent() { item = item, equip_index = equip_index });
         return item;
 	}
@@ -159,7 +163,7 @@ public class Player : Unit
 			//level = reader.GetInt32("player_level");
 			//exp = reader.GetInt32("player_exp");
 			//cur_health = reader.GetInt32("player_current_health");
-			coin = reader.GetInt32("player_coin");
+			ChangeCoin(reader.GetInt32("player_coin"));
 		}
 
 		if (0 == rowCount)
@@ -171,7 +175,7 @@ public class Player : Unit
 			level = 1;
 			exp = 0;
 			cur_health = 0;
-			coin = 0;
+			_coin = 0;
 		}
 	}
 	private void LoadStats()
@@ -334,5 +338,25 @@ public class Player : Unit
 		}
 		speed = Mathf.Round(speed * 100 / (100 + weight));
 		speed = Stat.Truncate(speed, 0.01f);
+	}
+
+	public void ChangeCoin(int amount, bool notifyEvent = true)
+	{
+		if (0 > amount)
+		{
+			if (coin < amount)
+			{
+				throw new System.Exception("not enough coin");
+			}
+		}
+		else
+		{
+			ProgressManager.Instance.Update(ProgressType.CollectCoin, "", amount);
+		}
+		_coin += amount;
+		if (true == notifyEvent)
+		{
+			Util.EventSystem.Publish(EventID.CoinAmountChanged);
+		}
 	}
 }

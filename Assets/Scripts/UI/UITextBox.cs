@@ -37,6 +37,7 @@ public class UITextBox : MonoBehaviour
 
 	public void Init()
 	{
+		contents.text = "";
 		rectTransform = GetComponent<RectTransform>();
 		height = rectTransform.rect.height + rectTransform.anchoredPosition.y;
 		position = rectTransform.anchoredPosition;

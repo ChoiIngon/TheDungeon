@@ -20,13 +20,14 @@ public class UINpc : MonoBehaviour {
 		heightScale = Screen.height/canvasScaler.referenceResolution.y;
 	}
 
-	public IEnumerator Talk(string speaker, string[] text)
+	public IEnumerator Talk(string speaker_id, string[] text)
 	{
 		while (UITextBox.State.Idle != GameManager.Instance.ui_textbox.state)
 		{
 			yield return null;
 		}
 
+		SetSprite(speaker_id);
 		iTween.MoveBy(image.gameObject, iTween.Hash("x", image.rectTransform.rect.width * widthScale, "easeType", "easeInOutExpo"));
 		GameManager.Instance.ui_textbox.on_close += () =>
 		{
@@ -42,7 +43,6 @@ public class UINpc : MonoBehaviour {
 			yield return null;
 		}
 		
-		gameObject.SetActive(true);
 		int phaseNum = 0;
 		GameManager.Instance.ui_textbox.on_close += () =>
 		{

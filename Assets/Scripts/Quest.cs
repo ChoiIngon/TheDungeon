@@ -118,7 +118,6 @@ public class Quest
 			return;
 		}
 
-		GameManager.Instance.player.coin += reward.coin;
 		Util.EventSystem.Publish<Quest>(EventID.Quest_Complete, this);
 	}
 

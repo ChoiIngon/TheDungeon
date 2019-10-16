@@ -129,7 +129,6 @@ public class SceneDungeon : SceneMain
 
 		GameManager.Instance.ui_inventory.Clear();
 		GameManager.Instance.player.Init();
-		GameManager.Instance.ui_coin.Init();
 
 		player_health.max = GameManager.Instance.player.max_health;
 		player_health.current = GameManager.Instance.player.cur_health;
@@ -304,7 +303,7 @@ public class SceneDungeon : SceneMain
 			item = ItemManager.Instance.CreateRandomEquipItem();
 			GameManager.Instance.player.inventory.Add(item);
 		}
-		GameManager.Instance.player.coin += rewardCoin + bonusCoin;
+		GameManager.Instance.player.ChangeCoin(rewardCoin + bonusCoin, false);
 		GameManager.Instance.player.AddExp(rewardExp + bonusExp);
 
 		collect_coin_count += rewardCoin + bonusCoin;
@@ -312,10 +311,9 @@ public class SceneDungeon : SceneMain
 
 		Database.Execute(Database.Type.UserData, "UPDATE user_data SET player_coin=" + GameManager.Instance.player.coin);
 		ProgressManager.Instance.Update(ProgressType.EnemiesSlain, meta.id, 1);
-		ProgressManager.Instance.Update(ProgressType.CollectCoin, "", rewardCoin + bonusCoin);
-		ProgressManager.Instance.Update(ProgressType.PlayerLevel, "", GameManager.Instance.player.level);
-
+	
 		CreateCoins(rewardCoin + bonusCoin);
+
 		for (int i = prevPlayerLevel; i < GameManager.Instance.player.level; i++)
 		{
 			yield return player_exp.SetCurrent(player_exp.max, 0.3f);
@@ -342,10 +340,6 @@ public class SceneDungeon : SceneMain
 		}
 
 		StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(battleResult));
-		/*
-		QuestManager.Instance.Update("KillMonster", info.id);
-		yield return StartCoroutine(CheckCompleteQuest());
-		*/
 	}
 
 	private IEnumerator Lose()
@@ -366,7 +360,6 @@ public class SceneDungeon : SceneMain
 		yield return GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f);
 
 		StartCoroutine(GameManager.Instance.advertisement.ShowAds());
-		//InitScene();
 
 		yield return AsyncLoadScene("Start");
 		yield return AsyncUnloadScene("Dungeon");
