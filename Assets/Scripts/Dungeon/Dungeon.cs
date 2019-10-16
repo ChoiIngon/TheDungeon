@@ -39,7 +39,7 @@ public class Dungeon
 		public int group = 0;
 		public bool visit = false;
 		public Type type = Type.Normal;
-		public Item item = null;
+		public Item.Meta item = null;
 		public Monster.Meta monster = null;
 		public Room[] next = new Room[Max];
 		
@@ -176,7 +176,7 @@ public class Dungeon
 			}
 			int index = Random.Range(0, candidates.Count);
 			Room room = candidates[index];
-			room.item = ItemManager.Instance.CreateRandomExpendableItem();
+			room.item = ItemManager.Instance.GetRandomExpendableItemMeta();
 			candidates.RemoveAt(index);
 		}
 
@@ -184,7 +184,7 @@ public class Dungeon
 		{
 			exit.type = Dungeon.Room.Type.Lock;
 			int index = Random.Range(0, candidates.Count);
-			candidates[index].item = ItemManager.Instance.CreateItem("ITEM_KEY");
+			candidates[index].item = ItemManager.Instance.FindMeta<KeyItem.Meta>("ITEM_KEY");
 			candidates.RemoveAt(index);
 		}
 	}

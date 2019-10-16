@@ -39,11 +39,12 @@ public class Achieve : Progress
 		if (metas.Count >= step + 1)
 		{
 			Meta meta = metas[step];
+			name = meta.name;
 			step = meta.step;
 			count = count - goal;
 			goal = meta.goal;
 			Database.Execute(Database.Type.UserData,
-				"UPDATE user_achieve SET achieve_step=" + step + ", achieve_count=" + count + ", achieve_goal=" + goal + " WHERE achieve_type='" + type + "'"
+				"UPDATE user_achieve SET achieve_name='" + name + "', achieve_step=" + step + ", achieve_count=" + count + ", achieve_goal=" + goal + " WHERE achieve_type='" + type + "'"
 			);
 
 			if (count >= goal)

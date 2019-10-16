@@ -10,11 +10,10 @@ public class ItemManager : Util.Singleton<ItemManager>
 		Item.Type.Expendable
 	};
 	private Dictionary<string, Item.Meta> metas = new Dictionary<string, Item.Meta>();
-	private EquipItemManager equip_item_manager = new EquipItemManager();
 	private ExpendableItemManager expendable_item_manager = new ExpendableItemManager();
 	public void Init()
 	{
-		equip_item_manager.Init();
+		EquipItemManager.Instance.Init();
 		expendable_item_manager.Init();
 		InitKeyItemInfo();
 	}
@@ -42,7 +41,7 @@ public class ItemManager : Util.Singleton<ItemManager>
 	public EquipItem CreateRandomEquipItem()
 	{
 		ProgressManager.Instance.Update(ProgressType.CollectItem, "", 1);
-		return equip_item_manager.CreateRandomItem();
+		return EquipItemManager.Instance.CreateRandomItem();
 	}
 
 	public ExpendableItem CreateRandomExpendableItem()
@@ -74,6 +73,14 @@ public class ItemManager : Util.Singleton<ItemManager>
 		return metas[id] as T;
 	}
 
+	public ExpendableItem.Meta GetRandomExpendableItemMeta()
+	{
+		if (0 == expendable_item_manager.item_metas.Count)
+		{
+			throw new System.Exception("no potion item info");
+		}
+		return expendable_item_manager.item_metas[Random.Range(0, expendable_item_manager.item_metas.Count)];
+	}
 	private void InitKeyItemInfo()
 	{
 		{

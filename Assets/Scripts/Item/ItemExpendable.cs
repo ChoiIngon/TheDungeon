@@ -153,7 +153,7 @@ public class TreasureRevealScrollItem : ExpendableItem
 
 public class ExpendableItemManager
 {
-	private List<ExpendableItem.Meta> item_metas = new List<ExpendableItem.Meta>();
+	public List<ExpendableItem.Meta> item_metas = new List<ExpendableItem.Meta>();
 	public void Init()
 	{
 		{

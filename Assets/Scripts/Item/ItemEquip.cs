@@ -31,9 +31,32 @@ public class EquipItem : Item
 		
 		public override Item CreateInstance()
 		{
-			return new EquipItem(this);
+			EquipItem item = new EquipItem(this);
+			item.grade = EquipItemManager.Instance.grade_gacha.Random();
+			item.level = Mathf.Max(1, Random.Range(GameManager.Instance.player.level - 5, GameManager.Instance.player.level + 2));
+			item.main_stat.AddStat(item.CreateStat((item.meta as Meta).main_stat));
+			for (int i = 0; i < (int)item.grade - (int)EquipItem.Grade.Normal; i++)
+			{
+				item.sub_stat.AddStat(item.CreateStat(EquipItemManager.Instance.sub_stat_gacha[(int)item.part].Random()));
+			}
+
+			if (EquipItem.Grade.Rare <= item.grade)
+			{
+				item.skill = SkillManager.Instance.CreateRandomInstance();
+			}
+
+			Analytics.CustomEvent("CreateItem", new Dictionary<string, object>
+			{
+				{ "id", item.meta.id },
+				{ "type", item.meta.type.ToString()},
+				{ "name", item.meta.name },
+				{ "grade", item.grade.ToString()},
+				{ "level", item.level}
+			});
+
+			return item;
 		}
-    }
+	}
 
 	public int 	level = 0;
 	public Part part = Part.Invalid;
@@ -53,13 +76,26 @@ public class EquipItem : Item
 	{
 		part = meta.part;
 	}
+
+	private Stat.Data CreateStat(EquipItemStatMeta meta)
+	{
+		Stat.Data data = new Stat.Data();
+		data.type = meta.type;
+		data.value = meta.base_value;
+		for (int i = 0; i < level; i++)
+		{
+			data.value += meta.rand_stat_meta.value;
+		}
+		data.value = Mathf.Round(data.value * 100) / 100.0f;
+		return data;
+	}
 }
 
-public class EquipItemManager
+public class EquipItemManager : Util.Singleton<EquipItemManager>
 {
-	private List<EquipItem.Meta> item_metas = new List<EquipItem.Meta>();
-	private Util.WeightRandom<Item.Grade> grade_gacha = new Util.WeightRandom<Item.Grade>();
-	private Util.WeightRandom<EquipItemStatMeta>[] sub_stat_gacha = new Util.WeightRandom<EquipItemStatMeta>[(int)EquipItem.Part.Max];
+	public List<EquipItem.Meta> item_metas = new List<EquipItem.Meta>();
+	public Util.WeightRandom<Item.Grade> grade_gacha = new Util.WeightRandom<Item.Grade>();
+	public Util.WeightRandom<EquipItemStatMeta>[] sub_stat_gacha = new Util.WeightRandom<EquipItemStatMeta>[(int)EquipItem.Part.Max];
 
 	public void Init()
 	{
@@ -106,29 +142,7 @@ public class EquipItemManager
 	public EquipItem CreateRandomItem()
 	{
 		EquipItem.Meta meta = item_metas[Random.Range(0, item_metas.Count)];
-		EquipItem item = meta.CreateInstance() as EquipItem;
-		item.grade = grade_gacha.Random();
-		item.level = Mathf.Max(1, Random.Range(GameManager.Instance.player.level - 5, GameManager.Instance.player.level + 2));
-		item.main_stat.AddStat(CreateStat(item.level, meta.main_stat));
-		for (int i = 0; i < (int)item.grade - (int)EquipItem.Grade.Normal; i++)
-		{
-			item.sub_stat.AddStat(CreateStat(item.level, sub_stat_gacha[(int)item.part].Random()));
-		}
-
-		if (EquipItem.Grade.Rare <= item.grade)
-		{
-			item.skill = SkillManager.Instance.CreateRandomInstance();
-		}
-
-		Analytics.CustomEvent("CreateItem", new Dictionary<string, object>
-		{
-			{"id", item.meta.id },
-			{"type", item.meta.type.ToString()},
-			{"name", item.meta.name },
-			{"grade", item.grade.ToString()},
-			{"level", item.level}
-		});
-		return item;
+		return meta.CreateInstance() as EquipItem;
 	}
 
 	private void InitStatGacha()
@@ -265,18 +279,5 @@ public class EquipItemManager
 			sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(itemStatMeta, 1);
 			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
 		}
-	}
-
-	private Stat.Data CreateStat(int level, EquipItemStatMeta meta)
-	{
-		Stat.Data data = new Stat.Data();
-		data.type = meta.type;
-		data.value = meta.base_value;
-		for (int i = 0; i < level; i++)
-		{
-			data.value += meta.rand_stat_meta.value;
-		}
-		data.value = Mathf.Round(data.value * 100) / 100.0f;
-		return data;
 	}
 }

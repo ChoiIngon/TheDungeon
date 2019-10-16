@@ -163,7 +163,8 @@ public class Player : Unit
 			//level = reader.GetInt32("player_level");
 			//exp = reader.GetInt32("player_exp");
 			//cur_health = reader.GetInt32("player_current_health");
-			ChangeCoin(reader.GetInt32("player_coin"));
+			_coin = reader.GetInt32("player_coin");
+			Util.EventSystem.Publish(EventID.CoinAmountChanged);
 		}
 
 		if (0 == rowCount)
