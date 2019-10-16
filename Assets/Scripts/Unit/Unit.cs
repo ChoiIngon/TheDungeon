@@ -168,22 +168,18 @@ public class Unit
 
 	public void OnBattleTurn()
 	{
-		List<Buff> delete = new List<Buff>();
 		for (int i = 0; i < buffs.Length; i++)
 		{
-			List<Buff> buffsByType = buffs[i];
+			List<Buff> buffsByType = new List<Buff>(buffs[i]);
 			foreach (Buff buff in buffsByType)
 			{
-				buff.OnBuff();
+				buff.OnEffect();
+				Util.EventSystem.Publish<Buff>(EventID.Buff_Effect, buff);
 				if (false == buff.active)
 				{
-					delete.Add(buff);
+					RemoveBuff(buff); 
 				}
 			}
-		}
-		foreach (Buff buff in delete)
-		{
-			RemoveBuff(buff);
 		}
 	}
 }

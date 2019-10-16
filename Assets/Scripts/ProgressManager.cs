@@ -72,7 +72,6 @@ public abstract class Progress
 public class ProgressManager : Util.Singleton<ProgressManager>
 {
     private Dictionary<Tuple<string, string>, List<Progress>> progresses = new Dictionary<Tuple<string, string>, List<Progress>>();
-	private List<Progress> complete_progresses = new List<Progress>();
 
 	public void Add(Progress progress)
 	{
@@ -86,34 +85,28 @@ public class ProgressManager : Util.Singleton<ProgressManager>
 
 	public void Remove(Progress progress)
 	{
-		complete_progresses.Add(progress);
+		Tuple<string, string> key = new Tuple<string, string>(progress.type, progress.key);
+		if (false == progresses.ContainsKey(key))
+		{
+			Debug.Log("can not find progress(tyep:" + progress.type + ", key:" + progress.key + ")");
+			return;
+		}
+		progresses[key].Remove(progress);
+		if (0 == progresses[key].Count)
+		{
+			progresses.Remove(key);
+		}
 	}
 	
 	public void Update(string progressType, string progressKey, int changedAmount)
 	{
-		foreach (Progress complete_progress in complete_progresses)
-		{
-			Tuple<string, string> key = new Tuple<string, string>(complete_progress.type, complete_progress.key);
-			if (false == progresses.ContainsKey(key))
-			{
-				Debug.Log("can not find progress(tyep:" + complete_progress.type + ", key:" + complete_progress.key + ")");
-				return;
-			}
-			progresses[key].Remove(complete_progress);
-			if (0 == progresses[key].Count)
-			{
-				progresses.Remove(key);
-			}
-		}
-
-		complete_progresses.Clear();
-
 		if ("" != progressKey)
 		{
 			Tuple<string, string> key = new Tuple<string, string>(progressType, progressKey);
 			if (true == progresses.ContainsKey(key))
 			{
-				foreach (Progress progress in progresses[key])
+				List<Progress> progressesInKey = new List<Progress>(progresses[key]);
+				foreach (Progress progress in progressesInKey)
 				{
 					progress.Update(changedAmount);
 				}
@@ -124,7 +117,8 @@ public class ProgressManager : Util.Singleton<ProgressManager>
 			Tuple<string, string> key = new Tuple<string, string>(progressType, "");
 			if (true == progresses.ContainsKey(key))
 			{
-				foreach (Progress progress in progresses[key])
+				List<Progress> progressesInKey = new List<Progress>(progresses[key]);
+				foreach (Progress progress in progressesInKey)
 				{
 					progress.Update(changedAmount);
 				}

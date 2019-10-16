@@ -152,6 +152,7 @@ public class SceneDungeon : SceneMain
 		mini_map.Init(dungeon);
 		InitRooms();
 		StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(GameText.GetText("DUNGEON/WELCOME", dungeon.level)));
+		ProgressManager.Instance.Update(ProgressType.DungeonLevel, "", dungeon.level);
 	}
 
 	private void InitRooms()

@@ -34,23 +34,27 @@ public class ItemManager : Util.Singleton<ItemManager>
 			{"name", item.meta.name },
 			{"grade", item.grade.ToString()}
 		});
+
+		ProgressManager.Instance.Update(ProgressType.CollectItem, "", 1);
 		return item;
 	}
 
 	public EquipItem CreateRandomEquipItem()
 	{
+		ProgressManager.Instance.Update(ProgressType.CollectItem, "", 1);
 		return equip_item_manager.CreateRandomItem();
 	}
 
 	public ExpendableItem CreateRandomExpendableItem()
 	{
+		ProgressManager.Instance.Update(ProgressType.CollectItem, "", 1);
 		return expendable_item_manager.CreateRandomItem();
 	}
 
 	public Item CreateRandomItem()
 	{
+		ProgressManager.Instance.Update(ProgressType.CollectItem, "", 1);
 		Item.Type itemType = item_type_gacha[Random.Range(0, item_type_gacha.Count)];
-
 		switch (itemType)
 		{
 			case Item.Type.Equipment:

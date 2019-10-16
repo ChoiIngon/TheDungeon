@@ -15,6 +15,7 @@ public class Buff
 
 	public string buff_id;
 	public Type buff_type;
+	public string buff_name;
 	public Unit target;
 	public bool active;
 
@@ -25,7 +26,7 @@ public class Buff
 		this.active = true;
 	}
 
-	public virtual void OnBuff()
+	public virtual void OnEffect()
 	{
 	}
 }
@@ -38,7 +39,7 @@ public class Buff_Blaze : Buff
 		duration = 8;
     }
 
-    public override void OnBuff()
+    public override void OnEffect()
     {
 		//duration -= 1;
         //target.Damage(0);
@@ -57,7 +58,7 @@ public class Buff_Bleeding : Buff
     {
     }
 
-    public override void OnBuff()
+    public override void OnEffect()
     {
 		turn--;
 		if (0 >= turn)
@@ -74,7 +75,7 @@ public class Buff_GrimReaper : Buff
         //target.buffs.Add(this);
     }
 
-    public override void OnBuff()
+    public override void OnEffect()
     {
 		//target.Damage(target.stats.health);
         //target.buffs.Remove(this);
@@ -88,7 +89,7 @@ public class Buff_Stun : Buff
     {
 	}
 
-    public override void OnBuff()
+    public override void OnEffect()
     {
 		turn--;
 		if (0 >= turn)
@@ -108,7 +109,7 @@ public class Buff_Chill : Buff
         //target.buffs.Add(this);
     }
 
-    public override void OnBuff()
+    public override void OnEffect()
     {
 		//target.stats.speed = 0.0f;
         //if (0 >= turn)
@@ -128,7 +129,7 @@ public class Buff_Unstable : Buff
         //target.buffs.Add(this);
     }
 
-    public override void OnBuff()
+    public override void OnEffect()
     {
 
 		//target.stats.speed = 0.0f;
@@ -146,7 +147,7 @@ public class Buff_Fear : Buff
 	{
 	}
 
-	public override void OnBuff()
+	public override void OnEffect()
 	{
 		turn--;
 		if (0 >= turn)
@@ -166,7 +167,7 @@ public class Buff_Luck : Buff
         //target.buffs.Add(this);
     }
 
-    public override void OnBuff()
+    public override void OnEffect()
     {
 		//target.stats.speed = 0.0f;
         //if (0 >= turn)
@@ -183,7 +184,7 @@ public class Buff_Blindness : Buff
 	{
 	}
 
-	public override void OnBuff()
+	public override void OnEffect()
 	{
 		turn--;
 		if (0 >= turn)

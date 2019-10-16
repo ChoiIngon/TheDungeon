@@ -38,6 +38,8 @@ public class DungeonBattle : MonoBehaviour
 		{
 			throw new MissingComponentException("TouchInput");
 		}
+
+		Util.EventSystem.Subscribe<Buff>(EventID.Buff_Effect, OnBuffEffect);
 	}
 	void Start()
 	{
@@ -53,6 +55,11 @@ public class DungeonBattle : MonoBehaviour
 		};
 		touch_input.AddBlockCount();
 		battle_buttons.gameObject.SetActive(false);
+	}
+
+	private void OnDestroy()
+	{
+		Util.EventSystem.Unsubscribe<Buff>(EventID.Buff_Effect, OnBuffEffect);
 	}
 
 	public IEnumerator BattleStart(Monster.Meta monsterMeta)
@@ -146,5 +153,10 @@ public class DungeonBattle : MonoBehaviour
 			battle_log.AsyncWrite(GameText.GetText("DUNGEON/BATTLE/HIT", "You", monster.meta.name) + "(-" + (int)result.damage + ")");
 			StartCoroutine(monster.OnDamage(result));
 		}
+	}
+
+	private void OnBuffEffect(Buff buff)
+	{
+		battle_log.AsyncWrite(buff.buff_id);
 	}
 }

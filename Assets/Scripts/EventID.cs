@@ -28,6 +28,7 @@ public class EventID
 
 	public const string Buff_Start = "Buff_Start";
 	public const string Buff_End = "Buff_End";
+	public const string Buff_Effect = "Buff_Effect";
 
 	public const string Quest_Start = "Quest_Start";
 	
