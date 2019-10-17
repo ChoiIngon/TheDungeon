@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class DungeonBattle : MonoBehaviour
 {
@@ -13,14 +14,13 @@ public class DungeonBattle : MonoBehaviour
 
 	private UIBattleLog			battle_log;
 	private UIButtonGroup		battle_buttons;
-	private float				battle_speed = 1.5f;
+	private float				battle_speed = 1.1f;
 	private float				wait_time_for_next_turn = 0.0f;
-
 	public enum BattleResult
 	{
 		Lose = 0,
 		Win = 1,
-		Draw = 2
+		Runaway = 2
 	}
 	public BattleResult			battle_result = BattleResult.Lose; // 0 : lose, 1 : win, 2 : draw
 
@@ -43,8 +43,6 @@ public class DungeonBattle : MonoBehaviour
 	}
 	void Start()
 	{
-		battle_buttons.Init();
-
 		touch_input.onTouchDown += (Vector3 position) =>
 		{
 			if (null == monster.meta)
@@ -67,12 +65,68 @@ public class DungeonBattle : MonoBehaviour
 		gameObject.SetActive(true);
 		monster.gameObject.SetActive(true);
 		battle_buttons.gameObject.SetActive(true);
+		battle_buttons.Init();
+
+		bool runaway = false;
+		bool pause = false;
+		int runawayCount = 3;
+
+		{
+			UIButtonGroup.UIButton button = null;
+			List<HealPotionItem> items = GameManager.Instance.player.inventory.GetItems<HealPotionItem>();
+			if (0 < items.Count)
+			{
+				int itemCount = items.Count;
+				int itemIndex = 0;
+				battle_buttons.AddButton((itemCount - itemIndex).ToString() + "/" + itemCount, ResourceManager.Instance.Load<Sprite>("Item/item_potion_002"), () =>
+				{
+					HealPotionItem item = items[itemIndex++];
+					GameManager.Instance.player.inventory.Remove(item.slot_index);
+					item.Use(GameManager.Instance.player);
+					button.title = (itemCount - itemIndex).ToString() + "/" + itemCount;
+
+					if (0 == itemCount - itemIndex)
+					{
+						button.button.gameObject.SetActive(false);
+					}
+				});
+				button = battle_buttons.buttons[battle_buttons.buttons.Count - 1];
+			}
+		}
+
+		{
+			UIButtonGroup.UIButton button = null;
+			battle_buttons.AddButton("run", ResourceManager.Instance.Load<Sprite>("Skill/skill_icon_run"), () =>
+			{
+				touch_input.AddBlockCount();
+				pause = true;
+
+				float successChance = (GameManager.Instance.player.speed / monster.meta.speed) * 0.5f;
+				if (successChance > Random.Range(0.0f, 1.0f))
+				{
+					pause = false;
+					runaway = true;
+					battle_log.AsyncWrite("You runaway.");
+				}
+				else
+				{
+					pause = false;
+					battle_log.AsyncWrite("You trid to runaway. but failed..");
+					if (0 < runawayCount--)
+					{
+						button.button.gameObject.SetActive(false);
+					}
+				}				
+				touch_input.ReleaseBlockCount();
+			});
+			button = battle_buttons.buttons[battle_buttons.buttons.Count - 1];
+		}
+
 		battle_buttons.Show(0.5f);
 
 		battle_log.Init();
 		monster.Init(monsterMeta);
 		yield return StartCoroutine(monster.ColorTo(Color.black, Color.white, 1.0f));
-
 
 		touch_input.ReleaseBlockCount();
 		// attack per second
@@ -123,18 +177,31 @@ public class DungeonBattle : MonoBehaviour
 				wait_time_for_next_turn -= Time.deltaTime;
 				yield return null;
 			}
+			if (true == runaway)
+			{
+				break;
+			}
+			while (true == pause)
+			{
+				yield return null;
+			}
 		}
 
-		if (0.0f < monster.data.cur_health)
-		{
-			battle_result = BattleResult.Lose;
-			// return to main
-		}
-		else
+		if (0.0f >= monster.data.cur_health)
 		{
 			monster.Die();
 			battle_result = BattleResult.Win;
+
 		}
+		else if (0.0f >= GameManager.Instance.player.cur_health)
+		{
+			battle_result = BattleResult.Lose;
+		}
+		else if(true == runaway)
+		{
+			battle_result = BattleResult.Runaway;
+		}
+
 		monster.meta = null;
 		monster.data = null;
 		

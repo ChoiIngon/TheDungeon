@@ -135,7 +135,7 @@ public class Dungeon
 		}
 
 		List<Room> candidates = new List<Room>(rooms);
-		int monsterCount = Random.Range(candidates.Count / 5, candidates.Count / 3);
+		int monsterCount = (int)Random.Range(candidates.Count / 4.0f, candidates.Count / 2.5f);
 		int itemBoxCount = Random.Range(0, 4);
 		if (2 + monsterCount + itemBoxCount > candidates.Count)
 		{

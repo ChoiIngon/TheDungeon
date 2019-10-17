@@ -91,6 +91,28 @@ public class SpeedPotionItem : ExpendableItem
 	}
 }
 
+public class FoodItem : ExpendableItem
+{
+	public new class Meta : ExpendableItem.Meta
+	{
+		public override Item CreateInstance()
+		{
+			return new FoodItem(this);
+		}
+	}
+
+	public FoodItem(FoodItem.Meta meta) : base(meta)
+	{
+	}
+
+	public override void Use(Unit target)
+	{
+		//target.cur_health = target.max_health;
+		Util.EventSystem.Publish(EventID.Player_Stat_Change);
+	}
+
+}
+
 public class MapRevealScrollItem : ExpendableItem
 {
 	public new class Meta : ExpendableItem.Meta

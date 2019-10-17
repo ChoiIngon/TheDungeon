@@ -67,7 +67,15 @@ public class UITextBox : MonoBehaviour
 		cancel.gameObject.SetActive(false);
 	}
 
-	public IEnumerator TypeWrite(string[] texts)
+	public void AsyncWrite(string[] texts)
+	{
+		StartCoroutine(Write(texts));
+	} 
+	public void AsyncWrite(string text)
+	{
+		StartCoroutine(Write(text));
+	}
+	public IEnumerator Write(string[] texts)
 	{
 		while (State.Idle != state)
 		{
@@ -86,7 +94,7 @@ public class UITextBox : MonoBehaviour
 			paragraph = Mathf.Max(0, paragraph - 1);
 		}
 	}
-	public IEnumerator TypeWrite(string text)
+	public IEnumerator Write(string text)
 	{
 		while (State.Idle != state)
 		{
@@ -140,14 +148,35 @@ public class UITextBox : MonoBehaviour
 		on_submit = null;
 		yield return hide_coroutine;
 	}
-	
+
+	public void Close()
+	{
+		on_close?.Invoke();
+		hide_coroutine = StartCoroutine(Hide());
+		on_close = null;
+		on_next = null;
+	}
+	public void FastForward()
+	{
+		scroll_rect.verticalNormalizedPosition = 0.0f;
+		state = State.Complete;
+		fast.gameObject.SetActive(false);
+		if (0 == paragraph)
+		{
+			close.gameObject.SetActive(true);
+		}
+		else
+		{
+			next.gameObject.SetActive(true);
+		}
+	}
+
 	public Rect Resize(float h)
 	{
 		Rect prev = rectTransform.rect;
 		iTween.ValueTo(gameObject, iTween.Hash("from", 0, "to", h, "time", 0.5f, "onupdate", "OnUpdate"));
 		return prev;
 	}
-
 	private void OnUpdate(float value)
 	{
 		Vector2 delta = new Vector2(0.0f, value);
@@ -191,28 +220,5 @@ public class UITextBox : MonoBehaviour
 		rectTransform.anchoredPosition = new Vector3(rectTransform.anchoredPosition.x, position.y, 0.0f);
 		state = State.Idle;
 		contents.text = "";
-	}
-
-	public void Close()
-	{
-		on_close?.Invoke();
-		hide_coroutine = StartCoroutine(Hide());
-		on_close = null;
-		on_next = null;
-	}
-	public void FastForward()
-	{
-		scroll_rect.verticalNormalizedPosition = 0.0f;
-		state = State.Complete;
-		fast.gameObject.SetActive(false);
-		if (0 == paragraph)
-		{
-			close.gameObject.SetActive(true);
-		}
-		else
-		{
-			next.gameObject.SetActive(true);
-		}
-		//iTween.MoveBy(close.gameObject, iTween.Hash("y", 20.0f, "easeType", "easeInQuad", "loopType", "pingPong"));
 	}
 }

@@ -41,7 +41,6 @@ public class UIBattleLog : MonoBehaviour
 		{
 			int index = this.text.text.IndexOf('\n');
 			this.text.text = this.text.text.Substring(index + 1);
-			Debug.Log("index:" + index + ", " + this.text.text);
 			yield break;
 		}
 		line_count++;

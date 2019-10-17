@@ -19,6 +19,8 @@ public enum StatType
 	StartItemCount = 13,
 	StartItemLevel = 14,
 	Lucky = 15,
+	Stamina = 16,
+	Stamina_Rate = 17,
 }
 
 public class RandomStatMeta

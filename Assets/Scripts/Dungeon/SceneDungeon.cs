@@ -152,7 +152,7 @@ public class SceneDungeon : SceneMain
 		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon.level.ToString();
 		mini_map.Init(dungeon);
 		InitRooms();
-		StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(GameText.GetText("DUNGEON/WELCOME", dungeon.level)));
+		StartCoroutine(GameManager.Instance.ui_textbox.Write(GameText.GetText("DUNGEON/WELCOME", dungeon.level)));
 		ProgressManager.Instance.Update(ProgressType.DungeonLevel, "", dungeon.level);
 	}
 
@@ -240,7 +240,7 @@ public class SceneDungeon : SceneMain
 				yes = true;
 				GameManager.Instance.ui_textbox.Close();
 			};
-			yield return GameManager.Instance.ui_textbox.TypeWrite("Do you want to open box?");
+			yield return GameManager.Instance.ui_textbox.Write("Do you want to open box?");
 			if (true == yes)
 			{
 				open_box_count++;
@@ -278,9 +278,18 @@ public class SceneDungeon : SceneMain
 				dungeon.current_room.monster = null;
 				mini_map.CurrentPosition(dungeon.current_room.id);
 			}
-			else
+			else if (DungeonBattle.BattleResult.Lose == battle.battle_result)
 			{
 				yield return Lose();
+			}
+			else if (DungeonBattle.BattleResult.Runaway == battle.battle_result)
+			{
+				int runawayDirection = (direction + 2) % 4;
+				if (0 <= runawayDirection || Dungeon.WIDTH * Dungeon.HEIGHT > runawayDirection)
+				{
+					Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, runawayDirection);
+					StartCoroutine(GameManager.Instance.ui_textbox.Write("겨우겨우 도망 쳤다.."));
+				}
 			}
 		}
 
@@ -341,7 +350,7 @@ public class SceneDungeon : SceneMain
 			battleResult += GameText.GetText("DUNGEON/HAVE_ITEM", "You", "<color=#" + ColorUtility.ToHtmlStringRGBA(UIItem.GetGradeColor(item.grade)) +">" + item.meta.name + "</color>") + "\n";
 		}
 
-		StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(battleResult));
+		StartCoroutine(GameManager.Instance.ui_textbox.Write(battleResult));
 	}
 
 	private IEnumerator Lose()
@@ -349,7 +358,7 @@ public class SceneDungeon : SceneMain
 		ProgressManager.Instance.Update(ProgressType.DieCount, "", 1);
 
 		Rect prev = GameManager.Instance.ui_textbox.Resize(1000 /*Screen.currentResolution.height * GameManager.Instance.canvas.scaleFactor * 0.8f*/);
-		yield return StartCoroutine(GameManager.Instance.ui_textbox.TypeWrite(
+		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(
 			"You died.\n\n" +
 			"collect coin : " + collect_coin_count + "\n" +
 			"collect item : " + collect_item_count + "\n" +
@@ -391,7 +400,7 @@ public class SceneDungeon : SceneMain
 				yes = true;
 				GameManager.Instance.ui_textbox.Close();
 			};
-			yield return GameManager.Instance.ui_textbox.TypeWrite("Do you want to go down the stair?");
+			yield return GameManager.Instance.ui_textbox.Write("Do you want to go down the stair?");
 			if (true == yes)
 			{
 				yield return StartCoroutine(GoDown());

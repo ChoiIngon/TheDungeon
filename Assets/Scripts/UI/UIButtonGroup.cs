@@ -12,7 +12,7 @@ public class UIButtonGroup : MonoBehaviour
 		public Text name;
 		public Image image;
 		public Button button;
-		public System.Action action;
+		//public System.Action action;
 
 		public string title
 		{
@@ -21,22 +21,34 @@ public class UIButtonGroup : MonoBehaviour
 		}
 	}
 	public List<UIButton> buttons;
-	// Use this for initialization
+	public Button button_prefab;
+
 	public void Init ()
 	{
-		buttons = new List<UIButton>();
-		for (int i = 0; i < transform.childCount; i++)
+		if (null != buttons)
 		{
-			int index = i;
-			UIButton button = new UIButton();
-			button.image = transform.GetChild(i).GetComponent<Image>();
-			button.button = transform.GetChild(i).GetComponent<Button>();
-			button.name = UIUtil.FindChild<Text>(transform.GetChild(i).transform, "Text");
-			UIUtil.AddPointerUpListener(button.button.gameObject, () => {
-				button.action?.Invoke();
-			});
-			buttons.Add(button);
+			foreach (UIButton button in buttons)
+			{
+				button.button.transform.SetParent(null);
+				Object.Destroy(button.button.gameObject);
+			}
 		}
+		buttons = new List<UIButton>();
+	}
+
+	public void AddButton(string text, Sprite sprite, System.Action action)
+	{
+		UIButton button = new UIButton();
+		button.button = GameObject.Instantiate<Button>(button_prefab);
+		button.button.transform.SetParent(transform, false);
+		button.button.gameObject.SetActive(true);
+		UIUtil.AddPointerUpListener(button.button.gameObject, action);
+		button.image = button.button.transform.GetComponent<Image>();
+		button.image.sprite = sprite;
+		button.name = UIUtil.FindChild<Text>(button.button.transform, "Text");
+		button.name.gameObject.SetActive(true);
+		button.title = text;
+		buttons.Add(button);
 	}
 
 	public void Show(float time = 0.5f)
@@ -44,7 +56,7 @@ public class UIButtonGroup : MonoBehaviour
 		for (int i = 0; i < buttons.Count; i++)
 		{
 			buttons[i].button.enabled = true;
-			buttons[i].name.gameObject.SetActive(false);
+			buttons[i].name.gameObject.SetActive(true);
 			StartCoroutine(Util.UITween.ColorTo(buttons[i].image, new Color(1.0f, 1.0f, 1.0f, 1.0f), time));
 		}
 	}
@@ -54,7 +66,7 @@ public class UIButtonGroup : MonoBehaviour
 		for (int i = 0; i < buttons.Count; i++)
 		{
 			buttons[i].button.enabled = false;
-			buttons[i].name.gameObject.SetActive(true);
+			buttons[i].name.gameObject.SetActive(false);
 			StartCoroutine(Util.UITween.ColorTo(buttons[i].image, new Color(1.0f, 1.0f, 1.0f, 0.0f), time));
 		}
 	}

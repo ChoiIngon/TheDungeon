@@ -43,6 +43,8 @@ public class Player : Unit
 	public Inventory inventory;
 	public int level;
 	public int exp;
+	public int max_stamina;
+	public int cur_stamina;
 	private int _coin = 0;
 	public int coin
 	{
@@ -133,6 +135,7 @@ public class Player : Unit
 		}
 		CalculateStat();
 		cur_health = max_health;
+		cur_stamina = max_stamina;
 	}
 	private void LoadPlayer()
 	{
@@ -205,11 +208,12 @@ public class Player : Unit
 		if (0 == rowCount)
 		{
 		*/
-			stats.AddStat(meta.base_stats[StatType.Health].CreateInstance());
-			stats.AddStat(meta.base_stats[StatType.Attack].CreateInstance());
-			stats.AddStat(meta.base_stats[StatType.Defense].CreateInstance());
-			stats.AddStat(meta.base_stats[StatType.Speed].CreateInstance());
-			stats.AddStat(meta.base_stats[StatType.Critical].CreateInstance());
+		stats.AddStat(meta.base_stats[StatType.Health].CreateInstance());
+		stats.AddStat(meta.base_stats[StatType.Attack].CreateInstance());
+		stats.AddStat(meta.base_stats[StatType.Defense].CreateInstance());
+		stats.AddStat(meta.base_stats[StatType.Speed].CreateInstance());
+		stats.AddStat(meta.base_stats[StatType.Critical].CreateInstance());
+		stats.AddStat(new Stat.Data() { type = StatType.Stamina, value = 100.0f });
 		/*
 		}
 		*/
@@ -339,6 +343,8 @@ public class Player : Unit
 		}
 		speed = Mathf.Round(speed * 100 / (100 + weight));
 		speed = Stat.Truncate(speed, 0.01f);
+
+		max_stamina = (int)(stats.GetStat(StatType.Stamina) + (stats.GetStat(StatType.Stamina) * stats.GetStat(StatType.Stamina_Rate) / 100));
 	}
 
 	public void ChangeCoin(int amount, bool notifyEvent = true)
