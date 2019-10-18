@@ -28,18 +28,19 @@ public class Monster : MonoBehaviour
 		}
 	}
 
-	public Meta						meta;
-	public Unit						data;
-	private Transform				ui_root;
-	private Text					ui_name;
-	public UIGaugeBar				ui_health;
-	
-	public Animator					animator;
-	private Transform				damage_effect_spot;
-	public Effect_MonsterDamage		damage_effect_prefab;
-	public Transform				death_effect_prefab;
-	private Transform				buff_effect_spot;
-	private Transform[]			buff_effects;
+	public Meta meta;
+	public Unit data;
+	private Transform ui_root;
+	private Text ui_name;
+	public UIGaugeBar ui_health;
+
+	public Animator animator;
+	private Transform damage_effect_spot;
+	public Effect_MonsterDamage[] damage_effects;
+	public int damage_effect_index;
+	public Transform death_effect_prefab;
+	private Transform buff_effect_spot;
+	private Transform[] buff_effects;
 
 	private SpriteRenderer sprite;
 	private Shader shaderOriginal;
@@ -70,7 +71,12 @@ public class Monster : MonoBehaviour
 		buff_effects[(int)Buff.Type.Bleeding - 1] = UIUtil.FindChild<Transform>(buff_effect_spot, "Effect_MonsterBleeding");
 
 		damage_effect_spot = UIUtil.FindChild<Transform>(transform, "../../UI/BattleEffect");
-		damage_effect_prefab = UIUtil.FindChild<Effect_MonsterDamage>(damage_effect_spot, "Effect_MonsterDamage");
+		damage_effects = new Effect_MonsterDamage[2];
+		for (int i = 0; i < damage_effects.Length; i++)
+		{
+			damage_effects[i] = GameObject.Instantiate<Effect_MonsterDamage>(UIUtil.FindChild<Effect_MonsterDamage>(damage_effect_spot, "Effect_MonsterDamage"));
+			damage_effects[i].transform.SetParent(damage_effect_spot);
+		}
 		death_effect_prefab = UIUtil.FindChild<Transform>(damage_effect_spot, "Effect_MonsterDeath/BloodDroplets");
 	}
 
@@ -122,6 +128,8 @@ public class Monster : MonoBehaviour
 		ui_health.current = data.cur_health;
 		sprite.sprite = ResourceManager.Instance.Load<Sprite>(meta.sprite_path);
 		sprite.material.shader = shaderOriginal;
+
+		damage_effect_index = 0;
 	}
 
 	public IEnumerator ColorTo(Color from, Color to, float time)
@@ -145,8 +153,9 @@ public class Monster : MonoBehaviour
 	public IEnumerator OnDamage(Unit.AttackResult attackResult)
 	{
 		iTween.ShakePosition(gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
-		Effect_MonsterDamage effect = GameObject.Instantiate<Effect_MonsterDamage>(damage_effect_prefab);
-		effect.transform.SetParent(damage_effect_spot);
+		Effect_MonsterDamage effect = damage_effects[damage_effect_index++];
+		damage_effect_index = damage_effect_index % damage_effects.Length;
+		effect.gameObject.SetActive(false);
 		effect.damage = (int)attackResult.damage;
 		effect.critical = attackResult.critical;
 		effect.gameObject.SetActive(true);

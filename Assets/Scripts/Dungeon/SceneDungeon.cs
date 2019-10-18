@@ -97,10 +97,9 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Subscribe(EventID.Dungeon_Map_Reveal, () => { mini_map.RevealMap(); });
 		Util.EventSystem.Subscribe(EventID.Dungeon_Monster_Reveal, () => { mini_map.RevealMonster(); });
 		Util.EventSystem.Subscribe(EventID.Dungeon_Treasure_Reveal, () => { mini_map.RevealTreasure(); });
-		Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnChangePlayerHealth);
 		Util.EventSystem.Subscribe<Item>(EventID.Inventory_Add, OnItemAdd);
 		Util.EventSystem.Subscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
-		
+		Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
 		InitScene();
 	}
@@ -109,13 +108,12 @@ public class SceneDungeon : SceneMain
 	{
 		Util.EventSystem.Unsubscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Exit_Unlock);
-		Util.EventSystem.Unsubscribe(EventID.Player_Stat_Change, OnChangePlayerHealth);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Map_Reveal);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Monster_Reveal);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Treasure_Reveal);
 		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Add, OnItemAdd);
 		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
-
+		Util.EventSystem.Unsubscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
 	}
 
 	private void InitScene()
@@ -231,6 +229,14 @@ public class SceneDungeon : SceneMain
 
 		InitRooms();
 
+		if (Dungeon.Room.Type.Exit == dungeon.current_room.type || Dungeon.Room.Type.Lock == dungeon.current_room.type)
+		{
+			StartCoroutine(mini_map.Hide(0.5f, 0.3f));
+		}
+		else
+		{
+			StartCoroutine(mini_map.Show(0.5f));
+		}
 		yield return OnExitUnlock();
 
 		if (null != dungeon.current_room.item)
@@ -250,14 +256,7 @@ public class SceneDungeon : SceneMain
 			}
 		}
 
-		if (Dungeon.Room.Type.Exit == dungeon.current_room.type || Dungeon.Room.Type.Lock == dungeon.current_room.type)
-		{
-			StartCoroutine(mini_map.Hide(0.5f, 0.3f));
-		}
-		else 
-		{
-			StartCoroutine(mini_map.Show(0.5f));
-		}
+		
 
 		if (null != dungeon.current_room.monster)
 		{
@@ -288,7 +287,6 @@ public class SceneDungeon : SceneMain
 				if (0 <= runawayDirection || Dungeon.WIDTH * Dungeon.HEIGHT > runawayDirection)
 				{
 					Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, runawayDirection);
-					StartCoroutine(GameManager.Instance.ui_textbox.Write("겨우겨우 도망 쳤다.."));
 				}
 			}
 		}
@@ -409,12 +407,6 @@ public class SceneDungeon : SceneMain
 		}
 	}
 
-	private void OnChangePlayerHealth()
-	{
-		player_health.max = GameManager.Instance.player.max_health;
-		player_health.current = GameManager.Instance.player.cur_health;
-	}
-	
 	private void CreateCoins(int amount)
 	{
 		int total = amount;
@@ -469,5 +461,9 @@ public class SceneDungeon : SceneMain
 		text_inventory.text = GameManager.Instance.player.inventory.count.ToString() + "/" + Inventory.MAX_SLOT_COUNT.ToString();
 	}
 
-	
+	private void OnPlayerStatChange()
+	{
+		player_health.max = GameManager.Instance.player.max_health;
+		player_health.current = GameManager.Instance.player.cur_health;
+	}		
 }

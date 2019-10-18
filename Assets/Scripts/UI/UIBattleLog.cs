@@ -11,18 +11,7 @@ public class UIBattleLog : MonoBehaviour
 	{
 		text = UIUtil.FindChild<Text>(transform, "Viewport/Content");
 	}
-	// Use this for initialization
-	void Start()
-	{
-
-	}
-
-	// Update is called once per frame
-	void Update()
-	{
-
-	}
-
+	
 	public void Init()
 	{
 		text.text = "";
@@ -37,7 +26,7 @@ public class UIBattleLog : MonoBehaviour
 	public IEnumerator Write(string text)
 	{
 		this.text.text += text + "\n";
-		if (6 <= line_count)
+		if (8 <= line_count)
 		{
 			int index = this.text.text.IndexOf('\n');
 			this.text.text = this.text.text.Substring(index + 1);

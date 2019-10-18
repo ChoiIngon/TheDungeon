@@ -345,6 +345,7 @@ public class Player : Unit
 		speed = Stat.Truncate(speed, 0.01f);
 
 		max_stamina = (int)(stats.GetStat(StatType.Stamina) + (stats.GetStat(StatType.Stamina) * stats.GetStat(StatType.Stamina_Rate) / 100));
+		Util.EventSystem.Publish(EventID.Player_Stat_Change);
 	}
 
 	public void ChangeCoin(int amount, bool notifyEvent = true)

@@ -50,7 +50,8 @@ public class HealPotionItem : ExpendableItem
 	}
 }
 
-public class StranthPotionItem : ExpendableItem {
+public class StranthPotionItem : ExpendableItem
+{
 	public new class Meta : ExpendableItem.Meta
 	{
 		public override Item CreateInstance()
@@ -66,7 +67,6 @@ public class StranthPotionItem : ExpendableItem {
 	{
 		target.stats.AddStat(new Stat.Data() { type = StatType.Attack, value = target.stats.GetStat(StatType.Attack) * 0.01f });
 		target.CalculateStat();
-		Util.EventSystem.Publish(EventID.Player_Stat_Change);
 	}
 }
 
@@ -87,7 +87,6 @@ public class SpeedPotionItem : ExpendableItem
 	{
 		target.stats.AddStat(new Stat.Data() { type = StatType.Speed, value = target.stats.GetStat(StatType.Speed) * 0.01f });
 		target.CalculateStat();
-		Util.EventSystem.Publish(EventID.Player_Stat_Change);
 	}
 }
 
