@@ -19,7 +19,7 @@ public class UIInventory : MonoBehaviour
 		item_prefabs[(int)Item.Type.Expendable] = UIUtil.FindChild<UIPotionItem>(transform, "ItemPrefabs/PotionItem");
 		item_prefabs[(int)Item.Type.Key] = UIUtil.FindChild<UIKeyItem>(transform, "ItemPrefabs/KeyItem");
 
-		close = UIUtil.FindChild<Button>(transform, "Close");
+		close = UIUtil.FindChild<Button>(transform, "BottomBar/Close");
 		item_info = UIUtil.FindChild<UIItemInfo>(transform, "ItemInfo");
 		player_info = UIUtil.FindChild<UIPlayerInfo>(transform, "PlayerInfo");
 	}

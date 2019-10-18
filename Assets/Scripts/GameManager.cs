@@ -12,6 +12,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 	public UIInventory ui_inventory;
 	public UICoin ui_coin;
 	public UINpc ui_npc;
+	public UISetting ui_setting;
 	public UITextBox ui_textbox;
 	public UITicker ui_ticker;
 	public Advertisement advertisement;
@@ -40,6 +41,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		canvas = UIUtil.FindChild<Canvas>(transform, "UI");
 		camera_fade = UIUtil.FindChild<Image>(canvas.transform, "CameraFade");
 		ui_inventory = UIUtil.FindChild<UIInventory>(canvas.transform, "UIInventory");
+		ui_setting = UIUtil.FindChild<UISetting>(canvas.transform, "UISetting");
 		ui_textbox = UIUtil.FindChild<UITextBox>(canvas.transform, "UITextBox");
 		ui_coin = UIUtil.FindChild<UICoin>(canvas.transform, "UICoin");
 		ui_npc = UIUtil.FindChild<UINpc>(canvas.transform, "UINpc");
@@ -88,6 +90,9 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		ui_inventory.gameObject.SetActive(true);
 		ui_inventory.Init();
 		ui_inventory.gameObject.SetActive(false);
+		ui_setting.gameObject.SetActive(true);
+		ui_setting.Init();
+		ui_setting.gameObject.SetActive(false);
 		ui_npc.Init();
 		ui_textbox.Init();
 	}

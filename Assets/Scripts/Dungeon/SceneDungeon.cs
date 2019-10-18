@@ -87,11 +87,11 @@ public class SceneDungeon : SceneMain
 		player_health = UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Health");
 		player_exp =	UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Exp");
 
+		GameManager.Instance.ui_coin.gameObject.SetActive(true);
 		coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot");
 		coin_spot.gameObject.SetActive(true);
 		coin_prefab = UIUtil.FindChild<Coin>(transform, "Prefabs/Coin");
 
-		GameManager.Instance.ui_coin.gameObject.SetActive(true);
 		Util.EventSystem.Subscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
 		Util.EventSystem.Subscribe(EventID.Dungeon_Exit_Unlock, () => { StartCoroutine(OnExitUnlock()); });
 		Util.EventSystem.Subscribe(EventID.Dungeon_Map_Reveal, () => { mini_map.RevealMap(); });

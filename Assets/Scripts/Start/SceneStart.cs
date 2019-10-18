@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class SceneStart : SceneMain
 {
 	private Button start_button;
+	private Button setting_button;
 	private Button reset_button;
 	public override IEnumerator Run()
 	{
@@ -28,6 +29,11 @@ public class SceneStart : SceneMain
 			StartCoroutine(OnStart());
 		});
 
+		setting_button = UIUtil.FindChild<Button>(transform, "UI/SettingButton");
+		UIUtil.AddPointerUpListener(setting_button.gameObject, () =>
+		{
+			GameManager.Instance.ui_setting.gameObject.SetActive(true);
+		});
 		reset_button = UIUtil.FindChild<Button>(transform, "UI/ResetButton");
 		UIUtil.AddPointerUpListener(reset_button.gameObject, () =>
 		{
@@ -42,6 +48,7 @@ public class SceneStart : SceneMain
 	private IEnumerator OnStart()
 	{
 		start_button.gameObject.SetActive(false);
+		setting_button.gameObject.SetActive(false);
 		reset_button.gameObject.SetActive(false);
 		string[] scripts = new string[] {
 			"오래전 이 던전엔 자신의 부와 젊음을 위해 백성들을 악마의 제물로 바쳤다는 피의 여왕이 살았다고 하네. ",

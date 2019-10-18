@@ -27,7 +27,6 @@ public class Coin : MonoBehaviour
 		animator.Play("Spin", -1, Random.Range(0.0f, 1.0f));
 		groundPos = transform.localPosition.y;
 		velocity = transform.forward * Random.Range(0.5f, 1.0f);
-		// Throw upwards
 		velocity.y = Random.Range(4.0f, 6.0f);
 		coroutine = StartCoroutine(Bounce());
 	}

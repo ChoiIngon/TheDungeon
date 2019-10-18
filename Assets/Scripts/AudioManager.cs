@@ -15,21 +15,35 @@ public class AudioManager : Util.MonoSingleton<AudioManager>
 
 	public void Init()
 	{
-		Object[] audioClips = Resources.LoadAll("Audio", typeof(AudioClip));
-		foreach (var audioClip in audioClips)
 		{
-			GameObject audio = new GameObject();
-
-			audio.transform.SetParent(transform, false);
-			audio.name = audioClip.name;
-
-			AudioSource audioSource = audio.AddComponent<AudioSource>();
-			audioSource.clip = (AudioClip)audioClip;
-			audioSource.loop = false;
-			audioSource.playOnAwake = false;
-			audio_sources[audio.name] = audioSource;
+			Object[] audioClips = Resources.LoadAll("Audio/BGM", typeof(AudioClip));
+			foreach (var audioClip in audioClips)
+			{
+				audio_sources[audioClip.name] = CreateAudioSource("BGM", (AudioClip)audioClip);
+			}
 		}
+		{
+			Object[] audioClips = Resources.LoadAll("Audio/SFX", typeof(AudioClip));
+			foreach (var audioClip in audioClips)
+			{
+				audio_sources[audioClip.name] = CreateAudioSource("SFX", (AudioClip)audioClip);
+			}
+		}
+
 		DontDestroyOnLoad(AudioManager.Instance.gameObject);
+	}
+
+	private AudioSource CreateAudioSource(string tag, AudioClip audioClip)
+	{
+		GameObject audio = new GameObject();
+		audio.transform.SetParent(transform, false);
+		audio.name = tag;
+
+		AudioSource audioSource = audio.AddComponent<AudioSource>();
+		audioSource.clip = audioClip;
+		audioSource.loop = false;
+		audioSource.playOnAwake = false;
+		return audioSource;
 	}
 
 	public void Play(string name, bool loop = false)
@@ -64,12 +78,17 @@ public class AudioManager : Util.MonoSingleton<AudioManager>
 		}
 	}
 
-	public void Volumn(float volumn)
+	public void Volumn(string tag, float volumn)
 	{
 		foreach (var itr in audio_sources)
 		{
 			AudioSource audioSource = itr.Value;
-			audioSource.volume = volumn;
+			if (tag == audioSource.gameObject.name)
+			{
+				audioSource.volume = volumn;
+			}
 		}
 	}
+
+
 }
