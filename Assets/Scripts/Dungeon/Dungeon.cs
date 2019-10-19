@@ -62,45 +62,51 @@ public class Dungeon
 			if (0 < outerRooms.Count)
 			{
 				Room room = outerRooms [Random.Range (0, outerRooms.Count)];
-				int direction = Random.Range (0, Max);
-				for (int j = 0; j < Max; j++)
+				int directionCount = Random.Range(1, 3);
+				for (int i = 0; i < directionCount; i++)
 				{
-					Room other = GetNeighbor (room.id, direction);
-					if (null == other)
+					int direction = Random.Range(0, Max);
+					for (int j = 0; j < Max; j++)
 					{
-						direction = (direction + 1) % Max;
-						continue;
-					}
-
-					room.next [direction] = other;
-					switch (direction)
-					{
-					case North:
-						other.next [South] = room;
-						break;
-					case East:
-						other.next [West] = room;
-						break;
-					case South:
-						other.next [North] = room;
-						break;
-					case West:
-						other.next [East] = room;
-						break;
-					}
-
-					if (other.group != room.group)
-					{
-						if (room.group < other.group)
+						Room other = GetNeighbor(room.id, direction);
+						if (null == other)
 						{
-							ChangeGroupID (other.group, room.group);
-						} else {
-							ChangeGroupID (room.group, other.group);
+							direction = (direction + 1) % Max;
+							continue;
 						}
-						break;
-					}
 
-					direction = (direction + 1) % Max;
+						room.next[direction] = other;
+						switch (direction)
+						{
+							case North:
+								other.next[South] = room;
+								break;
+							case East:
+								other.next[West] = room;
+								break;
+							case South:
+								other.next[North] = room;
+								break;
+							case West:
+								other.next[East] = room;
+								break;
+						}
+
+						if (other.group != room.group)
+						{
+							if (room.group < other.group)
+							{
+								ChangeGroupID(other.group, room.group);
+							}
+							else
+							{
+								ChangeGroupID(room.group, other.group);
+							}
+							break;
+						}
+
+						direction = (direction + 1) % Max;
+					}
 				}
 			}
 			int roomCountInGroupZero = 0;
@@ -210,7 +216,6 @@ public class Dungeon
 				candidates.RemoveAt(index);
 			}
 		}
-		
 	}
 
 	public Room Move(int direction)
@@ -225,7 +230,8 @@ public class Dungeon
 		
 	private Room GetNeighbor(int id, int direction)
 	{
-		if (0 > direction || Max <= direction) {
+		if (0 > direction || Max <= direction)
+		{
 			throw new System.Exception ("room id:" + direction + ", invalid direction:" + direction);
 		}
 		switch (direction) {
@@ -252,13 +258,18 @@ public class Dungeon
 		}
 		return null;
 	}
-	private List<Room> GetOuterRoomsInGroup(int group) {
+	private List<Room> GetOuterRoomsInGroup(int group)
+	{
 		List<Room> outerRooms = new List<Room> ();
-		foreach (Room room in rooms) {
-			if (group == room.group) {
-				for (int direction = 0; direction < Max; direction++) {
+		foreach (Room room in rooms)
+		{
+			if (group == room.group)
+			{
+				for (int direction = 0; direction < Max; direction++)
+				{
 					Room other = GetNeighbor(room.id, direction);
-                    if (null != other && group != other.group) {
+                    if (null != other && group != other.group)
+					{
 						outerRooms.Add (room);
 						break;
 					}
@@ -269,7 +280,8 @@ public class Dungeon
 	}
 	private void ChangeGroupID(int from, int to)
 	{
-		for (int i = 0; i < WIDTH * HEIGHT; i++) {
+		for (int i = 0; i < WIDTH * HEIGHT; i++)
+		{
 			Room room = rooms [i];
 			if (from == room.group) {
 				room.group = to;

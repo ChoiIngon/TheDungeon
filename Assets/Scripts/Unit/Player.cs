@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 public class ItemEquipEvent
 {
-    public EquipItem item;
+	public EquipItem prev_item;
+	public EquipItem curr_item;
     public int equip_index;
 }
 
@@ -91,7 +92,7 @@ public class Player : Unit
 			AddSkill(item.skill);
 		}
         
-        Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Equip, new ItemEquipEvent() { item = item, equip_index = equip_index } );
+        Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Equip, new ItemEquipEvent() { prev_item = prev, curr_item = item, equip_index = equip_index } );
         return prev;
 	}
 
@@ -116,7 +117,7 @@ public class Player : Unit
 			RemoveSkill(item.skill);
 		}
 		
-        Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Unequip, new ItemEquipEvent() { item = item, equip_index = equip_index });
+        Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Unequip, new ItemEquipEvent() { curr_item = item, equip_index = equip_index });
         return item;
 	}
 
@@ -145,17 +146,12 @@ public class Player : Unit
 
 		Database.Execute(Database.Type.UserData,
 			"CREATE TABLE IF NOT EXISTS user_data (" +
-				//"player_level INTEGER NOT NULL DEFAULT 0," +
-				//"player_exp INTEGER NOT NULL DEFAULT 0," +
-				//"player_current_health INTEGER NOT NULL DEFAULT 0," +
 				"player_coin INTEGER NOT NULL DEFAULT 0," +
-				//"dungeon_level INTEGER NOT NULL DEFAULT 0," +
 				"total_play_time INTEGER NOT NULL DEFAULT 0" +
 			")"
 		);
 
 		Util.Database.DataReader reader = Database.Execute(Database.Type.UserData,
-			//"SELECT player_level, player_exp, player_current_health, player_coin, dungeon_level, total_play_time FROM user_data"
 			"SELECT player_coin, total_play_time FROM user_data"
 		);
 
@@ -163,9 +159,6 @@ public class Player : Unit
 		while (true == reader.Read())
 		{
 			rowCount++;
-			//level = reader.GetInt32("player_level");
-			//exp = reader.GetInt32("player_exp");
-			//cur_health = reader.GetInt32("player_current_health");
 			_coin = reader.GetInt32("player_coin");
 			Util.EventSystem.Publish(EventID.CoinAmountChanged);
 		}
@@ -173,7 +166,6 @@ public class Player : Unit
 		if (0 == rowCount)
 		{
 			Database.Execute(Database.Type.UserData,
-				//"INSERT INTO user_data(player_level, player_exp, player_current_health, player_coin, dungeon_level, total_play_time) VALUES (1,0, 0, 0, 1, 0)"
 				"INSERT INTO user_data(player_coin, total_play_time) VALUES (0, 0)"
 			);
 			level = 1;
@@ -184,107 +176,13 @@ public class Player : Unit
 	}
 	private void LoadStats()
 	{
-		/*
-		Database.Execute(Database.Type.UserData,
-			"CREATE TABLE IF NOT EXISTS user_stats (" +
-				"stat_type INTEGER NOT NULL DEFAULT 0," +
-				"stat_value REAL NOT NULL DEFAULT 0," +
-				"PRIMARY KEY('stat_type')" +
-			")"
-		);
-
-		Util.Database.DataReader reader = Database.Execute(Database.Type.UserData,
-			"SELECT stat_type, stat_value FROM user_stats"
-		);
-
-		int rowCount = 0;
-		while (true == reader.Read())
-		{
-			rowCount++;
-			Stat.Data statData = new Stat.Data() { type = (StatType)reader.GetInt32("stat_type"), value = reader.GetFloat("stat_value") };
-			stats.SetStat(statData);
-		}
-
-		if (0 == rowCount)
-		{
-		*/
 		stats.AddStat(meta.base_stats[StatType.Health].CreateInstance());
 		stats.AddStat(meta.base_stats[StatType.Attack].CreateInstance());
 		stats.AddStat(meta.base_stats[StatType.Defense].CreateInstance());
 		stats.AddStat(meta.base_stats[StatType.Speed].CreateInstance());
 		stats.AddStat(meta.base_stats[StatType.Critical].CreateInstance());
 		stats.AddStat(new Stat.Data() { type = StatType.Stamina, value = 100.0f });
-		/*
-		}
-		*/
 	}
-	/*
-	private void LoadEquipItem()
-	{
-		string sub_stat_column = "";
-		for (int i = 0; i < EquipItem.MAX_SUB_STAT_COUNT; i++)
-		{
-			sub_stat_column +=
-				"sub_stat_type_" + (i + 1) + " INTEGER NOT NULL DEFAULT 0," +
-				"sub_stat_value_" + (i + 1) + " REAL NOT NULL DEFAULT 0,";
-		}
-
-		Database.Execute(Database.Type.UserData,
-		   "CREATE TABLE IF NOT EXISTS user_item_equip (" +
-			   "item_seq INTEGER NOT NULL," +
-			   "item_id TEXT NOT NULL," +
-			   "equip_index INTEGER NOT NULL," +
-			   "main_stat_type INTEGER NOT NULL," +
-			   "main_stat_value REAL NOT NULL," +
-			   sub_stat_column +
-			   "PRIMARY KEY('item_seq')" +
-		   ")"
-	   );
-
-		sub_stat_column = "";
-		for (int i = 0; i < EquipItem.MAX_SUB_STAT_COUNT; i++)
-		{
-			sub_stat_column += "sub_stat_type_" + (i + 1) + ", sub_stat_value_" + (i + 1) + " ,";
-		}
-		Util.Database.DataReader reader = Database.Execute(Database.Type.UserData,
-			"SELECT item_seq, item_id,  " +
-				"main_stat_type, main_stat_value, " +
-				sub_stat_column +
-				"equip_index " +
-			"FROM user_item_equip"
-		);
-		while (true == reader.Read())
-		{
-			string itemID = reader.GetString("item_id");
-			EquipItem.Meta meta = ItemManager.Instance.FindMeta<EquipItem.Meta>(itemID);
-			EquipItem item = meta.CreateInstance() as EquipItem;
-			item.item_seq = reader.GetInt32("item_seq");
-			item.equip_index = reader.GetInt16("equip_index");
-			item.main_stat.AddStat(new Stat.Data() { type = (StatType)reader.GetInt32("main_stat_type"), value = reader.GetFloat("main_stat_value") });
-
-			for (int i = 0; i < EquipItem.MAX_SUB_STAT_COUNT; i++)
-			{
-				if (0 == reader.GetInt32("sub_stat_type_" + (i + 1)))
-				{
-					continue;
-				}
-				item.sub_stat.AddStat(new Stat.Data() { type = (StatType)reader.GetInt32("sub_stat_type" + (i + 1)), value = reader.GetFloat("sub_stat_value_" + (i + 1)) });
-			}
-
-			if (true == item.equip)
-			{
-				GameManager.Instance.player.Equip(item, item.equip_index);
-			}
-			else
-			{
-				GameManager.Instance.player.inventory.Add(item);
-			}
-		}
-	}
-	private void LoadExpendableItem()
-	{
-	}
-	*/
 
 	public void AddExp(int amount)
 	{
@@ -301,11 +199,7 @@ public class Player : Unit
 			stats.AddStat(meta.levelup_stats[StatType.Critical].CreateInstance());
 			CalculateStat();
 			cur_health = max_health;
-			//Util.Database.DataReader reader = Database.Execute(Database.Type.UserData,
-			//	"UPDATE user_data SET player_level=" + level + ", player_exp=" + exp + ",player_current_health=" + cur_health
-			//);
 			ProgressManager.Instance.Update(ProgressType.PlayerLevel, "", level);
-			//Util.EventSystem.Publish<AddExpEvent>(EventID.Player_Add_Exp, 
 		}
 	}
 
@@ -318,15 +212,6 @@ public class Player : Unit
 	{
 		return (int)Mathf.Pow(level, 1.8f);
 	}
-	/*
-	public EquipmentItem GetEquipment(EquipmentItem.Part category, int index) {
-        if(equipments.ContainsKey(new Tuple<EquipmentItem.Part, int>(category, index)))
-        {
-            return null;
-        }
-		return equipments [new Tuple<EquipmentItem.Part, int> (category, index)];
-	}
-	*/
 	
 	public override void CalculateStat()
 	{

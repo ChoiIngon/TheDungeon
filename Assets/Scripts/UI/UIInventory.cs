@@ -118,19 +118,19 @@ public class UIInventory : MonoBehaviour
     private void OnItemEquip(ItemEquipEvent evt)
     {
         player_info.Refresh();
-        var key = new Tuple<EquipItem.Part, int>(evt.item.part, evt.equip_index);
+        var key = new Tuple<EquipItem.Part, int>(evt.curr_item.part, evt.equip_index);
         if (false == equip_slots.ContainsKey(key))
         {
-            throw new System.Exception("invalid item equip slot(equip_part:" + evt.item.part + ", equip_index:" + evt.item.equip_index +")");
+            throw new System.Exception("invalid item equip slot(equip_part:" + evt.curr_item.part + ", equip_index:" + evt.curr_item.equip_index +")");
         }
 
-		UIItem item = GameObject.Instantiate<UIItem>(item_prefabs[(int)evt.item.meta.type]);
+		UIItem item = GameObject.Instantiate<UIItem>(item_prefabs[(int)evt.curr_item.meta.type]);
 		if (null == item)
 		{
-			throw new System.Exception("can not instantiate slot object for item(item_id:" + evt.item.meta.id + ", name:" + evt.item.meta.name + ")");
+			throw new System.Exception("can not instantiate slot object for item(item_id:" + evt.curr_item.meta.id + ", name:" + evt.curr_item.meta.name + ")");
 		}
 		item.gameObject.SetActive(true);
-		item.Init(evt.item);
+		item.Init(evt.curr_item);
 		item.outline.active = true;
 		equip_slots[key].SetItem(item);
 	}
@@ -138,10 +138,10 @@ public class UIInventory : MonoBehaviour
 	private void OnItemUnequip(ItemEquipEvent evt)
     {
         player_info.Refresh();
-        var key = new Tuple<EquipItem.Part, int>(evt.item.part, evt.equip_index);
+        var key = new Tuple<EquipItem.Part, int>(evt.curr_item.part, evt.equip_index);
         if (false == equip_slots.ContainsKey(key))
         {
-            throw new System.Exception("invalid item equip slot(equip_part:" + evt.item.part + ", equip_index:" + evt.item.equip_index + ")");
+            throw new System.Exception("invalid item equip slot(equip_part:" + evt.curr_item.part + ", equip_index:" + evt.curr_item.equip_index + ")");
         }
 		Object.Destroy(equip_slots[key].item.gameObject);
 		equip_slots[key].SetItem(null);

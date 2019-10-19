@@ -53,6 +53,13 @@ public class Stat
 		public float value;
 	}
 
+	public class Meta
+	{
+		public StatType type;
+		public string name;
+		public string description;
+	}
+
 	public Dictionary<StatType, float> datas = new Dictionary<StatType, float>();
 	public void SetStat(Data data)
 	{
@@ -90,6 +97,7 @@ public class Stat
 			datas[data.type] = data.value;
 			//Database.Execute(Database.Type.UserData, "INSERT INTO user_stats (stat_type, stat_value) VALUES (" + (int)data.type + ", " + data.value + ")");
 		}
+		datas[data.type] = Truncate(datas[data.type], 0.01f);
 	}
 
 	public void SubtractStat(Data data)
@@ -107,12 +115,13 @@ public class Stat
 		}
 #endif
 		datas[data.type] -= data.value;
-		//Database.Execute(Database.Type.UserData, "UPDATE user_stats SET stat_value=" + data.value + " WHERE stat_type=" + (int)data.type);
+		datas[data.type] = Truncate(datas[data.type], 0.01f);
+		/*
 		if (EPSILON >= datas[data.type])
 		{
 			datas.Remove(data.type);
-			//Database.Execute(Database.Type.UserData, "DELETE from user_stats WHERE stat_type=" + (int)data.type);
 		}
+		*/
 	}
 
 	static public Stat operator + (Stat rhs, Stat lhs)
@@ -148,6 +157,20 @@ public class Stat
 	static public float Truncate(float value, float trunc)
 	{
 		return trunc * (int)(value / trunc);
+	}
+
+	static public Meta GetMeta(StatType type)
+	{
+		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)type);
+		while (true == reader.Read())
+		{
+			Meta meta = new Meta();
+			meta.type = type;
+			meta.name = reader.GetString("stat_name");
+			meta.description = reader.GetString("description");
+			return meta;			
+		}
+		return null;
 	}
 }
 

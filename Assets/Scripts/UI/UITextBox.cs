@@ -67,15 +67,15 @@ public class UITextBox : MonoBehaviour
 		cancel.gameObject.SetActive(false);
 	}
 
-	public void AsyncWrite(string[] texts)
+	public void AsyncWrite(string[] texts, bool typing = true)
 	{
-		StartCoroutine(Write(texts));
+		StartCoroutine(Write(texts, typing));
 	} 
-	public void AsyncWrite(string text)
+	public void AsyncWrite(string text, bool typing = true)
 	{
-		StartCoroutine(Write(text));
+		StartCoroutine(Write(text, typing));
 	}
-	public IEnumerator Write(string[] texts)
+	public IEnumerator Write(string[] texts, bool typing = true)
 	{
 		while (State.Idle != state)
 		{
@@ -90,11 +90,11 @@ public class UITextBox : MonoBehaviour
 		paragraph = texts.Length - 1;
 		foreach (string text in texts)
 		{
-			yield return _TypeWrite(text);
+			yield return _Write(text, typing);
 			paragraph = Mathf.Max(0, paragraph - 1);
 		}
 	}
-	public IEnumerator Write(string text)
+	public IEnumerator Write(string text, bool typing = true)
 	{
 		while (State.Idle != state)
 		{
@@ -106,9 +106,9 @@ public class UITextBox : MonoBehaviour
 			yield return StartCoroutine(Show());
 		}
 
-		yield return _TypeWrite(text);
+		yield return _Write(text, typing);
 	}
-	private IEnumerator _TypeWrite(string text)
+	private IEnumerator _Write(string text, bool typing)
 	{
 		contents.text = "";
 		
@@ -119,17 +119,25 @@ public class UITextBox : MonoBehaviour
 		submit.gameObject.SetActive(false);
 		cancel.gameObject.SetActive(false);
 
-		AudioManager.Instance.Play("textbox_type", true);
-		foreach (char c in text)
+		if (true == typing)
 		{
-			contents.text += c;
-			scroll_rect.verticalNormalizedPosition = 0.0f;
-			if (State.Typing == state)	// can be changed to State.Complete for fast forward
+			AudioManager.Instance.Play("textbox_type", true);
+			foreach (char c in text)
 			{
-				yield return new WaitForSeconds(1.0f / charPerSecond);
+				contents.text += c;
+				scroll_rect.verticalNormalizedPosition = 0.0f;
+				if (State.Typing == state)  // can be changed to State.Complete for fast forward
+				{
+					yield return new WaitForSeconds(1.0f / charPerSecond);
+				}
 			}
+			AudioManager.Instance.Stop("textbox_type");
 		}
-		AudioManager.Instance.Stop("textbox_type");
+		else
+		{
+			contents.text += text;
+			scroll_rect.verticalNormalizedPosition = 0.0f;
+		}
 		FastForward();
 
 		if (null != on_submit)
