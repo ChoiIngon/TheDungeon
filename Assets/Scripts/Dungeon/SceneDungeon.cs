@@ -237,32 +237,14 @@ public class SceneDungeon : SceneMain
 		{
 			StartCoroutine(mini_map.Show(0.5f));
 		}
+
 		yield return OnExitUnlock();
-
-		if (null != dungeon.current_room.item)
-		{
-			bool yes = false;
-			GameManager.Instance.ui_textbox.on_submit += () => {
-				yes = true;
-				GameManager.Instance.ui_textbox.Close();
-			};
-			yield return GameManager.Instance.ui_textbox.Write("Do you want to open box?");
-			if (true == yes)
-			{
-				open_box_count++;
-				collect_item_count++;
-				yield return current_room.box.Open();
-				mini_map.CurrentPosition(dungeon.current_room.id);
-			}
-		}
-
-		
 
 		if (null != dungeon.current_room.monster)
 		{
 			AudioManager.Instance.Stop(AudioManager.DUNGEON_BGM);
 			AudioManager.Instance.Play(AudioManager.BATTLE_BGM, true);
-			
+
 			StartCoroutine(mini_map.Hide(0.5f));
 			button_inventory.gameObject.SetActive(false);
 			yield return StartCoroutine(battle.BattleStart(dungeon.current_room.monster));
@@ -274,8 +256,6 @@ public class SceneDungeon : SceneMain
 			if (DungeonBattle.BattleResult.Win == battle.battle_result)
 			{
 				yield return Win(dungeon.current_room.monster);
-				dungeon.current_room.monster = null;
-				mini_map.CurrentPosition(dungeon.current_room.id);
 			}
 			else if (DungeonBattle.BattleResult.Lose == battle.battle_result)
 			{
@@ -288,6 +268,24 @@ public class SceneDungeon : SceneMain
 				{
 					Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, runawayDirection);
 				}
+			}
+		}
+
+		if (null == dungeon.current_room.monster && null != dungeon.current_room.item)
+		{
+			current_room.box.Show(dungeon.current_room);
+			bool yes = false;
+			GameManager.Instance.ui_textbox.on_submit += () => {
+				yes = true;
+				GameManager.Instance.ui_textbox.Close();
+			};
+			yield return GameManager.Instance.ui_textbox.Write("Do you want to open box?");
+			if (true == yes)
+			{
+				open_box_count++;
+				collect_item_count++;
+				yield return current_room.box.Open();
+				mini_map.CurrentPosition(dungeon.current_room.id);
 			}
 		}
 
@@ -305,13 +303,6 @@ public class SceneDungeon : SceneMain
 		int rewardExp = meta.reward.exp + (int)Random.Range(-meta.reward.exp * 0.1f, meta.reward.exp * 0.1f);
 		int bonusExp = (int)(rewardExp * stat.GetStat(StatType.ExpBonus) / 100.0f);
 
-		Item item = null;
-		if (meta.reward.item_chance >= Random.Range(0, 100))
-		{
-			collect_item_count++;
-			item = ItemManager.Instance.CreateRandomEquipItem();
-			GameManager.Instance.player.inventory.Add(item);
-		}
 		GameManager.Instance.player.ChangeCoin(rewardCoin + bonusCoin, false);
 		GameManager.Instance.player.AddExp(rewardExp + bonusExp);
 
@@ -343,12 +334,10 @@ public class SceneDungeon : SceneMain
 		{
 			battleResult += "Level : " + prevPlayerLevel + " -> " + GameManager.Instance.player.level + "\n";
 		}
-		if (null != item)
-		{
-			battleResult += GameText.GetText("DUNGEON/HAVE_ITEM", "You", "<color=#" + ColorUtility.ToHtmlStringRGBA(UIItem.GetGradeColor(item.grade)) +">" + item.meta.name + "</color>") + "\n";
-		}
 
-		StartCoroutine(GameManager.Instance.ui_textbox.Write(battleResult));
+		yield return GameManager.Instance.ui_textbox.Write(battleResult);
+		dungeon.current_room.monster = null;
+		mini_map.CurrentPosition(dungeon.current_room.id);
 	}
 
 	private IEnumerator Lose()

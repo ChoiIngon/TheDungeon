@@ -207,7 +207,12 @@ public class UITextBox : MonoBehaviour
 	}
 	private IEnumerator Hide()
 	{
+		fast.gameObject.SetActive(false);
+		next.gameObject.SetActive(false);
 		close.gameObject.SetActive(false);
+		submit.gameObject.SetActive(false);
+		cancel.gameObject.SetActive(false);
+
 		Util.EventSystem.Publish(EventID.TextBox_Close);
 		state = State.Hide;
 		while (position.y < rectTransform.anchoredPosition.y)

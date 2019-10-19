@@ -69,7 +69,7 @@ public class UINpc : MonoBehaviour {
 		if ("" != npcID)
 		{
 			image.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-			image.sprite = ResourceManager.Instance.Load<Sprite>("Npcs/" + npcID);
+			image.sprite = ResourceManager.Instance.Load<Sprite>("Npc/" + npcID);
 		}
 		else
 		{

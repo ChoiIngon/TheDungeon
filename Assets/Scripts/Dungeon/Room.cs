@@ -36,7 +36,7 @@ public class Room : MonoBehaviour
 			}
 		}		   		
 
-		if (null != data.item)
+		if (null == data.monster && null != data.item)
 		{
 			box.Show(data);
 		}

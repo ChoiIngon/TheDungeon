@@ -291,8 +291,8 @@ public class Player : Unit
 		exp += amount;
 		while (this.exp >= GetMaxExp())
 		{
-			level += 1;
 			exp -= GetMaxExp();
+			level += 1;
 
 			stats.AddStat(meta.levelup_stats[StatType.Health].CreateInstance());
 			stats.AddStat(meta.levelup_stats[StatType.Attack].CreateInstance());

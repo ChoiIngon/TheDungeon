@@ -13,20 +13,6 @@ public class Dungeon
 	public const int Max = 4;
 	private const int EXIT_LOCK_CHANCE = 100;
 
-	[System.Serializable]
-	public class LevelInfo
-	{
-		[System.Serializable]
-		public class Item {
-			public float chance;
-	//		public ItemManager.GradeWeight[] grade_weight;
-		}
-
-		public int level;
-		public string[] monsters;
-		public Item items;
-	}
-
 	public class Room
 	{
 		public enum Type {
@@ -40,6 +26,7 @@ public class Dungeon
 		public bool visit = false;
 		public Type type = Type.Normal;
 		public Item.Meta item = null;
+		public float item_chance = 0.0f;
 		public Monster.Meta monster = null;
 		public Room[] next = new Room[Max];
 		
@@ -55,7 +42,6 @@ public class Dungeon
 
 	public Room current_room = null;
 	public Room[] rooms = new Room[WIDTH * HEIGHT];
-	public bool exit_lock = false;
 	public int level = 1;	
 	// Use this for initialization
 	public void Init(int dungeonLevel)
@@ -67,11 +53,6 @@ public class Dungeon
 			room.id = i;
 			room.group = i;
 			rooms [i] = room;
-		}
-
-		if (EXIT_LOCK_CHANCE >= Random.Range(0, 100))
-		{
-			exit_lock = true;
 		}
 
 		int group = 0;
@@ -135,13 +116,6 @@ public class Dungeon
 		}
 
 		List<Room> candidates = new List<Room>(rooms);
-		int monsterCount = (int)Random.Range(candidates.Count / 4.0f, candidates.Count / 2.5f);
-		int itemBoxCount = Random.Range(0, 4);
-		if (2 + monsterCount + itemBoxCount > candidates.Count)
-		{
-			throw new System.IndexOutOfRangeException();
-		}
-
 		int start = Random.Range(0, candidates.Count);
 		rooms[start].type = Room.Type.Start;
 		current_room = rooms[start];
@@ -156,18 +130,42 @@ public class Dungeon
 		exit.type = Room.Type.Exit;
 		candidates.RemoveAt(end);
 
-		for (int i = 0; i < monsterCount; i++)
+		candidates = new List<Room>(rooms);
+		candidates.RemoveAll(room => (room.type == Room.Type.Start || room.type == Room.Type.Exit));
 		{
-			if (0 == candidates.Count)
+			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+				"SELECT monster_id, monster_count, reward_item_chance, reward_item_id FROM meta_dungeon_monster WHERE dungeon_level=" + dungeonLevel
+			);
+
+			while (true == reader.Read())
 			{
-				break;
+				int monsterCount = reader.GetInt32("monster_count");
+				for (int i = 0; i < monsterCount; i++)
+				{
+					int index = Random.Range(0, candidates.Count);
+					Room room = candidates[index];
+					room.monster = MonsterManager.Instance.FindMeta(reader.GetString("monster_id"));
+					room.item_chance = reader.GetFloat("reward_item_chance");
+					if (0.0f < room.item_chance)
+					{
+						string rewardItemID = reader.GetString("reward_item_id");
+						if ("" == rewardItemID)
+						{
+							room.item = EquipItemManager.Instance.GetRandomMeta();
+						}
+						else
+						{
+							room.item = ItemManager.Instance.FindMeta<Item.Meta>(rewardItemID);
+						}
+					}
+
+					candidates.RemoveAt(index);
+				}
 			}
-			int index = Random.Range(0, candidates.Count);
-			Room room = candidates[index];
-			room.monster = MonsterManager.Instance.GetRandomMonster(dungeonLevel);
-			candidates.RemoveAt(index);
 		}
 
+		int itemBoxCount = Random.Range(0, 5);
+		
 		for (int i = 0; i < itemBoxCount; i++)
 		{
 			if (0 == candidates.Count)
@@ -180,13 +178,39 @@ public class Dungeon
 			candidates.RemoveAt(index);
 		}
 
-		if(true == exit_lock)
+		candidates = new List<Room>(rooms);
+		bool exitLock = false;
+		int keyItemCount = 0;
+		foreach (Room candidate in candidates)
+		{
+			if (null == candidate.item)
+			{
+				continue;
+			}
+			if (candidate.item.id == "ITEM_KEY")
+			{
+				exitLock = true;
+				keyItemCount = 1;
+				break;
+			}
+		}
+		if (false == exitLock)
+		{
+			exitLock = 30 > Random.Range(0, 100);
+		}
+
+		if (true == exitLock)
 		{
 			exit.type = Dungeon.Room.Type.Lock;
-			int index = Random.Range(0, candidates.Count);
-			candidates[index].item = ItemManager.Instance.FindMeta<KeyItem.Meta>("ITEM_KEY");
-			candidates.RemoveAt(index);
+			if(0 == keyItemCount)
+			{
+				candidates.RemoveAll(room => (room.type == Room.Type.Start || room.type == Room.Type.Lock));
+				int index = Random.Range(0, candidates.Count);
+				candidates[index].item = ItemManager.Instance.FindMeta<KeyItem.Meta>("ITEM_KEY");
+				candidates.RemoveAt(index);
+			}
 		}
+		
 	}
 
 	public Room Move(int direction)

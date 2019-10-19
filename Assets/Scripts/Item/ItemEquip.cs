@@ -141,10 +141,14 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 
 	public EquipItem CreateRandomItem()
 	{
-		EquipItem.Meta meta = item_metas[Random.Range(0, item_metas.Count)];
+		EquipItem.Meta meta = GetRandomMeta();
 		return meta.CreateInstance() as EquipItem;
 	}
 
+	public EquipItem.Meta GetRandomMeta()
+	{
+		return item_metas[Random.Range(0, item_metas.Count)];
+	}
 	private void InitStatGacha()
 	{
 		for (int i = 0; i < (int)EquipItem.Part.Max; i++)
