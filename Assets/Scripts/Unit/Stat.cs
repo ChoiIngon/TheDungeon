@@ -105,7 +105,7 @@ public class Stat
 		if (false == datas.ContainsKey(data.type))
 		{
 			Debug.LogWarning("can not find stat(stat_type:" + data.type.ToString() + ")");
-			return;
+			datas.Add(data.type, 0.0f);
 		}
 
 #if UNITY_EDITOR

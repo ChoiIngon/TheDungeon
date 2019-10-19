@@ -192,6 +192,11 @@ public class UIEquipItem : UIItem
 		EquipItem equipItem = (EquipItem)item_data;
 		if (true == equipItem.equip)
 		{
+			foreach (var itr in inventory.equip_slots)
+			{
+				itr.Value.SetActiveGuideArrow(false);
+			}
+
 			GameManager.Instance.player.Unequip(equipItem.part, equipItem.equip_index);
 			GameManager.Instance.player.inventory.Add(equipItem);
 
