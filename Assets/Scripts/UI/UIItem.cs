@@ -52,10 +52,6 @@ public class UIItem : MonoBehaviour
         Init (item_data);
 	}
 
-	private void Start()
-	{
-	}
-
 	public virtual void Init(Item item)
 	{
 		this.item_data = item;
@@ -79,15 +75,9 @@ public class UIItem : MonoBehaviour
 	{
 		
 	}
-	public virtual void OnDrag() {}
 	public virtual void OnDrop() {}
-	public virtual void OnEquipSlotDrop(UIEquipSlot slot) 
-	{
-	}
-    public virtual void OnItemSlotDrop(UIItemSlot slot) 
-	{
-
-	}
+	public virtual void OnEquipSlotDrop(UIEquipSlot slot) {}
+    public virtual void OnItemSlotDrop(UIItemSlot slot) {}
 	
 	private void OnPointerDown(PointerEventData evt)
     {

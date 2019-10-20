@@ -33,18 +33,18 @@ public class UIEquipItem : UIItem
 		foreach (Stat.Data stat in equipItem.main_stat.GetStats())
 		{
 			Stat.Meta meta = Stat.GetMeta(stat.type);
-			description += "<color=white> +" + string.Format(meta.description, stat.value) + "</color>\n";
+			description += "<color=white> " + meta.ToString(stat.value) + "</color>\n";
 		}
 
 		foreach (Stat.Data stat in equipItem.sub_stat.GetStats())
 		{
 			Stat.Meta meta = Stat.GetMeta(stat.type);
-			description += "<color=green> +" + string.Format(meta.description, stat.value) + "</color>\n";
+			description += "<color=green> " + meta.ToString(stat.value) + "</color>\n";
 		}
 
 		if (null != equipItem.skill)
 		{
-			description += "<color=red> +" + equipItem.skill.meta.description + "</color>";
+			description += "<color=red> " + equipItem.skill.meta.description + "</color>";
 		}
 		inventory.item_info.SetDescription(description);
 		inventory.item_info.SetButtonListener(UIItemInfo.Action.Drop, () =>
@@ -74,6 +74,7 @@ public class UIEquipItem : UIItem
 			return;
 		}
 
+		Stat prev = GameManager.Instance.player.stats + new Stat();
 		EquipItem unequipItem = null;
 		if (null != slot.item)
 		{
@@ -92,48 +93,16 @@ public class UIEquipItem : UIItem
 		}
 		GameManager.Instance.player.Equip((EquipItem)item_data, slot.equip_index);
 
-		if (unequipItem == equipItemData || true == alreadyEquiped)
-		{
-			return;
-		}
-		string changedStat = "";
-
-		Stat main_stat = equipItemData.main_stat - (null != unequipItem ? unequipItem.main_stat : new Stat());
-		foreach (Stat.Data stat in main_stat.GetStats())
-		{
-			Stat.Meta meta = Stat.GetMeta(stat.type);
-			if (0.0f < stat.value)
-			{
-				changedStat += "<color=white> +" + string.Format(meta.description, stat.value) + "</color>\n";
-			}
-			else
-			{
-				changedStat += "<color=red> -" + string.Format(meta.description, stat.value) + "</color>\n";
-			}
-		}
-
-		Stat sub_stat = equipItemData.sub_stat - (null != unequipItem ? unequipItem.sub_stat : new Stat());
-		foreach (Stat.Data stat in sub_stat.GetStats())
-		{
-			Stat.Meta meta = Stat.GetMeta(stat.type);
-			if (0.0f < stat.value)
-			{
-				changedStat += "<color=white> +" + string.Format(meta.description, stat.value) + "</color>\n";
-			}
-			else
-			{
-				changedStat += "<color=red> -" + string.Format(meta.description, stat.value) + "</color>\n";
-			}
-		}
+		string changedStat = DiffStat(prev, GameManager.Instance.player.stats);
 
 		if (null != equipItemData.skill)
 		{
-			changedStat += "<color=white> +" + equipItemData.skill.meta.description + "</color>";
+			changedStat += "<color=white> " + equipItemData.skill.meta.description + "</color>";
 		}
 
 		if (null != unequipItem && null != unequipItem.skill)
 		{
-			changedStat += "<color=red> -" + unequipItem.skill.meta.description + "</color>";
+			changedStat += "<color=red> " + unequipItem.skill.meta.description + "</color>";
 		}
 		GameManager.Instance.ui_textbox.AsyncWrite(changedStat, false);
 	}
@@ -148,22 +117,11 @@ public class UIEquipItem : UIItem
 		EquipItem equipItem = (EquipItem)item_data;
 		if (true == equipItem.equip)
 		{
+			Stat prevStat = GameManager.Instance.player.stats + new Stat();
 			GameManager.Instance.player.Unequip(equipItem.part, equipItem.equip_index);
 			GameManager.Instance.player.inventory.Add(equipItem);
 
-			string changedStat = "";
-			foreach (Stat.Data stat in equipItem.main_stat.GetStats())
-			{
-				Stat.Meta meta = Stat.GetMeta(stat.type);
-				changedStat += "<color=red> -" + string.Format(meta.description, stat.value) + "</color>\n";
-			}
-
-			foreach (Stat.Data stat in equipItem.sub_stat.GetStats())
-			{
-				Stat.Meta meta = Stat.GetMeta(stat.type);
-				changedStat += "<color=red> -" + string.Format(meta.description, stat.value) + "</color>\n";
-			}
-
+			string changedStat = DiffStat(prevStat, GameManager.Instance.player.stats);
 			if (null != equipItem.skill)
 			{
 				changedStat += "<color=red> -" + equipItem.skill.meta.description + "</color>";
@@ -197,27 +155,36 @@ public class UIEquipItem : UIItem
 				itr.Value.SetActiveGuideArrow(false);
 			}
 
+			Stat prev = GameManager.Instance.player.stats + new Stat();
 			GameManager.Instance.player.Unequip(equipItem.part, equipItem.equip_index);
 			GameManager.Instance.player.inventory.Add(equipItem);
 
-			string changedStat = "";
-			foreach (Stat.Data stat in equipItem.main_stat.GetStats())
-			{
-				Stat.Meta meta = Stat.GetMeta(stat.type);
-				changedStat += "<color=red> -" + string.Format(meta.description, stat.value) + "</color>\n";
-			}
-
-			foreach (Stat.Data stat in equipItem.sub_stat.GetStats())
-			{
-				Stat.Meta meta = Stat.GetMeta(stat.type);
-				changedStat += "<color=red> -" + string.Format(meta.description, stat.value) + "</color>\n";
-			}
-
+			string changedStat = DiffStat(prev, GameManager.Instance.player.stats);
 			if (null != equipItem.skill)
 			{
-				changedStat += "<color=red> -" + equipItem.skill.meta.description + "</color>";
+				changedStat += "<color=red> " + equipItem.skill.meta.description + "</color>";
 			}
 			GameManager.Instance.ui_textbox.AsyncWrite(changedStat, false);
 		}
+	}
+
+	private string DiffStat(Stat prev, Stat after)
+	{
+		Stat curr = after - prev;
+		string statText = "";
+		foreach (Stat.Data stat in curr.GetStats())
+		{
+			Stat.Meta meta = Stat.GetMeta(stat.type);
+
+			if (0.0f < stat.value)
+			{
+				statText += meta.ToString(stat.value) + "\n";
+			}
+			else if (0.0f > stat.value)
+			{
+				statText += "<color=red> " + meta.ToString(stat.value) + "</color>\n";
+			}
+		}
+		return statText;
 	}
 }

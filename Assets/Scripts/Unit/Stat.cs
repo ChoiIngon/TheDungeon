@@ -58,6 +58,15 @@ public class Stat
 		public StatType type;
 		public string name;
 		public string description;
+		public string ToString(float value)
+		{
+			string valueText = value.ToString();
+			if (0.0f <= value)
+			{
+				valueText = "+" + valueText;
+			}
+			return string.Format(description, valueText);
+		}
 	}
 
 	public Dictionary<StatType, float> datas = new Dictionary<StatType, float>();
