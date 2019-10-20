@@ -20,7 +20,11 @@ public class UINpc : MonoBehaviour {
 		heightScale = Screen.height/canvasScaler.referenceResolution.y;
 	}
 
-	public IEnumerator Talk(string speaker_id, string[] text)
+	public void AsyncWrite(string speaker_id, string[] text)
+	{
+		StartCoroutine(Write(speaker_id, text));
+	}
+	public IEnumerator Write(string speaker_id, string[] text)
 	{
 		while (UITextBox.State.Idle != GameManager.Instance.ui_textbox.state)
 		{
@@ -33,10 +37,15 @@ public class UINpc : MonoBehaviour {
 		{
 			iTween.MoveTo(image.gameObject, iTween.Hash("x", 0.0f, "easeType", "easeInOutExpo", "time", 0.5f));
 		};
-		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(text));
+		yield return GameManager.Instance.ui_textbox.Write(text);
 	}
 
-	public IEnumerator Talk(List<Quest.Dialogue> dialogues)
+	public void AsyncWrite(List<Quest.Dialogue> dialogues)
+	{
+		StartCoroutine(Write(dialogues));
+	}
+
+	public IEnumerator Write(List<Quest.Dialogue> dialogues)
 	{
 		while (UITextBox.State.Idle != GameManager.Instance.ui_textbox.state)
 		{
@@ -61,7 +70,7 @@ public class UINpc : MonoBehaviour {
 		{
 			scripts.Add(dialogue.script);
 		}
-		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(scripts.ToArray()));
+		yield return GameManager.Instance.ui_textbox.Write(scripts.ToArray());
 	}
 
 	private void SetSprite(string npcID)

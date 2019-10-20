@@ -13,9 +13,8 @@ public class UICoin : MonoBehaviour
 		text = UIUtil.FindChild<Text>(transform, "Amount");
 		Image image = UIUtil.FindChild<Image>(transform, "Image");
         position = Camera.main.ScreenToWorldPoint(
-			new Vector3(image.rectTransform.position.x + 25.0f, image.rectTransform.position.y, Camera.main.transform.position.z * -1.0f)
-        );
-
+			new Vector3(image.rectTransform.position.x, image.rectTransform.position.y, Camera.main.transform.position.z * -1.0f)
+		);
 		Util.EventSystem.Subscribe(EventID.CoinAmountChanged, OnCoinAmountChanged);
 	}
 

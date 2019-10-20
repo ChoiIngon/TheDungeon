@@ -56,7 +56,7 @@ public class SceneStart : SceneMain
 			"하지만 지금까지 저곳으로 들어서 무사히 돌아나온 사람은 없다는군."
 		};
 
-		yield return GameManager.Instance.ui_npc.Talk("npc_farseer", scripts);
+		yield return GameManager.Instance.ui_npc.Write("npc_farseer", scripts);
 		GameManager.Instance.CameraFade(0.0f, 1.0f, 1.0f);
 		yield return AsyncLoadScene("Dungeon");
 		yield return AsyncUnloadScene("Start");

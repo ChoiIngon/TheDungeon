@@ -35,7 +35,7 @@ public class UIQuestInfo : MonoBehaviour
 				contents.text += progress.name + " " + progress.count + "/" + progress.goal + "\n";
 			}
 		};
-		StartCoroutine(GameManager.Instance.ui_npc.Talk(quest.start_dialogues));
+		StartCoroutine(GameManager.Instance.ui_npc.Write(quest.start_dialogues));
 	}
 	private void OnQuestUpdate(Quest quest)
 	{
@@ -65,6 +65,6 @@ public class UIQuestInfo : MonoBehaviour
 			script = "퀘스트 완료 보상\n" +
 			(reward.coin == 0 ? "" : ("Coin : " + reward.coin))
 		});
-		StartCoroutine(GameManager.Instance.ui_npc.Talk(quest.complete_dialogues));
+		StartCoroutine(GameManager.Instance.ui_npc.Write(quest.complete_dialogues));
 	}
 }

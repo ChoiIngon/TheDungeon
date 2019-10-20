@@ -102,6 +102,13 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
 		InitScene();
+
+		Button shopButton = UIUtil.FindChild<Button>(transform, "UI/Shop");
+		UIUtil.AddPointerUpListener(shopButton.gameObject, () =>
+		{
+			GameManager.Instance.ui_shop.gameObject.SetActive(true);
+			GameManager.Instance.ui_shop.Init();
+		});
 	}
 
 	private void OnDestroy()
