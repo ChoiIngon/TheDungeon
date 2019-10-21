@@ -59,7 +59,7 @@ public class Coin : MonoBehaviour
 		}
 
 		iTween.MoveTo(gameObject, iTween.Hash(
-			"position", GameManager.Instance.ui_coin.position,
+			"position", UICoin.position,
 			"time", 0.25f,
 			"easetype", iTween.EaseType.easeOutQuint,
 			"oncomplete", "OnComplete",
@@ -70,7 +70,8 @@ public class Coin : MonoBehaviour
 			yield return null;
 		}
 
-		yield return GameManager.Instance.ui_coin.ChangeAmount();
+		//yield return GameManager.Instance.ui_coin.ChangeAmount();
+		Util.EventSystem.Publish(EventID.CoinAmountChanged);
 		Destroy(gameObject);
 	}
 

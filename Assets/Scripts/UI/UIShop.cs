@@ -39,9 +39,7 @@ public class UIShop : MonoBehaviour
 		close = UIUtil.FindChild<Button>(transform, "BottomBar/Close");
 		coin = UIUtil.FindChild<UICoin>(transform, "../UICoin");
 		coin_position = coin.transform.position;
-		coin_spot = UIUtil.FindChild<Transform>(transform, "Line").position;
-		coin_spot.x = coin_position.x;
-		coin_spot.y += 30.0f;
+		coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot").position;
 	}
 
 	private void Start()

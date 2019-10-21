@@ -29,6 +29,7 @@ public class Dungeon
 		public float item_chance = 0.0f;
 		public Monster.Meta monster = null;
 		public Room[] next = new Room[Max];
+		public string npc_sprite_path = "";
 		
 		public Room GetNext(int direction)
 		{

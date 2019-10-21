@@ -18,6 +18,7 @@ public class Quest
 
 	public string quest_id;
 	public string quest_name;
+	public string npc_sprite_path;
 	public int step;
 	
 	public List<List<QuestProgress>> progresses = new List<List<QuestProgress>>();
@@ -156,13 +157,6 @@ public class QuestProgress : Progress
 	}
 }
 
-public class CompleteQuest
-{
-	public string id;
-	public int date;
-	public int count;
-};
-
 public class QuestManager : Util.Singleton<QuestManager>
 {
 	public Quest Find(string questID)
@@ -170,13 +164,14 @@ public class QuestManager : Util.Singleton<QuestManager>
 		Quest quest = null;
 		{
 			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-				"SELECT quest_id, quest_name, reward_coin, reward_item_id FROM meta_quest WHERE quest_id='" + questID + "'"
+				"SELECT quest_id, quest_name, reward_coin, reward_item_id, npc_sprite_path FROM meta_quest WHERE quest_id='" + questID + "'"
 			);
 			while (true == reader.Read())
 			{
 				quest = new Quest();
 				quest.quest_id = reader.GetString("quest_id");
 				quest.quest_name = reader.GetString("quest_name");
+				quest.npc_sprite_path = reader.GetString("npc_sprite_path");
 				quest.reward.coin = reader.GetInt32("reward_coin");
 				quest.reward.item_id = reader.GetString("reward_item_id");
 			}

@@ -10,8 +10,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
     public const string VERSION = "1.2";
 	public Player player;
 	public UIInventory ui_inventory;
-	public UIShop ui_shop;
-	public UICoin ui_coin;
+	
 	public UINpc ui_npc;
 	public UISetting ui_setting;
 	public UITextBox ui_textbox;
@@ -42,10 +41,8 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		canvas = UIUtil.FindChild<Canvas>(transform, "UI");
 		camera_fade = UIUtil.FindChild<Image>(canvas.transform, "CameraFade");
 		ui_inventory = UIUtil.FindChild<UIInventory>(canvas.transform, "UIInventory");
-		ui_shop = UIUtil.FindChild<UIShop>(canvas.transform, "UIShop");
 		ui_setting = UIUtil.FindChild<UISetting>(canvas.transform, "UISetting");
 		ui_textbox = UIUtil.FindChild<UITextBox>(canvas.transform, "UITextBox");
-		ui_coin = UIUtil.FindChild<UICoin>(canvas.transform, "UICoin");
 		ui_npc = UIUtil.FindChild<UINpc>(canvas.transform, "UINpc");
 		ui_ticker = UIUtil.FindChild<UITicker>(canvas.transform, "UITicker");
 		camera_fade.gameObject.SetActive(true);

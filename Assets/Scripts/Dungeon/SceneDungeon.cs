@@ -87,10 +87,20 @@ public class SceneDungeon : SceneMain
 		player_health = UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Health");
 		player_exp =	UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Exp");
 
-		GameManager.Instance.ui_coin.gameObject.SetActive(true);
+		UICoin uiCoin = UIUtil.FindChild<UICoin>(transform, "UI/UICoin");
+		uiCoin.gameObject.SetActive(true);
+		
 		coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot");
 		coin_spot.gameObject.SetActive(true);
 		coin_prefab = UIUtil.FindChild<Coin>(transform, "Prefabs/Coin");
+
+		UIShop uiShop = UIUtil.FindChild<UIShop>(transform, "UI/UIShop");
+		Button shopButton = UIUtil.FindChild<Button>(transform, "UI/ShopButton");
+		UIUtil.AddPointerUpListener(shopButton.gameObject, () =>
+		{
+			uiShop.gameObject.SetActive(true);
+			uiShop.Init();
+		});
 
 		Util.EventSystem.Subscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
 		Util.EventSystem.Subscribe(EventID.Dungeon_Exit_Unlock, () => { StartCoroutine(OnExitUnlock()); });
@@ -100,15 +110,9 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Subscribe<Item>(EventID.Inventory_Add, OnItemAdd);
 		Util.EventSystem.Subscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
 		Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
+		Util.EventSystem.Subscribe<Quest>(EventID.Quest_Start, OnQuestStart);
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
-		InitScene();
-
-		Button shopButton = UIUtil.FindChild<Button>(transform, "UI/Shop");
-		UIUtil.AddPointerUpListener(shopButton.gameObject, () =>
-		{
-			GameManager.Instance.ui_shop.gameObject.SetActive(true);
-			GameManager.Instance.ui_shop.Init();
-		});
+		InitScene();			
 	}
 
 	private void OnDestroy()
@@ -121,6 +125,7 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Add, OnItemAdd);
 		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
 		Util.EventSystem.Unsubscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
+		Util.EventSystem.Unsubscribe<Quest>(EventID.Quest_Start, OnQuestStart);
 	}
 
 	private void InitScene()
@@ -142,11 +147,11 @@ public class SceneDungeon : SceneMain
 		player_exp.current = GameManager.Instance.player.exp;
 		text_inventory.text = GameManager.Instance.player.inventory.count.ToString() + "/" + Inventory.MAX_SLOT_COUNT;
 
-		Quest quest = QuestManager.Instance.GetAvailableQuest();
-		quest.Start();
-
 		dungeon.level = 0;
 		InitDungeon();
+
+		Quest quest = QuestManager.Instance.GetAvailableQuest();
+		quest.Start();
 	}
 
 	private void InitDungeon()
@@ -156,6 +161,7 @@ public class SceneDungeon : SceneMain
 		StartCoroutine(GameManager.Instance.CameraFade(Color.black, new Color(0.0f, 0.0f, 0.0f, 0.0f), 1.5f));
 		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon.level.ToString();
 		mini_map.Init(dungeon);
+		
 		InitRooms();
 		StartCoroutine(GameManager.Instance.ui_textbox.Write(GameText.GetText("DUNGEON/WELCOME", dungeon.level)));
 		ProgressManager.Instance.Update(ProgressType.DungeonLevel, "", dungeon.level);
@@ -461,5 +467,11 @@ public class SceneDungeon : SceneMain
 	{
 		player_health.max = GameManager.Instance.player.max_health;
 		player_health.current = GameManager.Instance.player.cur_health;
-	}		
+	}
+
+	public void OnQuestStart(Quest quest)
+	{
+		dungeon.current_room.npc_sprite_path = quest.npc_sprite_path;
+		current_room.Init(dungeon.current_room);
+	}
 }

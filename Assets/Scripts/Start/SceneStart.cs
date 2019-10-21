@@ -20,8 +20,7 @@ public class SceneStart : SceneMain
 			}
 			yield return StartCoroutine(GameManager.Instance.Init());
 		}
-
-		GameManager.Instance.ui_coin.gameObject.SetActive(false);
+				
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
 		start_button = UIUtil.FindChild<Button>(transform, "UI/StartButton");
 		UIUtil.AddPointerUpListener(start_button.gameObject, () =>

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class UICoin : MonoBehaviour
 {
-	public Vector3 position;
+	public static Vector3 position;
 	private Text text;
 	private int current_amount = 0;
 
