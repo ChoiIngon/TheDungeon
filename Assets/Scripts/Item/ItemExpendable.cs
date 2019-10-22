@@ -184,7 +184,7 @@ public class ExpendableItemManager
 			meta.id = "ITEM_POTION_HEALING";
 			meta.name = "Healing Potion";
 			meta.price = 100;
-			meta.sprite_path = "Item/item_potion_002";
+			meta.sprite_path = "Item/item_potion_red";
 			meta.description = "An elixir that will instantly return you to full health and cure poison.";
 			item_metas.Add(meta);
 			ItemManager.Instance.AddItemMeta(meta);
@@ -197,7 +197,7 @@ public class ExpendableItemManager
 			meta.id = "ITEM_POTION_STRENGTH";
 			meta.name = "Strength Potion";
 			meta.price = 100;
-			meta.sprite_path = "Item/item_potion_001";
+			meta.sprite_path = "Item/item_potion_yellow";
 			meta.description = "An elixir that will permenently increase strength.";
 			item_metas.Add(meta);
 			ItemManager.Instance.AddItemMeta(meta);
@@ -210,7 +210,7 @@ public class ExpendableItemManager
 			meta.id = "ITEM_POTION_SPEED";
 			meta.name = "Speed Potion";
 			meta.price = 100;
-			meta.sprite_path = "Item/item_potion_001";
+			meta.sprite_path = "Item/item_potion_marin";
 			meta.description = "An elixir that will permenently increase speed.";
 			item_metas.Add(meta);
 			ItemManager.Instance.AddItemMeta(meta);
@@ -223,7 +223,7 @@ public class ExpendableItemManager
 			meta.id = "ITEM_SCROLL_REVEAL_MAP";
 			meta.name = "scroll of map";
 			meta.price = 100;
-			meta.sprite_path = "Item/item_potion_001";
+			meta.sprite_path = "Item/item_scroll_map";
 			meta.description = "reveal map.";
 			item_metas.Add(meta);
 			ItemManager.Instance.AddItemMeta(meta);
@@ -236,7 +236,7 @@ public class ExpendableItemManager
 			meta.id = "ITEM_SCROLL_REVEAL_MONSTER";
 			meta.name = "scroll of monster";
 			meta.price = 100;
-			meta.sprite_path = "Item/item_potion_001";
+			meta.sprite_path = "Item/item_scroll_monster";
 			meta.description = "detect monster";
 			item_metas.Add(meta);
 			ItemManager.Instance.AddItemMeta(meta);
@@ -249,7 +249,7 @@ public class ExpendableItemManager
 			meta.id = "ITEM_SCROLL_REVEAL_TREASURE";
 			meta.name = "scroll of treasure";
 			meta.price = 100;
-			meta.sprite_path = "Item/item_potion_001";
+			meta.sprite_path = "Item/item_scroll_treasure";
 			meta.description = "detect treasure";
 			item_metas.Add(meta);
 			ItemManager.Instance.AddItemMeta(meta);

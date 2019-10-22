@@ -118,7 +118,7 @@ public class DungeonBattle : MonoBehaviour
 			{
 				int itemCount = items.Count;
 				int itemIndex = 0;
-				battle_buttons.AddButton((itemCount - itemIndex).ToString() + "/" + itemCount, ResourceManager.Instance.Load<Sprite>("Item/item_potion_002"), () =>
+				battle_buttons.AddButton((itemCount - itemIndex).ToString() + "/" + itemCount, ResourceManager.Instance.Load<Sprite>("Item/item_potion_red"), () =>
 				{
 					HealPotionItem item = items[itemIndex++];
 					GameManager.Instance.player.inventory.Remove(item.slot_index);

@@ -12,7 +12,7 @@ public class RoomStair : MonoBehaviour
 	private BoxCollider2D touch_collider;
 	private Dungeon.Room room;
 	private Coroutine textbox_coroutine;
-	// Start is called before the first frame update
+	
 	void Awake()
 	{
 		close = UIUtil.FindChild<SpriteRenderer>(transform, "Close");
@@ -28,8 +28,6 @@ public class RoomStair : MonoBehaviour
 		{
 			throw new MissingComponentException("BoxCollider2D");
 		}
-
-		
 	}
 
 	private void Start()
