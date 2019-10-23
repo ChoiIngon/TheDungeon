@@ -59,16 +59,16 @@ public class UINpc : MonoBehaviour {
 		};
 		GameManager.Instance.ui_textbox.on_next += () =>
 		{
-			SetSprite(dialogues[phaseNum++].speaker_id);
+			SetSprite(dialogues[phaseNum++].sprite_path);
 		};
 
-		SetSprite(dialogues[phaseNum++].speaker_id);
+		SetSprite(dialogues[phaseNum++].sprite_path);
 		iTween.MoveBy(image.gameObject, iTween.Hash("x", image.rectTransform.rect.width * widthScale, "easeType", "easeInOutExpo"));
 
 		List<string> scripts = new List<string>();
 		foreach (Quest.Dialogue dialogue in dialogues)
 		{
-			scripts.Add(dialogue.script);
+			scripts.Add(dialogue.text);
 		}
 		yield return GameManager.Instance.ui_textbox.Write(scripts.ToArray());
 	}
@@ -78,7 +78,7 @@ public class UINpc : MonoBehaviour {
 		if ("" != npcID)
 		{
 			image.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-			image.sprite = ResourceManager.Instance.Load<Sprite>("Npc/" + npcID);
+			image.sprite = ResourceManager.Instance.Load<Sprite>(npcID);
 		}
 		else
 		{

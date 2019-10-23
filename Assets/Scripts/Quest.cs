@@ -12,13 +12,13 @@ public class Quest
 
 	public class Dialogue
 	{
-		public string speaker_id;
-		public string script; // 대사
+		public string sprite_path;
+		public string text; // 대사
 	}
 
 	public string quest_id;
 	public string quest_name;
-	public string npc_sprite_path;
+	public string sprite_path;
 	public int step;
 	
 	public List<List<QuestProgress>> progresses = new List<List<QuestProgress>>();
@@ -164,14 +164,14 @@ public class QuestManager : Util.Singleton<QuestManager>
 		Quest quest = null;
 		{
 			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-				"SELECT quest_id, quest_name, reward_coin, reward_item_id, npc_sprite_path FROM meta_quest WHERE quest_id='" + questID + "'"
+				"SELECT quest_id, quest_name, reward_coin, reward_item_id, sprite_path FROM meta_quest WHERE quest_id='" + questID + "'"
 			);
 			while (true == reader.Read())
 			{
 				quest = new Quest();
 				quest.quest_id = reader.GetString("quest_id");
 				quest.quest_name = reader.GetString("quest_name");
-				quest.npc_sprite_path = reader.GetString("npc_sprite_path");
+				quest.sprite_path = reader.GetString("sprite_path");
 				quest.reward.coin = reader.GetInt32("reward_coin");
 				quest.reward.item_id = reader.GetString("reward_item_id");
 			}
@@ -203,23 +203,26 @@ public class QuestManager : Util.Singleton<QuestManager>
 		}
 		{
 			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-				"SELECT dialogue_type, order_num, speaker_id, script FROM meta_quest_dialogue WHERE quest_id='" + questID + "' ORDER BY dialogue_type, order_num"
+				"SELECT dialogue_type, dialogue_num, dialogue_text, sprite_path FROM meta_quest_dialogue WHERE quest_id='" + questID + "' ORDER BY dialogue_type, dialogue_num"
 			);
 			while (true == reader.Read())
 			{
 				Quest.Dialogue dialogue = new Quest.Dialogue();
-				dialogue.speaker_id = reader.GetString("speaker_id");
-				dialogue.script = reader.GetString("script");
+				dialogue.sprite_path = reader.GetString("sprite_path");
+				dialogue.text = reader.GetString("dialogue_text");
 				int dialogueType = reader.GetInt32("dialogue_type");
 
-				if (1 == dialogueType) // start
+				switch (dialogueType)
 				{
-					quest.start_dialogues.Add(dialogue);
-				}
-				else //complete
-				{
-					quest.complete_dialogues.Add(dialogue);
-				}
+					case 1:
+						quest.start_dialogues.Add(dialogue);
+						break;
+					case 2:
+						break;
+					case 3:
+						quest.complete_dialogues.Add(dialogue);
+						break;
+				}				
 			}
 		}
 		

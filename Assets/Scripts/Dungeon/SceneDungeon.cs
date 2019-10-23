@@ -471,7 +471,7 @@ public class SceneDungeon : SceneMain
 
 	public void OnQuestStart(Quest quest)
 	{
-		dungeon.current_room.npc_sprite_path = quest.npc_sprite_path;
+		dungeon.current_room.npc_sprite_path = quest.sprite_path;
 		current_room.Init(dungeon.current_room);
 	}
 }
