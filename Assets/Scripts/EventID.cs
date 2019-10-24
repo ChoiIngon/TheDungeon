@@ -23,6 +23,10 @@ public class EventID
 
 	public const string TextBox_Open = "TextBox_Open";
 	public const string TextBox_Close = "TextBox_Close";
+
+	public const string Shop_Open = "Shop_Open";
+	public const string Shop_Close = "Shop_Close";
+
 	public const string Player_Add_Exp = "Player_Add_Exp";
 	public const string Player_Stat_Change = "Player_Stat_Change";
 

@@ -18,6 +18,8 @@ public class DungeonMoveButtons : MonoBehaviour
 
 		Util.EventSystem.Subscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
 		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, OnMoveFinish);
+		Util.EventSystem.Subscribe(EventID.Shop_Open, () => { touch_input.AddBlockCount(); });
+		Util.EventSystem.Subscribe(EventID.Shop_Close, () => { touch_input.ReleaseBlockCount(); });
 		Util.EventSystem.Subscribe(EventID.Inventory_Open, () => { touch_input.AddBlockCount(); });
 		Util.EventSystem.Subscribe(EventID.Inventory_Close, () => { touch_input.ReleaseBlockCount(); });
 		Util.EventSystem.Subscribe(EventID.TextBox_Open, () => { touch_input.AddBlockCount(); });
@@ -97,6 +99,8 @@ public class DungeonMoveButtons : MonoBehaviour
 	{
 		Util.EventSystem.Unsubscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Move_Finish, OnMoveFinish);
+		Util.EventSystem.Unsubscribe(EventID.Shop_Open, () => { touch_input.AddBlockCount(); });
+		Util.EventSystem.Unsubscribe(EventID.Shop_Close, () => { touch_input.ReleaseBlockCount(); });
 		Util.EventSystem.Unsubscribe(EventID.Inventory_Open);
 		Util.EventSystem.Unsubscribe(EventID.Inventory_Close);
 		Util.EventSystem.Unsubscribe(EventID.TextBox_Open);

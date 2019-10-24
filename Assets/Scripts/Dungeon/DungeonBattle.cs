@@ -13,7 +13,7 @@ public class DungeonBattle : MonoBehaviour
 	private Transform			player_damage_effect_spot;
 	private Effect_PlayerDamage[] player_damage_effects;
 
-	private UIBattleLog			battle_log;
+	public UILog				battle_log;
 	private UIButtonGroup		battle_buttons;
 	private float				battle_speed = 1.1f;
 	private float				wait_time_for_next_turn = 0.0f;
@@ -29,7 +29,6 @@ public class DungeonBattle : MonoBehaviour
 		Runaway = 2
 	}
 	public BattleResult			battle_result = BattleResult.Lose; // 0 : lose, 1 : win, 2 : draw
-
 	private void Awake()
 	{
 		monster = UIUtil.FindChild<Monster>(transform, "Monster");
@@ -42,7 +41,6 @@ public class DungeonBattle : MonoBehaviour
 		}
 		player_health = UIUtil.FindChild<UIGaugeBar>(transform, "../UI/Player/Health");
 		battle_buttons = UIUtil.FindChild<UIButtonGroup>(transform, "../UI/Battle/SkillButtons");
-		battle_log = UIUtil.FindChild<UIBattleLog>(transform, "../UI/Battle/BattleLog");
 		runaway_button = UIUtil.FindChild<Button>(transform, "../UI/Battle/Runaway");
 
 		touch_input = GetComponent<TouchInput>();

@@ -1,59 +1,38 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿	using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
-public class UILog : MonoBehaviour {
-	private static UILog _instance;  
-	public static UILog Instance  
-	{  
-		get  
-		{  
-			if (!_instance) 
-			{  
-				_instance = (UILog)GameObject.FindObjectOfType(typeof(UILog));  
-				if (!_instance)  
-				{  
-					GameObject container = new GameObject();  
-					container.name = "UILog";  
-					_instance = container.AddComponent<UILog>();  
-				}  
-				_instance.Init ();
-				//DontDestroyOnLoad (_instance.gameObject);
-			}  
+public class UILog : MonoBehaviour
+{
+	private int line_count;
+	private Text text;
 
-			return _instance;  
-		}  
-	}	
-	Text text;
-	public int lineLimit;
-	private int lineCount;
-	void Init()
+	private void Awake()
 	{
-		text = GetComponent<Text> ();
-		lineCount = 0;
-		gameObject.SetActive (false);
+		text = UIUtil.FindChild<Text>(transform, "Viewport/Content");
+		Init();		
+	}
+	
+	public void Init()
+	{
+		text.text = "";
+		line_count = 0;
 	}
 
-	public void Write(string text)
+	public void AsyncWrite(string text)
 	{
-		gameObject.SetActive (true);
-		this.text.text += text + System.Environment.NewLine;
-		lineCount++;
-		if (lineLimit < lineCount) {
-			int index = this.text.text.IndexOf(System.Environment.NewLine);
-			this.text.text = this.text.text.Substring(index + System.Environment.NewLine.Length);
-		}
+		StartCoroutine(Write(text));
 	}
 
-	public IEnumerator Hide(float time)
+	public IEnumerator Write(string text)
 	{
-		while (0.0f < text.color.a) {
-			Color color = text.color;
-			color.a -= Time.deltaTime / time;
-			text.color = color;
-			yield return null;
+		this.text.text += text + "\n";
+		if (4 <= line_count)
+		{
+			int index = this.text.text.IndexOf('\n');
+			this.text.text = this.text.text.Substring(index + 1);
+			yield break;
 		}
-		gameObject.SetActive (false);
+		line_count++;
 	}
 }

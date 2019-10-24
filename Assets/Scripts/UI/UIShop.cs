@@ -28,6 +28,7 @@ public class UIShop : MonoBehaviour
 	private Button close;
 	private List<Product> products;
 	private int current_index;
+	private bool complete;
 
 	private void Awake()
 	{
@@ -47,12 +48,25 @@ public class UIShop : MonoBehaviour
 		UIUtil.AddPointerUpListener(buy.gameObject, Buy);
 		UIUtil.AddPointerUpListener(close.gameObject, () => {
 			coin.GetComponent<RectTransform>().position = coin_position;
-			gameObject.SetActive(false);
+			complete = true;
 		});
 	}
 
-	public void Init()
+	private void OnEnable()
 	{
+		Util.EventSystem.Publish(EventID.Shop_Open);
+	}
+
+	private void OnDisable()
+	{
+		Util.EventSystem.Publish(EventID.Shop_Close);
+	}
+
+
+	public IEnumerator Open()
+	{
+		gameObject.SetActive(true);
+		complete = false;
 		if (null != products)
 		{
 			foreach (Product product in products)
@@ -93,6 +107,12 @@ public class UIShop : MonoBehaviour
 
 		InitProduct(products[Random.Range(0, products.Count)], ItemManager.Instance.FindMeta<HealPotionItem.Meta>("ITEM_POTION_HEALING"));
 		SelectProduct(0);
+
+		while (false == complete)
+		{
+			yield return null;
+		}
+		gameObject.SetActive(false);
 	}
 
 	private void InitProduct(Product product, Item.Meta meta)

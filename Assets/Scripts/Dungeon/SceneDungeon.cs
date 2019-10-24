@@ -21,6 +21,8 @@ public class SceneDungeon : SceneMain
 	private Transform ui_player_transform;
 	public UIGaugeBar player_health;
 	public UIGaugeBar player_exp;
+	public UILog log;
+	public UIShop shop;
 
 	private Dungeon dungeon;	
     private Text ui_dungeon_level;
@@ -94,13 +96,10 @@ public class SceneDungeon : SceneMain
 		coin_spot.gameObject.SetActive(true);
 		coin_prefab = UIUtil.FindChild<Coin>(transform, "Prefabs/Coin");
 
-		UIShop uiShop = UIUtil.FindChild<UIShop>(transform, "UI/UIShop");
-		Button shopButton = UIUtil.FindChild<Button>(transform, "UI/ShopButton");
-		UIUtil.AddPointerUpListener(shopButton.gameObject, () =>
-		{
-			uiShop.gameObject.SetActive(true);
-			uiShop.Init();
-		});
+		shop = UIUtil.FindChild<UIShop>(transform, "UI/UIShop");
+
+		log = UIUtil.FindChild<UILog>(transform, "UI/UILog");
+		battle.battle_log = log;
 
 		Util.EventSystem.Subscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
 		Util.EventSystem.Subscribe(EventID.Dungeon_Exit_Unlock, () => { StartCoroutine(OnExitUnlock()); });
@@ -302,6 +301,28 @@ public class SceneDungeon : SceneMain
 			}
 		}
 
+		if (dungeon.current_room.type == Dungeon.Room.Type.Shop)
+		{
+			StartCoroutine(mini_map.Hide(0.5f));
+			
+			dungeon.current_room.npc_sprite_path = "Npc/npc_graverobber";
+			current_room.Init(dungeon.current_room);
+			bool yes = false;
+			GameManager.Instance.ui_textbox.on_submit += () => {
+				yes = true;
+				GameManager.Instance.ui_textbox.Close();
+			};
+			yield return GameManager.Instance.ui_npc.Write("Npc/npc_graverobber_portrait", new string [] { "[전설의 상인]\n오! 이곳에서 사람은 오랜만이구만! 물건좀 보겠소?" });
+			if (true == yes)
+			{
+				yield return shop.Open();
+			}
+			yield return GameManager.Instance.ui_npc.Write("Npc/npc_graverobber_portrait", new string[] { "[전설의 상인]\n그럼 좋은 여행하게나..킬킬킬!" });
+			StartCoroutine(mini_map.Show(0.5f));
+			dungeon.current_room.type = Dungeon.Room.Type.Normal;
+			current_room.npc.gameObject.SetActive(false);
+		}
+		
 		Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
 	}
 
