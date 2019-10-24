@@ -12,6 +12,7 @@ public class ProgressType
 	public const string EnemiesSlain = "EnemiesSlain";
 	public const string BossSlain = "BossSlain";
 	public const string UseItem = "UseItem";
+	public const string MeetNpc = "MeetNcp";
 
 	public static Dictionary<string, Progress.Operation> progress_operations = new Dictionary<string, Progress.Operation>()
 	{

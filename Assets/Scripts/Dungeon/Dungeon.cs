@@ -19,6 +19,7 @@ public class Dungeon
 			Start,
 			Exit,
 			Lock,
+			Shop,
 			Normal
 		}
 		public int id = 0;
@@ -127,52 +128,44 @@ public class Dungeon
 		rooms[start].type = Room.Type.Start;
 		current_room = rooms[start];
 		candidates.RemoveAt(start);
-		candidates.RemoveAll(room => room.id == current_room.id + WIDTH);
-		candidates.RemoveAll(room => room.id == current_room.id + 1);
-		candidates.RemoveAll(room => room.id == current_room.id - 1);
-		candidates.RemoveAll(room => room.id == current_room.id - WIDTH);
 
-		int end = Random.Range(0, candidates.Count);
-		Room exit = candidates[end];
-		exit.type = Room.Type.Exit;
-		candidates.RemoveAt(end);
+		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+			"SELECT monster_id, monster_count, reward_item_chance, reward_item_id FROM meta_dungeon_monster WHERE dungeon_level=" + dungeonLevel
+		);
 
-		candidates = new List<Room>(rooms);
-		candidates.RemoveAll(room => (room.type == Room.Type.Start || room.type == Room.Type.Exit));
+		while (true == reader.Read())
 		{
-			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-				"SELECT monster_id, monster_count, reward_item_chance, reward_item_id FROM meta_dungeon_monster WHERE dungeon_level=" + dungeonLevel
-			);
-
-			while (true == reader.Read())
+			int monsterCount = reader.GetInt32("monster_count");
+			for (int i = 0; i < monsterCount; i++)
 			{
-				int monsterCount = reader.GetInt32("monster_count");
-				for (int i = 0; i < monsterCount; i++)
+				if (0 == candidates.Count)
 				{
-					int index = Random.Range(0, candidates.Count);
-					Room room = candidates[index];
-					room.monster = MonsterManager.Instance.FindMeta(reader.GetString("monster_id"));
-					room.item_chance = reader.GetFloat("reward_item_chance");
-					if (0.0f < room.item_chance)
-					{
-						string rewardItemID = reader.GetString("reward_item_id");
-						if ("" == rewardItemID)
-						{
-							room.item = EquipItemManager.Instance.GetRandomMeta();
-						}
-						else
-						{
-							room.item = ItemManager.Instance.FindMeta<Item.Meta>(rewardItemID);
-						}
-					}
-
-					candidates.RemoveAt(index);
+					break;
 				}
+
+				int index = Random.Range(0, candidates.Count);
+				Room room = candidates[index];
+				room.monster = MonsterManager.Instance.FindMeta(reader.GetString("monster_id"));
+				room.item_chance = reader.GetFloat("reward_item_chance");
+				if (0.0f < room.item_chance)
+				{
+					string rewardItemID = reader.GetString("reward_item_id");
+					if ("" == rewardItemID)
+					{
+						room.item = EquipItemManager.Instance.GetRandomMeta();
+					}
+					else
+					{
+						room.item = ItemManager.Instance.FindMeta<Item.Meta>(rewardItemID);
+					}
+				}
+
+				candidates.RemoveAt(index);
 			}
 		}
 
 		int itemBoxCount = Random.Range(0, 5);
-		
+
 		for (int i = 0; i < itemBoxCount; i++)
 		{
 			if (0 == candidates.Count)
@@ -185,38 +178,53 @@ public class Dungeon
 			candidates.RemoveAt(index);
 		}
 
-		candidates = new List<Room>(rooms);
-		bool exitLock = false;
-		int keyItemCount = 0;
-		foreach (Room candidate in candidates)
 		{
-			if (null == candidate.item)
+			int index = Random.Range(0, candidates.Count);
+			Room room = candidates[index];
+			room.type = Room.Type.Shop;
+		}
+
+		bool exitLock = false;
+		bool keyItem = false;
+		foreach (Room room in rooms)
+		{
+			if (null == room.item)
 			{
 				continue;
 			}
-			if (candidate.item.id == "ITEM_KEY")
+			if (room.item.id == "ITEM_KEY")
 			{
 				exitLock = true;
-				keyItemCount = 1;
+				keyItem = true;
 				break;
 			}
 		}
+
 		if (false == exitLock)
 		{
 			exitLock = 30 > Random.Range(0, 100);
 		}
 
+		if (true == exitLock && false == keyItem)
+		{
+			int index = Random.Range(0, candidates.Count);
+			candidates[index].item = ItemManager.Instance.FindMeta<KeyItem.Meta>("ITEM_KEY");
+			candidates.RemoveAt(index);
+		}
+
+		candidates.RemoveAll(room => room.id == current_room.id + WIDTH);
+		candidates.RemoveAll(room => room.id == current_room.id + 1);
+		candidates.RemoveAll(room => room.id == current_room.id - 1);
+		candidates.RemoveAll(room => room.id == current_room.id - WIDTH);
+
+		int end = Random.Range(0, candidates.Count);
+		Room exit = candidates[end];
+		exit.type = Room.Type.Exit;
 		if (true == exitLock)
 		{
-			exit.type = Dungeon.Room.Type.Lock;
-			if(0 == keyItemCount)
-			{
-				candidates.RemoveAll(room => (room.type == Room.Type.Start || room.type == Room.Type.Lock));
-				int index = Random.Range(0, candidates.Count);
-				candidates[index].item = ItemManager.Instance.FindMeta<KeyItem.Meta>("ITEM_KEY");
-				candidates.RemoveAt(index);
-			}
+			exit.type = Room.Type.Lock;
 		}
+		candidates.RemoveAt(end);
 	}
 
 	public Room Move(int direction)
