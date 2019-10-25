@@ -19,19 +19,13 @@ public class UILog : MonoBehaviour
 		line_count = 0;
 	}
 
-	public void AsyncWrite(string text)
-	{
-		StartCoroutine(Write(text));
-	}
-
-	public IEnumerator Write(string text)
+	public void Write(string text)
 	{
 		this.text.text += text + "\n";
 		if (4 <= line_count)
 		{
 			int index = this.text.text.IndexOf('\n');
 			this.text.text = this.text.text.Substring(index + 1);
-			yield break;
 		}
 		line_count++;
 	}

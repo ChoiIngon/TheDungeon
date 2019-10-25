@@ -13,7 +13,6 @@ public class DungeonBattle : MonoBehaviour
 	private Transform			player_damage_effect_spot;
 	private Effect_PlayerDamage[] player_damage_effects;
 
-	public UILog				battle_log;
 	private UIButtonGroup		battle_buttons;
 	private float				battle_speed = 1.1f;
 	private float				wait_time_for_next_turn = 0.0f;
@@ -73,14 +72,12 @@ public class DungeonBattle : MonoBehaviour
 			{
 				runaway = true;
 				battle_pause = false;
-				battle_log.AsyncWrite("You runaway.");
-				GameManager.Instance.ui_textbox.AsyncWrite("You runaway.");
+				SceneDungeon.log.Write("You runaway.");
 			}
 			else
 			{
 				battle_pause = false;
-				battle_log.AsyncWrite("You trid to runaway. but failed..");
-				GameManager.Instance.ui_textbox.AsyncWrite("You trid to runaway. but failed..");
+				SceneDungeon.log.Write("You trid to runaway. but failed..");
 				if (0 == --runaway_count)
 				{
 					runaway_button.image.color = Color.gray;
@@ -98,6 +95,7 @@ public class DungeonBattle : MonoBehaviour
 
 	public IEnumerator BattleStart(Monster.Meta monsterMeta)
 	{
+		Util.EventSystem.Publish<float>(EventID.MiniMap_Hide, 0.0f);
 		gameObject.SetActive(true);
 		monster.gameObject.SetActive(true);
 		battle_buttons.gameObject.SetActive(true);
@@ -134,7 +132,6 @@ public class DungeonBattle : MonoBehaviour
 
 		battle_buttons.Show(0.5f);
 
-		battle_log.Init();
 		monster.Init(monsterMeta);
 		yield return StartCoroutine(monster.ColorTo(Color.black, Color.white, 1.0f));
 
@@ -158,7 +155,7 @@ public class DungeonBattle : MonoBehaviour
 				Unit.AttackResult result = GameManager.Instance.player.Attack(monster.data);
 				if (0.0f < result.damage)
 				{
-					battle_log.AsyncWrite(GameText.GetText("DUNGEON/BATTLE/HIT", "You", monster.meta.name) + "(-" + (int)result.damage + ")");
+					SceneDungeon.log.Write(GameText.GetText("DUNGEON/BATTLE/HIT", "You", monster.meta.name) + "(-" + (int)result.damage + ")");
 					StartCoroutine(monster.OnDamage(result));
 				}
 				else
@@ -188,8 +185,8 @@ public class DungeonBattle : MonoBehaviour
 						0.0f
 					);
 					effectPlayerDamage.gameObject.SetActive(true);
-					
-					battle_log.AsyncWrite("<color=red>" + GameText.GetText("DUNGEON/BATTLE/HIT", monster.meta.name, "You") + "(-" + (int)result.damage + ")</color>");
+
+					SceneDungeon.log.Write("<color=red>" + GameText.GetText("DUNGEON/BATTLE/HIT", monster.meta.name, "You") + "(-" + (int)result.damage + ")</color>");
 					GameManager.Instance.player.cur_health -= result.damage;
 					player_health.current = GameManager.Instance.player.cur_health;
 				}
@@ -238,10 +235,11 @@ public class DungeonBattle : MonoBehaviour
 		monster.gameObject.SetActive(false);
 		touch_input.AddBlockCount();
 		gameObject.SetActive(false);
+		Util.EventSystem.Publish(EventID.MiniMap_Show);
 	}
 
 	private void OnBuffEffect(Buff buff)
 	{
-		battle_log.AsyncWrite(buff.buff_id);
+		SceneDungeon.log.Write(buff.buff_id);
 	}
 }

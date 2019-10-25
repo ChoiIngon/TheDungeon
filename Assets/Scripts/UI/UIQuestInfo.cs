@@ -46,7 +46,7 @@ public class UIQuestInfo : MonoBehaviour
 		{
 			if (progress.count >= progress.goal)
 			{
-				contents.text += "<color=#DDDDDD>" + progress.name + " 완료\n";
+				contents.text += "<color=#DDDDDD>" + progress.name + "</color> 완료\n";
 			}
 			else
 			{

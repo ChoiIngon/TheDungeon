@@ -100,6 +100,7 @@ public class Quest
 			{
 				ProgressManager.Instance.Add(progress);
 			}
+			Util.EventSystem.Publish<Quest>(EventID.Quest_Update, this);
 		}
 
 		Reward reward = GetReward();

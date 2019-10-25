@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class SceneDungeon : SceneMain
 {
+	public static UILog log;
 	private const float ROOM_SIZE = 7.2f; // walkDistance;
 	private const float ROOM_MOVE_SPEED = 17.0f;
 
@@ -21,7 +22,7 @@ public class SceneDungeon : SceneMain
 	private Transform ui_player_transform;
 	public UIGaugeBar player_health;
 	public UIGaugeBar player_exp;
-	public UILog log;
+	
 	public UIShop shop;
 
 	private Dungeon dungeon;	
@@ -54,6 +55,8 @@ public class SceneDungeon : SceneMain
 			yield return StartCoroutine(GameManager.Instance.Init());
 		}
 
+		log = UIUtil.FindChild<UILog>(transform, "UI/UILog");
+
 		dungeon = new Dungeon();
 		battle = UIUtil.FindChild<DungeonBattle>(transform, "Battle");
 		battle.gameObject.SetActive(true);
@@ -75,12 +78,12 @@ public class SceneDungeon : SceneMain
 
 		move_buttons = UIUtil.FindChild<DungeonMoveButtons>(transform, "UI/MoveButtons");
 		
-		button_inventory = UIUtil.FindChild<Button>(transform, "UI/ButtonInventory");
+		button_inventory = UIUtil.FindChild<Button>(transform, "UI/Dungeon/ButtonInventory");
 		UIUtil.AddPointerUpListener(button_inventory.gameObject, () =>
 		{
 			GameManager.Instance.ui_inventory.SetActive(true);
 		});
-		text_inventory = UIUtil.FindChild<Text>(transform, "UI/ButtonInventory/Text");
+		text_inventory = UIUtil.FindChild<Text>(transform, "UI/Dungeon/ButtonInventory/Text");
 		
 		mini_map = UIUtil.FindChild<UIMiniMap>(transform,		"UI/Dungeon/MiniMap");
 		ui_dungeon_level = UIUtil.FindChild<Text>(transform,	"UI/Dungeon/Level");
@@ -98,8 +101,7 @@ public class SceneDungeon : SceneMain
 
 		shop = UIUtil.FindChild<UIShop>(transform, "UI/UIShop");
 
-		log = UIUtil.FindChild<UILog>(transform, "UI/UILog");
-		battle.battle_log = log;
+		
 
 		Util.EventSystem.Subscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
 		Util.EventSystem.Subscribe(EventID.Dungeon_Exit_Unlock, () => { StartCoroutine(OnExitUnlock()); });
@@ -110,7 +112,12 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Subscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
 		Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
 		Util.EventSystem.Subscribe<Quest>(EventID.Quest_Start, OnQuestStart);
+		Util.EventSystem.Subscribe<Quest>(EventID.Quest_Complete, OnQuestComplete);
+		Util.EventSystem.Subscribe(EventID.MiniMap_Show, OnShowMiniMap);
+		Util.EventSystem.Subscribe<float>(EventID.MiniMap_Hide, OnHideMiniMap);
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
+
+		
 		InitScene();			
 	}
 
@@ -125,6 +132,9 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Unsubscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
 		Util.EventSystem.Unsubscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
 		Util.EventSystem.Unsubscribe<Quest>(EventID.Quest_Start, OnQuestStart);
+		Util.EventSystem.Unsubscribe<Quest>(EventID.Quest_Complete, OnQuestComplete);
+		Util.EventSystem.Unsubscribe(EventID.MiniMap_Show, OnShowMiniMap);
+		Util.EventSystem.Unsubscribe<float>(EventID.MiniMap_Hide, OnHideMiniMap);
 	}
 
 	private void InitScene()
@@ -256,11 +266,9 @@ public class SceneDungeon : SceneMain
 		{
 			AudioManager.Instance.Stop(AudioManager.DUNGEON_BGM);
 			AudioManager.Instance.Play(AudioManager.BATTLE_BGM, true);
-
-			StartCoroutine(mini_map.Hide(0.5f));
+			
 			button_inventory.gameObject.SetActive(false);
 			yield return StartCoroutine(battle.BattleStart(dungeon.current_room.monster));
-			StartCoroutine(mini_map.Show(0.5f));
 			button_inventory.gameObject.SetActive(true);
 
 			AudioManager.Instance.Stop(AudioManager.BATTLE_BGM);
@@ -286,19 +294,6 @@ public class SceneDungeon : SceneMain
 		if (null == dungeon.current_room.monster && null != dungeon.current_room.item)
 		{
 			current_room.box.Show(dungeon.current_room);
-			bool yes = false;
-			GameManager.Instance.ui_textbox.on_submit += () => {
-				yes = true;
-				GameManager.Instance.ui_textbox.Close();
-			};
-			yield return GameManager.Instance.ui_textbox.Write("Do you want to open box?");
-			if (true == yes)
-			{
-				open_box_count++;
-				collect_item_count++;
-				yield return current_room.box.Open();
-				mini_map.CurrentPosition(dungeon.current_room.id);
-			}
 		}
 
 		if (dungeon.current_room.type == Dungeon.Room.Type.Shop)
@@ -319,10 +314,15 @@ public class SceneDungeon : SceneMain
 			}
 			yield return GameManager.Instance.ui_npc.Write("Npc/npc_graverobber_portrait", new string[] { "[전설의 상인]\n그럼 좋은 여행하게나..킬킬킬!" });
 			StartCoroutine(mini_map.Show(0.5f));
+			dungeon.current_room.npc_sprite_path = "";
 			dungeon.current_room.type = Dungeon.Room.Type.Normal;
 			current_room.npc.gameObject.SetActive(false);
 		}
-		
+
+		if ("" != dungeon.current_room.npc_sprite_path)
+		{
+			ProgressManager.Instance.Update(ProgressType.MeetNpc, dungeon.current_room.npc_sprite_path, 1);
+		}
 		Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
 	}
 
@@ -462,6 +462,7 @@ public class SceneDungeon : SceneMain
 
 	private void OnMoveStart(int direction)
 	{
+		StartCoroutine(mini_map.Show(0.5f));
 		StartCoroutine(Move(direction));
 	}
 
@@ -494,5 +495,20 @@ public class SceneDungeon : SceneMain
 	{
 		dungeon.current_room.npc_sprite_path = quest.sprite_path;
 		current_room.Init(dungeon.current_room);
+	}
+
+	public void OnQuestComplete(Quest quest)
+	{
+		dungeon.current_room.npc_sprite_path = "";
+		current_room.Init(dungeon.current_room);
+	}
+
+	public void OnShowMiniMap()
+	{
+		StartCoroutine(mini_map.Show(0.5f));
+	}
+	public void OnHideMiniMap(float alpha)
+	{
+		StartCoroutine(mini_map.Hide(0.5f, alpha));
 	}
 }

@@ -17,11 +17,15 @@ public class ProgressType
 	public static Dictionary<string, Progress.Operation> progress_operations = new Dictionary<string, Progress.Operation>()
 	{
 		{ CollectCoin, Progress.Operation.Add },
+		{ CollectItem, Progress.Operation.Add },
 		{ PlayerLevel, Progress.Operation.Max },
+		{ DungeonLevel, Progress.Operation.Max },
 		{ DieCount, Progress.Operation.Add },
 		{ SellKey, Progress.Operation.Add },
-		{ CollectItem, Progress.Operation.Add },
 		{ EnemiesSlain, Progress.Operation.Add },
+		{ BossSlain, Progress.Operation.Add },
+		{ UseItem, Progress.Operation.Add },
+		{ MeetNpc, Progress.Operation.Add },
 	};
 }
 

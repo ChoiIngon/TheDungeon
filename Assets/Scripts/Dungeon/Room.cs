@@ -39,11 +39,6 @@ public class Room : MonoBehaviour
 			}
 		}		   		
 
-		if (null == data.monster && null != data.item)
-		{
-			box.Show(data);
-		}
-
 		if (Dungeon.Room.Type.Exit == data.type || Dungeon.Room.Type.Lock == data.type)
 		{
 			stair.Show(data);
