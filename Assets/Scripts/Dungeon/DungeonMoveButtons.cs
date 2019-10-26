@@ -7,14 +7,14 @@ public class DungeonMoveButtons : MonoBehaviour
 	private Vector3 touch_point = Vector3.zero;
 	private bool touch_finish = false;
 
-	private Button[] buttons = new Button[Dungeon.Max];
+	private Button[] buttons = new Button[Room.Max];
 	private void Awake()
 	{
 		touch_input = UIUtil.FindChild<TouchInput>(transform, "../../");
-		buttons[Dungeon.North] = UIUtil.FindChild<Button>(transform, "North");
-		buttons[Dungeon.East] = UIUtil.FindChild<Button>(transform, "East");
-		buttons[Dungeon.West] = UIUtil.FindChild<Button>(transform, "West");
-		buttons[Dungeon.South] = UIUtil.FindChild<Button>(transform, "South");
+		buttons[Room.North] = UIUtil.FindChild<Button>(transform, "North");
+		buttons[Room.East] = UIUtil.FindChild<Button>(transform, "East");
+		buttons[Room.West] = UIUtil.FindChild<Button>(transform, "West");
+		buttons[Room.South] = UIUtil.FindChild<Button>(transform, "South");
 
 		Util.EventSystem.Subscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
 		Util.EventSystem.Subscribe(EventID.Dungeon_Move_Finish, OnMoveFinish);
@@ -28,21 +28,21 @@ public class DungeonMoveButtons : MonoBehaviour
 
 	void Start()
     {
-		UIUtil.AddPointerUpListener(buttons[Dungeon.North].gameObject, () =>
+		UIUtil.AddPointerUpListener(buttons[Room.North].gameObject, () =>
 		{
-			Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Dungeon.North);
+			Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Room.North);
 		});
-		UIUtil.AddPointerUpListener(buttons[Dungeon.East].gameObject, () =>
+		UIUtil.AddPointerUpListener(buttons[Room.East].gameObject, () =>
 		{
-			Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Dungeon.East);
+			Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Room.East);
 		});
-		UIUtil.AddPointerUpListener(buttons[Dungeon.West].gameObject, () =>
+		UIUtil.AddPointerUpListener(buttons[Room.West].gameObject, () =>
 		{
-			Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Dungeon.West);
+			Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Room.West);
 		});
-		UIUtil.AddPointerUpListener(buttons[Dungeon.South].gameObject, () =>
+		UIUtil.AddPointerUpListener(buttons[Room.South].gameObject, () =>
 		{
-			Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Dungeon.South);
+			Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Room.South);
 		});
 
 		touch_input.AddBlockCount();
@@ -72,22 +72,22 @@ public class DungeonMoveButtons : MonoBehaviour
 			{
 				if (0.0f > delta.x)
 				{
-					Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Dungeon.East);
+					Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Room.East);
 				}
 				else
 				{
-					Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Dungeon.West);
+					Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Room.West);
 				}
 			}
 			else
 			{
 				if (0.0f > delta.y)
 				{
-					Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Dungeon.North);
+					Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Room.North);
 				}
 				else
 				{
-					Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Dungeon.South);
+					Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, Room.South);
 				}
 			}
 			touch_point = Vector3.zero;
@@ -107,11 +107,11 @@ public class DungeonMoveButtons : MonoBehaviour
 		Util.EventSystem.Unsubscribe(EventID.TextBox_Close);
 	}
 
-	public void Init(Dungeon.Room room)
+	public void Init(Room.Data room)
 	{
-		for (int i = 0; i < Dungeon.Max; i++)
+		for (int i = 0; i < Room.Max; i++)
 		{
-			Dungeon.Room nextRoom = room.next[i];
+			Room.Data nextRoom = room.nexts[i];
 			if (null != nextRoom)
 			{
 				buttons[i].enabled = true;

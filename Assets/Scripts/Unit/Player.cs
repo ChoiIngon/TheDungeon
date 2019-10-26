@@ -55,9 +55,25 @@ public class Player : Unit
 	public int start_item_count = 1;
 	public Meta meta = new Meta();
 
+	public int enemy_slain_count;
+	public int collect_item_count;
+	public int collect_coin_count;
+	public int open_box_count;
+	public int move_count;
+	public int total_exp;
+	public int start_time;
+
 	public override void Init()
 	{
 		base.Init();
+
+		enemy_slain_count = 0;
+		collect_item_count = 0;
+		collect_coin_count = 0; 
+		open_box_count = 0;
+		move_count = 0;
+		total_exp = 0;
+		start_time = 0;
 
 		equip_items = new Dictionary<Tuple<EquipItem.Part, int>, EquipItem>();
 		equip_items.Add(new Tuple<EquipItem.Part, int>(EquipItem.Part.Helmet, 0), null);

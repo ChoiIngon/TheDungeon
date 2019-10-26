@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class DungeonBox : MonoBehaviour
+public class TreasureBox : MonoBehaviour
 {
 	private SpriteRenderer close;
 	private SpriteRenderer open;
 	private float time = 0.2f;
-	private Dungeon.Room room;
+	private Room.Data room;
 
 	private SpriteRenderer lock_icon;
 	private TouchInput touch_input;
@@ -39,7 +39,7 @@ public class DungeonBox : MonoBehaviour
 		Util.EventSystem.Publish(EventID.MiniMap_Show);
 	}
 
-	public void Show(Dungeon.Room room)
+	public void Show(Room.Data room)
 	{
 		this.room = room;
 		close.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -55,13 +55,14 @@ public class DungeonBox : MonoBehaviour
 			yield return GameManager.Instance.ui_textbox.Write(GameText.GetText("ERROR/INVENTORY_FULL"));
 			yield break;
 		}
-		lock_icon.gameObject.SetActive(false);
+		
 		AudioManager.Instance.Play(AudioManager.BOX_OPEN);
-		yield return Util.UITween.Overlap(close, open, time);
+		StartCoroutine(Util.UITween.Overlap(close, open, time));
+		yield return GameManager.Instance.ui_textbox.Write(GameText.GetText("DUNGEON/HAVE_ITEM", "You", room.item.name));
 		GameManager.Instance.player.inventory.Add(room.item.CreateInstance());
 		ProgressManager.Instance.Update(ProgressType.CollectItem, "", 1);
-		yield return GameManager.Instance.ui_textbox.Write(GameText.GetText("DUNGEON/HAVE_ITEM", "You", room.item.name));
-		gameObject.SetActive(false);
 		room.item = null;
+		lock_icon.gameObject.SetActive(false);
+		gameObject.SetActive(false);
 	}
 }

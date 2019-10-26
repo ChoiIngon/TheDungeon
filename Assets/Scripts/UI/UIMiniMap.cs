@@ -54,12 +54,12 @@ public class UIMiniMap : MonoBehaviour
 	public void Init (Dungeon dungeon)
 	{
 		this.dungeon = dungeon;
-		foreach (Dungeon.Room room in dungeon.rooms)
+		foreach (Room.Data room in dungeon.data.rooms)
 		{
 			UIMiniMapRoom miniRoom = rooms[room.id];
 			miniRoom.gameObject.SetActive(false);
 		}
-		current_room_id = dungeon.current_room.id;
+		current_room_id = dungeon.data.current_room.id;
 	}
 
 	public void CurrentPosition (int id)
@@ -74,8 +74,8 @@ public class UIMiniMap : MonoBehaviour
 
 	private Sprite GetRoomSprite(int id)
 	{
-		Dungeon.Room room = dungeon.rooms[id];
-		if (Dungeon.Room.Type.Exit == room.type || Dungeon.Room.Type.Lock == room.type)
+		Room.Data room = dungeon.data.rooms[id];
+		if (Room.Type.Exit == room.type || Room.Type.Lock == room.type)
 		{
 			return stair_mini_icon;
 		}
@@ -96,15 +96,15 @@ public class UIMiniMap : MonoBehaviour
 		minimapRoom.room.sprite = GetRoomSprite(id);
 		minimapRoom.color = color;
 		minimapRoom.gameObject.SetActive(true);
-		for (int i = 0; i < Dungeon.Max; i++)
+		for (int i = 0; i < Room.Max; i++)
 		{
-			minimapRoom.next[i].gameObject.SetActive((bool)(null != dungeon.rooms[id].next[i]));
+			minimapRoom.next[i].gameObject.SetActive((bool)(null != dungeon.data.rooms[id].nexts[i]));
 		}
 	}
 
 	public void RevealMap()
 	{
-		foreach (Dungeon.Room room in dungeon.rooms)
+		foreach (Room.Data room in dungeon.data.rooms)
 		{
 			if (true == room.visit)
 			{
@@ -117,7 +117,7 @@ public class UIMiniMap : MonoBehaviour
 			if (false == active)
 			{
 				minimapRoom.room.sprite = this.room_mini_icon;
-				if (Dungeon.Room.Type.Exit == dungeon.rooms[room.id].type || Dungeon.Room.Type.Lock == dungeon.rooms[room.id].type)
+				if (Room.Type.Exit == dungeon.data.rooms[room.id].type || Room.Type.Lock == dungeon.data.rooms[room.id].type)
 				{
 					minimapRoom.room.sprite = stair_mini_icon;
 				}
@@ -128,7 +128,7 @@ public class UIMiniMap : MonoBehaviour
 	}
 	public void RevealTreasure()
 	{
-		foreach (Dungeon.Room room in dungeon.rooms)
+		foreach (Room.Data room in dungeon.data.rooms)
 		{
 			if (null == room.item)
 			{
@@ -138,7 +138,7 @@ public class UIMiniMap : MonoBehaviour
 			RevealRoom(room.id, ROOM_DEACTIVATE_COLOR);
 			if (false == active)
 			{
-				for (int i = 0; i < Dungeon.Max; i++)
+				for (int i = 0; i < Room.Max; i++)
 				{
 					rooms[room.id].next[i].gameObject.SetActive(false);
 				}
@@ -147,7 +147,7 @@ public class UIMiniMap : MonoBehaviour
 	}
 	public void RevealMonster()
 	{
-		foreach (Dungeon.Room room in dungeon.rooms)
+		foreach (Room.Data room in dungeon.data.rooms)
 		{
 			if (null == room.monster)
 			{
@@ -157,7 +157,7 @@ public class UIMiniMap : MonoBehaviour
 			RevealRoom(room.id, ROOM_DEACTIVATE_COLOR);
 			if (false == active)
 			{
-				for (int i = 0; i < Dungeon.Max; i++)
+				for (int i = 0; i < Room.Max; i++)
 				{
 					rooms[room.id].next[i].gameObject.SetActive(false);
 				}
@@ -204,19 +204,19 @@ public class UIMiniMap : MonoBehaviour
 
 				if (current_room_id == id - 1)
 				{
-					miniRoom.SetGateColor(Dungeon.West, rooms[current_room_id].next[Dungeon.East].color);
+					miniRoom.SetGateColor(Room.West, rooms[current_room_id].next[Room.East].color);
 				}
 				else if (current_room_id == id + 1)
 				{
-					miniRoom.SetGateColor(Dungeon.East, rooms[current_room_id].next[Dungeon.West].color);
+					miniRoom.SetGateColor(Room.East, rooms[current_room_id].next[Room.West].color);
 				}
 				else if (current_room_id == id - Dungeon.WIDTH)
 				{
-					miniRoom.SetGateColor(Dungeon.North, rooms[current_room_id].next[Dungeon.South].color);
+					miniRoom.SetGateColor(Room.North, rooms[current_room_id].next[Room.South].color);
 				}
 				else if (current_room_id == id + Dungeon.WIDTH)
 				{
-					miniRoom.SetGateColor(Dungeon.South, rooms[current_room_id].next[Dungeon.North].color);
+					miniRoom.SetGateColor(Room.South, rooms[current_room_id].next[Room.North].color);
 				}
 			}
             alpha += Time.deltaTime / time;

@@ -6,15 +6,11 @@ using UnityEngine.SceneManagement;
 public class SceneDungeon : SceneMain
 {
 	public static UILog log;
-	private const float ROOM_SIZE = 7.2f; // walkDistance;
-	private const float ROOM_MOVE_SPEED = 17.0f;
-
-	public UIMiniMap mini_map;
 	
-	private Transform rooms;
-	private Room current_room;
-	private readonly Room[] next_rooms = new Room[Dungeon.Max];
-
+	private int dungeon_level;
+	
+	public UIMiniMap mini_map;
+	public Dungeon dungeon;	
 	public DungeonBattle battle;
 
 	public Button button_inventory;
@@ -24,25 +20,15 @@ public class SceneDungeon : SceneMain
 	public UIGaugeBar player_exp;
 	
 	public UIShop shop;
+	public UIInventory ui_inventory;
 
-	private Dungeon dungeon;	
-    private Text ui_dungeon_level;
-
+	private Text ui_dungeon_level;
 	private Transform coin_spot;
     private Coin coin_prefab;
 	private DungeonMoveButtons move_buttons;
 
-	private int enemy_slain_count;
-	private int collect_item_count;
-	private int collect_coin_count;
-	private int open_box_count;
-	private int move_count;
-	private int total_exp;
-	private int play_time;
-
-    //private List<QuestData> completeQuests;
 	
-	public override IEnumerator Run()
+    public override IEnumerator Run()
 	{
 		if ("Dungeon" == SceneManager.GetActiveScene().name)
 		{
@@ -57,31 +43,19 @@ public class SceneDungeon : SceneMain
 
 		log = UIUtil.FindChild<UILog>(transform, "UI/UILog");
 
-		dungeon = new Dungeon();
+		dungeon = UIUtil.FindChild<Dungeon>(transform, "Dungeon");
 		battle = UIUtil.FindChild<DungeonBattle>(transform, "Battle");
 		battle.gameObject.SetActive(true);
-		rooms = UIUtil.FindChild<Transform>(transform, "Rooms");
-		current_room = UIUtil.FindChild<Room>(rooms, "Current");
-		current_room.Init(null);
-		next_rooms[Dungeon.North] = UIUtil.FindChild<Room>(rooms, "North");
-		next_rooms[Dungeon.North].transform.position = new Vector3(0.0f, 0.0f, ROOM_SIZE);
-		next_rooms[Dungeon.North].Init(null);
-		next_rooms[Dungeon.East] = UIUtil.FindChild<Room>(rooms, "East");
-		next_rooms[Dungeon.East].transform.position = new Vector3(ROOM_SIZE, 0.0f, 0.0f);
-		next_rooms[Dungeon.East].Init(null);
-		next_rooms[Dungeon.South] = UIUtil.FindChild<Room>(rooms, "South");
-		next_rooms[Dungeon.South].transform.position = new Vector3(0.0f, 0.0f, -ROOM_SIZE);
-		next_rooms[Dungeon.South].Init(null);
-		next_rooms[Dungeon.West] = UIUtil.FindChild<Room>(rooms, "West");
-		next_rooms[Dungeon.West].transform.position = new Vector3(-ROOM_SIZE, 0.0f, 0.0f);
-		next_rooms[Dungeon.West].Init(null);
-
+				
 		move_buttons = UIUtil.FindChild<DungeonMoveButtons>(transform, "UI/MoveButtons");
-		
+		ui_inventory = UIUtil.FindChild<UIInventory>(transform, "UI/UIInventory");
+		ui_inventory.Init();
+		ui_inventory.gameObject.SetActive(false);
+
 		button_inventory = UIUtil.FindChild<Button>(transform, "UI/Dungeon/ButtonInventory");
 		UIUtil.AddPointerUpListener(button_inventory.gameObject, () =>
 		{
-			GameManager.Instance.ui_inventory.SetActive(true);
+			ui_inventory.gameObject.SetActive(true);
 		});
 		text_inventory = UIUtil.FindChild<Text>(transform, "UI/Dungeon/ButtonInventory/Text");
 		
@@ -101,8 +75,6 @@ public class SceneDungeon : SceneMain
 
 		shop = UIUtil.FindChild<UIShop>(transform, "UI/UIShop");
 
-		
-
 		Util.EventSystem.Subscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
 		Util.EventSystem.Subscribe(EventID.Dungeon_Exit_Unlock, () => { StartCoroutine(OnExitUnlock()); });
 		Util.EventSystem.Subscribe(EventID.Dungeon_Map_Reveal, () => { mini_map.RevealMap(); });
@@ -117,7 +89,6 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Subscribe<float>(EventID.MiniMap_Hide, OnHideMiniMap);
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
 
-		
 		InitScene();			
 	}
 
@@ -139,15 +110,6 @@ public class SceneDungeon : SceneMain
 
 	private void InitScene()
 	{
-		enemy_slain_count = 0;
-		collect_item_count = 0;
-		collect_coin_count = 0;
-		move_count = 0;
-		open_box_count = 0;
-		total_exp = 0;
-		play_time = 0;
-
-		GameManager.Instance.ui_inventory.Clear();
 		GameManager.Instance.player.Init();
 
 		player_health.max = GameManager.Instance.player.max_health;
@@ -155,8 +117,7 @@ public class SceneDungeon : SceneMain
 		player_exp.max = GameManager.Instance.player.GetMaxExp();
 		player_exp.current = GameManager.Instance.player.exp;
 		text_inventory.text = GameManager.Instance.player.inventory.count.ToString() + "/" + Inventory.MAX_SLOT_COUNT;
-
-		dungeon.level = 0;
+		
 		InitDungeon();
 
 		Quest quest = QuestManager.Instance.GetAvailableQuest();
@@ -165,31 +126,17 @@ public class SceneDungeon : SceneMain
 
 	private void InitDungeon()
 	{
-		dungeon.Init(++dungeon.level);
-
 		StartCoroutine(GameManager.Instance.CameraFade(Color.black, new Color(0.0f, 0.0f, 0.0f, 0.0f), 1.5f));
-		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon.level.ToString();
-		mini_map.Init(dungeon);
 		
-		InitRooms();
-		StartCoroutine(GameManager.Instance.ui_textbox.Write(GameText.GetText("DUNGEON/WELCOME", dungeon.level)));
-		ProgressManager.Instance.Update(ProgressType.DungeonLevel, "", dungeon.level);
-	}
+		dungeon.Init(++dungeon_level);
+		move_buttons.Init(dungeon.data.current_room);
+		mini_map.Init(dungeon);
+		mini_map.CurrentPosition(dungeon.data.current_room.id);
 
-	private void InitRooms()
-	{
-		rooms.transform.position = Vector3.zero;
-		for(int i=0; i<Dungeon.Max; i++)
-		{
-			Dungeon.Room room = dungeon.current_room.next [i];
-			if (null != room)
-			{
-				next_rooms[i].Init (room);
-			}
-		}
-		mini_map.CurrentPosition (dungeon.current_room.id);
-		current_room.Init(dungeon.current_room);
-		move_buttons.Init(dungeon.current_room);
+		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon_level.ToString();
+
+		ProgressManager.Instance.Update(ProgressType.DungeonLevel, "", dungeon.level);
+		StartCoroutine(GameManager.Instance.ui_textbox.Write(GameText.GetText("DUNGEON/WELCOME", dungeon.level)));
 	}
 
 	private IEnumerator Move(int direction)
@@ -199,59 +146,11 @@ public class SceneDungeon : SceneMain
 			yield return null;
 		}
 
-		Dungeon.Room next_room = dungeon.current_room.GetNext(direction);
+		yield return dungeon.Move(direction);
+		move_buttons.Init(dungeon.data.current_room);
+		mini_map.CurrentPosition(dungeon.data.current_room.id);
 
-		if (null == next_room)
-		{
-			switch (direction)
-			{
-				case Dungeon.North:
-					iTween.PunchPosition(rooms.gameObject, new Vector3(0.0f, 0.0f, 1.0f), 0.5f);
-					break;
-				case Dungeon.East:
-					iTween.PunchPosition(rooms.gameObject, new Vector3(1.0f, 0.0f, 0.0f), 0.5f);
-					break;
-				case Dungeon.South:
-					iTween.PunchPosition(rooms.gameObject, new Vector3(0.0f, 0.0f, -1.0f), 0.5f);
-					break;
-				case Dungeon.West:
-					iTween.PunchPosition(rooms.gameObject, new Vector3(-1.0f, 0.0f, 0.5f), 0.5f);
-					break;
-				default:
-					break;
-			}
-			Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
-			yield break;
-		}
-
-		move_count++;
-		Vector3 position = Vector3.zero;
-		switch (direction)
-		{
-			case Dungeon.North:
-				position = new Vector3(rooms.position.x, rooms.position.y, rooms.position.z - ROOM_SIZE);
-				break;
-			case Dungeon.East:
-				position = new Vector3(rooms.position.x - ROOM_SIZE, rooms.position.y, rooms.position.z);
-				break;
-			case Dungeon.South:
-				position = new Vector3(rooms.position.x, rooms.position.y, rooms.position.z + ROOM_SIZE);
-				break;
-			case Dungeon.West:
-				position = new Vector3(rooms.position.x + ROOM_SIZE, rooms.position.y, rooms.position.z);
-				break;
-			default:
-				break;
-		}
-
-		dungeon.Move(direction);
-		AudioManager.Instance.Play(AudioManager.DUNGEON_WALK, true);
-		yield return MoveTo(rooms.gameObject, iTween.Hash("position", position, "time", ROOM_SIZE / ROOM_MOVE_SPEED, "easetype", iTween.EaseType.linear), true);
-		AudioManager.Instance.Stop(AudioManager.DUNGEON_WALK);
-
-		InitRooms();
-
-		if (Dungeon.Room.Type.Exit == dungeon.current_room.type || Dungeon.Room.Type.Lock == dungeon.current_room.type)
+		if (Room.Type.Exit == dungeon.data.current_room.type || Room.Type.Lock == dungeon.data.current_room.type)
 		{
 			StartCoroutine(mini_map.Hide(0.5f, 0.3f));
 		}
@@ -261,74 +160,59 @@ public class SceneDungeon : SceneMain
 		}
 
 		yield return OnExitUnlock();
-
-		if (null != dungeon.current_room.monster)
+		yield return OnMonser();
+		yield return OnTreasureBox();
+		yield return OnShop();		
+		
+		if ("" != dungeon.data.current_room.npc_sprite_path)
 		{
-			AudioManager.Instance.Stop(AudioManager.DUNGEON_BGM);
-			AudioManager.Instance.Play(AudioManager.BATTLE_BGM, true);
-			
-			button_inventory.gameObject.SetActive(false);
-			yield return StartCoroutine(battle.BattleStart(dungeon.current_room.monster));
-			button_inventory.gameObject.SetActive(true);
-
-			AudioManager.Instance.Stop(AudioManager.BATTLE_BGM);
-			AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
-			if (DungeonBattle.BattleResult.Win == battle.battle_result)
-			{
-				yield return Win(dungeon.current_room.monster);
-			}
-			else if (DungeonBattle.BattleResult.Lose == battle.battle_result)
-			{
-				yield return Lose();
-			}
-			else if (DungeonBattle.BattleResult.Runaway == battle.battle_result)
-			{
-				int runawayDirection = (direction + 2) % 4;
-				if (0 <= runawayDirection || Dungeon.WIDTH * Dungeon.HEIGHT > runawayDirection)
-				{
-					Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, runawayDirection);
-				}
-			}
+			ProgressManager.Instance.Update(ProgressType.MeetNpc, dungeon.data.current_room.npc_sprite_path, 1);
 		}
 
-		if (null == dungeon.current_room.monster && null != dungeon.current_room.item)
-		{
-			current_room.box.Show(dungeon.current_room);
-		}
-
-		if (dungeon.current_room.type == Dungeon.Room.Type.Shop)
-		{
-			StartCoroutine(mini_map.Hide(0.5f));
-			
-			dungeon.current_room.npc_sprite_path = "Npc/npc_graverobber";
-			current_room.Init(dungeon.current_room);
-			bool yes = false;
-			GameManager.Instance.ui_textbox.on_submit += () => {
-				yes = true;
-				GameManager.Instance.ui_textbox.Close();
-			};
-			yield return GameManager.Instance.ui_npc.Write("Npc/npc_graverobber_portrait", new string [] { "[전설의 상인]\n오! 이곳에서 사람은 오랜만이구만! 물건좀 보겠소?" });
-			if (true == yes)
-			{
-				yield return shop.Open();
-			}
-			yield return GameManager.Instance.ui_npc.Write("Npc/npc_graverobber_portrait", new string[] { "[전설의 상인]\n그럼 좋은 여행하게나..킬킬킬!" });
-			StartCoroutine(mini_map.Show(0.5f));
-			dungeon.current_room.npc_sprite_path = "";
-			dungeon.current_room.type = Dungeon.Room.Type.Normal;
-			current_room.npc.gameObject.SetActive(false);
-		}
-
-		if ("" != dungeon.current_room.npc_sprite_path)
-		{
-			ProgressManager.Instance.Update(ProgressType.MeetNpc, dungeon.current_room.npc_sprite_path, 1);
-		}
+		move_buttons.Init(dungeon.data.current_room);
+		mini_map.CurrentPosition(dungeon.data.current_room.id);
 		Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
 	}
 
+	private IEnumerator OnMonser()
+	{
+		if (null == dungeon.data.current_room.monster)
+		{
+			yield break;
+		}
+
+		AudioManager.Instance.Stop(AudioManager.DUNGEON_BGM);
+		AudioManager.Instance.Play(AudioManager.BATTLE_BGM, true);
+
+		button_inventory.gameObject.SetActive(false);
+		yield return battle.BattleStart(dungeon.data.current_room.monster);
+		button_inventory.gameObject.SetActive(true);
+
+		AudioManager.Instance.Stop(AudioManager.BATTLE_BGM);
+		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
+		if (DungeonBattle.BattleResult.Win == battle.battle_result)
+		{
+			yield return Win(dungeon.data.current_room.monster);
+		}
+		else if (DungeonBattle.BattleResult.Lose == battle.battle_result)
+		{
+			yield return Lose();
+		}
+
+		/*
+		else if (DungeonBattle.BattleResult.Runaway == battle.battle_result)
+		{
+			int runawayDirection = (direction + 2) % 4;
+			if (0 <= runawayDirection || Dungeon.WIDTH * Dungeon.HEIGHT > runawayDirection)
+			{
+				Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, runawayDirection);
+			}
+		}
+		*/
+	}
 	private IEnumerator Win(Monster.Meta meta)
 	{
-		enemy_slain_count++;
+		GameManager.Instance.player.enemy_slain_count++;
 
 		int prevPlayerLevel = GameManager.Instance.player.level;
 		Stat stat = GameManager.Instance.player.stats;
@@ -340,8 +224,8 @@ public class SceneDungeon : SceneMain
 		GameManager.Instance.player.ChangeCoin(rewardCoin + bonusCoin, false);
 		GameManager.Instance.player.AddExp(rewardExp + bonusExp);
 
-		collect_coin_count += rewardCoin + bonusCoin;
-		total_exp += rewardExp + bonusExp;
+		GameManager.Instance.player.collect_coin_count += rewardCoin + bonusCoin;
+		GameManager.Instance.player.total_exp += rewardExp + bonusExp;
 
 		Database.Execute(Database.Type.UserData, "UPDATE user_data SET player_coin=" + GameManager.Instance.player.coin);
 		ProgressManager.Instance.Update(ProgressType.EnemiesSlain, meta.id, 1);
@@ -370,10 +254,9 @@ public class SceneDungeon : SceneMain
 		}
 
 		yield return GameManager.Instance.ui_textbox.Write(battleResult);
-		dungeon.current_room.monster = null;
-		mini_map.CurrentPosition(dungeon.current_room.id);
+		dungeon.data.current_room.monster = null;
+		mini_map.CurrentPosition(dungeon.data.current_room.id);
 	}
-
 	private IEnumerator Lose()
 	{
 		ProgressManager.Instance.Update(ProgressType.DieCount, "", 1);
@@ -381,12 +264,11 @@ public class SceneDungeon : SceneMain
 		Rect prev = GameManager.Instance.ui_textbox.Resize(1000 /*Screen.currentResolution.height * GameManager.Instance.canvas.scaleFactor * 0.8f*/);
 		yield return StartCoroutine(GameManager.Instance.ui_textbox.Write(
 			"You died.\n\n" +
-			"collect coin : " + collect_coin_count + "\n" +
-			"collect item : " + collect_item_count + "\n" +
-			"open box : " + open_box_count + "\n" +
-			"move : " + move_count + "\n" +
-			"level : " + GameManager.Instance.player.level + "(exp:" + total_exp + ")\n" +
-			"play time : " + play_time + "(sec)\n"
+			"collect coin : " + GameManager.Instance.player.collect_coin_count + "\n" +
+			"collect item : " + GameManager.Instance.player.collect_item_count + "\n" +
+			"open box : " + GameManager.Instance.player.open_box_count + "\n" +
+			"move : " + GameManager.Instance.player.move_count + "\n" +
+			"level : " + GameManager.Instance.player.level + "(exp:" + GameManager.Instance.player.total_exp + ")\n"
 		));
 		GameManager.Instance.ui_textbox.Resize(prev.height);
 		yield return GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f);
@@ -395,14 +277,22 @@ public class SceneDungeon : SceneMain
 		yield return GameManager.Instance.AsyncUnloadScene("Dungeon");
 	}
 
+	private IEnumerator OnTreasureBox()
+	{
+		if (null == dungeon.data.current_room.monster && null != dungeon.data.current_room.item)
+		{
+			dungeon.current_room.treasure_box.Show(dungeon.data.current_room);
+		}
+		yield break;
+	}
 	private IEnumerator GoDown()
 	{
 		Vector3 position = Camera.main.transform.position;
 		StartCoroutine(GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f));
 		yield return StartCoroutine(MoveTo(Camera.main.gameObject, iTween.Hash(
-			"x", current_room.stair.transform.position.x,
-			"y", current_room.stair.transform.position.y,
-			"z", current_room.stair.transform.position.z - 0.5f,
+			"x", dungeon.current_room.stair.transform.position.x,
+			"y", dungeon.current_room.stair.transform.position.y,
+			"z", dungeon.current_room.stair.transform.position.z - 0.5f,
 			"time", 1.0f
 		), true));
 		InitDungeon();
@@ -411,7 +301,7 @@ public class SceneDungeon : SceneMain
 
 	private IEnumerator OnExitUnlock()
 	{
-		if (Dungeon.Room.Type.Exit == dungeon.current_room.type)
+		if (Room.Type.Exit == dungeon.data.current_room.type)
 		{
 			move_buttons.touch_input.AddBlockCount();
 			bool yes = false;
@@ -428,6 +318,31 @@ public class SceneDungeon : SceneMain
 		}
 	}
 
+	private IEnumerator OnShop()
+	{
+		if (Room.Type.Shop == dungeon.data.current_room.type)
+		{
+			StartCoroutine(mini_map.Hide(0.5f));
+
+			dungeon.data.current_room.npc_sprite_path = "Npc/npc_graverobber";
+			dungeon.current_room.Init(dungeon.data.current_room);
+			bool yes = false;
+			GameManager.Instance.ui_textbox.on_submit += () => {
+				yes = true;
+				GameManager.Instance.ui_textbox.Close();
+			};
+			yield return GameManager.Instance.ui_npc.Write("Npc/npc_graverobber_portrait", new string[] { "[전설의 상인]\n오! 이곳에서 사람은 오랜만이구만! 물건좀 보겠소?" });
+			if (true == yes)
+			{
+				yield return shop.Open();
+			}
+			yield return GameManager.Instance.ui_npc.Write("Npc/npc_graverobber_portrait", new string[] { "[전설의 상인]\n그럼 좋은 여행하게나..킬킬킬!" });
+			StartCoroutine(mini_map.Show(0.5f));
+			dungeon.data.current_room.npc_sprite_path = "";
+			dungeon.data.current_room.type = Room.Type.Normal;
+			dungeon.current_room.npc.gameObject.SetActive(false);
+		}
+	}
 	private void CreateCoins(int amount)
 	{
 		int total = amount;
@@ -491,14 +406,14 @@ public class SceneDungeon : SceneMain
 
 	public void OnQuestStart(Quest quest)
 	{
-		dungeon.current_room.npc_sprite_path = quest.sprite_path;
-		current_room.Init(dungeon.current_room);
+		dungeon.data.current_room.npc_sprite_path = quest.sprite_path;
+		dungeon.current_room.Init(dungeon.data.current_room);
 	}
 
 	public void OnQuestComplete(Quest quest)
 	{
-		dungeon.current_room.npc_sprite_path = "";
-		current_room.Init(dungeon.current_room);
+		dungeon.data.current_room.npc_sprite_path = "";
+		dungeon.current_room.Init(dungeon.data.current_room);
 	}
 
 	public void OnShowMiniMap()

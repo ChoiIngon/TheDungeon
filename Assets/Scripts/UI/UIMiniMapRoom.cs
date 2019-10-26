@@ -12,7 +12,7 @@ public class UIMiniMapRoom : MonoBehaviour
 		set
 		{
 			room.color = value;
-			for (int i = 0; i < Dungeon.Max; i++)
+			for (int i = 0; i < Room.Max; i++)
 			{
 				next[i].color = value;
 			}

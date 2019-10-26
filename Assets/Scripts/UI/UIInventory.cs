@@ -21,11 +21,14 @@ public class UIInventory : MonoBehaviour
 
 		close = UIUtil.FindChild<Button>(transform, "BottomBar/Close");
 		item_info = UIUtil.FindChild<UIItemInfo>(transform, "ItemInfo");
+		item_info.Init();
 		player_info = UIUtil.FindChild<UIPlayerInfo>(transform, "PlayerInfo");
+		player_info.Init();
 	}
 
 	public void Init()
     {
+		gameObject.SetActive(true);
 		GridLayoutGroup inventorySlots = UIUtil.FindChild<GridLayoutGroup>(transform, "ItemSlots");
 		for (int i = 0; i < Inventory.MAX_SLOT_COUNT; i++)
 		{
@@ -53,10 +56,8 @@ public class UIInventory : MonoBehaviour
 			itr.Value.slot_index = -1;
 			slots.Add(itr.Value);
 		}
-		UIUtil.AddPointerUpListener(close.gameObject, () => { SetActive(false); });
+		UIUtil.AddPointerUpListener(close.gameObject, () => { gameObject.SetActive(false); });
 
-		item_info.Init();
-        player_info.Init();
 		Util.EventSystem.Subscribe<Item>(EventID.Inventory_Add, OnItemAdd);
         Util.EventSystem.Subscribe<Item>(EventID.Inventory_Remove, OnItemRemove);
 		Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
@@ -80,21 +81,21 @@ public class UIInventory : MonoBehaviour
 		Util.EventSystem.Unsubscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
 	}
 
-	public void SetActive(bool flag)
-    {
-        gameObject.SetActive(flag);
-        if(true == flag)
-        {
+	private void OnEnable()
+	{
+		if (null != player_info)
+		{
 			player_info.Refresh();
-            Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
-			Util.EventSystem.Publish(EventID.Inventory_Open);
-        }
-        else
-        {
-            Util.EventSystem.Unsubscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
-			Util.EventSystem.Publish(EventID.Inventory_Close);
 		}
-    }
+		Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
+		Util.EventSystem.Publish(EventID.Inventory_Open);
+	}
+
+	private void OnDisable()
+	{
+		Util.EventSystem.Unsubscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
+		Util.EventSystem.Publish(EventID.Inventory_Close);
+	}
 	
     private void OnItemAdd(Item itemData)
     {

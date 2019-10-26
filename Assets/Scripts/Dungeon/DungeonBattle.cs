@@ -105,7 +105,7 @@ public class DungeonBattle : MonoBehaviour
 		runaway = false;
 		runaway_count = 3;
 		runaway_button.image.color = Color.white;
-		UIUtil.FindChild<Text>(runaway_button.transform, "Text").text = runaway_count.ToString() + "/" + 3.ToString();
+		UIUtil.FindChild<Text>(runaway_button.transform, "Text").text = runaway_count.ToString() + "/" + "3";
 
 		{
 			UIButtonGroup.UIButton button = null;

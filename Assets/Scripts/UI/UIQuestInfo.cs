@@ -63,7 +63,8 @@ public class UIQuestInfo : MonoBehaviour
 		{
 			sprite_path = "",
 			text = "퀘스트 완료 보상\n" +
-			(reward.coin == 0 ? "" : ("Coin : " + reward.coin))
+			(0 == reward.coin ? "" : ("Coin : " + reward.coin)) + "\n" +
+			("" == reward.item_id ? "" : ("Item : " + reward.item_id)) + "\n"
 		});
 		StartCoroutine(GameManager.Instance.ui_npc.Write(quest.complete_dialogues));
 	}
