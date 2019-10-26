@@ -390,11 +390,9 @@ public class SceneDungeon : SceneMain
 		));
 		GameManager.Instance.ui_textbox.Resize(prev.height);
 		yield return GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f);
-
-		StartCoroutine(GameManager.Instance.advertisement.ShowAds());
-
-		yield return AsyncLoadScene("Start");
-		yield return AsyncUnloadScene("Dungeon");
+		yield return GameManager.Instance.advertisement.ShowAds();
+		yield return GameManager.Instance.AsyncLoadScene("Start");
+		yield return GameManager.Instance.AsyncUnloadScene("Dungeon");
 	}
 
 	private IEnumerator GoDown()

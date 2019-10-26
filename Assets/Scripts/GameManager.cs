@@ -142,5 +142,24 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		camera_fade.color = to;
 		camera_fade.gameObject.SetActive(false);
 	}
+
+	public IEnumerator AsyncLoadScene(string sceneName)
+	{
+		AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+		while (false == operation.isDone)
+		{
+			// loading progress
+			yield return null;
+		}
+	}
+	public IEnumerator AsyncUnloadScene(string sceneName)
+	{
+		AsyncOperation operation = SceneManager.UnloadSceneAsync(sceneName);
+		while (false == operation.isDone)
+		{
+			// loading progress
+			yield return null;
+		}
+	}
 }
  

@@ -58,8 +58,8 @@ public class SceneStart : SceneMain
 		yield return GameManager.Instance.ui_npc.Write("npc_farseer", scripts);
 		*/
 		GameManager.Instance.CameraFade(0.0f, 1.0f, 1.0f);
-		yield return AsyncLoadScene("Dungeon");
-		yield return AsyncUnloadScene("Start");
+		yield return GameManager.Instance.AsyncLoadScene("Dungeon");
+		yield return GameManager.Instance.AsyncUnloadScene("Start");
 	}
 
 }
