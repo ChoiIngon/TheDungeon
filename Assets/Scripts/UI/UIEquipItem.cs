@@ -39,7 +39,7 @@ public class UIEquipItem : UIItem
 		foreach (Stat.Data stat in equipItem.sub_stat.GetStats())
 		{
 			Stat.Meta meta = Stat.GetMeta(stat.type);
-			description += "<color=green> " + meta.ToString(stat.value) + "</color>\n";
+			description += "<color=#4eb105> " + meta.ToString(stat.value) + "</color>\n";
 		}
 
 		if (null != equipItem.skill)

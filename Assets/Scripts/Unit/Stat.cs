@@ -51,6 +51,11 @@ public class Stat
 	{
 		public StatType type;
 		public float value;
+		public override string ToString()
+		{
+			Meta meta = Stat.GetMeta(type);
+			return meta.ToString(value);
+		}
 	}
 
 	public class Meta
@@ -179,7 +184,7 @@ public class Stat
 			meta.description = reader.GetString("description");
 			return meta;			
 		}
-		return null;
+		throw new System.Exception("can not find stat meta data(stat_type:" + type.ToString() + ")");
 	}
 }
 

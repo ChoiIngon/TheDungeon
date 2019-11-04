@@ -47,6 +47,10 @@ public class Database
 	[MenuItem("Tools/Database/Disconnect")]
 	private static void Disconnect()
 	{
+		if (null == databases)
+		{
+			return;
+		}
 		foreach (var itr in databases)
 		{
 			itr.Value.Dispose();

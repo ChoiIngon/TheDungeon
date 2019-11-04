@@ -140,7 +140,7 @@ public class Player : Unit
 	public void Load()
 	{
 		Debug.Log("data path:" + Application.persistentDataPath);
-		AchieveManager.Instance.Init();
+		
 		LoadPlayer();
 		//LoadEquipItem();
 		//LoadExpendableItem();
@@ -192,6 +192,15 @@ public class Player : Unit
 	}
 	private void LoadStats()
 	{
+		foreach (var itr in AchieveManager.Instance.achieves)
+		{
+			Achieve achieve = itr.Value;
+			if (0 < achieve.complete_step)
+			{
+				stats.AddStat(achieve.reward_stat);
+				Debug.Log("achievement bonus:" + achieve.reward_stat.type.ToString() + " " + achieve.reward_stat.value);
+			}
+		}
 		stats.AddStat(meta.base_stats[StatType.Health].CreateInstance());
 		stats.AddStat(meta.base_stats[StatType.Attack].CreateInstance());
 		stats.AddStat(meta.base_stats[StatType.Defense].CreateInstance());

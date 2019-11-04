@@ -6,9 +6,20 @@ using UnityEngine.SceneManagement;
 
 public class SceneStart : SceneMain
 {
+	private UIAchievement ui_achievement;
 	private Button start_button;
 	private Button setting_button;
 	private Button reset_button;
+	private Button achievement_button;
+	private void Awake()
+	{
+		start_button = UIUtil.FindChild<Button>(transform, "UI/StartButton");
+		setting_button = UIUtil.FindChild<Button>(transform, "UI/SettingButton");
+		reset_button = UIUtil.FindChild<Button>(transform, "UI/ResetButton");
+		achievement_button = UIUtil.FindChild<Button>(transform, "UI/AchievementButton");
+		ui_achievement = UIUtil.FindChild<UIAchievement>(transform, "UI/UIAchievement");
+	}
+
 	public override IEnumerator Run()
 	{
 		if ("Start" == SceneManager.GetActiveScene().name)
@@ -22,18 +33,17 @@ public class SceneStart : SceneMain
 		}
 				
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
-		start_button = UIUtil.FindChild<Button>(transform, "UI/StartButton");
+		
 		UIUtil.AddPointerUpListener(start_button.gameObject, () =>
 		{
 			StartCoroutine(OnStart());
 		});
-
-		setting_button = UIUtil.FindChild<Button>(transform, "UI/SettingButton");
+				
 		UIUtil.AddPointerUpListener(setting_button.gameObject, () =>
 		{
 			GameManager.Instance.ui_setting.gameObject.SetActive(true);
 		});
-		reset_button = UIUtil.FindChild<Button>(transform, "UI/ResetButton");
+				
 		UIUtil.AddPointerUpListener(reset_button.gameObject, () =>
 		{
 			Database.Disconnect(Database.Type.UserData);
@@ -41,6 +51,12 @@ public class SceneStart : SceneMain
 			Database.Connect(Database.Type.UserData, Application.persistentDataPath + "/user_data.db");
 			StartCoroutine(OnStart());
 		});
+
+		UIUtil.AddPointerUpListener(achievement_button.gameObject, () =>
+		{
+			ui_achievement.gameObject.SetActive(true);
+		});
+
 		yield return GameManager.Instance.CameraFade(1.0f, 0.0f, 1.0f);
 	}
 
@@ -49,6 +65,7 @@ public class SceneStart : SceneMain
 		start_button.gameObject.SetActive(false);
 		setting_button.gameObject.SetActive(false);
 		reset_button.gameObject.SetActive(false);
+		achievement_button.gameObject.SetActive(false);
 		/*
 		string[] scripts = new string[] {
 			"오래전 이 던전엔 자신의 부와 젊음을 위해 백성들을 악마의 제물로 바쳤다는 피의 여왕이 살았다고 하네. ",
