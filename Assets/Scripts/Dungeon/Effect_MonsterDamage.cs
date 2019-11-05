@@ -6,7 +6,7 @@ public class Effect_MonsterDamage : MonoBehaviour
 {
 	public int damage = 0;
 	public bool critical = false;
-	private float fadeout_time = 1.0f;
+	
 	private TrailRenderer trail_renderer;
 	private MeshRenderer mesh_renderer;
 	private TextMesh text_mesh;
@@ -35,10 +35,6 @@ public class Effect_MonsterDamage : MonoBehaviour
 		}
 
 		coroutine = StartCoroutine(SetActive());
-	}
-
-	private void OnDisable()
-	{
 	}
 
 	private IEnumerator SetActive()

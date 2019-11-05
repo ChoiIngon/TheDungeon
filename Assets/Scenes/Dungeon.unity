@@ -589,8 +589,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 468876231}
   m_HandleRect: {fileID: 468876230}
   m_Direction: 2
-  m_Value: 0.0000002664471
-  m_Size: 0.34936193
+  m_Value: 0.00000011068635
+  m_Size: 0.37297124
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2368,7 +2368,7 @@ MonoBehaviour:
   player_exp: {fileID: 0}
   shop: {fileID: 0}
   ui_inventory: {fileID: 0}
-  _camera: {fileID: 1301400437}
+  player_slash_effect: {fileID: 106438, guid: e156790911efcce4c8eb965b94c15f1f, type: 3}
 --- !u!1001 &890608720
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3661,7 +3661,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 669276803}
   m_HandleRect: {fileID: 669276802}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
