@@ -27,9 +27,12 @@ public class SceneDungeon : SceneMain
     private Coin coin_prefab;
 	private DungeonMoveButtons move_buttons;
 
-	
+	public Camera _camera;
     public override IEnumerator Run()
 	{
+		Debug.Log("camera fov:" + _camera.fieldOfView);
+
+		_camera.fieldOfView = 90.0f * (16.0f/9.0f) / ((float)_camera.pixelWidth / _camera.pixelHeight);
 		if ("Dungeon" == SceneManager.GetActiveScene().name)
 		{
 			AsyncOperation operation = SceneManager.LoadSceneAsync("Common", LoadSceneMode.Additive);
@@ -408,6 +411,7 @@ public class SceneDungeon : SceneMain
 	{
 		dungeon.data.current_room.npc_sprite_path = quest.sprite_path;
 		dungeon.current_room.Init(dungeon.data.current_room);
+		mini_map.CurrentPosition(dungeon.data.current_room.id);
 	}
 
 	public void OnQuestComplete(Quest quest)

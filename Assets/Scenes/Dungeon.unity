@@ -590,7 +590,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 468876230}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.3369863
+  m_Size: 0.3430118
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2368,6 +2368,7 @@ MonoBehaviour:
   player_exp: {fileID: 0}
   shop: {fileID: 0}
   ui_inventory: {fileID: 0}
+  _camera: {fileID: 1301400437}
 --- !u!1001 &890608720
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3550,7 +3551,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 65
+  field of view: 96
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -3576,7 +3577,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1301400435}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -6.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -3758,7 +3759,8 @@ MonoBehaviour:
   stair_mini_icon: {fileID: 21300000, guid: 7d89a0083f2204d1d9466bafc7c3abaf, type: 3}
   room_mini_icon: {fileID: 21300000, guid: afdfa7fb6db31455e9e82ccf023548c9, type: 3}
   monster_mini_icon: {fileID: 21300000, guid: 3b0a20ae585750240801e9a40c067828, type: 3}
-  box_mini_icon: {fileID: 21300000, guid: 56ba8bc35bc88904d8ca204879b0e9af, type: 3}
+  treasure_mini_icon: {fileID: 21300000, guid: 56ba8bc35bc88904d8ca204879b0e9af, type: 3}
+  npc_mini_icon: {fileID: 21300000, guid: f61efd2120e982544936874efb9ac8a9, type: 3}
 --- !u!1 &1489329551
 GameObject:
   m_ObjectHideFlags: 0

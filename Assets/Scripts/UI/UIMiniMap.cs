@@ -9,7 +9,8 @@ public class UIMiniMap : MonoBehaviour
 	public Sprite stair_mini_icon;
 	public Sprite room_mini_icon;
 	public Sprite monster_mini_icon;
-	public Sprite box_mini_icon;
+	public Sprite treasure_mini_icon;
+	public Sprite npc_mini_icon;
 
 	private UIMiniMapRoom[] rooms;
 	private int current_room_id;
@@ -85,7 +86,11 @@ public class UIMiniMap : MonoBehaviour
 		}
 		else if (null != room.item)
 		{
-			return box_mini_icon;
+			return treasure_mini_icon;
+		}
+		else if ("" != room.npc_sprite_path)
+		{
+			return npc_mini_icon;
 		}
 		return this.room_mini_icon;
 	}
