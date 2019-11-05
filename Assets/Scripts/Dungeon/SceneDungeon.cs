@@ -27,12 +27,8 @@ public class SceneDungeon : SceneMain
     private Coin coin_prefab;
 	private DungeonMoveButtons move_buttons;
 
-	public Camera _camera;
-    public override IEnumerator Run()
+	public override IEnumerator Run()
 	{
-		Debug.Log("camera fov:" + _camera.fieldOfView);
-
-		_camera.fieldOfView = 90.0f * (16.0f/9.0f) / ((float)_camera.pixelWidth / _camera.pixelHeight);
 		if ("Dungeon" == SceneManager.GetActiveScene().name)
 		{
 			AsyncOperation operation = SceneManager.LoadSceneAsync("Common", LoadSceneMode.Additive);

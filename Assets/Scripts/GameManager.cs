@@ -20,7 +20,10 @@ public class GameManager : Util.MonoSingleton<GameManager>
 
 	private IEnumerator Start()
 	{
-		if("Common" == SceneManager.GetActiveScene().name)
+		const float fixedHorizontalFOV = 58.7f;
+		Camera.main.fieldOfView = 2 * Mathf.Atan(Mathf.Tan(fixedHorizontalFOV * Mathf.Deg2Rad * 0.5f) / Camera.main.aspect) * Mathf.Rad2Deg;
+
+		if ("Common" == SceneManager.GetActiveScene().name)
 		{
 			yield return StartCoroutine(Init());
 			AsyncOperation operation = SceneManager.LoadSceneAsync("Start", LoadSceneMode.Additive);
