@@ -63,7 +63,8 @@ public class UIInventory : MonoBehaviour
 		Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Equip, OnItemEquip);
 		Util.EventSystem.Subscribe<ItemEquipEvent>(EventID.Item_Unequip, OnItemUnequip);
 		Debug.Log("init complete UIInventory");
-    }
+		gameObject.SetActive(false);
+	}
 
 	public void Clear()
 	{

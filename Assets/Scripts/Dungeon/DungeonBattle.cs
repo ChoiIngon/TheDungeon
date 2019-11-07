@@ -14,6 +14,7 @@ public class DungeonBattle : MonoBehaviour
 	private Effect_PlayerDamage[] player_damage_effects;
 
 	private UIButtonGroup		battle_buttons;
+	private Dictionary<string, UIButtonGroup.UIButton> skill_buttons;
 	private float				battle_speed = 1.1f;
 	private float				wait_time_for_next_turn = 0.0f;
 
@@ -100,7 +101,7 @@ public class DungeonBattle : MonoBehaviour
 		monster.gameObject.SetActive(true);
 		battle_buttons.gameObject.SetActive(true);
 		battle_buttons.Init();
-
+		skill_buttons = new Dictionary<string, UIButtonGroup.UIButton>();
 		battle_pause = false;
 		runaway = false;
 		runaway_count = 3;
@@ -108,29 +109,48 @@ public class DungeonBattle : MonoBehaviour
 		UIUtil.FindChild<Text>(runaway_button.transform, "Text").text = runaway_count.ToString() + "/" + "3";
 
 		{
-			UIButtonGroup.UIButton button = null;
+			//UIButtonGroup.UIButton button = null;
 			List<HealPotionItem> items = GameManager.Instance.player.inventory.GetItems<HealPotionItem>();
 			if (0 < items.Count)
 			{
 				int itemCount = items.Count;
 				int itemIndex = 0;
-				battle_buttons.AddButton((itemCount - itemIndex).ToString() + "/" + itemCount, ResourceManager.Instance.Load<Sprite>("Item/item_potion_red"), () =>
-				{
+				battle_buttons.AddButton(ResourceManager.Instance.Load<Sprite>("Item/item_potion_red"), (itemCount - itemIndex).ToString() + "/" + itemCount, () => {
 					HealPotionItem item = items[itemIndex++];
 					GameManager.Instance.player.inventory.Remove(item.slot_index);
 					item.Use(GameManager.Instance.player);
+					/*
 					button.title = (itemCount - itemIndex).ToString() + "/" + itemCount;
 
 					if (0 == itemCount - itemIndex)
 					{
 						button.button.gameObject.SetActive(false);
 					}
+					*/
 				});
-				button = battle_buttons.buttons[battle_buttons.buttons.Count - 1];
+				//button = battle_buttons.buttons[battle_buttons.buttons.Count - 1];
 			}
 		}
 
-		battle_buttons.Show(0.5f);
+		foreach (var itr in GameManager.Instance.player.skills)
+		{
+			Skill skill = itr.Value.skill_data;
+			skill.cooltime = 0;
+			skill_buttons[skill.meta.skill_id] = battle_buttons.AddButton(ResourceManager.Instance.Load<Sprite>(skill.meta.sprite_path), skill.meta.skill_name, () =>
+			{
+				if (0 < skill.cooltime)
+				{
+					SceneDungeon.log.Write("can not use skill");
+					return;
+				}
+				skill.cooltime = skill.meta.cooltime;
+				skill_buttons[skill.meta.skill_id].image.fillAmount = 0.0f;
+				skill.OnAttack(monster.data);
+			});
+		}
+
+
+		battle_buttons.gameObject.SetActive(true);
 
 		monster.Init(monsterMeta);
 		yield return StartCoroutine(monster.ColorTo(Color.black, Color.white, 1.0f));
@@ -143,58 +163,65 @@ public class DungeonBattle : MonoBehaviour
 		float monsterTurn = monsterAPS;
 		int playerDamageEffectIndex = 0;
 
-		Unit defender = null;
-		while (0.0f < monster.data.cur_health && 0.0f < GameManager.Instance.player.cur_health)
+		GameManager.Instance.player.on_attack = null;
+		GameManager.Instance.player.on_attack += (Unit.AttackResult result) =>
 		{
+			SceneDungeon.log.Write(GameText.GetText("DUNGEON/BATTLE/HIT", "You", monster.meta.name) + "(-" + (int)result.damage + ")");
+			StartCoroutine(monster.OnDamage(result));
+		};
+
+		monster.data.on_attack = null;
+		monster.data.on_attack += (Unit.AttackResult result) =>
+		{
+			monster.animator.SetTrigger("Attack");
+			StartCoroutine(GameManager.Instance.CameraFade(Color.white, new Color(1.0f, 1.0f, 1.0f, 0.0f), 0.1f));
+			iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
+			Effect_PlayerDamage effectPlayerDamage = player_damage_effects[playerDamageEffectIndex++];
+			playerDamageEffectIndex = playerDamageEffectIndex % player_damage_effects.Length;
+			effectPlayerDamage.gameObject.SetActive(false);
+			effectPlayerDamage.transform.position = new Vector3(
+				Random.Range(Screen.width / 2 - Screen.width / 2 * 0.85f, Screen.width / 2 + Screen.width / 2 * 0.9f),
+				Random.Range(Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
+				0.0f
+			);
+			effectPlayerDamage.gameObject.SetActive(true);
+
+			SceneDungeon.log.Write("<color=red>" + GameText.GetText("DUNGEON/BATTLE/HIT", monster.meta.name, "You") + "(-" + (int)result.damage + ")</color>");
+			GameManager.Instance.player.cur_health -= result.damage;
+			player_health.current = GameManager.Instance.player.cur_health;
+		};
+
+		while (true)
+		{
+			Unit attacker = null;
+			Unit defender = null;
 			if (monsterTurn < playerTurn)
 			{
+				attacker = GameManager.Instance.player;
 				defender = monster.data;
-				GameManager.Instance.player.OnBattleTurn();
-				monster.data.OnBattleTurn();
-
-				Unit.AttackResult result = GameManager.Instance.player.Attack(monster.data);
-				if (0.0f < result.damage)
-				{
-					SceneDungeon.log.Write(GameText.GetText("DUNGEON/BATTLE/HIT", "You", monster.meta.name) + "(-" + (int)result.damage + ")");
-					StartCoroutine(monster.OnDamage(result));
-				}
-				else
-				{
-					continue;
-				}
 				monsterTurn += monsterAPS + Random.Range(1.0f, 2.0f);
 			}
 			else
 			{
+				attacker = monster.data;
 				defender = GameManager.Instance.player;
-				monster.data.OnBattleTurn();
-				GameManager.Instance.player.OnBattleTurn();
-
-				Unit.AttackResult result = monster.data.Attack(GameManager.Instance.player);
-				if (0.0f < result.damage)
-				{
-					monster.animator.SetTrigger("Attack");
-					StartCoroutine(GameManager.Instance.CameraFade(Color.white, new Color(1.0f, 1.0f, 1.0f, 0.0f), 0.1f));
-					iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
-					Effect_PlayerDamage effectPlayerDamage = player_damage_effects[playerDamageEffectIndex++];
-					playerDamageEffectIndex = playerDamageEffectIndex % player_damage_effects.Length;
-					effectPlayerDamage.gameObject.SetActive(false);
-					effectPlayerDamage.transform.position = new Vector3(
-						Random.Range(Screen.width / 2 - Screen.width / 2 * 0.85f, Screen.width / 2 + Screen.width / 2 * 0.9f),
-						Random.Range(Screen.height / 2 - Screen.height / 2 * 0.85f, Screen.height / 2 + Screen.height / 2 * 0.9f),
-						0.0f
-					);
-					effectPlayerDamage.gameObject.SetActive(true);
-
-					SceneDungeon.log.Write("<color=red>" + GameText.GetText("DUNGEON/BATTLE/HIT", monster.meta.name, "You") + "(-" + (int)result.damage + ")</color>");
-					GameManager.Instance.player.cur_health -= result.damage;
-					player_health.current = GameManager.Instance.player.cur_health;
-				}
-				else
-				{
-					continue;
-				}
 				playerTurn += playerAPS;
+			}
+
+			if (0 < attacker.GetBuffCount(Buff.Type.Stun) || 0 < attacker.GetBuffCount(Buff.Type.Fear))
+			{
+				Unit temp = attacker;
+				attacker = defender;
+				defender = temp;
+			}
+
+			attacker.OnBattleTurn();
+			defender.OnBattleTurn();
+			attacker.Attack(defender);
+
+			if (0.0f >= attacker.cur_health || 0.0f >= defender.cur_health)
+			{
+				break;
 			}
 
 			wait_time_for_next_turn = 1.0f / battle_speed;
@@ -203,10 +230,24 @@ public class DungeonBattle : MonoBehaviour
 				wait_time_for_next_turn -= Time.deltaTime;
 				yield return null;
 			}
+
+			foreach (var itr in GameManager.Instance.player.skills)
+			{
+				Skill skill = itr.Value.skill_data;
+				if (0 < skill.cooltime)
+				{
+					skill.cooltime -= playerAPS;
+					skill.cooltime = Mathf.Max(0.0f, skill.cooltime);
+				}
+
+				skill_buttons[skill.meta.skill_id].image.fillAmount = ((float)skill.meta.cooltime - skill.cooltime) / skill.meta.cooltime;
+			}
+
 			if (true == runaway)
 			{
 				break;
 			}
+
 			while (true == battle_pause)
 			{
 				yield return null;
@@ -228,6 +269,7 @@ public class DungeonBattle : MonoBehaviour
 			battle_result = BattleResult.Runaway;
 		}
 
+		
 		monster.meta = null;
 		monster.data = null;
 		
@@ -240,6 +282,6 @@ public class DungeonBattle : MonoBehaviour
 
 	private void OnBuffEffect(Buff buff)
 	{
-		SceneDungeon.log.Write(buff.buff_id);
+		SceneDungeon.log.Write("on effect buff(" + buff.buff_name +")");
 	}
 }

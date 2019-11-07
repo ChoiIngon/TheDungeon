@@ -4,6 +4,20 @@ using UnityEngine;
 
 public class Unit
 {
+	public class UnitSkill
+	{
+		public int ref_count;
+		public Skill skill_data;
+	}
+	public Dictionary<string, UnitSkill> skills;
+	public List<Buff>[] buffs = new List<Buff>[(int)Buff.Type.Max];
+
+	public class AttackResult
+	{
+		public bool critical = false;
+		public float damage = 0.0f;
+	}
+
 	public float max_health;
 	public float cur_health;
 
@@ -14,20 +28,9 @@ public class Unit
 
 	public Stat stats;
 
-	public class UnitSkill
-	{
-		public int ref_count;
-		public Skill skill_data;
-	}
-	private Dictionary<string, UnitSkill> skills;
-	public List<Buff>[] buffs = new List<Buff>[(int)Buff.Type.Max];
-
-	public class AttackResult
-	{
-		public bool critical = false;
-		public float damage = 0.0f;
-	}
-
+	public System.Action<AttackResult> on_attack;
+	public System.Action<AttackResult> on_defense;
+	
 	public virtual void Init()
 	{
 		max_health = 0.0f;
@@ -51,28 +54,29 @@ public class Unit
 		AttackResult result = new AttackResult();
 		if (0 < GetBuffCount(Buff.Type.Stun))
 		{
-			result.damage = 0.0f;
-			return result;
+			return null;
 		}
 
 		if (0 < GetBuffCount(Buff.Type.Fear))
 		{
-			result.damage = 0.0f;
-			return result;
+			return null;
 		}
+
+		OnAttack(target);
+		target.OnDefense(this);
 
 		float attack = this.attack + Random.Range(-this.attack * 0.1f, this.attack * 0.1f);
 		float defense = target.defense + Random.Range(-target.defense * 0.1f, target.defense * 0.1f);
 		result.damage = attack * 100 / (100 + defense);
-
-		OnAttack(target);
-		target.OnDefense(this);
 
 		if (critical >= Random.Range(0.0f, 100.0f))
 		{
 			result.damage *= 3;
 			result.critical = true;
 		}
+
+		on_attack?.Invoke(result);
+		target.on_defense?.Invoke(result);
 		return result;
 	}
 
@@ -131,11 +135,13 @@ public class Unit
 
 	public void OnAttack(Unit target)
 	{
+		/*
 		foreach (var itr in skills)
 		{
 			Skill skill = itr.Value.skill_data;
 			skill.OnAttack(target);
 		}
+		*/
 	}
 
 	public void OnDefense(Unit target)

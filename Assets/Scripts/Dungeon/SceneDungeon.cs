@@ -41,15 +41,17 @@ public class SceneDungeon : SceneMain
 		}
 
 		log = UIUtil.FindChild<UILog>(transform, "UI/UILog");
-
+		log.gameObject.SetActive(true);
 		dungeon = UIUtil.FindChild<Dungeon>(transform, "Dungeon");
+		dungeon.gameObject.SetActive(true);
 		battle = UIUtil.FindChild<DungeonBattle>(transform, "Battle");
 		battle.gameObject.SetActive(true);
 				
 		move_buttons = UIUtil.FindChild<DungeonMoveButtons>(transform, "UI/MoveButtons");
+		move_buttons.gameObject.SetActive(true);
+
 		ui_inventory = UIUtil.FindChild<UIInventory>(transform, "UI/UIInventory");
 		ui_inventory.Init();
-		ui_inventory.gameObject.SetActive(false);
 
 		button_inventory = UIUtil.FindChild<Button>(transform, "UI/Dungeon/ButtonInventory");
 		UIUtil.AddPointerUpListener(button_inventory.gameObject, () =>
@@ -59,9 +61,13 @@ public class SceneDungeon : SceneMain
 		text_inventory = UIUtil.FindChild<Text>(transform, "UI/Dungeon/ButtonInventory/Text");
 		
 		mini_map = UIUtil.FindChild<UIMiniMap>(transform,		"UI/Dungeon/MiniMap");
+		mini_map.gameObject.SetActive(true);
+
 		ui_dungeon_level = UIUtil.FindChild<Text>(transform,	"UI/Dungeon/Level");
+		ui_dungeon_level.gameObject.SetActive(true);
 
 		ui_player_transform = UIUtil.FindChild<Transform>(transform, "UI/Player");
+		ui_player_transform.gameObject.SetActive(true);
 		player_health = UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Health");
 		player_exp =	UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Exp");
 

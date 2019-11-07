@@ -129,10 +129,18 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 			ItemManager.Instance.AddItemMeta(meta);
 		}
 
+		/*
 		grade_gacha.SetWeight(Item.Grade.Low, 6);
 		grade_gacha.SetWeight(Item.Grade.Normal, 5);
 		grade_gacha.SetWeight(Item.Grade.High, 4);
 		grade_gacha.SetWeight(Item.Grade.Magic, 3);
+		grade_gacha.SetWeight(Item.Grade.Rare, 2);
+		grade_gacha.SetWeight(Item.Grade.Legendary, 1);
+		*/
+		grade_gacha.SetWeight(Item.Grade.Low, 0);
+		grade_gacha.SetWeight(Item.Grade.Normal, 0);
+		grade_gacha.SetWeight(Item.Grade.High, 0);
+		grade_gacha.SetWeight(Item.Grade.Magic, 0);
 		grade_gacha.SetWeight(Item.Grade.Rare, 2);
 		grade_gacha.SetWeight(Item.Grade.Legendary, 1);
 

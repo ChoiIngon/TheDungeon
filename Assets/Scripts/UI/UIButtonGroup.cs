@@ -7,17 +7,29 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(GridLayoutGroup))]
 public class UIButtonGroup : MonoBehaviour
 {
-	public class UIButton
+	public class UIButton : MonoBehaviour
 	{
-		public Text name;
+		public Image background;
 		public Image image;
+		public Text title;
 		public Button button;
 		//public System.Action action;
 
-		public string title
+		private void Awake()
 		{
-			get { return name.text; }
-			set { name.text = value; }
+			button = GetComponent<Button>();
+			if (null == button)
+			{
+				throw new MissingComponentException("Button");
+			}
+
+			background = GetComponent<Image>();
+			if (null == background)
+			{
+				throw new MissingComponentException("Button");
+			}
+			image = UIUtil.FindChild<Image>(transform, "Image");
+			title = UIUtil.FindChild<Text>(transform, "Text");
 		}
 	}
 	public List<UIButton> buttons;
@@ -36,38 +48,17 @@ public class UIButtonGroup : MonoBehaviour
 		buttons = new List<UIButton>();
 	}
 
-	public void AddButton(string text, Sprite sprite, System.Action action)
+	public UIButton AddButton(Sprite sprite, string text, System.Action action)
 	{
-		UIButton button = new UIButton();
-		button.button = GameObject.Instantiate<Button>(button_prefab);
-		button.button.transform.SetParent(transform, false);
-		button.button.gameObject.SetActive(true);
-		UIUtil.AddPointerUpListener(button.button.gameObject, action);
-		button.image = button.button.transform.GetComponent<Image>();
-		button.image.sprite = sprite;
-		button.name = UIUtil.FindChild<Text>(button.button.transform, "Text");
-		button.name.gameObject.SetActive(true);
-		button.title = text;
-		buttons.Add(button);
-	}
-
-	public void Show(float time = 0.5f)
-	{
-		for (int i = 0; i < buttons.Count; i++)
-		{
-			buttons[i].button.enabled = true;
-			buttons[i].name.gameObject.SetActive(true);
-			StartCoroutine(Util.UITween.ColorTo(buttons[i].image, new Color(1.0f, 1.0f, 1.0f, 1.0f), time));
-		}
-	}
-
-	public void Hide(float time = 0.5f)
-	{
-		for (int i = 0; i < buttons.Count; i++)
-		{
-			buttons[i].button.enabled = false;
-			buttons[i].name.gameObject.SetActive(false);
-			StartCoroutine(Util.UITween.ColorTo(buttons[i].image, new Color(1.0f, 1.0f, 1.0f, 0.0f), time));
-		}
+		Button button = GameObject.Instantiate<Button>(button_prefab);
+		UIButton uiButton = button.gameObject.AddComponent<UIButton>();
+		button.gameObject.SetActive(true);
+		button.transform.SetParent(transform, false);
+		UIUtil.AddPointerUpListener(button.gameObject, action);
+		uiButton.title.text = text;
+		uiButton.background.sprite = sprite;
+		uiButton.image.sprite = sprite;
+		buttons.Add(uiButton);
+		return uiButton;
 	}
 }
