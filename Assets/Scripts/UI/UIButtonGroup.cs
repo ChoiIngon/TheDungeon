@@ -61,4 +61,13 @@ public class UIButtonGroup : MonoBehaviour
 		buttons.Add(uiButton);
 		return uiButton;
 	}
+
+	public void Enable(bool flag)
+	{
+		foreach (UIButton button in buttons)
+		{
+			button.image.gameObject.SetActive(flag);
+			button.button.enabled = flag;
+		}
+	}
 }

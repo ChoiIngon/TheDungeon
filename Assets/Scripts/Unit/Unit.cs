@@ -62,9 +62,6 @@ public class Unit
 			return null;
 		}
 
-		OnAttack(target);
-		target.OnDefense(this);
-
 		float attack = this.attack + Random.Range(-this.attack * 0.1f, this.attack * 0.1f);
 		float defense = target.defense + Random.Range(-target.defense * 0.1f, target.defense * 0.1f);
 		result.damage = attack * 100 / (100 + defense);
@@ -75,9 +72,20 @@ public class Unit
 			result.critical = true;
 		}
 
+		target.OnDamage(this, result);
 		on_attack?.Invoke(result);
-		target.on_defense?.Invoke(result);
+		on_defense?.Invoke(result);
 		return result;
+	}
+
+	public void OnDamage(Unit attacker, AttackResult attackResult)
+	{
+		foreach (var itr in skills)
+		{
+			Skill skill = itr.Value.skill_data;
+			skill.OnDefense(attacker);
+		}
+		cur_health = Mathf.Max(cur_health - attackResult.damage, 0.0f);
 	}
 
 	public virtual void CalculateStat()
@@ -132,27 +140,7 @@ public class Unit
 			skills.Remove(skill.meta.skill_id);
 		}
 	}
-
-	public void OnAttack(Unit target)
-	{
-		/*
-		foreach (var itr in skills)
-		{
-			Skill skill = itr.Value.skill_data;
-			skill.OnAttack(target);
-		}
-		*/
-	}
-
-	public void OnDefense(Unit target)
-	{
-		foreach (var itr in skills)
-		{
-			Skill skill = itr.Value.skill_data;
-			skill.OnDefense(target);
-		}
-	}
-
+		
 	public int GetBuffCount(Buff.Type type)
 	{
 		return buffs[(int)type - 1].Count;
@@ -160,7 +148,7 @@ public class Unit
 
 	public void AddBuff(Buff buff)
 	{
-		Debug.Log("add buff(buff_id:" + buff.buff_id + ")");
+		Debug.Log("add buff(buff_id:" + buff.buff_name + ")");
 		buffs[(int)buff.buff_type - 1].Add(buff);
 		Util.EventSystem.Publish<Buff>(EventID.Buff_Start, buff);
 	}
@@ -169,7 +157,7 @@ public class Unit
 	{
 		buffs[(int)buff.buff_type - 1].Remove(buff);
 		Util.EventSystem.Publish<Buff>(EventID.Buff_End, buff);
-		Debug.Log("remove buff(buff_id:" + buff.buff_id + ")");
+		Debug.Log("remove buff(buff_id:" + buff.buff_name + ")");
 	}
 
 	public void OnBattleTurn()

@@ -163,7 +163,7 @@ SpriteRenderer:
   m_SortingLayerID: 652576461
   m_SortingLayer: -1
   m_SortingOrder: 11
-  m_Sprite: {fileID: 21300004, guid: 64a8e5a12338c4accb72e9fe66db3432, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2a780637d809f0e43a93866f4b8bda24, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -321,7 +321,7 @@ SpriteRenderer:
   m_SortingLayerID: 652576461
   m_SortingLayer: -1
   m_SortingOrder: 11
-  m_Sprite: {fileID: 21300008, guid: 64a8e5a12338c4accb72e9fe66db3432, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8af121cf8fceb524099c3e5eeb6975be, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -400,7 +400,7 @@ SpriteRenderer:
   m_SortingLayerID: 652576461
   m_SortingLayer: -1
   m_SortingOrder: 11
-  m_Sprite: {fileID: 21300006, guid: 64a8e5a12338c4accb72e9fe66db3432, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 71751c26d047d2a45a1712a9db002f3f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -462,13 +462,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63147c49406a946e8ba336ecdd888168, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  doors:
-  - {fileID: 1793269997381738}
-  - {fileID: 1574933067811976}
-  - {fileID: 0}
-  - {fileID: 1138558002925956}
+  nexts: []
   stair: {fileID: 0}
-  box: {fileID: 0}
+  treasure_box: {fileID: 0}
   npc: {fileID: 0}
 --- !u!212 &212880722782547474
 SpriteRenderer:
@@ -507,7 +503,7 @@ SpriteRenderer:
   m_SortingLayerID: 652576461
   m_SortingLayer: -1
   m_SortingOrder: 10
-  m_Sprite: {fileID: 21300000, guid: 64a8e5a12338c4accb72e9fe66db3432, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ca92c008cb61cb640b63110e7411dd95, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

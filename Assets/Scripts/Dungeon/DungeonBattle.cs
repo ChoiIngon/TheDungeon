@@ -108,47 +108,7 @@ public class DungeonBattle : MonoBehaviour
 		runaway_button.image.color = Color.white;
 		UIUtil.FindChild<Text>(runaway_button.transform, "Text").text = runaway_count.ToString() + "/" + "3";
 
-		{
-			//UIButtonGroup.UIButton button = null;
-			List<HealPotionItem> items = GameManager.Instance.player.inventory.GetItems<HealPotionItem>();
-			if (0 < items.Count)
-			{
-				int itemCount = items.Count;
-				int itemIndex = 0;
-				battle_buttons.AddButton(ResourceManager.Instance.Load<Sprite>("Item/item_potion_red"), (itemCount - itemIndex).ToString() + "/" + itemCount, () => {
-					HealPotionItem item = items[itemIndex++];
-					GameManager.Instance.player.inventory.Remove(item.slot_index);
-					item.Use(GameManager.Instance.player);
-					/*
-					button.title = (itemCount - itemIndex).ToString() + "/" + itemCount;
-
-					if (0 == itemCount - itemIndex)
-					{
-						button.button.gameObject.SetActive(false);
-					}
-					*/
-				});
-				//button = battle_buttons.buttons[battle_buttons.buttons.Count - 1];
-			}
-		}
-
-		foreach (var itr in GameManager.Instance.player.skills)
-		{
-			Skill skill = itr.Value.skill_data;
-			skill.cooltime = 0;
-			skill_buttons[skill.meta.skill_id] = battle_buttons.AddButton(ResourceManager.Instance.Load<Sprite>(skill.meta.sprite_path), skill.meta.skill_name, () =>
-			{
-				if (0 < skill.cooltime)
-				{
-					SceneDungeon.log.Write("can not use skill");
-					return;
-				}
-				skill.cooltime = skill.meta.cooltime;
-				skill_buttons[skill.meta.skill_id].image.fillAmount = 0.0f;
-				skill.OnAttack(monster.data);
-			});
-		}
-
+		InitButtons();
 
 		battle_buttons.gameObject.SetActive(true);
 
@@ -187,7 +147,6 @@ public class DungeonBattle : MonoBehaviour
 			effectPlayerDamage.gameObject.SetActive(true);
 
 			SceneDungeon.log.Write("<color=red>" + GameText.GetText("DUNGEON/BATTLE/HIT", monster.meta.name, "You") + "(-" + (int)result.damage + ")</color>");
-			GameManager.Instance.player.cur_health -= result.damage;
 			player_health.current = GameManager.Instance.player.cur_health;
 		};
 
@@ -200,12 +159,15 @@ public class DungeonBattle : MonoBehaviour
 				attacker = GameManager.Instance.player;
 				defender = monster.data;
 				monsterTurn += monsterAPS + Random.Range(1.0f, 2.0f);
+				battle_pause = true;
+				battle_buttons.Enable(true);
 			}
 			else
 			{
 				attacker = monster.data;
 				defender = GameManager.Instance.player;
 				playerTurn += playerAPS;
+				battle_pause = false;
 			}
 
 			if (0 < attacker.GetBuffCount(Buff.Type.Stun) || 0 < attacker.GetBuffCount(Buff.Type.Fear))
@@ -214,6 +176,12 @@ public class DungeonBattle : MonoBehaviour
 				attacker = defender;
 				defender = temp;
 			}
+
+			while (true == battle_pause)
+			{
+				yield return null;
+			}
+			battle_buttons.Enable(false);
 
 			attacker.OnBattleTurn();
 			defender.OnBattleTurn();
@@ -247,11 +215,6 @@ public class DungeonBattle : MonoBehaviour
 			{
 				break;
 			}
-
-			while (true == battle_pause)
-			{
-				yield return null;
-			}
 		}
 
 		if (0.0f >= monster.data.cur_health)
@@ -284,4 +247,80 @@ public class DungeonBattle : MonoBehaviour
 	{
 		SceneDungeon.log.Write("on effect buff(" + buff.buff_name +")");
 	}
+
+	private void InitButtons()
+	{
+		battle_buttons.AddButton(ResourceManager.Instance.Load<Sprite>("Skill/skill_icon_stun"), "Attack", () =>
+		{
+			battle_pause = false;
+		});
+
+		foreach (var itr in GameManager.Instance.player.skills)
+		{
+			Skill skill = itr.Value.skill_data;
+			skill.cooltime = 0;
+			skill_buttons[skill.meta.skill_id] = battle_buttons.AddButton(ResourceManager.Instance.Load<Sprite>(skill.meta.sprite_path), skill.meta.skill_name, () =>
+			{
+				if (0 < skill.cooltime)
+				{
+					SceneDungeon.log.Write("can not use skill");
+					return;
+				}
+				skill.cooltime = skill.meta.cooltime;
+				skill_buttons[skill.meta.skill_id].image.fillAmount = 0.0f;
+				skill.OnAttack(monster.data);
+				battle_pause = false;
+			});
+		}
+
+		{
+			//UIButtonGroup.UIButton button = null;
+			List<HealPotionItem> items = GameManager.Instance.player.inventory.GetItems<HealPotionItem>();
+			if (0 < items.Count)
+			{
+				int itemCount = items.Count;
+				int itemIndex = 0;
+				battle_buttons.AddButton(ResourceManager.Instance.Load<Sprite>("Item/item_potion_red"), (itemCount - itemIndex).ToString() + "/" + itemCount, () => {
+					HealPotionItem item = items[itemIndex++];
+					GameManager.Instance.player.inventory.Remove(item.slot_index);
+					item.Use(GameManager.Instance.player);
+					/*
+					button.title = (itemCount - itemIndex).ToString() + "/" + itemCount;
+
+					if (0 == itemCount - itemIndex)
+					{
+						button.button.gameObject.SetActive(false);
+					}
+					*/
+				});
+				//button = battle_buttons.buttons[battle_buttons.buttons.Count - 1];
+			}
+		}
+
+		skill_buttons["runaway"] = battle_buttons.AddButton(ResourceManager.Instance.Load<Sprite>("Skill/skill_icon_run"), "Runaway", () =>
+		{
+			if (0 == runaway_count)
+			{
+				return;
+			}
+			runaway = false;
+			float successChance = (GameManager.Instance.player.speed / monster.meta.speed) * 0.25f;
+			if (successChance > Random.Range(0.0f, 1.0f))
+			{
+				runaway = true;
+				SceneDungeon.log.Write("You runaway.");
+			}
+			else
+			{
+				if (0 == --runaway_count)
+				{
+					runaway_button.image.color = Color.gray;
+				}
+				SceneDungeon.log.Write("You trid to runaway. but failed..");
+			}
+
+			battle_pause = false;
+		});
+	}
+
 }

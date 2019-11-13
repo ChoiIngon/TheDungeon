@@ -42,8 +42,7 @@ public class Skill_Stun : Skill
 	{
 		if (0 == target.GetBuffCount(Buff.Type.Stun))
 		{
-			Buff_Stun buff = new Buff_Stun(target);
-			buff.turn = 5;
+			Buff buff = new Buff(target, "Stun", 5, Buff.Type.Stun);
 			target.AddBuff(buff);
 		}
 	}
@@ -59,7 +58,7 @@ public class Skill_Fear : Skill
 			skill_id = "SKILL_FEAR";
 			sprite_path = "Item/item_equip_sword_004";
 			cooltime = 3;
-			description = "20% 확율로 적을 공포에 질리게 한다. 공포에 질린적은 도망간다";
+			description = "2턴 동안 적을 공포에 질리게 한다. 공포에 질린적은 무서워한다";
 		}
 		public override Skill CreateInstance()
 		{
@@ -72,8 +71,7 @@ public class Skill_Fear : Skill
 	{
 		if (0 == target.GetBuffCount(Buff.Type.Fear))
 		{
-			Buff_Fear buff = new Buff_Fear(target);
-			buff.turn = 2;
+			Buff buff = new Buff(target, "Fear", 2, Buff.Type.Fear);
 			target.AddBuff(buff);
 		}
 	}
@@ -88,7 +86,7 @@ public class Skill_Bleeding : Skill
 			skill_name = "Bledding";
 			skill_id = "SKILL_BLEEDING";
 			sprite_path = "Item/item_equip_sword_004";
-			cooltime = 2;
+			cooltime = 10;
 			description = "20% 확율로 적에게 출혈 상처를 입힌다";
 		}
 		public override Skill CreateInstance()
@@ -100,12 +98,8 @@ public class Skill_Bleeding : Skill
 	}
 	public override void OnAttack(Unit target)
 	{
-		if (100 >= Random.Range(0, 100))
-		{
-			Buff_Bleeding buff = new Buff_Bleeding(target);
-			buff.turn = 2;
-			target.AddBuff(buff);
-		}
+		Buff buff = new Buff_DOT(target, "Bleeding", 5, 10, Buff.Type.Bleeding);
+		target.AddBuff(buff);
 	}
 }
 
@@ -130,12 +124,7 @@ public class Skill_Blindness : Skill
 	}
 	public override void OnAttack(Unit target)
 	{
-		if (100 >= Random.Range(0, 100))
-		{
-			Buff_Blindness buff = new Buff_Blindness(target);
-			buff.turn = 2;
-			target.AddBuff(buff);
-		}
+		Buff buff = new Buff(target, "Blindness", 2, Buff.Type.Blind);
 	}
 }
 public class SkillManager : Util.Singleton<SkillManager>

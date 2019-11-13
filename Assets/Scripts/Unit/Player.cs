@@ -38,6 +38,11 @@ public class Player : Unit
 				levelup_stats.Add(statType, new RandomStatMeta() { type = statType, min_value = reader.GetFloat("levelup_min_value"), max_value = reader.GetFloat("levelup_max_value"), interval = reader.GetFloat("levelup_interval") });
 			}
 		}
+
+		public int GetMaxExp(int level)
+		{
+			return (int)Mathf.Pow(level, 1.8f);
+		}
 	}
 
 	public Dictionary<Tuple<EquipItem.Part, int>, EquipItem> equip_items;
@@ -111,7 +116,10 @@ public class Player : Unit
         Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Equip, new ItemEquipEvent() { prev_item = prev, curr_item = item, equip_index = equip_index } );
         return prev;
 	}
-
+	public EquipItem GetEquipItem(EquipItem.Part part, int equip_index)
+	{
+		return equip_items[new Tuple<EquipItem.Part, int>(part, equip_index)];
+	}
 	public EquipItem Unequip(EquipItem.Part part, int equip_index)
 	{
 		EquipItem item = equip_items[new Tuple<EquipItem.Part, int>(part, equip_index)];
@@ -209,35 +217,6 @@ public class Player : Unit
 		stats.AddStat(new Stat.Data() { type = StatType.Stamina, value = 100.0f });
 	}
 
-	public void AddExp(int amount)
-	{
-		exp += amount;
-		while (this.exp >= GetMaxExp())
-		{
-			exp -= GetMaxExp();
-			level += 1;
-
-			stats.AddStat(meta.levelup_stats[StatType.Health].CreateInstance());
-			stats.AddStat(meta.levelup_stats[StatType.Attack].CreateInstance());
-			stats.AddStat(meta.levelup_stats[StatType.Defense].CreateInstance());
-			stats.AddStat(meta.levelup_stats[StatType.Speed].CreateInstance());
-			stats.AddStat(meta.levelup_stats[StatType.Critical].CreateInstance());
-			CalculateStat();
-			cur_health = max_health;
-			ProgressManager.Instance.Update(ProgressType.PlayerLevel, "", level);
-		}
-	}
-
-	public int GetMaxExp()
-	{
-		return GetMaxExp(level);
-	}
-
-	public int GetMaxExp(int level)
-	{
-		return (int)Mathf.Pow(level, 1.8f);
-	}
-	
 	public override void CalculateStat()
 	{
 		base.CalculateStat();
@@ -258,6 +237,24 @@ public class Player : Unit
 		Util.EventSystem.Publish(EventID.Player_Stat_Change);
 	}
 
+	public void AddExp(int amount)
+	{
+		exp += amount;
+		while (this.exp >= meta.GetMaxExp(level))
+		{
+			exp -= meta.GetMaxExp(level);
+			level += 1;
+
+			stats.AddStat(meta.levelup_stats[StatType.Health].CreateInstance());
+			stats.AddStat(meta.levelup_stats[StatType.Attack].CreateInstance());
+			stats.AddStat(meta.levelup_stats[StatType.Defense].CreateInstance());
+			stats.AddStat(meta.levelup_stats[StatType.Speed].CreateInstance());
+			stats.AddStat(meta.levelup_stats[StatType.Critical].CreateInstance());
+			CalculateStat();
+			cur_health = max_health;
+			ProgressManager.Instance.Update(ProgressType.PlayerLevel, "", level);
+		}
+	}
 	public void ChangeCoin(int amount, bool notifyEvent = true)
 	{
 		if (0 == amount)

@@ -158,7 +158,7 @@ public class Monster : MonoBehaviour
 		effect.damage = (int)attackResult.damage;
 		effect.critical = attackResult.critical;
 		effect.gameObject.SetActive(true);
-		data.cur_health -= (int)attackResult.damage;
+		
 		ui_health.current = data.cur_health;
 		if (true == attackResult.critical)
 		{

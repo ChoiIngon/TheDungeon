@@ -55,14 +55,14 @@ public class TreasureBox : MonoBehaviour
 			yield return GameManager.Instance.ui_textbox.Write(GameText.GetText("ERROR/INVENTORY_FULL"));
 			yield break;
 		}
-		
+
+		lock_icon.gameObject.SetActive(false);
 		AudioManager.Instance.Play(AudioManager.BOX_OPEN);
 		StartCoroutine(Util.UITween.Overlap(close, open, time));
 		yield return GameManager.Instance.ui_textbox.Write(GameText.GetText("DUNGEON/HAVE_ITEM", "You", room.item.name));
 		GameManager.Instance.player.inventory.Add(room.item.CreateInstance());
 		ProgressManager.Instance.Update(ProgressType.CollectItem, "", 1);
 		room.item = null;
-		lock_icon.gameObject.SetActive(false);
 		gameObject.SetActive(false);
 	}
 }
