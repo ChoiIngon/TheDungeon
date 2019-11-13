@@ -14,9 +14,67 @@ public abstract class Skill
 	}
 
 	public Meta meta;
+
+	public Unit owner;
 	public float cooltime;
+
+	public virtual void OnAttach(Unit owner)
+	{
+		this.owner = owner;
+	}
+	public virtual void OnDetach() {}
 	public virtual void OnAttack(Unit target) { }
 	public virtual void OnDefense(Unit target) { }
+}
+
+public class Skill_Attack : Skill
+{
+	public new class Meta : Skill.Meta
+	{
+		public Meta()
+		{
+			skill_name = "Attack";
+			skill_id = "SKILL_ATTACK";
+			sprite_path = "Skill/skill_icon_stun";
+			cooltime = 0;
+			description = "";
+		}
+		public override Skill CreateInstance()
+		{
+			Skill_Attack skill = new Skill_Attack();
+			skill.meta = this;
+			return skill;
+		}
+	}
+
+	public override void OnAttack(Unit target)
+	{
+		Unit.AttackResult result = new Unit.AttackResult();
+		if (0 < owner.GetBuffCount(Buff.Type.Stun))
+		{
+			return;
+		}
+
+		if (0 < owner.GetBuffCount(Buff.Type.Fear))
+		{
+			return;
+		}
+
+		const float RANDOM_RANGE = 0.1f;
+		float attack = owner.attack + Random.Range(-owner.attack * RANDOM_RANGE, owner.attack * RANDOM_RANGE);
+		float defense = target.defense + Random.Range(-target.defense * RANDOM_RANGE, target.defense * RANDOM_RANGE);
+		result.damage = attack * 100 / (100 + defense);
+
+		if (owner.critical >= Random.Range(0.0f, 100.0f))
+		{
+			result.damage *= 3;
+			result.critical = true;
+		}
+
+		target.OnDamage(owner, result);
+		owner.on_attack?.Invoke(result);
+		target.on_defense?.Invoke(result);
+	}
 }
 
 public class Skill_Stun : Skill
@@ -57,7 +115,7 @@ public class Skill_Fear : Skill
 			skill_name = "Fear";
 			skill_id = "SKILL_FEAR";
 			sprite_path = "Item/item_equip_sword_004";
-			cooltime = 3;
+			cooltime = 10;
 			description = "2턴 동안 적을 공포에 질리게 한다. 공포에 질린적은 무서워한다";
 		}
 		public override Skill CreateInstance()
@@ -112,7 +170,7 @@ public class Skill_Blindness : Skill
 			skill_name = "Blind";
 			skill_id = "SKILL_BLINDNESS";
 			sprite_path = "Item/item_equip_sword_004";
-			cooltime = 4;
+			cooltime = 10;
 			description = "높은 확율로 공격이 빗나감";
 		}
 		public override Skill CreateInstance()

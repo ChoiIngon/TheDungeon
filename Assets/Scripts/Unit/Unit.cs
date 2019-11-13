@@ -30,7 +30,8 @@ public class Unit
 
 	public System.Action<AttackResult> on_attack;
 	public System.Action<AttackResult> on_defense;
-	
+	public Skill current_skill;
+
 	public virtual void Init()
 	{
 		max_health = 0.0f;
@@ -47,35 +48,16 @@ public class Unit
 		{
 			buffs[i] = new List<Buff>();
 		}
+
+		Skill_Attack.Meta defaultSkillMeta = new Skill_Attack.Meta();
+		current_skill = defaultSkillMeta.CreateInstance();
+		AddSkill(current_skill);
 	}
 
-	public AttackResult Attack(Unit target)
+	public void Attack(Unit target)
 	{
-		AttackResult result = new AttackResult();
-		if (0 < GetBuffCount(Buff.Type.Stun))
-		{
-			return null;
-		}
-
-		if (0 < GetBuffCount(Buff.Type.Fear))
-		{
-			return null;
-		}
-
-		float attack = this.attack + Random.Range(-this.attack * 0.1f, this.attack * 0.1f);
-		float defense = target.defense + Random.Range(-target.defense * 0.1f, target.defense * 0.1f);
-		result.damage = attack * 100 / (100 + defense);
-
-		if (critical >= Random.Range(0.0f, 100.0f))
-		{
-			result.damage *= 3;
-			result.critical = true;
-		}
-
-		target.OnDamage(this, result);
-		on_attack?.Invoke(result);
-		on_defense?.Invoke(result);
-		return result;
+		current_skill.OnAttack(target);
+		current_skill.cooltime = current_skill.meta.cooltime;
 	}
 
 	public void OnDamage(Unit attacker, AttackResult attackResult)
@@ -111,6 +93,7 @@ public class Unit
 			unitSkill = new UnitSkill();
 			unitSkill.skill_data = skill;
 			unitSkill.ref_count = 0;
+			skill.OnAttach(this);
 			skills.Add(skill.meta.skill_id, unitSkill);
 		}
 		else
@@ -137,6 +120,7 @@ public class Unit
 		if (0 >= unitSkill.ref_count)
 		{
 			Debug.Log("remove skill");
+			skill.OnDetach();
 			skills.Remove(skill.meta.skill_id);
 		}
 	}

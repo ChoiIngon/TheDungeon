@@ -46,6 +46,7 @@ public class Room : MonoBehaviour
 	public RoomStair stair;
 	public TreasureBox treasure_box;
 	public SpriteRenderer npc;
+	public int sorting_order;
 	private void Awake()
 	{
 		nexts = new GameObject[Max];
@@ -67,6 +68,37 @@ public class Room : MonoBehaviour
 		stair.gameObject.SetActive(false);
 		treasure_box.gameObject.SetActive(false);
 		npc.gameObject.SetActive(false);
+
+		SpriteRenderer roomSprite = GetComponent<SpriteRenderer>();
+
+		SpriteRenderer northDoorSprite = UIUtil.FindChild<SpriteRenderer>(transform, "NorthDoor");
+		SpriteRenderer eastDoorSprite = UIUtil.FindChild<SpriteRenderer>(transform, "EastDoor");
+		SpriteRenderer westDoorSprite = UIUtil.FindChild<SpriteRenderer>(transform, "WestDoor");
+
+		SpriteRenderer boxLockIcon = UIUtil.FindChild<SpriteRenderer>(transform, "Box/LockIcon");
+		SpriteRenderer boxOpen = UIUtil.FindChild<SpriteRenderer>(transform, "Box/Open");
+		SpriteRenderer boxClose = UIUtil.FindChild<SpriteRenderer>(transform, "Box/Close");
+		SpriteRenderer boxShadow = UIUtil.FindChild<SpriteRenderer>(transform, "Box/Shadow");
+
+		SpriteRenderer stairLockIcon = UIUtil.FindChild<SpriteRenderer>(transform, "Stair/LockIcon");
+		SpriteRenderer stairOpen = UIUtil.FindChild<SpriteRenderer>(transform, "Stair/Open");
+		SpriteRenderer stairClose = UIUtil.FindChild<SpriteRenderer>(transform, "Stair/Close");
+
+		roomSprite.sortingOrder = sorting_order;
+		northDoorSprite.sortingOrder = sorting_order + 1;
+		eastDoorSprite.sortingOrder = sorting_order + 1;
+		westDoorSprite.sortingOrder = sorting_order + 1;
+
+		boxLockIcon.sortingOrder = sorting_order + 2;
+		boxShadow.sortingOrder = sorting_order + 2;
+		boxOpen.sortingOrder = sorting_order + 3;
+		boxClose.sortingOrder = sorting_order + 3;
+
+		stairLockIcon.sortingOrder = sorting_order + 2;
+		stairOpen.sortingOrder = sorting_order + 3;
+		stairClose.sortingOrder = sorting_order + 3;
+
+		npc.sortingOrder = sorting_order + 2;
 	}
 
 	public void Init(Data data)
