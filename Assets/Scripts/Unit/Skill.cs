@@ -50,19 +50,76 @@ public class Skill_Attack : Skill
 	public override void OnAttack(Unit target)
 	{
 		Unit.AttackResult result = new Unit.AttackResult();
-		if (0 < owner.GetBuffCount(Buff.Type.Stun))
-		{
-			return;
-		}
-
-		if (0 < owner.GetBuffCount(Buff.Type.Fear))
-		{
-			return;
-		}
-
+		
 		const float RANDOM_RANGE = 0.1f;
 		float attack = owner.attack + Random.Range(-owner.attack * RANDOM_RANGE, owner.attack * RANDOM_RANGE);
 		float defense = target.defense + Random.Range(-target.defense * RANDOM_RANGE, target.defense * RANDOM_RANGE);
+		result.damage = attack * 100 / (100 + defense);
+
+		if (owner.critical >= Random.Range(0.0f, 100.0f))
+		{
+			result.damage *= 3;
+			result.critical = true;
+		}
+
+		owner.on_attack?.Invoke(result);
+		target.OnDamage(owner, result);
+	}
+}
+
+public class Skill_DoubleAttack : Skill_Attack
+{
+	public new class Meta : Skill.Meta
+	{
+		public Meta()
+		{
+			skill_name = "Double Attack";
+			skill_id = "SKILL_DOUBLE_ATTACK";
+			sprite_path = "Skill/skill_icon_stun";
+			cooltime = 10;
+			description = "연속 2회 공격한다";
+		}
+		public override Skill CreateInstance()
+		{
+			Skill_DoubleAttack skill = new Skill_DoubleAttack();
+			skill.meta = this;
+			return skill;
+		}
+	}
+
+	public override void OnAttack(Unit target)
+	{
+		base.OnAttack(target);
+		base.OnAttack(target);
+	}
+}
+
+public class Skill_Penetrate : Skill
+{
+	public new class Meta : Skill.Meta
+	{
+		public Meta()
+		{
+			skill_name = "Penetrate";
+			skill_id = "SKILL_PENETRATE";
+			sprite_path = "Skill/skill_icon_stun";
+			cooltime = 10;
+			description = "방어력을 무시한 관통 공격";
+		}
+		public override Skill CreateInstance()
+		{
+			Skill_Penetrate skill = new Skill_Penetrate();
+			skill.meta = this;
+			return skill;
+		}
+	}
+
+	public override void OnAttack(Unit target)
+	{
+		Unit.AttackResult result = new Unit.AttackResult();
+		const float RANDOM_RANGE = 0.1f;
+		float attack = owner.attack + Random.Range(-owner.attack * RANDOM_RANGE, owner.attack * RANDOM_RANGE);
+		float defense = 0.0f; // target.defense + Random.Range(-target.defense * RANDOM_RANGE, target.defense * RANDOM_RANGE);
 		result.damage = attack * 100 / (100 + defense);
 
 		if (owner.critical >= Random.Range(0.0f, 100.0f))
@@ -77,6 +134,37 @@ public class Skill_Attack : Skill
 	}
 }
 
+public class Skill_Smash : Skill_Attack
+{
+	public new class Meta : Skill.Meta
+	{
+		public Meta()
+		{
+			skill_name = "Smash";
+			skill_id = "SKILL_Smash";
+			sprite_path = "Skill/skill_icon_stun";
+			cooltime = 10;
+			description = "강력한 공격으로 20%의 확율로 3턴 동안 적을 기절 시킨다";
+		}
+		public override Skill CreateInstance()
+		{
+			Skill_Smash skill = new Skill_Smash();
+			skill.meta = this;
+			return skill;
+		}
+	}
+
+	public override void OnAttack(Unit target)
+	{
+		base.OnAttack(target);
+		if (50.0f >= Random.Range(0.0f, 100.0f) && 0 == target.GetBuffCount(Buff.Type.Stun))
+		{
+			Buff buff = new Buff("Stun", 3, Buff.Type.Stun);
+			target.AddBuff(buff);
+		}
+	}
+}
+
 public class Skill_Stun : Skill
 {
 	public new class Meta : Skill.Meta
@@ -87,7 +175,7 @@ public class Skill_Stun : Skill
 			skill_id = "SKILL_STUN";
 			sprite_path = "Item/item_equip_sword_004";
 			cooltime = 10;
-			description = "5턴 동안 대상을 기절 시킴";
+			description = "2턴 동안 대상을 기절 시킴";
 		}
 		public override Skill CreateInstance()
 		{
@@ -100,7 +188,7 @@ public class Skill_Stun : Skill
 	{
 		if (0 == target.GetBuffCount(Buff.Type.Stun))
 		{
-			Buff buff = new Buff(target, "Stun", 5, Buff.Type.Stun);
+			Buff buff = new Buff("Stun", 2, Buff.Type.Stun);
 			target.AddBuff(buff);
 		}
 	}
@@ -129,19 +217,19 @@ public class Skill_Fear : Skill
 	{
 		if (0 == target.GetBuffCount(Buff.Type.Fear))
 		{
-			Buff buff = new Buff(target, "Fear", 2, Buff.Type.Fear);
+			Buff buff = new Buff("Fear", 2, Buff.Type.Fear);
 			target.AddBuff(buff);
 		}
 	}
 }
 
-public class Skill_Bleeding : Skill
+public class Skill_Bleeding : Skill_Attack
 {
 	public new class Meta : Skill.Meta
 	{
 		public Meta()
 		{
-			skill_name = "Bledding";
+			skill_name = "Bleeding";
 			skill_id = "SKILL_BLEEDING";
 			sprite_path = "Item/item_equip_sword_004";
 			cooltime = 10;
@@ -156,7 +244,11 @@ public class Skill_Bleeding : Skill
 	}
 	public override void OnAttack(Unit target)
 	{
-		Buff buff = new Buff_DOT(target, "Bleeding", 5, 10, Buff.Type.Bleeding);
+		base.OnAttack(target);
+		const float RANDOM_RANGE = 0.1f;
+		float attack = owner.attack + Random.Range(-owner.attack * RANDOM_RANGE, owner.attack * RANDOM_RANGE);
+		attack *= 0.1f;
+		Buff buff = new Buff_Bleeding(5, attack);
 		target.AddBuff(buff);
 	}
 }
@@ -182,7 +274,7 @@ public class Skill_Blindness : Skill
 	}
 	public override void OnAttack(Unit target)
 	{
-		Buff buff = new Buff(target, "Blindness", 2, Buff.Type.Blind);
+		Buff buff = new Buff("Blindness", 2, Buff.Type.Blind);
 	}
 }
 public class SkillManager : Util.Singleton<SkillManager>
@@ -191,10 +283,13 @@ public class SkillManager : Util.Singleton<SkillManager>
 
 	public void Init()
 	{
+		skill_metas.Add(new Skill_DoubleAttack.Meta());
+		skill_metas.Add(new Skill_Smash.Meta());
 		skill_metas.Add(new Skill_Stun.Meta());
-		skill_metas.Add(new Skill_Fear.Meta());
+		skill_metas.Add(new Skill_Penetrate.Meta());
 		skill_metas.Add(new Skill_Bleeding.Meta());
-		skill_metas.Add(new Skill_Blindness.Meta());
+		//skill_metas.Add(new Skill_Fear.Meta());
+		//skill_metas.Add(new Skill_Blindness.Meta());
 	}
 
 	public Skill CreateRandomInstance()

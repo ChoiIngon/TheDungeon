@@ -14,6 +14,7 @@ public class Unit
 
 	public class AttackResult
 	{
+		public string type = "";
 		public bool critical = false;
 		public float damage = 0.0f;
 	}
@@ -68,6 +69,7 @@ public class Unit
 			skill.OnDefense(attacker);
 		}
 		cur_health = Mathf.Max(cur_health - attackResult.damage, 0.0f);
+		on_defense?.Invoke(attackResult);
 	}
 
 	public virtual void CalculateStat()
@@ -133,6 +135,7 @@ public class Unit
 	public void AddBuff(Buff buff)
 	{
 		Debug.Log("add buff(buff_id:" + buff.buff_name + ")");
+		buff.target = this;
 		buffs[(int)buff.buff_type - 1].Add(buff);
 		Util.EventSystem.Publish<Buff>(EventID.Buff_Start, buff);
 	}

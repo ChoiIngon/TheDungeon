@@ -27,18 +27,21 @@ public class UIGaugeBar : MonoBehaviour
         }
 	}
 
-    public Transform gauge;
+    public Image gauge;
 	public Text text;
+	public Rect rect;
 	
     float _current;
 	float _max;
 	bool _complete;
-	// Use this for initialization
-	void Start ()
+
+	private void Awake()
 	{
-		RectTransform rt = text.gameObject.GetComponent<RectTransform> ();
+		gauge = UIUtil.FindChild<Image>(transform, "Gauge");
+		RectTransform rt = text.gameObject.GetComponent<RectTransform>();
 		text.fontSize = (int)(rt.rect.height - text.lineSpacing);
-    }
+		rect = rt.rect;
+	}
 
 	public IEnumerator SetCurrent(float current, float time)
 	{
@@ -66,7 +69,7 @@ public class UIGaugeBar : MonoBehaviour
 		if (0.0f < time)
 		{
 			iTween.ValueTo(gameObject, iTween.Hash(
-				"from", gauge.localScale.x,
+				"from", gauge.fillAmount,
 				"to", scale,
 				"onupdate", "OnScaleChange",
 				"time", time,
@@ -79,18 +82,17 @@ public class UIGaugeBar : MonoBehaviour
 				yield return null;
 			}
 		}
-		OnScaleChange(_current / _max);
 	}
 
 	private void OnScaleChange(float scale)
 	{
-		gauge.localScale = new Vector3(scale, gauge.localScale.y, gauge.localScale.z);
-		text.text = ((int)(max * gauge.localScale.x)).ToString() + "/" + max.ToString();
+		gauge.fillAmount = scale;
+		text.text = ((int)(max * gauge.fillAmount)).ToString() + "/" + max.ToString();
 	}
 
 	private void OnComplete()
 	{
-		gauge.localScale = new Vector3(_current/max, gauge.localScale.y, gauge.localScale.z);
+		gauge.fillAmount = _current/max;
 		text.text = ((int)_current).ToString() + "/" + max.ToString();
 		_complete = true;
 	}

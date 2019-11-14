@@ -122,8 +122,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2598112}
   - component: {fileID: 2598113}
-  - component: {fileID: 2598115}
-  - component: {fileID: 2598114}
   m_Layer: 5
   m_Name: Battle
   m_TagString: Untagged
@@ -160,46 +158,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skill_button_prefab: {fileID: 36117986116111825, guid: 633c9fd30e04d2b4fbe6430cea9374ac,
     type: 3}
+  damage_text_prefab: {fileID: 5308346494842492101, guid: 65020212f5610264a9e18e66d6c2dc4b,
+    type: 3}
   battle_result: 0
---- !u!114 &2598114
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2598111}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d3f9145d98ed4395a798a0bebddf394, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  touchBlockCount: 0
---- !u!61 &2598115
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2598111}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 7.5, y: 13.34}
-  m_EdgeRadius: 0
 --- !u!1 &3914109
 GameObject:
   m_ObjectHideFlags: 0
@@ -722,6 +683,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 224153935741433628, guid: 8ee137f7ba70d4b23963333d52a3c0bd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224153935741433628, guid: 8ee137f7ba70d4b23963333d52a3c0bd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224153935741433628, guid: 8ee137f7ba70d4b23963333d52a3c0bd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224153935741433628, guid: 8ee137f7ba70d4b23963333d52a3c0bd,
         type: 3}

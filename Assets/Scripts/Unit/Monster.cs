@@ -154,9 +154,6 @@ public class Monster : MonoBehaviour
 		iTween.ShakePosition(gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
 		Effect_MonsterDamage effect = damage_effects[damage_effect_index++];
 		damage_effect_index = damage_effect_index % damage_effects.Length;
-		effect.gameObject.SetActive(false);
-		effect.damage = (int)attackResult.damage;
-		effect.critical = attackResult.critical;
 		effect.gameObject.SetActive(true);
 		
 		ui_health.current = data.cur_health;

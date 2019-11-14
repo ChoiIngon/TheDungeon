@@ -19,9 +19,8 @@ public class Buff
 	public int duration;
 	public bool active;
 
-	public Buff(Unit unit, string buffName, int duration, Type buffType)
+	public Buff(string buffName, int duration, Type buffType)
 	{
-		target = unit;
 		buff_name = buffName;
 		buff_type = buffType;
 		this.duration = duration;
@@ -41,7 +40,7 @@ public class Buff
 public class Buff_DOT : Buff
 {
 	public float damage;
-	public Buff_DOT(Unit target, string buffName, int duration, float damage, Type buffType) : base(target, buffName, duration, buffType)
+	public Buff_DOT(string buffName, int duration, float damage, Type buffType) : base(buffName, duration, buffType)
 	{
 		this.duration = duration;
 		this.damage = damage;
@@ -55,6 +54,7 @@ public class Buff_DOT : Buff
 		}
 
 		Unit.AttackResult result = new Unit.AttackResult();
+		result.type = buff_name;
 		result.damage = damage;
 		target.OnDamage(null, result);
 
@@ -62,9 +62,15 @@ public class Buff_DOT : Buff
 	}
 }
 
+/*
+public class Buff_Defense : Buff
+{
+}
+*/
+
 public class Buff_Bleeding : Buff_DOT			   
 {
-    public Buff_Bleeding(Unit target, string buffName, int duration, float damage) : base(target, buffName, duration, damage, Type.Bleeding)
+    public Buff_Bleeding(int duration, float damage) : base("Bleeding", duration, damage, Type.Bleeding)
     {
 	}
 }
