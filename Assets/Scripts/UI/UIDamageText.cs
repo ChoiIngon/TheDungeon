@@ -28,7 +28,7 @@ public class UIDamageText : MonoBehaviour
 	{
 		text.faceColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 		iTween.Stop(gameObject);
-		iTween.MoveBy(gameObject, iTween.Hash("y", 20.0f, "easeType", "easeOutExpo", "time", life));
+		iTween.MoveBy(gameObject, iTween.Hash("y", 40.0f * GameManager.Instance.canvas.scaleFactor, "easeType", "easeOutExpo", "time", life));
 		iTween.ValueTo(gameObject, iTween.Hash("from", 1.0f, "to", 0.0f, "easeType", "easeInCirc", "onupdate", "OnUpdate", "time", life, "oncomplete", "OnComplete", "oncompletetarget", gameObject));
 	}
 

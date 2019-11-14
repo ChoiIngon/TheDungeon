@@ -55,6 +55,7 @@ public class Skill_Attack : Skill
 		float attack = owner.attack + Random.Range(-owner.attack * RANDOM_RANGE, owner.attack * RANDOM_RANGE);
 		float defense = target.defense + Random.Range(-target.defense * RANDOM_RANGE, target.defense * RANDOM_RANGE);
 		result.damage = attack * 100 / (100 + defense);
+		result.damage = (int)result.damage;
 
 		if (owner.critical >= Random.Range(0.0f, 100.0f))
 		{
@@ -121,6 +122,7 @@ public class Skill_Penetrate : Skill
 		float attack = owner.attack + Random.Range(-owner.attack * RANDOM_RANGE, owner.attack * RANDOM_RANGE);
 		float defense = 0.0f; // target.defense + Random.Range(-target.defense * RANDOM_RANGE, target.defense * RANDOM_RANGE);
 		result.damage = attack * 100 / (100 + defense);
+		result.damage = (int)result.damage;
 
 		if (owner.critical >= Random.Range(0.0f, 100.0f))
 		{
@@ -248,6 +250,7 @@ public class Skill_Bleeding : Skill_Attack
 		const float RANDOM_RANGE = 0.1f;
 		float attack = owner.attack + Random.Range(-owner.attack * RANDOM_RANGE, owner.attack * RANDOM_RANGE);
 		attack *= 0.1f;
+		attack = (int)attack;
 		Buff buff = new Buff_Bleeding(5, attack);
 		target.AddBuff(buff);
 	}
