@@ -138,7 +138,7 @@ public class Player : Unit
 
 		if (null != item.skill)
 		{
-			RemoveSkill(item.skill);
+			RemoveSkill(item.skill.meta.skill_id);
 		}
 		
         Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Unequip, new ItemEquipEvent() { curr_item = item, equip_index = equip_index });

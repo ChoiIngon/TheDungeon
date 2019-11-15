@@ -10,7 +10,8 @@ public class Buff
 		Blind = 2,
 		Fear = 3,
 		Bleeding = 4,
-		Max	= 4
+		Runaway = 5,
+		Max	= 5
 	}
 
 	public string buff_name;

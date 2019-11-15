@@ -98,7 +98,6 @@ public class GameManager : Util.MonoSingleton<GameManager>
 
 	/*
 		Instantly changes the amount(transparency) of a camera fade and then returns it back over time.
-	*/
 	public IEnumerator CameraFade(float from, float to, float time)
 	{
 		float amount = to - from;
@@ -116,8 +115,9 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		camera_fade.color = new Color(color.r, color.g, color.b, to);
 		camera_fade.gameObject.SetActive(false);
 	}
+	*/
 
-	public IEnumerator CameraFade(Color from, Color to, float time)
+	public IEnumerator CameraFade(Color from, Color to, float time, bool stay = false)
 	{
 		Color amount = Color.white;
 		amount.r = to.r - from.r;
@@ -140,7 +140,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 			yield return null;
 		}
 		camera_fade.color = to;
-		camera_fade.gameObject.SetActive(false);
+		camera_fade.gameObject.SetActive(stay);
 	}
 
 	public IEnumerator AsyncLoadScene(string sceneName)

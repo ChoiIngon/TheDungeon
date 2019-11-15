@@ -13,7 +13,7 @@ public class SceneDungeon : SceneMain
 	public Dungeon dungeon;	
 	public DungeonBattle battle;
 
-	public Button button_inventory;
+	public Button inventory_button;
 	public Text text_inventory;
 	private Transform ui_player_transform;
 	public UIGaugeBar player_health;
@@ -53,12 +53,12 @@ public class SceneDungeon : SceneMain
 		ui_inventory = UIUtil.FindChild<UIInventory>(transform, "UI/UIInventory");
 		ui_inventory.Init();
 
-		button_inventory = UIUtil.FindChild<Button>(transform, "UI/Dungeon/ButtonInventory");
-		UIUtil.AddPointerUpListener(button_inventory.gameObject, () =>
+		inventory_button = UIUtil.FindChild<Button>(transform, "UI/SideButtons/InventoryButton");
+		UIUtil.AddPointerUpListener(inventory_button.gameObject, () =>
 		{
 			ui_inventory.gameObject.SetActive(true);
 		});
-		text_inventory = UIUtil.FindChild<Text>(transform, "UI/Dungeon/ButtonInventory/Text");
+		text_inventory = UIUtil.FindChild<Text>(transform, "UI/SideButtons/InventoryButton/Text");
 		
 		mini_map = UIUtil.FindChild<UIMiniMap>(transform,		"UI/Dungeon/MiniMap");
 		mini_map.gameObject.SetActive(true);
@@ -166,6 +166,25 @@ public class SceneDungeon : SceneMain
 
 		yield return OnExitUnlock();
 		yield return OnMonser();
+		if (null != dungeon.data.current_room.monster)
+		{
+			if (DungeonBattle.BattleResult.Win == battle.battle_result)
+			{
+				yield return Win(dungeon.data.current_room.monster);
+			}
+			else if (DungeonBattle.BattleResult.Lose == battle.battle_result)
+			{
+				yield return Lose();
+			}
+			else if (DungeonBattle.BattleResult.Runaway == battle.battle_result)
+			{
+				int runawayDirection = (direction + 2) % 4;
+				if (0 <= runawayDirection || Dungeon.WIDTH * Dungeon.HEIGHT > runawayDirection)
+				{
+					Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, runawayDirection);
+				}
+			}
+		}
 		yield return OnTreasureBox();
 		yield return OnShop();		
 		
@@ -189,31 +208,10 @@ public class SceneDungeon : SceneMain
 		AudioManager.Instance.Stop(AudioManager.DUNGEON_BGM);
 		AudioManager.Instance.Play(AudioManager.BATTLE_BGM, true);
 
-		button_inventory.gameObject.SetActive(false);
 		yield return battle.BattleStart(dungeon.data.current_room.monster);
-		button_inventory.gameObject.SetActive(true);
 
 		AudioManager.Instance.Stop(AudioManager.BATTLE_BGM);
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
-		if (DungeonBattle.BattleResult.Win == battle.battle_result)
-		{
-			yield return Win(dungeon.data.current_room.monster);
-		}
-		else if (DungeonBattle.BattleResult.Lose == battle.battle_result)
-		{
-			yield return Lose();
-		}
-
-		/*
-		else if (DungeonBattle.BattleResult.Runaway == battle.battle_result)
-		{
-			int runawayDirection = (direction + 2) % 4;
-			if (0 <= runawayDirection || Dungeon.WIDTH * Dungeon.HEIGHT > runawayDirection)
-			{
-				Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, runawayDirection);
-			}
-		}
-		*/
 	}
 	private IEnumerator Win(Monster.Meta meta)
 	{

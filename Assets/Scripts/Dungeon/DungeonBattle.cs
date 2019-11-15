@@ -14,21 +14,23 @@ public class DungeonBattle : MonoBehaviour
 	public UISkillButton			skill_button_prefab;
 	private Transform				skill_button_spot;
 	private List<UISkillButton>		skill_buttons;
+	private UISkillButton			runaway_button;
 
 	public UIDamageText damage_text_prefab;
 	private List<UIDamageText> damage_texts;
-	//private Button runaway_button;
+
 	private bool battle_pause;
-	private bool runaway;
-	private int runaway_count;
+	
 	private Coroutine show_damage_text_coroutine;
+
 	public enum BattleResult
 	{
-		Lose = 0,
+		Invalid = 0,
 		Win = 1,
-		Runaway = 2
+		Lose = 2,
+		Runaway = 3
 	}
-	public BattleResult			battle_result = BattleResult.Lose; // 0 : lose, 1 : win, 2 : draw
+	public BattleResult			battle_result = BattleResult.Invalid; // 0 : lose, 1 : win, 2 : draw
 	private void Awake()
 	{
 		monster = UIUtil.FindChild<Monster>(transform, "Monster");
@@ -41,11 +43,14 @@ public class DungeonBattle : MonoBehaviour
 		}
 		player_health = UIUtil.FindChild<UIGaugeBar>(transform, "../UI/Player/Health");
 		skill_button_spot = UIUtil.FindChild<Transform>(transform, "../UI/Battle/SkillButtons");
+		runaway_button = UIUtil.FindChild<UISkillButton>(transform, "../UI/SideButtons/RunawayButton");
+		runaway_button.gameObject.SetActive(false);
 		touch_input = GetComponent<TouchInput>();
 		if (null == touch_input)
 		{
 			throw new MissingComponentException("TouchInput");
-		}		Util.EventSystem.Subscribe<Buff>(EventID.Buff_Effect, OnBuffEffect);
+		}
+		Util.EventSystem.Subscribe<Buff>(EventID.Buff_Effect, OnBuffEffect);
 	}
 	void Start()
 	{
@@ -59,31 +64,6 @@ public class DungeonBattle : MonoBehaviour
 		touch_input.AddBlockCount();
 		skill_button_spot.gameObject.SetActive(false);
 		damage_texts = new List<UIDamageText>();
-		/*
-		UIUtil.AddPointerUpListener(runaway_button.gameObject, () =>
-		{
-			touch_input.AddBlockCount();
-			battle_pause = true;
-			float successChance = (GameManager.Instance.player.speed / monster.meta.speed) * 0.25f;
-			if (successChance > Random.Range(0.0f, 1.0f))
-			{
-				runaway = true;
-				battle_pause = false;
-				SceneDungeon.log.Write("You runaway.");
-			}
-			else
-			{
-				battle_pause = false;
-				SceneDungeon.log.Write("You tried to runaway. but failed..");
-				if (0 == --runaway_count)
-				{
-					runaway_button.image.color = Color.gray;
-				}
-			}
-			UIUtil.FindChild<Text>(runaway_button.transform, "Text").text = runaway_count.ToString() + "/" + 3.ToString();
-			touch_input.ReleaseBlockCount();
-		});
-		*/
 	}
 
 	private void OnDestroy()
@@ -97,8 +77,6 @@ public class DungeonBattle : MonoBehaviour
 
 		gameObject.SetActive(true);
 		battle_pause = false;
-		runaway = false;
-		runaway_count = 3;
 
 		InitButtons();
 
@@ -200,21 +178,22 @@ public class DungeonBattle : MonoBehaviour
 			}
 
 			EnableButton(false);
-			if (true == runaway)
-			{
-				break;
-			}
 
 			attacker.OnBattleTurn();
 			defender.OnBattleTurn();
 			attacker.Attack(defender);
 
-			yield return new WaitForSeconds(0.5f);
+			if (0 < attacker.GetBuffCount(Buff.Type.Runaway))
+			{
+				break;
+			}
+
 			if (null == show_damage_text_coroutine)
 			{
 				show_damage_text_coroutine = StartCoroutine(ShowDamageText());
 			}
 			
+			yield return new WaitForSeconds(0.5f);
 			if (monster.data == attacker)
 			{
 				while (monster.animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
@@ -243,17 +222,18 @@ public class DungeonBattle : MonoBehaviour
 		{
 			battle_result = BattleResult.Lose;
 		}
-		else if(true == runaway)
+		else if(0 < GameManager.Instance.player.GetBuffCount(Buff.Type.Runaway))
 		{
 			battle_result = BattleResult.Runaway;
 		}
 		
 		monster.meta = null;
 		monster.data = null;
-		
-		//battle_buttons.gameObject.SetActive(false);
+
+		runaway_button.gameObject.SetActive(false);
 		monster.gameObject.SetActive(false);
-		touch_input.AddBlockCount();		gameObject.SetActive(false);
+		touch_input.AddBlockCount();
+		gameObject.SetActive(false);
 		Util.EventSystem.Publish(EventID.MiniMap_Show);
 	}
 
@@ -272,7 +252,7 @@ public class DungeonBattle : MonoBehaviour
 
 		if (0 < damage_texts.Count)
 		{
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(0.25f);
 		}
 		StartCoroutine(ShowDamageText());
 	}
@@ -290,17 +270,33 @@ public class DungeonBattle : MonoBehaviour
 		}
 	}
 
-	private void CooldownButton(float aps)
+	private void CooldownButton(float turn)
 	{
 		foreach (UISkillButton skillButton in skill_buttons)
 		{
 			Skill skill = skillButton.skill;
 			if (0 < skill.cooltime)
 			{
-				skill.cooltime -= aps;
+				skill.cooltime -= turn;
 				skill.cooltime = Mathf.Max(0.0f, skill.cooltime);
 			}
 			StartCoroutine(skillButton.Refresh());
+		}
+
+		Skill_Runaway runawaySkill = GameManager.Instance.player.skills["SKILL_RUNAWAY"].skill_data as Skill_Runaway;
+		foreach (UISkillButton skillButton in skill_buttons)
+		{
+			if (runawaySkill == skillButton.skill)
+			{
+				skillButton.title.text = runawaySkill.meta.skill_name + "(" + runawaySkill.remain_count + "/" + (runawaySkill.meta as Skill_Runaway.Meta).max_count + ")";
+				if (0 == runawaySkill.remain_count)
+				{
+					skillButton.skill_icon.gameObject.SetActive(false);
+					skillButton.enabled = false;
+				}
+
+				break;
+			}
 		}
 	}
 
@@ -312,6 +308,8 @@ public class DungeonBattle : MonoBehaviour
 			skill_button_spot.GetChild(0).transform.SetParent(null);
 		}
 
+		GameManager.Instance.player.RemoveSkill("SKILL_RUNAWAY");
+		
 		skill_button_spot.gameObject.SetActive(true);
 		skill_buttons = new List<UISkillButton>();
 
@@ -336,57 +334,23 @@ public class DungeonBattle : MonoBehaviour
 			skillButton.transform.SetParent(skill_button_spot, false);
 		}
 
+		runaway_button.gameObject.SetActive(true);
+		GameManager.Instance.player.AddSkill(SkillManager.Instance.FindMeta<Skill_Runaway.Meta>("SKILL_RUNAWAY").CreateInstance());
 		{
-			/*
-			//UIButtonGroup.UIButton button = null;
-			List<HealPotionItem> items = GameManager.Instance.player.inventory.GetItems<HealPotionItem>();
-			if (0 < items.Count)
+			Skill skill = GameManager.Instance.player.skills["SKILL_RUNAWAY"].skill_data;
+			runaway_button.Init(skill, () =>
 			{
-				int itemCount = items.Count;
-				int itemIndex = 0;
-				battle_buttons.AddButton(ResourceManager.Instance.Load<Sprite>("Item/item_potion_red"), (itemCount - itemIndex).ToString() + "/" + itemCount, () => {
-					HealPotionItem item = items[itemIndex++];
-					GameManager.Instance.player.inventory.Remove(item.slot_index);
-					item.Use(GameManager.Instance.player);
-				
-					button.title = (itemCount - itemIndex).ToString() + "/" + itemCount;
-
-					if (0 == itemCount - itemIndex)
-					{
-						button.button.gameObject.SetActive(false);
-					}
-				
-				});
-				//button = battle_buttons.buttons[battle_buttons.buttons.Count - 1];
-			}
-			*/
-		}
-
-		/*
-		skill_buttons["runaway"] = battle_buttons.AddButton(ResourceManager.Instance.Load<Sprite>("Skill/skill_icon_run"), "Runaway", () =>
-		{
-			if (0 == runaway_count)
-			{
-				return;
-			}
-			runaway = false;
-			float successChance = (GameManager.Instance.player.speed / monster.meta.speed) * 0.25f;
-			if (successChance > Random.Range(0.0f, 1.0f))
-			{
-				runaway = true;
-				SceneDungeon.log.Write("You runaway.");
-			}
-			else
-			{
-				if (0 == --runaway_count)
+				if (0 < skill.cooltime)
 				{
-					runaway_button.image.color = Color.gray;
+					SceneDungeon.log.Write("can not use skill");
+					return;
 				}
-				SceneDungeon.log.Write("You trid to runaway. but failed..");
-			}
-
-			battle_pause = false;
-		});
-		*/
+				GameManager.Instance.player.current_skill = skill;
+				skill.cooltime = skill.meta.cooltime;
+				runaway_button.skill_icon.fillAmount = 0.0f;
+				battle_pause = false;
+			});
+			skill_buttons.Add(runaway_button);
+		}
 	}
 }

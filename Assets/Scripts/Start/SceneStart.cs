@@ -57,11 +57,12 @@ public class SceneStart : SceneMain
 			ui_achievement.gameObject.SetActive(true);
 		});
 
-		yield return GameManager.Instance.CameraFade(1.0f, 0.0f, 1.0f);
+		yield return GameManager.Instance.CameraFade(Color.black, new Color(0.0f, 0.0f, 0.0f, 0.0f), 1.0f);
 	}
 
 	private IEnumerator OnStart()
 	{
+		yield return GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.0f, true);
 		start_button.gameObject.SetActive(false);
 		setting_button.gameObject.SetActive(false);
 		reset_button.gameObject.SetActive(false);
@@ -74,7 +75,6 @@ public class SceneStart : SceneMain
 		};
 		yield return GameManager.Instance.ui_npc.Write("npc_farseer", scripts);
 		*/
-		GameManager.Instance.CameraFade(0.0f, 1.0f, 1.0f);
 		yield return GameManager.Instance.AsyncLoadScene("Dungeon");
 		yield return GameManager.Instance.AsyncUnloadScene("Start");
 	}

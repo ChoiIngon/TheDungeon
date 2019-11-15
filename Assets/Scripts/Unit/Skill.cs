@@ -77,7 +77,7 @@ public class Skill_DoubleAttack : Skill_Attack
 			skill_name = "Double Attack";
 			skill_id = "SKILL_DOUBLE_ATTACK";
 			sprite_path = "Skill/skill_icon_stun";
-			cooltime = 10;
+			cooltime = 6;
 			description = "연속 2회 공격한다";
 		}
 		public override Skill CreateInstance()
@@ -130,9 +130,8 @@ public class Skill_Penetrate : Skill
 			result.critical = true;
 		}
 
-		target.OnDamage(owner, result);
 		owner.on_attack?.Invoke(result);
-		target.on_defense?.Invoke(result);
+		target.OnDamage(owner, result);
 	}
 }
 
@@ -280,28 +279,96 @@ public class Skill_Blindness : Skill
 		Buff buff = new Buff("Blindness", 2, Buff.Type.Blind);
 	}
 }
+
+public class Skill_Runaway : Skill
+{
+	public new class Meta : Skill.Meta
+	{
+		public int max_count;
+		public Meta()
+		{
+			skill_name = "Runaway";
+			skill_id = "SKILL_RUNAWAY";
+			sprite_path = "Skill/skill_icon_run";
+			cooltime = 2;
+			max_count = 3;
+			description = "적으로 부터 도망 친다";
+		}
+		public override Skill CreateInstance()
+		{
+			Skill_Runaway skill = new Skill_Runaway();
+			skill.meta = this;
+			return skill;
+		}
+	}
+
+	public int remain_count = 0;
+	public override void OnAttach(Unit owner)
+	{
+		remain_count = (meta as Meta).max_count;
+		base.OnAttach(owner);
+	}
+
+	public override void OnAttack(Unit target)
+	{
+		if (0 >= remain_count)
+		{
+			return;
+		}
+		remain_count -= 1;
+		float successChance = (owner.speed / target.speed) * 0.25f;
+		if (successChance > Random.Range(0.0f, 1.0f))
+		{
+			Buff buff = new Buff("Runaway", 1, Buff.Type.Runaway);
+			owner.AddBuff(buff);
+		}
+	}
+}
 public class SkillManager : Util.Singleton<SkillManager>
 {
-	private List<Skill.Meta> skill_metas = new List<Skill.Meta>();
-
+	private List<Skill.Meta> skill_gacha_metas = new List<Skill.Meta>();
+	private Dictionary<string, Skill.Meta> metas = new Dictionary<string, Skill.Meta>();
 	public void Init()
 	{
-		skill_metas.Add(new Skill_DoubleAttack.Meta());
-		skill_metas.Add(new Skill_Smash.Meta());
-		skill_metas.Add(new Skill_Stun.Meta());
-		skill_metas.Add(new Skill_Penetrate.Meta());
-		skill_metas.Add(new Skill_Bleeding.Meta());
-		//skill_metas.Add(new Skill_Fear.Meta());
-		//skill_metas.Add(new Skill_Blindness.Meta());
+		Skill.Meta meta = null;
+
+		meta = RegisterSkill<Skill_Runaway.Meta>();
+		meta = RegisterSkill<Skill_Attack.Meta>();
+		meta = RegisterSkill<Skill_Bleeding.Meta>();
+		skill_gacha_metas.Add(meta);
+		meta = RegisterSkill<Skill_Blindness.Meta>();
+		skill_gacha_metas.Add(meta);
+		meta = RegisterSkill<Skill_Smash.Meta>();
+		skill_gacha_metas.Add(meta);
+		meta = RegisterSkill<Skill_Stun.Meta>();
+		skill_gacha_metas.Add(meta);
+		meta = RegisterSkill<Skill_Penetrate.Meta>();
+		skill_gacha_metas.Add(meta);
 	}
 
 	public Skill CreateRandomInstance()
 	{
-		if (0 == skill_metas.Count)
+		if (0 == skill_gacha_metas.Count)
 		{
 			return null;
 		}
 
-		return skill_metas[Random.Range(0, skill_metas.Count)].CreateInstance();
+		return skill_gacha_metas[Random.Range(0, skill_gacha_metas.Count)].CreateInstance();
+	}
+
+	public Skill.Meta FindMeta<T>(string id) where T : Skill.Meta
+	{
+	  if (false == metas.ContainsKey(id))
+		{
+			throw new System.Exception("can't find skill meta(id:" + id + ")");
+		}
+		return metas[id] as T;
+	}
+
+	private Skill.Meta RegisterSkill<T>() where T : Skill.Meta, new()
+	{
+		Skill.Meta meta = new T();
+		metas[meta.skill_id] = meta;
+		return meta;		
 	}
 }

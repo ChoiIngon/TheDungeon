@@ -108,7 +108,10 @@ public class Monster : MonoBehaviour
 	{
 		foreach (Transform buff in buff_effects)
 		{
-			buff.gameObject.SetActive(false);
+			if (null != buff)
+			{
+				buff.gameObject.SetActive(false);
+			}
 		}
 		this.meta = meta;
 		this.data = new Unit();
@@ -161,11 +164,17 @@ public class Monster : MonoBehaviour
 
 	private void OnBuffStart(Buff buff)
 	{
-		buff_effects[(int)buff.buff_type - 1].gameObject.SetActive(true);
+		if (null != buff_effects[(int)buff.buff_type - 1])
+		{
+			buff_effects[(int)buff.buff_type - 1].gameObject.SetActive(true);
+		}
 	}
 
 	private void OnBuffEnd(Buff buff)
 	{
-		buff_effects[(int)buff.buff_type - 1].gameObject.SetActive(false);
+		if (null != buff_effects[(int)buff.buff_type - 1])
+		{
+			buff_effects[(int)buff.buff_type - 1].gameObject.SetActive(false);
+		}
 	}
 }

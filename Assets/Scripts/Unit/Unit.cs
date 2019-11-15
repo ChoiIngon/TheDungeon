@@ -108,23 +108,21 @@ public class Unit
 		Debug.Log("add skill(skill_id:" + skill.meta.skill_id + ", ref_count:" + unitSkill.ref_count + ")");
 	}
 
-	public void RemoveSkill(Skill skill)
+	public void RemoveSkill(string skillID)
 	{
-		if (false == skills.ContainsKey(skill.meta.skill_id))
+		if (false == skills.ContainsKey(skillID))
 		{
-			Debug.LogError("can not find unit skill(skill_id:" + skill.meta.skill_id + ")");
+			Debug.LogWarning("can not find unit skill(skill_id:" + skillID + ")");
 			return;
 		}
-		UnitSkill unitSkill = skills[skill.meta.skill_id];
-		Debug.Log("add skill(skill_id:" + skill.meta.skill_id + ", ref_count:" + unitSkill.ref_count + ")");
+		UnitSkill unitSkill = skills[skillID];
 		unitSkill.ref_count -= 1;
-
 		if (0 >= unitSkill.ref_count)
 		{
-			Debug.Log("remove skill");
-			skill.OnDetach();
-			skills.Remove(skill.meta.skill_id);
+			unitSkill.skill_data.OnDetach();
+			skills.Remove(skillID);
 		}
+		Debug.Log("remove skill(skill_id:" + skillID + ", ref_count:" + unitSkill.ref_count + ")");
 	}
 		
 	public int GetBuffCount(Buff.Type type)
