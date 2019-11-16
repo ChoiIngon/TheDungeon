@@ -17,13 +17,13 @@ public class TreasureBox : MonoBehaviour
 		open = UIUtil.FindChild<SpriteRenderer>(transform, "Open");
 
 		lock_icon = UIUtil.FindChild<SpriteRenderer>(transform, "LockIcon");
-		touch_input = lock_icon.GetComponent<TouchInput>();
+		touch_input = GetComponent<TouchInput>();
 		if (null == touch_input)
 		{
 			throw new MissingComponentException("TouchInput");
 		}
 		
-		touch_input.onTouchUp += (Vector3 position) =>
+		touch_input.on_touch_up += (Vector3 position) =>
 		{
 			StartCoroutine(Open());
 		};
@@ -31,6 +31,7 @@ public class TreasureBox : MonoBehaviour
 
 	private void OnEnable()
 	{
+		touch_input.touch_collider.enabled = true;
 		Util.EventSystem.Publish<float>(EventID.MiniMap_Hide, 0.0f);
 	}
 
@@ -56,6 +57,7 @@ public class TreasureBox : MonoBehaviour
 			yield break;
 		}
 
+		touch_input.touch_collider.enabled = false;
 		lock_icon.gameObject.SetActive(false);
 		AudioManager.Instance.Play(AudioManager.BOX_OPEN);
 		StartCoroutine(Util.UITween.Overlap(close, open, time));

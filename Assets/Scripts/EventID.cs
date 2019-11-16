@@ -12,8 +12,7 @@ public class EventID
     public const string Item_Equip = "Item_Equip";
     public const string Item_Unequip = "Item_Unequip";
 
-	public const string Dungeon_Move_Start = "Dungeon_Move_Start";
-	public const string Dungeon_Move_Finish = "Dungeon_Move_Finish";
+	public const string Dungeon_Move = "Dungeon_Move";
 	public const string Dungeon_Battle_Start = "Dungeon_Battle_Start";
 	public const string Dungeon_Battle_Finish = "Dungeon_Battle_Finish";
 	public const string Dungeon_Exit_Unlock = "Dungeon_Exit_Unlock";

@@ -96,27 +96,6 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		ui_textbox.Init();
 	}
 
-	/*
-		Instantly changes the amount(transparency) of a camera fade and then returns it back over time.
-	public IEnumerator CameraFade(float from, float to, float time)
-	{
-		float amount = to - from;
-		Color color = camera_fade.color;
-		camera_fade.color = new Color(color.r, color.g, color.b, from);
-		camera_fade.gameObject.SetActive(true);
-
-		float delta = 0.0f;
-		while (Mathf.Abs(delta) < Mathf.Abs(amount))
-		{
-			delta += amount * (Time.deltaTime / time);
-			camera_fade.color = new Color(color.r, color.g, color.b, from + delta);
-			yield return null;
-		}
-		camera_fade.color = new Color(color.r, color.g, color.b, to);
-		camera_fade.gameObject.SetActive(false);
-	}
-	*/
-
 	public IEnumerator CameraFade(Color from, Color to, float time, bool stay = false)
 	{
 		Color amount = Color.white;

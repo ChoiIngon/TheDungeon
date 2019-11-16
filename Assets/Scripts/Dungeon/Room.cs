@@ -106,12 +106,15 @@ public class Room : MonoBehaviour
 		stair.gameObject.SetActive(false);
 		treasure_box.gameObject.SetActive(false);
 		npc.gameObject.SetActive(false);
+		gameObject.SetActive(false);
 
 		if (null == data)
 		{
-			return;	
+			return;
 		}
 
+		gameObject.SetActive(true);
+		
 		for (int i = 0; i < nexts.Length; i++)
 		{
 			if (null != nexts[i])

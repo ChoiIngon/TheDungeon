@@ -25,8 +25,8 @@ public class SceneDungeon : SceneMain
 	private Text ui_dungeon_level;
 	private Transform coin_spot;
     private Coin coin_prefab;
-	private DungeonMoveButtons move_buttons;
-
+	private DungeonMove dungeon_move;
+	
 	public override IEnumerator Run()
 	{
 		if ("Dungeon" == SceneManager.GetActiveScene().name)
@@ -42,14 +42,14 @@ public class SceneDungeon : SceneMain
 
 		log = UIUtil.FindChild<UILog>(transform, "UI/UILog");
 		log.gameObject.SetActive(true);
+
 		dungeon = UIUtil.FindChild<Dungeon>(transform, "Dungeon");
 		dungeon.gameObject.SetActive(true);
+		dungeon_move = UIUtil.FindChild<DungeonMove>(transform, "Dungeon");
+
 		battle = UIUtil.FindChild<DungeonBattle>(transform, "Battle");
 		battle.gameObject.SetActive(true);
-				
-		move_buttons = UIUtil.FindChild<DungeonMoveButtons>(transform, "UI/MoveButtons");
-		move_buttons.gameObject.SetActive(true);
-
+		
 		ui_inventory = UIUtil.FindChild<UIInventory>(transform, "UI/UIInventory");
 		ui_inventory.Init();
 
@@ -80,7 +80,7 @@ public class SceneDungeon : SceneMain
 
 		shop = UIUtil.FindChild<UIShop>(transform, "UI/UIShop");
 
-		Util.EventSystem.Subscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
+		Util.EventSystem.Subscribe<int>(EventID.Dungeon_Move, OnMove);
 		Util.EventSystem.Subscribe(EventID.Dungeon_Exit_Unlock, () => { StartCoroutine(OnExitUnlock()); });
 		Util.EventSystem.Subscribe(EventID.Dungeon_Map_Reveal, () => { mini_map.RevealMap(); });
 		Util.EventSystem.Subscribe(EventID.Dungeon_Monster_Reveal, () => { mini_map.RevealMonster(); });
@@ -99,7 +99,7 @@ public class SceneDungeon : SceneMain
 
 	private void OnDestroy()
 	{
-		Util.EventSystem.Unsubscribe<int>(EventID.Dungeon_Move_Start, OnMoveStart);
+		Util.EventSystem.Unsubscribe<int>(EventID.Dungeon_Move, OnMove);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Exit_Unlock);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Map_Reveal);
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Monster_Reveal);
@@ -125,8 +125,8 @@ public class SceneDungeon : SceneMain
 		
 		InitDungeon();
 
-		Quest quest = QuestManager.Instance.GetAvailableQuest();
-		quest.Start();
+		//Quest quest = QuestManager.Instance.GetAvailableQuest();
+		//quest.Start();
 	}
 
 	private void InitDungeon()
@@ -134,7 +134,7 @@ public class SceneDungeon : SceneMain
 		StartCoroutine(GameManager.Instance.CameraFade(Color.black, new Color(0.0f, 0.0f, 0.0f, 0.0f), 1.5f));
 		
 		dungeon.Init(++dungeon_level);
-		move_buttons.Init(dungeon.data.current_room);
+		//move_buttons.Init(dungeon.data.current_room);
 		mini_map.Init(dungeon);
 		mini_map.CurrentPosition(dungeon.data.current_room.id);
 
@@ -150,10 +150,6 @@ public class SceneDungeon : SceneMain
 		{
 			yield return null;
 		}
-
-		yield return dungeon.Move(direction);
-		move_buttons.Init(dungeon.data.current_room);
-		mini_map.CurrentPosition(dungeon.data.current_room.id);
 
 		if (Room.Type.Exit == dungeon.data.current_room.type || Room.Type.Lock == dungeon.data.current_room.type)
 		{
@@ -181,7 +177,7 @@ public class SceneDungeon : SceneMain
 				int runawayDirection = (direction + 2) % 4;
 				if (0 <= runawayDirection || Dungeon.WIDTH * Dungeon.HEIGHT > runawayDirection)
 				{
-					Util.EventSystem.Publish<int>(EventID.Dungeon_Move_Start, runawayDirection);
+					yield return dungeon_move.Move(runawayDirection);
 				}
 			}
 		}
@@ -193,9 +189,7 @@ public class SceneDungeon : SceneMain
 			ProgressManager.Instance.Update(ProgressType.MeetNpc, dungeon.data.current_room.npc_sprite_path, 1);
 		}
 
-		move_buttons.Init(dungeon.data.current_room);
 		mini_map.CurrentPosition(dungeon.data.current_room.id);
-		Util.EventSystem.Publish(EventID.Dungeon_Move_Finish);
 	}
 
 	private IEnumerator OnMonser()
@@ -306,7 +300,7 @@ public class SceneDungeon : SceneMain
 	{
 		if (Room.Type.Exit == dungeon.data.current_room.type)
 		{
-			move_buttons.touch_input.AddBlockCount();
+			dungeon_move.touch_input.block_count++;
 			bool yes = false;
 			GameManager.Instance.ui_textbox.on_submit += () => {
 				yes = true;
@@ -317,7 +311,7 @@ public class SceneDungeon : SceneMain
 			{
 				yield return StartCoroutine(GoDown());
 			}
-			move_buttons.touch_input.ReleaseBlockCount();
+			dungeon_move.touch_input.block_count--;
 		}
 	}
 
@@ -376,9 +370,8 @@ public class SceneDungeon : SceneMain
 		}
 	}
 
-	private void OnMoveStart(int direction)
+	private void OnMove(int direction)
 	{
-		StartCoroutine(mini_map.Show(0.5f));
 		StartCoroutine(Move(direction));
 	}
 

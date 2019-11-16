@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 public class Dungeon : MonoBehaviour
 {
 	public const int WIDTH = 5;
 	public const int HEIGHT = 5;
-	
-	private const int EXIT_LOCK_CHANCE = 100;
-	private const float ROOM_SIZE = 7.2f; // walkDistance;
-	private const float ROOM_MOVE_SPEED = 17.0f;
+	public const int EXIT_LOCK_CHANCE = 100;
+	public const float ROOM_SIZE = 7.2f; // walkDistance;
+	public const float ROOM_MOVE_SPEED = 17.0f;
 
 	public int level
 	{
@@ -112,7 +110,7 @@ public class Dungeon : MonoBehaviour
 			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
 				"SELECT monster_id, monster_count, reward_item_chance, reward_item_id FROM meta_dungeon_monster WHERE dungeon_level=" + dungeonLevel
 			);
-
+			
 			while (true == reader.Read())
 			{
 				int monsterCount = reader.GetInt32("monster_count");
@@ -143,7 +141,7 @@ public class Dungeon : MonoBehaviour
 					candidates.RemoveAt(index);
 				}
 			}
-
+			
 			int itemBoxCount = Random.Range(0, 5);
 
 			for (int i = 0; i < itemBoxCount; i++)
@@ -289,6 +287,7 @@ public class Dungeon : MonoBehaviour
 	public Data data;
 	public Room current_room;
 	private readonly Room[] next_rooms = new Room[Room.Max];
+	private SpriteRenderer south_door_arrow;
 	private void Awake()
 	{
 		current_room = UIUtil.FindChild<Room>(transform, "Current");
@@ -296,7 +295,7 @@ public class Dungeon : MonoBehaviour
 		next_rooms[Room.East] = UIUtil.FindChild<Room>(transform, "East");
 		next_rooms[Room.South] = UIUtil.FindChild<Room>(transform, "South");
 		next_rooms[Room.West] = UIUtil.FindChild<Room>(transform, "West");
-
+		south_door_arrow = UIUtil.FindChild<SpriteRenderer>(transform, "SouthDoorArrow");
 		data = new Data();
 	}
 
@@ -314,85 +313,20 @@ public class Dungeon : MonoBehaviour
 		InitRooms();
 	}
 
-	private void InitRooms()
+	public void InitRooms()
 	{
 		transform.position = Vector3.zero;
-
 		current_room.Init(data.current_room);
-
 		for (int i = 0; i < Room.Max; i++)
 		{
 			Room.Data room = data.current_room.nexts[i];
-			if (null != room)
-			{
-				next_rooms[i].Init(room);
-			}
+			next_rooms[i].Init(room);
 		}
-	}
 
-	public IEnumerator Move(int direction)
-	{
-		Room.Data nextRoom = data.current_room.GetNext(direction);
-
-		if (null == nextRoom)
+		south_door_arrow.gameObject.SetActive(false);
+		if (null != data.current_room.nexts[Room.South])
 		{
-			switch (direction)
-			{
-				case Room.North:
-					iTween.PunchPosition(Camera.main.gameObject, new Vector3(0.0f, 0.0f, 1.0f), 0.5f);
-					break;
-				case Room.East:
-					iTween.PunchPosition(Camera.main.gameObject, new Vector3(1.0f, 0.0f, 0.0f), 0.5f);
-					break;
-				case Room.South:
-					iTween.PunchPosition(Camera.main.gameObject, new Vector3(0.0f, 0.0f, -1.0f), 0.5f);
-					break;
-				case Room.West:
-					iTween.PunchPosition(Camera.main.gameObject, new Vector3(-1.0f, 0.0f, 0.5f), 0.5f);
-					break;
-				default:
-					break;
-			}
-			yield break;
+			south_door_arrow.gameObject.SetActive(true);
 		}
-
-		GameManager.Instance.player.move_count++;
-
-		Vector3 position = Vector3.zero;
-		switch (direction)
-		{
-			case Room.North:
-				position = new Vector3(transform.position.x, transform.position.y, transform.position.z - ROOM_SIZE);
-				break;
-			case Room.East:
-				position = new Vector3(transform.position.x - ROOM_SIZE, transform.position.y, transform.position.z);
-				break;
-			case Room.South:
-				position = new Vector3(transform.position.x, transform.position.y, transform.position.z + ROOM_SIZE);
-				break;
-			case Room.West:
-				position = new Vector3(transform.position.x + ROOM_SIZE, transform.position.y, transform.position.z);
-				break;
-			default:
-				break;
-		}
-
-		data.Move(direction);
-		AudioManager.Instance.Play(AudioManager.DUNGEON_WALK, true);
-		move_complete = false;
-		iTween.MoveTo(gameObject, iTween.Hash("position", position, "time", ROOM_SIZE / ROOM_MOVE_SPEED, "easetype", iTween.EaseType.linear, "oncompletetarget", gameObject, "oncomplete", "OnMoveComplete"));
-		while (false == move_complete)
-		{
-			yield return null;
-		}
-		AudioManager.Instance.Stop(AudioManager.DUNGEON_WALK);
-
-		InitRooms();
-	}
-	
-	private bool move_complete = false;
-	void OnMoveComplete()
-	{
-		move_complete = true;
 	}
 }

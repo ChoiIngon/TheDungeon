@@ -34,7 +34,7 @@ public class RoomStair : MonoBehaviour
 
 	private void Start()
 	{
-		touch_input.onTouchUp += (Vector3 position) =>
+		touch_input.on_touch_up += (Vector3 position) =>
 		{
 			touch_input.gameObject.SetActive(false);
 			//touch_collider.enabled = false;

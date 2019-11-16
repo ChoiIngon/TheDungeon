@@ -54,14 +54,14 @@ public class DungeonBattle : MonoBehaviour
 	}
 	void Start()
 	{
-		touch_input.onTouchDown += (Vector3 position) =>
+		touch_input.on_touch_down += (Vector3 position) =>
 		{
 			if (null == monster.meta)
 			{
 				return;
 			}
 		};
-		touch_input.AddBlockCount();
+		touch_input.block_count++;
 		skill_button_spot.gameObject.SetActive(false);
 		damage_texts = new List<UIDamageText>();
 	}
@@ -73,6 +73,7 @@ public class DungeonBattle : MonoBehaviour
 
 	public IEnumerator BattleStart(Monster.Meta monsterMeta)
 	{
+		Util.EventSystem.Publish(EventID.Dungeon_Battle_Start);
 		Util.EventSystem.Publish<float>(EventID.MiniMap_Hide, 0.0f);
 
 		gameObject.SetActive(true);
@@ -139,8 +140,6 @@ public class DungeonBattle : MonoBehaviour
 		};
 
 		yield return StartCoroutine(monster.ColorTo(Color.black, Color.white, 1.0f));
-
-		touch_input.ReleaseBlockCount();
 
 		while (true)
 		{
@@ -232,9 +231,10 @@ public class DungeonBattle : MonoBehaviour
 
 		runaway_button.gameObject.SetActive(false);
 		monster.gameObject.SetActive(false);
-		touch_input.AddBlockCount();
+		touch_input.block_count++;
 		gameObject.SetActive(false);
 		Util.EventSystem.Publish(EventID.MiniMap_Show);
+		Util.EventSystem.Publish<BattleResult>(EventID.Dungeon_Battle_Finish, battle_result);
 	}
 
 	private IEnumerator ShowDamageText()
