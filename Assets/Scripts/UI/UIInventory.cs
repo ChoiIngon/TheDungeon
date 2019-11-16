@@ -21,9 +21,13 @@ public class UIInventory : MonoBehaviour
 
 		close = UIUtil.FindChild<Button>(transform, "BottomBar/Close");
 		item_info = UIUtil.FindChild<UIItemInfo>(transform, "ItemInfo");
-		item_info.Init();
 		player_info = UIUtil.FindChild<UIPlayerInfo>(transform, "PlayerInfo");
-		player_info.Init();
+		player_info.gameObject.SetActive(true);
+	}
+
+	private void Start()
+	{
+		item_info.Init();
 	}
 
 	public void Init()
@@ -84,12 +88,12 @@ public class UIInventory : MonoBehaviour
 
 	private void OnEnable()
 	{
+		Util.EventSystem.Publish(EventID.Inventory_Open);
+		Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
 		if (null != player_info)
 		{
 			player_info.Refresh();
 		}
-		Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
-		Util.EventSystem.Publish(EventID.Inventory_Open);
 	}
 
 	private void OnDisable()
@@ -133,7 +137,6 @@ public class UIInventory : MonoBehaviour
 		}
 		item.gameObject.SetActive(true);
 		item.Init(evt.curr_item);
-		item.outline.active = true;
 		equip_slots[key].SetItem(item);
 	}
 

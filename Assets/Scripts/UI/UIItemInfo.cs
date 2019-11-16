@@ -7,7 +7,7 @@ public class UIItemInfo : MonoBehaviour
 {
 	public enum Action
 	{
-		Drink, Drop, Max
+		Equip_0, Equip_1, Unequip, Drink, Drop, Max
 	}
 
 	public new Text name;
@@ -25,6 +25,9 @@ public class UIItemInfo : MonoBehaviour
 		grade = UIUtil.FindChild<Image>(transform, "Image/ItemGrade");
 
 		buttons = new Button[(int)Action.Max];
+		buttons[(int)Action.Equip_0] = UIUtil.FindChild<Button>(transform, "Actions/Equip_0");
+		buttons[(int)Action.Equip_1] = UIUtil.FindChild<Button>(transform, "Actions/Equip_1");
+		buttons[(int)Action.Unequip] = UIUtil.FindChild<Button>(transform, "Actions/Unequip");
 		buttons[(int)Action.Drink] = UIUtil.FindChild<Button>(transform, "Actions/Drink");
 		buttons[(int)Action.Drop] = UIUtil.FindChild<Button>(transform, "Actions/Drop");
 
@@ -43,9 +46,9 @@ public class UIItemInfo : MonoBehaviour
 
 	public void SetItemIcon(UIItem item)
 	{
-		grade.color = UIItem.GetGradeColor(item.item_data.grade);
+		grade.color = UIItem.GetGradeColor(item.data.grade);
 		icon.color = Color.white;
-		icon.sprite = ResourceManager.Instance.Load<Sprite>(item.item_data.meta.sprite_path);
+		icon.sprite = ResourceManager.Instance.Load<Sprite>(item.data.meta.sprite_path);
 	}
 
 	public void SetItemName(string name)

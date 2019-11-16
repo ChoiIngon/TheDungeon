@@ -51,6 +51,7 @@ public class SceneDungeon : SceneMain
 		battle.gameObject.SetActive(true);
 		
 		ui_inventory = UIUtil.FindChild<UIInventory>(transform, "UI/UIInventory");
+		ui_inventory.gameObject.SetActive(false);
 		ui_inventory.Init();
 
 		inventory_button = UIUtil.FindChild<Button>(transform, "UI/SideButtons/InventoryButton");

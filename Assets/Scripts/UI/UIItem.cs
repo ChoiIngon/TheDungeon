@@ -6,16 +6,14 @@ using UnityEngine.EventSystems;
 
 public class UIItem : MonoBehaviour
 {
-	// Image border;
 	public Image icon = null;
 	public Image grade = null;
     public UIItem clone = null;
 
-    public ImageOutline outline = null;
 	public RectTransform rectTransform;
 	public UIInventory inventory;
 
-    public Item item_data;
+    public Item data;
 
     public virtual void Awake()
 	{
@@ -48,13 +46,12 @@ public class UIItem : MonoBehaviour
 		rectTransform = GetComponent<RectTransform> ();
 		icon = transform.Find ("ItemIcon").GetComponent<Image> ();
         grade = transform.Find("ItemGrade").GetComponent<Image>();
-        outline = transform.Find ("ItemIcon").GetComponent<ImageOutline> ();
-        Init (item_data);
+        Init (data);
 	}
 
 	public virtual void Init(Item item)
 	{
-		this.item_data = item;
+		this.data = item;
 		icon.gameObject.SetActive (false);
 		grade.gameObject.SetActive (false);
         if (null == item)
@@ -81,16 +78,7 @@ public class UIItem : MonoBehaviour
 	
 	private void OnPointerDown(PointerEventData evt)
     {
-		foreach(var slot in inventory.slots)
-		{
-			if(null == slot.item)
-			{
-				continue;
-			}
-
-			slot.item.outline.active = false;
-		}
-        if (null == item_data)
+		if (null == data)
         {
             return;
         }
@@ -103,7 +91,6 @@ public class UIItem : MonoBehaviour
 
 		clone.grade.gameObject.SetActive(true);
 		clone.icon.gameObject.SetActive(true);
-		clone.outline.active = false;
         clone.transform.SetParent(inventory.transform, false);
 
         RectTransform rtClone = clone.rectTransform;
@@ -128,20 +115,19 @@ public class UIItem : MonoBehaviour
 		}
 
 		Vector3 clonePosition = evt.position;
-		clonePosition.y += clone.rectTransform.rect.height * GameManager.Instance.canvas.scaleFactor;
+		clonePosition.y += clone.rectTransform.rect.height * GameManager.Instance.canvas.scaleFactor * 0.5f;
 		clone.transform.position = clonePosition;
     }
 
     private void OnPointerUp(PointerEventData evt)
     {
-		if (null == item_data)
+		if (null == data)
         {
             return;
         }
 
 		icon.color = Color.white;
-		grade.color = GetGradeColor(item_data.grade);
-		outline.active = true;
+		grade.color = GetGradeColor(data.grade);
 
 		do
 		{

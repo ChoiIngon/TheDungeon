@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
-
+using UnityEngine.UI;
 
 public class UIEquipItem : UIItem
 {
     public override void OnSelect()
 	{
-		EquipItem equipItem = (EquipItem)item_data;
+		EquipItem equipItem = (EquipItem)data;
 		foreach(var itr in inventory.equip_slots)
 		{
 			UIEquipSlot slot = itr.Value;
@@ -26,9 +26,9 @@ public class UIEquipItem : UIItem
 
 		inventory.item_info.Clear();
 		inventory.item_info.SetItemIcon(this);
-		inventory.item_info.SetItemName(item_data.meta.name + "\n" + "<size=" + (inventory.item_info.name.fontSize * 0.8) + ">Lv." + equipItem.level + "</size>");
+		inventory.item_info.SetItemName(data.meta.name + "\n" + "<size=" + (inventory.item_info.name.fontSize * 0.8) + ">Lv." + equipItem.level + "</size>");
 
-		string description = item_data.meta.description + "\n\n";
+		string description = data.meta.description + "\n\n";
 
 		foreach (Stat.Data stat in equipItem.main_stat.GetStats())
 		{
@@ -44,14 +44,76 @@ public class UIEquipItem : UIItem
 
 		if (null != equipItem.skill)
 		{
-			description += "<color=red> " + equipItem.skill.meta.description + "</color>";
+			description += "<color=red> " + equipItem.skill.meta.description + "</color>\n";
 		}
 		inventory.item_info.SetDescription(description);
+
+		Text text = UIUtil.FindChild<Text>(inventory.item_info.buttons[(int)UIItemInfo.Action.Equip_0].transform, "Text");
+		if (EquipItem.Part.Hand == equipItem.part || EquipItem.Part.Ring == equipItem.part)
+		{
+			text.text = "[Equip:L]";
+		}
+		else
+		{
+			text.text = "[Equip]";
+		}
+		inventory.item_info.SetButtonListener(UIItemInfo.Action.Equip_0, () =>
+		{
+			if (0 <= equipItem.slot_index)
+			{
+				GameManager.Instance.player.inventory.Remove(equipItem.slot_index);
+			}
+			if (true == equipItem.equip)
+			{
+				GameManager.Instance.player.Unequip(equipItem.part, equipItem.equip_index);
+			}
+			EquipItem prevItem = GameManager.Instance.player.Equip(equipItem, 0);
+			if (null != prevItem)
+			{
+				GameManager.Instance.player.inventory.Add(prevItem);
+			}
+			OnSelect();
+			foreach (var itr in inventory.equip_slots)
+			{
+				itr.Value.SetActiveGuideArrow(false);
+			}
+		});
+		inventory.item_info.SetButtonListener(UIItemInfo.Action.Equip_1, () =>
+		{
+			if (0 <= equipItem.slot_index)
+			{
+				GameManager.Instance.player.inventory.Remove(equipItem.slot_index);
+			}
+			if (true == equipItem.equip)
+			{
+				GameManager.Instance.player.Unequip(equipItem.part, equipItem.equip_index);
+			}
+			EquipItem prevItem = GameManager.Instance.player.Equip(equipItem, 1);
+			if (null != prevItem)
+			{
+				GameManager.Instance.player.inventory.Add(prevItem);
+			}
+			OnSelect();
+			foreach (var itr in inventory.equip_slots)
+			{
+				itr.Value.SetActiveGuideArrow(false);
+			}
+		});
+		inventory.item_info.SetButtonListener(UIItemInfo.Action.Unequip, () =>
+		{
+			EquipItem item = GameManager.Instance.player.Unequip(equipItem.part, equipItem.equip_index);
+			GameManager.Instance.player.inventory.Add(item);
+			OnSelect();
+			foreach (var itr in inventory.equip_slots)
+			{
+				itr.Value.SetActiveGuideArrow(false);
+			}
+		});
 		inventory.item_info.SetButtonListener(UIItemInfo.Action.Drop, () =>
 		{
-			if (0 <= item_data.slot_index)
+			if (0 <= data.slot_index)
 			{
-				GameManager.Instance.player.inventory.Remove(item_data.slot_index);
+				GameManager.Instance.player.inventory.Remove(data.slot_index);
 			}
 			else
 			{
@@ -59,6 +121,39 @@ public class UIEquipItem : UIItem
 			}
 			inventory.item_info.Clear();
 		});
+
+		if (true == equipItem.equip)
+		{
+			if (EquipItem.Part.Hand == equipItem.part || EquipItem.Part.Ring == equipItem.part)
+			{
+				if (0 == equipItem.equip_index)
+				{
+					inventory.item_info.buttons[(int)UIItemInfo.Action.Equip_0].gameObject.SetActive(false);
+				}
+				if (1 == equipItem.equip_index)
+				{
+					inventory.item_info.buttons[(int)UIItemInfo.Action.Equip_1].gameObject.SetActive(false);
+				}
+			}
+			else
+			{
+				inventory.item_info.buttons[(int)UIItemInfo.Action.Equip_0].gameObject.SetActive(false);
+				inventory.item_info.buttons[(int)UIItemInfo.Action.Equip_1].gameObject.SetActive(false);
+			}
+			inventory.item_info.buttons[(int)UIItemInfo.Action.Drop].gameObject.SetActive(false);
+		}
+		else
+		{
+			if (EquipItem.Part.Hand == equipItem.part || EquipItem.Part.Ring == equipItem.part)
+			{
+				// 
+			}
+			else
+			{
+				inventory.item_info.buttons[(int)UIItemInfo.Action.Equip_1].gameObject.SetActive(false);
+			}
+			inventory.item_info.buttons[(int)UIItemInfo.Action.Unequip].gameObject.SetActive(false);
+		}
 	}
 
 	public override void OnEquipSlotDrop(UIEquipSlot slot)
@@ -68,7 +163,7 @@ public class UIEquipItem : UIItem
 			itr.Value.SetActiveGuideArrow(false);
 		}
 
-		EquipItem equipItemData = (EquipItem)item_data;
+		EquipItem equipItemData = (EquipItem)data;
 		if (slot.part != equipItemData.part)
 		{
 			return;
@@ -78,6 +173,10 @@ public class UIEquipItem : UIItem
 		EquipItem unequipItem = null;
 		if (null != slot.item)
 		{
+			if (slot.item.data == data)
+			{
+				return;
+			}
 			unequipItem = GameManager.Instance.player.Unequip(slot.part, slot.equip_index);
 			GameManager.Instance.player.inventory.Add(unequipItem);
 		}
@@ -91,20 +190,26 @@ public class UIEquipItem : UIItem
 		{
 			GameManager.Instance.player.inventory.Remove(equipItemData.slot_index);
 		}
-		GameManager.Instance.player.Equip((EquipItem)item_data, slot.equip_index);
+		GameManager.Instance.player.Equip((EquipItem)data, slot.equip_index);
 
-		string changedStat = DiffStat(prev, GameManager.Instance.player.stats);
-
-		if (null != equipItemData.skill)
+		/*
+		if (false == alreadyEquiped)
 		{
-			changedStat += "<color=white> " + equipItemData.skill.meta.description + "</color>";
-		}
+			string changedStat = DiffStat(prev, GameManager.Instance.player.stats);
 
-		if (null != unequipItem && null != unequipItem.skill)
-		{
-			changedStat += "<color=red> " + unequipItem.skill.meta.description + "</color>";
+			if (null != equipItemData.skill)
+			{
+				changedStat += "<color=white> " + equipItemData.skill.meta.description + "</color>";
+			}
+
+			if (null != unequipItem && null != unequipItem.skill)
+			{
+				changedStat += "<color=red> " + unequipItem.skill.meta.description + "</color>";
+			}
+			GameManager.Instance.ui_textbox.AsyncWrite(changedStat, false);
 		}
-		GameManager.Instance.ui_textbox.AsyncWrite(changedStat, false);
+		*/
+		OnSelect();
 	}
 
 	public override void OnItemSlotDrop(UIItemSlot slot)
@@ -114,7 +219,7 @@ public class UIEquipItem : UIItem
 			itr.Value.SetActiveGuideArrow(false);
 		}
 
-		EquipItem equipItem = (EquipItem)item_data;
+		EquipItem equipItem = (EquipItem)data;
 		if (true == equipItem.equip)
 		{
 			Stat prevStat = GameManager.Instance.player.stats + new Stat();
@@ -143,11 +248,12 @@ public class UIEquipItem : UIItem
 			}
 			GameManager.Instance.player.inventory.Add(equipItem, slot.slot_index);
 		}
+		OnSelect();
 	}
 
 	public override void OnDrop()
 	{
-		EquipItem equipItem = (EquipItem)item_data;
+		EquipItem equipItem = (EquipItem)data;
 		if (true == equipItem.equip)
 		{
 			foreach (var itr in inventory.equip_slots)
@@ -166,6 +272,7 @@ public class UIEquipItem : UIItem
 			}
 			GameManager.Instance.ui_textbox.AsyncWrite(changedStat, false);
 		}
+		OnSelect();
 	}
 
 	private string DiffStat(Stat prev, Stat after)

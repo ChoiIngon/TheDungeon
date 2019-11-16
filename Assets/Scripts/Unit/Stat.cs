@@ -65,7 +65,7 @@ public class Stat
 		public string description;
 		public string ToString(float value)
 		{
-			string valueText = value.ToString();
+			string valueText = (Mathf.Round(value * 100.0f)/100).ToString();
 			if (0.0f <= value)
 			{
 				valueText = "+" + valueText;

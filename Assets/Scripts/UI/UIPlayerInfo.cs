@@ -12,16 +12,15 @@ public class UIPlayerInfo : MonoBehaviour
 	public Text defense;
 	public Text health;
 
-	public void Init()
+	private void Awake()
 	{
 		level = UIUtil.FindChild<Text>(transform, "Level/Value");
 		health = UIUtil.FindChild<Text>(transform, "Health/Value");
-        attack = UIUtil.FindChild<Text>(transform, "Stats/Attack/Value");
+		attack = UIUtil.FindChild<Text>(transform, "Stats/Attack/Value");
 		critical = UIUtil.FindChild<Text>(transform, "Stats/Critical/Value");
 		speed = UIUtil.FindChild<Text>(transform, "Stats/Speed/Value");
 		defense = UIUtil.FindChild<Text>(transform, "Stats/Defense/Value");
-		Refresh();
-    }
+	}
 
     public void Refresh()
     {
