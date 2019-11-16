@@ -7,6 +7,7 @@ public class AudioManager : Util.MonoSingleton<AudioManager>
 	public const string DUNGEON_BGM = "dungeon_bgm";
 	public const string DUNGEON_WALK = "dungeon_walk";
 	public const string BATTLE_BGM = "battle_bgm";
+	public const string BATTLE_ATTACK = "battle_attack";
 	public const string TEXTBOX_TYPE = "textbox_type";
 	public const string DOOR_OPEN = "door_open";
 	public const string BOX_OPEN = "box_open";

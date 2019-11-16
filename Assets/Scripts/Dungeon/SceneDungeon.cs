@@ -146,11 +146,7 @@ public class SceneDungeon : SceneMain
 
 	private IEnumerator Move(int direction)
 	{
-		while (0 < coin_spot.childCount)
-		{
-			yield return null;
-		}
-
+		mini_map.CurrentPosition(dungeon.data.current_room.id);
 		if (Room.Type.Exit == dungeon.data.current_room.type || Room.Type.Lock == dungeon.data.current_room.type)
 		{
 			StartCoroutine(mini_map.Hide(0.5f, 0.3f));
@@ -181,7 +177,7 @@ public class SceneDungeon : SceneMain
 				}
 			}
 		}
-		yield return OnTreasureBox();
+		OnTreasureBox();
 		yield return OnShop();		
 		
 		if ("" != dungeon.data.current_room.npc_sprite_path)
@@ -209,6 +205,8 @@ public class SceneDungeon : SceneMain
 	}
 	private IEnumerator Win(Monster.Meta meta)
 	{
+		dungeon_move.touch_input.block_count++;
+		dungeon.data.current_room.monster = null;
 		GameManager.Instance.player.enemy_slain_count++;
 
 		int prevPlayerLevel = GameManager.Instance.player.level;
@@ -251,8 +249,9 @@ public class SceneDungeon : SceneMain
 		}
 
 		yield return GameManager.Instance.ui_textbox.Write(battleResult);
-		dungeon.data.current_room.monster = null;
+		
 		mini_map.CurrentPosition(dungeon.data.current_room.id);
+		dungeon_move.touch_input.block_count--;
 	}
 	private IEnumerator Lose()
 	{
@@ -274,13 +273,12 @@ public class SceneDungeon : SceneMain
 		yield return GameManager.Instance.AsyncUnloadScene("Dungeon");
 	}
 
-	private IEnumerator OnTreasureBox()
+	private void OnTreasureBox()
 	{
 		if (null == dungeon.data.current_room.monster && null != dungeon.data.current_room.item)
 		{
 			dungeon.current_room.treasure_box.Show(dungeon.data.current_room);
 		}
-		yield break;
 	}
 	private IEnumerator GoDown()
 	{
@@ -415,6 +413,7 @@ public class SceneDungeon : SceneMain
 
 	public void OnShowMiniMap()
 	{
+		mini_map.CurrentPosition(dungeon.data.current_room.id);
 		StartCoroutine(mini_map.Show(0.5f));
 	}
 	public void OnHideMiniMap(float alpha)

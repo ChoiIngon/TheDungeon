@@ -297,6 +297,15 @@ public class Dungeon : MonoBehaviour
 		next_rooms[Room.West] = UIUtil.FindChild<Room>(transform, "West");
 		south_door_arrow = UIUtil.FindChild<SpriteRenderer>(transform, "SouthDoorArrow");
 		data = new Data();
+
+		Util.EventSystem.Subscribe(EventID.Dungeon_Battle_Start, OnDungeonBattleStart);
+		Util.EventSystem.Subscribe<DungeonBattle.BattleResult>(EventID.Dungeon_Battle_Finish, OnDungeonBattleFinish);
+	}
+
+	private void OnDestroy()
+	{
+		Util.EventSystem.Unsubscribe(EventID.Dungeon_Battle_Start, OnDungeonBattleStart);
+		Util.EventSystem.Unsubscribe<DungeonBattle.BattleResult>(EventID.Dungeon_Battle_Finish, OnDungeonBattleFinish);
 	}
 
 	private void Start()
@@ -324,6 +333,19 @@ public class Dungeon : MonoBehaviour
 		}
 
 		south_door_arrow.gameObject.SetActive(false);
+		if (null != data.current_room.nexts[Room.South])
+		{
+			south_door_arrow.gameObject.SetActive(true);
+		}
+	}
+
+	private void OnDungeonBattleStart()
+	{
+		south_door_arrow.gameObject.SetActive(false);
+	}
+
+	private void OnDungeonBattleFinish(DungeonBattle.BattleResult result)
+	{
 		if (null != data.current_room.nexts[Room.South])
 		{
 			south_door_arrow.gameObject.SetActive(true);

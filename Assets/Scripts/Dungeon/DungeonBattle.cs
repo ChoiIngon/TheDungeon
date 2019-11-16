@@ -84,7 +84,7 @@ public class DungeonBattle : MonoBehaviour
 		monster.gameObject.SetActive(true);
 		monster.Init(monsterMeta);
 		// attack per second
-		float playerAPS = GameManager.Instance.player.speed / monster.meta.speed;
+		float playerAPS = Mathf.Max(2.1f, GameManager.Instance.player.speed / monster.meta.speed);
 		float monsterAPS = 1.0f;
 		float playerTurn = playerAPS;
 		float monsterTurn = monsterAPS;
@@ -93,6 +93,7 @@ public class DungeonBattle : MonoBehaviour
 		GameManager.Instance.player.on_attack = null;
 		GameManager.Instance.player.on_attack += (Unit.AttackResult result) =>
 		{
+			AudioManager.Instance.Play(AudioManager.BATTLE_ATTACK, false);
 			SceneDungeon.log.Write(GameText.GetText("DUNGEON/BATTLE/HIT", "You", monster.meta.name) + "(-" + (int)result.damage + ")");
 		};
 		GameManager.Instance.player.on_defense = null;
@@ -122,6 +123,7 @@ public class DungeonBattle : MonoBehaviour
 		monster.data.on_attack = null;
 		monster.data.on_attack += (Unit.AttackResult result) =>
 		{
+			AudioManager.Instance.Play(AudioManager.BATTLE_ATTACK, false);
 			monster.animator.SetTrigger("Attack");
 			SceneDungeon.log.Write("<color=red>" + GameText.GetText("DUNGEON/BATTLE/HIT", monster.meta.name, "You") + "(-" + (int)result.damage + ")</color>");
 		};
@@ -145,11 +147,12 @@ public class DungeonBattle : MonoBehaviour
 		{
 			Unit attacker = null;
 			Unit defender = null;
+			Debug.Log("monster:" + monsterTurn + ", player:" + playerTurn);
 			if (monsterTurn < playerTurn)
 			{
 				attacker = GameManager.Instance.player;
 				defender = monster.data;
-				monsterTurn += monsterAPS + Random.Range(1.0f, 2.0f);
+				monsterTurn += monsterAPS + Random.Range(0.8f, 1.6f);
 
 				battle_pause = true;
 				EnableButton(true);

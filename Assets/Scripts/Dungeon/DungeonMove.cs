@@ -26,7 +26,7 @@ public class DungeonMove : MonoBehaviour
 		}
 
 		Util.EventSystem.Subscribe(EventID.Dungeon_Battle_Start, () => { touch_input.block_count++; });
-		Util.EventSystem.Subscribe(EventID.Dungeon_Battle_Finish, () => { touch_input.block_count--; });
+		Util.EventSystem.Subscribe<DungeonBattle.BattleResult>(EventID.Dungeon_Battle_Finish, (DungeonBattle.BattleResult result) => { touch_input.block_count--; });
 		Util.EventSystem.Subscribe(EventID.Shop_Open, () => { touch_input.block_count++; });
 		Util.EventSystem.Subscribe(EventID.Shop_Close, () => { touch_input.block_count--; });
 		Util.EventSystem.Subscribe(EventID.Inventory_Open, () => { touch_input.block_count++; });
@@ -106,7 +106,7 @@ public class DungeonMove : MonoBehaviour
 	private void OnDestroy()
 	{
 		Util.EventSystem.Unsubscribe(EventID.Dungeon_Battle_Start);
-		Util.EventSystem.Unsubscribe(EventID.Dungeon_Battle_Finish);
+		Util.EventSystem.Unsubscribe<DungeonBattle.BattleResult>(EventID.Dungeon_Battle_Finish);
 		Util.EventSystem.Unsubscribe(EventID.Shop_Open);
 		Util.EventSystem.Unsubscribe(EventID.Shop_Close);
 		Util.EventSystem.Unsubscribe(EventID.Inventory_Open);
