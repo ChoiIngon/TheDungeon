@@ -76,7 +76,7 @@ public class Monster : MonoBehaviour
 			damage_effects[i] = GameObject.Instantiate<Effect_MonsterDamage>(UIUtil.FindChild<Effect_MonsterDamage>(damage_effect_spot, "Effect_MonsterDamage"));
 			damage_effects[i].transform.SetParent(damage_effect_spot);
 		}
-		death_effect_prefab = UIUtil.FindChild<Transform>(damage_effect_spot, "Effect_MonsterDeath/BloodDroplets");
+		death_effect_prefab = UIUtil.FindChild<Transform>(damage_effect_spot, "Effect_MonsterDeath");
 	}
 
 	private void Start()
@@ -140,11 +140,14 @@ public class Monster : MonoBehaviour
 		return Util.UITween.ColorTo(sprite, to, time);
 	}
 
-	public void Die()
+	public IEnumerator Die()
 	{
+		sprite.enabled = false;
 		Transform deathEffect = GameObject.Instantiate<Transform>(death_effect_prefab);
+		deathEffect.transform.SetParent(damage_effect_spot);
 		deathEffect.gameObject.SetActive(true);
-		Object.Destroy(deathEffect.gameObject, 1.0f);
+		yield return new WaitForSeconds(1.0f);
+		Object.Destroy(deathEffect.gameObject);
 		ui_root.gameObject.SetActive(false);
 	}
 

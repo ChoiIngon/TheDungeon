@@ -101,15 +101,15 @@ public class DungeonBattle : MonoBehaviour
 		{
 			StartCoroutine(GameManager.Instance.CameraFade(Color.white, new Color(1.0f, 1.0f, 1.0f, 0.0f), 0.1f));
 			iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
-			Effect_PlayerDamage effectPlayerDamage = player_damage_effects[playerDamageEffectIndex++];
-			playerDamageEffectIndex = playerDamageEffectIndex % player_damage_effects.Length;
-			effectPlayerDamage.gameObject.SetActive(false);
-			effectPlayerDamage.transform.position = new Vector3(
-				Random.Range(Screen.width / 2 - Screen.width / 2 * 0.6f, Screen.width / 2 + Screen.width / 2 * 0.6f),
-				Random.Range(Screen.height / 2 - Screen.height / 2 * 0.3f, Screen.height / 2 + Screen.height / 2 * 0.9f),
-				0.0f
-			);
-			effectPlayerDamage.gameObject.SetActive(true);
+			//Effect_PlayerDamage effectPlayerDamage = player_damage_effects[playerDamageEffectIndex++];
+			//playerDamageEffectIndex = playerDamageEffectIndex % player_damage_effects.Length;
+			//effectPlayerDamage.gameObject.SetActive(false);
+			//effectPlayerDamage.transform.position = new Vector3(
+			//	Random.Range(Screen.width / 2 - Screen.width / 2 * 0.6f, Screen.width / 2 + Screen.width / 2 * 0.6f),
+			//	Random.Range(Screen.height / 2 - Screen.height / 2 * 0.3f, Screen.height / 2 + Screen.height / 2 * 0.9f),
+			//	0.0f
+			//);
+			//effectPlayerDamage.gameObject.SetActive(true);
 
 			UIDamageText damageText = GameObject.Instantiate<UIDamageText>(damage_text_prefab);
 			damageText.gameObject.SetActive(false);
@@ -217,7 +217,7 @@ public class DungeonBattle : MonoBehaviour
 
 		if (0.0f >= monster.data.cur_health)
 		{
-			monster.Die();
+			yield return monster.Die();
 			battle_result = BattleResult.Win;
 		}
 		else if (0.0f >= GameManager.Instance.player.cur_health)
