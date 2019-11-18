@@ -49,29 +49,9 @@ public class UISkillButton : MonoBehaviour
 		this.title.text = title;
 	}
 
-	public IEnumerator Refresh()
+	public void Cooldown()
 	{
-		skill_icon.fillAmount = 0.0f;
-		float fillAmount = 1.0f;
-
-		if (0.0f >= skill.cooltime)
-		{
-			outline.active = true;
-			skill_icon.fillAmount = fillAmount;
-			yield break;
-		}
-
-		if (0.0f < skill.meta.cooltime)
-		{
-			fillAmount = ((float)skill.meta.cooltime - skill.cooltime) / skill.meta.cooltime;
-		}
-
-		while (skill_icon.fillAmount < fillAmount)
-		{
-			skill_icon.fillAmount += fillAmount * 0.2f;
-			yield return new WaitForSeconds(0.1f);
-		}
-		skill_icon.fillAmount = fillAmount;
+		skill_icon.fillAmount = ((float)skill.meta.cooltime - skill.cooltime) / skill.meta.cooltime;
 		outline.active = false;
 		if (1.0f <= skill_icon.fillAmount + 0.00001f)
 		{

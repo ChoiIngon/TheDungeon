@@ -34,7 +34,7 @@ public class Monster : MonoBehaviour
 	public UIGaugeBar ui_health;
 
 	public Animator animator;
-	private Transform damage_effect_spot;
+	public Transform damage_effect_spot;
 	public Effect_MonsterDamage[] damage_effects;
 	public int damage_effect_index;
 	public Transform death_effect_prefab;
@@ -128,6 +128,7 @@ public class Monster : MonoBehaviour
 		ui_name.text = meta.name;
 		ui_health.max = data.max_health;
 		ui_health.current = data.cur_health;
+		sprite.enabled = true;
 		sprite.sprite = ResourceManager.Instance.Load<Sprite>(meta.sprite_path);
 		sprite.material.shader = shaderOriginal;
 

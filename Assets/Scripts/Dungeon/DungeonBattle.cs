@@ -5,7 +5,8 @@ using System.Collections.Generic;
 
 public class DungeonBattle : MonoBehaviour
 {
-	private TouchInput			touch_input;	private Monster				monster;
+	private TouchInput			touch_input;
+	private Monster				monster;
 
 	private UIGaugeBar			player_health;
 	private Transform			player_damage_effect_spot;
@@ -15,6 +16,8 @@ public class DungeonBattle : MonoBehaviour
 	private Transform				skill_button_spot;
 	private List<UISkillButton>		skill_buttons;
 	private UISkillButton			runaway_button;
+	private float second_per_turn = 0.5f;
+	private int turn_count = 0;
 
 	public UIDamageText damage_text_prefab;
 	private List<UIDamageText> damage_texts;
@@ -50,7 +53,6 @@ public class DungeonBattle : MonoBehaviour
 		{
 			throw new MissingComponentException("TouchInput");
 		}
-		Util.EventSystem.Subscribe<Buff>(EventID.Buff_Effect, OnBuffEffect);
 	}
 	void Start()
 	{
@@ -64,32 +66,47 @@ public class DungeonBattle : MonoBehaviour
 		touch_input.block_count++;
 		skill_button_spot.gameObject.SetActive(false);
 		damage_texts = new List<UIDamageText>();
+
+		Util.EventSystem.Subscribe<Buff>(EventID.Buff_Effect, OnBuffEffect);
+		Util.EventSystem.Subscribe(EventID.Inventory_Open, OnInventoryOpen);
+		Util.EventSystem.Subscribe(EventID.Inventory_Close, OnInventoryClose);
+	}
+
+	private void OnEnable()
+	{
+		battle_pause = true;
 	}
 
 	private void OnDestroy()
 	{
+		Util.EventSystem.Unsubscribe(EventID.Inventory_Open, OnInventoryOpen);
+		Util.EventSystem.Unsubscribe(EventID.Inventory_Close, OnInventoryClose);
 		Util.EventSystem.Unsubscribe<Buff>(EventID.Buff_Effect, OnBuffEffect);
 	}
 
+	private float player_attack_per_second;
+	private float player_preemptive_score;
+	private float enemy_attack_per_second;
+	private float enemy_preemptive_score;
+
 	public IEnumerator BattleStart(Monster.Meta monsterMeta)
 	{
+		turn_count = 0;
+		battle_pause = true;
 		Util.EventSystem.Publish(EventID.Dungeon_Battle_Start);
 		Util.EventSystem.Publish<float>(EventID.MiniMap_Hide, 0.0f);
 
-		gameObject.SetActive(true);
-		battle_pause = false;
-
-		InitButtons();
+		player_attack_per_second = Mathf.Max(2.1f, GameManager.Instance.player.speed / monsterMeta.speed);
+		enemy_attack_per_second = 1.0f;
+		player_preemptive_score = player_attack_per_second;
+		enemy_preemptive_score = enemy_attack_per_second;
+		battle_result = BattleResult.Invalid;
 
 		monster.gameObject.SetActive(true);
 		monster.Init(monsterMeta);
 		// attack per second
-		float playerAPS = Mathf.Max(2.1f, GameManager.Instance.player.speed / monster.meta.speed);
-		float monsterAPS = 1.0f;
-		float playerTurn = playerAPS;
-		float monsterTurn = monsterAPS;
-		int playerDamageEffectIndex = 0;
 
+		InitButtons();
 		GameManager.Instance.player.on_attack = null;
 		GameManager.Instance.player.on_attack += (Unit.AttackResult result) =>
 		{
@@ -101,15 +118,14 @@ public class DungeonBattle : MonoBehaviour
 		{
 			StartCoroutine(GameManager.Instance.CameraFade(Color.white, new Color(1.0f, 1.0f, 1.0f, 0.0f), 0.1f));
 			iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
-			//Effect_PlayerDamage effectPlayerDamage = player_damage_effects[playerDamageEffectIndex++];
-			//playerDamageEffectIndex = playerDamageEffectIndex % player_damage_effects.Length;
-			//effectPlayerDamage.gameObject.SetActive(false);
-			//effectPlayerDamage.transform.position = new Vector3(
-			//	Random.Range(Screen.width / 2 - Screen.width / 2 * 0.6f, Screen.width / 2 + Screen.width / 2 * 0.6f),
-			//	Random.Range(Screen.height / 2 - Screen.height / 2 * 0.3f, Screen.height / 2 + Screen.height / 2 * 0.9f),
-			//	0.0f
-			//);
-			//effectPlayerDamage.gameObject.SetActive(true);
+			Effect_PlayerDamage effectPlayerDamage = player_damage_effects[Random.Range(0, player_damage_effects.Length)];
+			effectPlayerDamage.gameObject.SetActive(false);
+			effectPlayerDamage.transform.position = new Vector3(
+				Random.Range(Screen.width / 2 - Screen.width / 2 * 0.6f, Screen.width / 2 + Screen.width / 2 * 0.6f),
+				Random.Range(Screen.height / 2 - Screen.height / 2 * 0.3f, Screen.height / 2 + Screen.height / 2 * 0.9f),
+				0.0f
+			);
+			effectPlayerDamage.gameObject.SetActive(true);
 
 			UIDamageText damageText = GameObject.Instantiate<UIDamageText>(damage_text_prefab);
 			damageText.gameObject.SetActive(false);
@@ -132,101 +148,37 @@ public class DungeonBattle : MonoBehaviour
 		monster.data.on_defense += (Unit.AttackResult result) =>
 		{
 			StartCoroutine(monster.OnDamage(result));
-			UIDamageText damageText = GameObject.Instantiate<UIDamageText>(damage_text_prefab);
-			damageText.gameObject.SetActive(false);
-			damageText.Init(result);
-			damageText.transform.SetParent(monster.ui_health.transform, false);
-			damageText.transform.localPosition = new Vector3(monster.ui_health.rect.x + monster.ui_health.rect.width * monster.ui_health.gauge.fillAmount, monster.ui_health.rect.y + monster.ui_health.rect.height / 2, 0.0f);
-			damage_texts.Add(damageText);
+			{
+				UIDamageText damageText = GameObject.Instantiate<UIDamageText>(damage_text_prefab);
+				damageText.gameObject.SetActive(false);
+				damageText.Init(result);
+				damageText.transform.SetParent(monster.ui_health.transform, false);
+				damageText.transform.localPosition = new Vector3(monster.ui_health.rect.x + monster.ui_health.rect.width * monster.ui_health.gauge.fillAmount, monster.ui_health.rect.y + monster.ui_health.rect.height / 2, 0.0f);
+				damage_texts.Add(damageText);
+			}
+			{
+				UIDamageText damageText = GameObject.Instantiate<UIDamageText>(damage_text_prefab);
+				damageText.gameObject.SetActive(false);
+				damageText.life_time = 2.5f;
+				damageText.Init(result);
+				damageText.transform.SetParent(monster.damage_effect_spot, false);
+				damageText.transform.localPosition = Vector3.zero;
+				damage_texts.Add(damageText);
+			}
 			monster.ui_health.current = monster.data.cur_health;
 		};
 
 		yield return StartCoroutine(monster.ColorTo(Color.black, Color.white, 1.0f));
+		battle_pause = false;
 
-		while (true)
+		while (BattleResult.Invalid == battle_result)
 		{
-			Unit attacker = null;
-			Unit defender = null;
-			Debug.Log("monster:" + monsterTurn + ", player:" + playerTurn);
-			if (monsterTurn < playerTurn)
-			{
-				attacker = GameManager.Instance.player;
-				defender = monster.data;
-				monsterTurn += monsterAPS + Random.Range(0.8f, 1.6f);
-
-				battle_pause = true;
-				EnableButton(true);
-				CooldownButton(1.0f);
-			}
-			else
-			{
-				attacker = monster.data;
-				defender = GameManager.Instance.player;
-				playerTurn += playerAPS;
-				
-				battle_pause = false;
-				EnableButton(false);
-			}
-
-			if (0 < attacker.GetBuffCount(Buff.Type.Stun) || 0 < attacker.GetBuffCount(Buff.Type.Fear))
-			{
-				//yield return new WaitForSeconds(0.5f);
-				continue;
-			}
-
-			while (true == battle_pause)
-			{
-				yield return null;
-			}
-
-			EnableButton(false);
-
-			attacker.OnBattleTurn();
-			defender.OnBattleTurn();
-			attacker.Attack(defender);
-
-			if (0 < attacker.GetBuffCount(Buff.Type.Runaway))
-			{
-				break;
-			}
-
-			if (null == show_damage_text_coroutine)
-			{
-				show_damage_text_coroutine = StartCoroutine(ShowDamageText());
-			}
-			
-			yield return new WaitForSeconds(0.5f);
-			if (monster.data == attacker)
-			{
-				while (monster.animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
-				{
-					yield return null;
-				}
-			}
-
-			if (0.0f >= attacker.cur_health || 0.0f >= defender.cur_health)
-			{
-				break;
-			}
+			yield return new WaitForSeconds(0.1f);
 		}
 
-		while (0 < damage_texts.Count)
-		{
-			yield return null;
-		}
-
-		if (0.0f >= monster.data.cur_health)
+		if (BattleResult.Win == battle_result)
 		{
 			yield return monster.Die();
-			battle_result = BattleResult.Win;
-		}
-		else if (0.0f >= GameManager.Instance.player.cur_health)
-		{
-			battle_result = BattleResult.Lose;
-		}
-		else if(0 < GameManager.Instance.player.GetBuffCount(Buff.Type.Runaway))
-		{
-			battle_result = BattleResult.Runaway;
 		}
 		
 		monster.meta = null;
@@ -235,11 +187,70 @@ public class DungeonBattle : MonoBehaviour
 		runaway_button.gameObject.SetActive(false);
 		monster.gameObject.SetActive(false);
 		touch_input.block_count++;
-		gameObject.SetActive(false);
+		
 		Util.EventSystem.Publish(EventID.MiniMap_Show);
 		Util.EventSystem.Publish<BattleResult>(EventID.Dungeon_Battle_Finish, battle_result);
 	}
 
+	float delta_time = 0;
+	private void Update()
+	{
+		if (true == battle_pause || BattleResult.Invalid != battle_result)
+		{
+			return;
+		}
+		delta_time += Time.deltaTime;
+		CooldownButton(Time.deltaTime * (1.0f / second_per_turn));
+		if (second_per_turn > delta_time)
+		{
+			return;
+		}
+
+		delta_time -= second_per_turn;
+		turn_count += 1;
+
+		Unit attacker = null;
+		Unit defender = null;
+		if (enemy_preemptive_score < player_preemptive_score)
+		{
+			attacker = GameManager.Instance.player;
+			defender = monster.data;
+			enemy_preemptive_score += enemy_attack_per_second + Random.Range(0.8f, 1.6f);
+		}
+		else
+		{
+			attacker = monster.data;
+			defender = GameManager.Instance.player;
+			player_preemptive_score += player_attack_per_second;
+		}
+
+		if (0 < attacker.GetBuffCount(Buff.Type.Stun) || 0 < attacker.GetBuffCount(Buff.Type.Fear))
+		{
+			return;
+		}
+
+		attacker.OnBattleTurn();
+		defender.OnBattleTurn();
+		attacker.Attack(defender);
+		
+		if (null == show_damage_text_coroutine)
+		{
+			show_damage_text_coroutine = StartCoroutine(ShowDamageText());
+		}
+
+		if (0.0f >= monster.data.cur_health)
+		{
+			battle_result = BattleResult.Win;
+		}
+		else if (0.0f >= GameManager.Instance.player.cur_health)
+		{
+			battle_result = BattleResult.Lose;
+		}
+		else if (0 < GameManager.Instance.player.GetBuffCount(Buff.Type.Runaway))
+		{
+			battle_result = BattleResult.Runaway;
+		}
+	}
 	private IEnumerator ShowDamageText()
 	{
 		if (0 == damage_texts.Count)
@@ -264,6 +275,16 @@ public class DungeonBattle : MonoBehaviour
 		SceneDungeon.log.Write("on effect buff(" + buff.buff_name +")");
 	}
 
+	private void OnInventoryOpen()
+	{
+		battle_pause = true;
+	}
+
+	private void OnInventoryClose()
+	{
+		battle_pause = false;
+	}
+
 	private void EnableButton(bool flag)
 	{
 		foreach (UISkillButton skillButton in skill_buttons)
@@ -273,19 +294,21 @@ public class DungeonBattle : MonoBehaviour
 		}
 	}
 
-	private void CooldownButton(float turn)
+	private void CooldownButton(float time)
 	{
 		foreach (UISkillButton skillButton in skill_buttons)
 		{
 			Skill skill = skillButton.skill;
 			if (0 < skill.cooltime)
 			{
-				skill.cooltime -= turn;
+				skill.cooltime -= time;
 				skill.cooltime = Mathf.Max(0.0f, skill.cooltime);
 			}
-			StartCoroutine(skillButton.Refresh());
+
+			skillButton.Cooldown();
 		}
 
+		/*
 		Skill_Runaway runawaySkill = GameManager.Instance.player.skills["SKILL_RUNAWAY"].skill_data as Skill_Runaway;
 		foreach (UISkillButton skillButton in skill_buttons)
 		{
@@ -301,9 +324,10 @@ public class DungeonBattle : MonoBehaviour
 				break;
 			}
 		}
+		*/
 	}
 
-	private void InitButtons()
+	public void InitButtons()
 	{
 		while (0 < skill_button_spot.childCount)
 		{

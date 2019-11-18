@@ -31,6 +31,7 @@ public class Unit
 
 	public System.Action<AttackResult> on_attack;
 	public System.Action<AttackResult> on_defense;
+	private Skill default_skill;
 	public Skill current_skill;
 
 	public virtual void Init()
@@ -51,14 +52,16 @@ public class Unit
 		}
 
 		Skill_Attack.Meta defaultSkillMeta = new Skill_Attack.Meta();
-		current_skill = defaultSkillMeta.CreateInstance();
-		AddSkill(current_skill);
+		default_skill = defaultSkillMeta.CreateInstance();
+		default_skill.owner = this;
+		current_skill = default_skill;
 	}
 
 	public void Attack(Unit target)
 	{
 		current_skill.OnAttack(target);
 		current_skill.cooltime = current_skill.meta.cooltime;
+		current_skill = default_skill;
 	}
 
 	public void OnDamage(Unit attacker, AttackResult attackResult)

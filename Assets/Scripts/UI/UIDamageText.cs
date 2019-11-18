@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class UIDamageText : MonoBehaviour
 {
-	float life = 0.8f;
+	public float life_time = 0.8f;
+	private float height = 40.0f;
 	TMPro.TextMeshProUGUI text;
 	private void Awake()
 	{
@@ -28,8 +29,8 @@ public class UIDamageText : MonoBehaviour
 	{
 		text.faceColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 		iTween.Stop(gameObject);
-		iTween.MoveBy(gameObject, iTween.Hash("y", 40.0f * GameManager.Instance.canvas.scaleFactor, "easeType", "easeOutExpo", "time", life));
-		iTween.ValueTo(gameObject, iTween.Hash("from", 1.0f, "to", 0.0f, "easeType", "easeInCirc", "onupdate", "OnUpdate", "time", life, "oncomplete", "OnComplete", "oncompletetarget", gameObject));
+		iTween.MoveBy(gameObject, iTween.Hash("y", height * life_time * GameManager.Instance.canvas.scaleFactor, "easeType", "easeOutExpo", "time", life_time));
+		iTween.ValueTo(gameObject, iTween.Hash("from", 1.0f, "to", 0.0f, "easeType", "easeInCirc", "onupdate", "OnUpdate", "time", life_time, "oncomplete", "OnComplete", "oncompletetarget", gameObject));
 	}
 
 	private void OnUpdate(float value)

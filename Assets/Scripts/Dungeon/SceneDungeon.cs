@@ -48,7 +48,7 @@ public class SceneDungeon : SceneMain
 		dungeon_move = UIUtil.FindChild<DungeonMove>(transform, "Dungeon");
 
 		battle = UIUtil.FindChild<DungeonBattle>(transform, "Battle");
-		battle.gameObject.SetActive(true);
+		battle.gameObject.SetActive(false);
 		
 		ui_inventory = UIUtil.FindChild<UIInventory>(transform, "UI/UIInventory");
 		ui_inventory.gameObject.SetActive(false);
@@ -198,9 +198,9 @@ public class SceneDungeon : SceneMain
 
 		AudioManager.Instance.Stop(AudioManager.DUNGEON_BGM);
 		AudioManager.Instance.Play(AudioManager.BATTLE_BGM, true);
-
+		battle.gameObject.SetActive(true);
 		yield return battle.BattleStart(dungeon.data.current_room.monster);
-
+		battle.gameObject.SetActive(false);
 		AudioManager.Instance.Stop(AudioManager.BATTLE_BGM);
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
 	}
