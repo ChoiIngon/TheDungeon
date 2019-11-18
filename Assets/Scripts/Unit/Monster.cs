@@ -83,7 +83,6 @@ public class Monster : MonoBehaviour
 	{
 		shaderOriginal = sprite.material.shader;
 		shaderWhite = Shader.Find("GUI/Text Shader");
-		gameObject.SetActive(false);
 		Util.EventSystem.Subscribe<Buff>(EventID.Buff_Start, OnBuffStart);
 		Util.EventSystem.Subscribe<Buff>(EventID.Buff_End, OnBuffEnd);
 	}
@@ -123,12 +122,9 @@ public class Monster : MonoBehaviour
 		this.data.speed = meta.speed;
 		this.data.critical = 0.0f;
 
-		gameObject.SetActive(true);
-
 		ui_name.text = meta.name;
 		ui_health.max = data.max_health;
 		ui_health.current = data.cur_health;
-		sprite.enabled = true;
 		sprite.sprite = ResourceManager.Instance.Load<Sprite>(meta.sprite_path);
 		sprite.material.shader = shaderOriginal;
 
@@ -143,10 +139,10 @@ public class Monster : MonoBehaviour
 
 	public IEnumerator Die()
 	{
-		sprite.enabled = false;
 		Transform deathEffect = GameObject.Instantiate<Transform>(death_effect_prefab);
 		deathEffect.transform.SetParent(damage_effect_spot);
 		deathEffect.gameObject.SetActive(true);
+		gameObject.SetActive(false);
 		yield return new WaitForSeconds(1.0f);
 		Object.Destroy(deathEffect.gameObject);
 		ui_root.gameObject.SetActive(false);

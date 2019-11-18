@@ -156,6 +156,7 @@ public class DungeonBattle : MonoBehaviour
 				damageText.transform.localPosition = new Vector3(monster.ui_health.rect.x + monster.ui_health.rect.width * monster.ui_health.gauge.fillAmount, monster.ui_health.rect.y + monster.ui_health.rect.height / 2, 0.0f);
 				damage_texts.Add(damageText);
 			}
+			if("" != result.type)
 			{
 				UIDamageText damageText = GameObject.Instantiate<UIDamageText>(damage_text_prefab);
 				damageText.gameObject.SetActive(false);
