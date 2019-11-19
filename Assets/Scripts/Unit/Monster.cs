@@ -81,6 +81,7 @@ public class Monster : MonoBehaviour
 
 	private void Start()
 	{
+		data = new Unit();
 		shaderOriginal = sprite.material.shader;
 		shaderWhite = Shader.Find("GUI/Text Shader");
 		Util.EventSystem.Subscribe<Buff>(EventID.Buff_Start, OnBuffStart);
@@ -113,7 +114,6 @@ public class Monster : MonoBehaviour
 			}
 		}
 		this.meta = meta;
-		this.data = new Unit();
 		this.data.Init();
 		this.data.max_health = meta.health;
 		this.data.cur_health = meta.health;
