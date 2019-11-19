@@ -126,8 +126,8 @@ public class SceneDungeon : SceneMain
 		
 		InitDungeon();
 
-		//Quest quest = QuestManager.Instance.GetAvailableQuest();
-		//quest.Start();
+		Quest quest = QuestManager.Instance.GetAvailableQuest();
+		quest.Start();
 	}
 
 	private void InitDungeon()
@@ -135,8 +135,9 @@ public class SceneDungeon : SceneMain
 		StartCoroutine(GameManager.Instance.CameraFade(Color.black, new Color(0.0f, 0.0f, 0.0f, 0.0f), 1.5f));
 		
 		dungeon.Init(++dungeon_level);
-		//move_buttons.Init(dungeon.data.current_room);
 		mini_map.Init(dungeon);
+
+		dungeon.InitRooms();
 		mini_map.CurrentPosition(dungeon.data.current_room.id);
 
 		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon_level.ToString();

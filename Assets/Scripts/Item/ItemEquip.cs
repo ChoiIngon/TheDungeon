@@ -23,7 +23,28 @@ public class EquipItem : Item
 		Shoes,
 		Max
 	}
-
+	/*
+	public enum EquipItemType
+	{
+		Invalid,
+		Dagger,
+		Sword,
+		Axe,
+		Buckler,
+		HeaterShield,
+		TowerShield,
+		LeatherArmor,
+		ChainMail,
+		PlateArmor,
+		Coif,
+		LeatherHat,
+		PlateHelmet,
+		Ring,
+		LeatherBoots,
+		IronShoes,
+		Max
+	}
+	*/
 	public new class Meta : Item.Meta
 	{
 		public float weight;
@@ -94,18 +115,6 @@ public class EquipItem : Item
 
 public class EquipItemManager : Util.Singleton<EquipItemManager>
 {
-	public enum EquipItemType
-	{
-		Invalid,
-		Dagger,
-		Sword,
-		Axe,
-		LeatherArmor,
-		ChainMail,
-		PlateArmor,
-		LeatherHat,
-
-	}
 	public List<EquipItem.Meta> item_metas = new List<EquipItem.Meta>();
 	public Util.WeightRandom<Item.Grade> grade_gacha = new Util.WeightRandom<Item.Grade>();
 	public Util.WeightRandom<EquipItemStatMeta>[] sub_stat_gacha = new Util.WeightRandom<EquipItemStatMeta>[(int)EquipItem.Part.Max];
@@ -143,18 +152,10 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 			ItemManager.Instance.AddItemMeta(meta);
 		}
 
-		/*
 		grade_gacha.SetWeight(Item.Grade.Low, 6);
 		grade_gacha.SetWeight(Item.Grade.Normal, 5);
 		grade_gacha.SetWeight(Item.Grade.High, 4);
 		grade_gacha.SetWeight(Item.Grade.Magic, 3);
-		grade_gacha.SetWeight(Item.Grade.Rare, 2);
-		grade_gacha.SetWeight(Item.Grade.Legendary, 1);
-		*/
-		grade_gacha.SetWeight(Item.Grade.Low, 0);
-		grade_gacha.SetWeight(Item.Grade.Normal, 0);
-		grade_gacha.SetWeight(Item.Grade.High, 0);
-		grade_gacha.SetWeight(Item.Grade.Magic, 0);
 		grade_gacha.SetWeight(Item.Grade.Rare, 2);
 		grade_gacha.SetWeight(Item.Grade.Legendary, 1);
 
@@ -222,11 +223,28 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 
 		sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(coinBonus, 1);
 		sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(expBonus, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(healthRate, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(defenseRate, 1);
 
-		
-		sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(expBonus, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(expBonus, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(attackRate, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(defenseRate, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(critical, 1);
+
+		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(coinBonus, 1);
 		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(expBonus, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(expBonus, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(healthRate, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(attackRate, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(defenseRate, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(speedRate, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(critical, 1);
+
+		sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(coinBonus, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(expBonus, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(healthRate, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(defenseRate, 1);
+
+		sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(defenseRate, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(critical, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(speedRate, 1);
 	}
 }

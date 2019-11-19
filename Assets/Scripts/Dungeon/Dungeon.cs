@@ -319,7 +319,6 @@ public class Dungeon : MonoBehaviour
 	public void Init(int dungeonLevel)
 	{
 		data.Init(dungeonLevel);
-		InitRooms();
 	}
 
 	public void InitRooms()

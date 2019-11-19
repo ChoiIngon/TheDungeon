@@ -65,6 +65,10 @@ public class UIMiniMap : MonoBehaviour
 
 	public void CurrentPosition (int id)
 	{
+		if (null == dungeon)
+		{
+			return;
+		}
 		UIMiniMapRoom minimapRoom = rooms[current_room_id];
 		minimapRoom.room.sprite = GetRoomSprite(current_room_id);
 		minimapRoom.color = ROOM_DEACTIVATE_COLOR;

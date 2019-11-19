@@ -77,13 +77,13 @@ public class Monster : MonoBehaviour
 			damage_effects[i].transform.SetParent(damage_effect_spot);
 		}
 		death_effect_prefab = UIUtil.FindChild<Transform>(damage_effect_spot, "Effect_MonsterDeath");
+
+		shaderOriginal = sprite.material.shader;
+		shaderWhite = Shader.Find("GUI/Text Shader");
 	}
 
 	private void Start()
 	{
-		data = new Unit();
-		shaderOriginal = sprite.material.shader;
-		shaderWhite = Shader.Find("GUI/Text Shader");
 		Util.EventSystem.Subscribe<Buff>(EventID.Buff_Start, OnBuffStart);
 		Util.EventSystem.Subscribe<Buff>(EventID.Buff_End, OnBuffEnd);
 	}
@@ -114,13 +114,14 @@ public class Monster : MonoBehaviour
 			}
 		}
 		this.meta = meta;
-		this.data.Init();
-		this.data.max_health = meta.health;
-		this.data.cur_health = meta.health;
-		this.data.attack = meta.attack;
-		this.data.defense = meta.defense;
-		this.data.speed = meta.speed;
-		this.data.critical = 0.0f;
+		data = new Unit();
+		data.Init();
+		data.max_health = meta.health;
+		data.cur_health = meta.health;
+		data.attack = meta.attack;
+		data.defense = meta.defense;
+		data.speed = meta.speed;
+		data.critical = 0.0f;
 
 		ui_name.text = meta.name;
 		ui_health.max = data.max_health;
