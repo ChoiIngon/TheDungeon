@@ -219,51 +219,14 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 			type = StatType.Critical, base_value = 1.0f, max_value = 10.0f,
 			rand_stat_meta = new RandomStatMeta() { type = StatType.Critical, min_value = 0.0f, max_value = 0.5f, interval = 0.1f }
 		};
-/*		// StatType.CoinBonus
-		{
 
+		sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(coinBonus, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(expBonus, 1);
 
-			sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(itemStatMeta, 1);
-			sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(itemStatMeta, 1);
-			sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(itemStatMeta, 1);
-			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
-			sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(itemStatMeta, 1);
-		}
-		// StatType.ExpBonus 
-		{
-			sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(itemStatMeta, 1);
-			sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(itemStatMeta, 1);
-			sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(itemStatMeta, 1);
-			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
-			sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(itemStatMeta, 1);
-		}
-		// StatType.Health_Rate
-		{
-			sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(itemStatMeta, 1);
-			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
-		}
-		// StatType.Attack_Rate
-		{
-			sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(itemStatMeta, 1);
-			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
-		}
-		// StatType.Defense_Rate
-		{
-			
-			sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(itemStatMeta, 1);
-			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
-		}
-		// StatType.Speed_Rate
-		  {
-			sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(itemStatMeta, 1);
-			sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(itemStatMeta, 1);
-			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
-		}
-		{
-			
-			sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(itemStatMeta, 1);
-			sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(itemStatMeta, 1);
-		}
-		*/
+		
+		sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(expBonus, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(expBonus, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(expBonus, 1);
+		sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(expBonus, 1);
 	}
 }
