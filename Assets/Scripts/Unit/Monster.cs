@@ -124,6 +124,7 @@ public class Monster : MonoBehaviour
 		data.defense = meta.defense;
 		data.speed = meta.speed;
 		data.critical = meta.critical;
+		data.stats.SetStat(new Stat.Data() { type = StatType.Critical_Damage, value = 3.0f });
 		for (int i = 0; i < level-1; i++)
 		{
 			data.max_health = data.max_health + data.max_health * 0.1f;

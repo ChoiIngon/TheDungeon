@@ -24,7 +24,7 @@ public abstract class Skill
 	}
 	public virtual void OnDetach() {}
 	public virtual void OnAttack(Unit target) { }
-	public virtual void OnDefense(Unit target) { }
+	public virtual void OnDefense(Unit attacker, Unit.AttackResult attack) { }
 }
 
 public class Skill_Attack : Skill
@@ -59,7 +59,7 @@ public class Skill_Attack : Skill
 
 		if (owner.critical >= Random.Range(0.0f, 100.0f))
 		{
-			result.damage *= 3;
+			result.damage *= owner.stats.GetStat(StatType.Critical_Damage);
 			result.critical = true;
 		}
 
@@ -324,6 +324,40 @@ public class Skill_Runaway : Skill
 		}
 	}
 }
+
+public class Skill_DamageRefection : Skill
+{
+	public new class Meta : Skill.Meta
+	{
+		public Meta()
+		{
+			skill_name = "Refection";
+			skill_id = "SKILL_DAMAGE_REFLECTION";
+			sprite_path = "Skill/skill_icon_stun";
+			cooltime = 0;
+			description = "10%의 확률로 받은 데미지의 절반을 반사한다";
+		}
+		public override Skill CreateInstance()
+		{
+			Skill_DamageRefection skill = new Skill_DamageRefection();
+			skill.meta = this;
+			return skill;
+		}
+	}
+
+	public override void OnDefense(Unit attacker, Unit.AttackResult attack)
+	{
+		if (10.0f > Random.Range(0.0f, 100.0f))
+		{
+			Unit.AttackResult clone = new Unit.AttackResult();
+			clone.type = "Reflection";
+			clone.damage = attack.damage * 0.5f;
+			clone.critical = attack.critical;
+			owner.on_attack?.Invoke(clone);
+			attacker.OnDamage(owner, clone);
+		}
+	}
+}
 public class SkillManager : Util.Singleton<SkillManager>
 {
 	private List<Skill.Meta> skill_gacha_metas = new List<Skill.Meta>();
@@ -334,6 +368,8 @@ public class SkillManager : Util.Singleton<SkillManager>
 
 		meta = RegisterSkill<Skill_Runaway.Meta>();
 		meta = RegisterSkill<Skill_Attack.Meta>();
+		meta = RegisterSkill<Skill_DoubleAttack.Meta>();
+		skill_gacha_metas.Add(meta);
 		meta = RegisterSkill<Skill_Bleeding.Meta>();
 		skill_gacha_metas.Add(meta);
 		meta = RegisterSkill<Skill_Blindness.Meta>();
@@ -343,6 +379,8 @@ public class SkillManager : Util.Singleton<SkillManager>
 		meta = RegisterSkill<Skill_Stun.Meta>();
 		skill_gacha_metas.Add(meta);
 		meta = RegisterSkill<Skill_Penetrate.Meta>();
+		skill_gacha_metas.Add(meta);
+		meta = RegisterSkill<Skill_DamageRefection.Meta>();
 		skill_gacha_metas.Add(meta);
 	}
 

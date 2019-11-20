@@ -214,6 +214,7 @@ public class Player : Unit
 		stats.AddStat(meta.base_stats[StatType.Defense].CreateInstance());
 		stats.AddStat(meta.base_stats[StatType.Speed].CreateInstance());
 		stats.AddStat(meta.base_stats[StatType.Critical].CreateInstance());
+		stats.AddStat(meta.base_stats[StatType.Critical_Damage].CreateInstance());
 		stats.AddStat(new Stat.Data() { type = StatType.Stamina, value = 100.0f });
 	}
 

@@ -12,8 +12,9 @@ public class UIDamageText : MonoBehaviour
 		text = GetComponent<TMPro.TextMeshProUGUI>();
 	}
 
-	public void Init(Unit.AttackResult attackResult)
+	public void Init(Unit.AttackResult attackResult, Color color)
 	{
+		text.color = color;
 		int damage = (int)attackResult.damage;
 		if (true == attackResult.critical)
 		{
@@ -30,7 +31,7 @@ public class UIDamageText : MonoBehaviour
 		text.faceColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 		iTween.Stop(gameObject);
 		iTween.MoveBy(gameObject, iTween.Hash("y", height * life_time * GameManager.Instance.canvas.scaleFactor, "easeType", "easeOutExpo", "time", life_time));
-		iTween.ValueTo(gameObject, iTween.Hash("from", 1.0f, "to", 0.0f, "easeType", "easeInCirc", "onupdate", "OnUpdate", "time", life_time, "oncomplete", "OnComplete", "oncompletetarget", gameObject));
+		iTween.ValueTo(gameObject, iTween.Hash("from", 1.0f, "to", 0.0f, "easeType", "linear", "onupdate", "OnUpdate", "time", life_time, "oncomplete", "OnComplete", "oncompletetarget", gameObject));
 	}
 
 	private void OnUpdate(float value)

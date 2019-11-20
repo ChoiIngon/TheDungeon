@@ -69,7 +69,7 @@ public class Unit
 		foreach (var itr in skills)
 		{
 			Skill skill = itr.Value.skill_data;
-			skill.OnDefense(attacker);
+			skill.OnDefense(attacker, attackResult);
 		}
 		cur_health = Mathf.Max(cur_health - attackResult.damage, 0.0f);
 		on_defense?.Invoke(attackResult);

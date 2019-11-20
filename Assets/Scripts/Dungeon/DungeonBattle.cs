@@ -134,7 +134,7 @@ public class DungeonBattle : MonoBehaviour
 
 			UIDamageText damageText = GameObject.Instantiate<UIDamageText>(damage_text_prefab);
 			damageText.gameObject.SetActive(false);
-			damageText.Init(result);
+			damageText.Init(result, Color.red);
 			damageText.transform.SetParent(player_health.transform, false);
 			damageText.transform.localPosition = new Vector3(player_health.rect.x + player_health.rect.width * player_health.gauge.fillAmount, player_health.rect.y + player_health.rect.height / 2, 0.0f);
 			damage_texts.Add(damageText);
@@ -155,7 +155,7 @@ public class DungeonBattle : MonoBehaviour
 			StartCoroutine(monster.OnDamage(result));
 			UIDamageText damageText = GameObject.Instantiate<UIDamageText>(damage_text_prefab);
 			damageText.gameObject.SetActive(false);
-			damageText.Init(result);
+			damageText.Init(result, Color.white);
 			if ("" == result.type)
 			{
 				damageText.life_time = 0.8f;
@@ -164,9 +164,9 @@ public class DungeonBattle : MonoBehaviour
 			}
 			else
 			{
-				damageText.life_time = 2.5f;
+				damageText.life_time = 3.0f;
 				damageText.transform.SetParent(monster.damage_effect_spot, false);
-				damageText.transform.localPosition = Vector3.zero;
+				damageText.transform.localPosition = new Vector3(0.0f, 400.0f * GameManager.Instance.canvas.scaleFactor, 0.0f);
 			}
 			damage_texts.Add(damageText);
 			monster.ui_health.current = monster.data.cur_health;
