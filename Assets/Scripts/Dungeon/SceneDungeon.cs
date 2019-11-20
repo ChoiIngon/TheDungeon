@@ -224,6 +224,18 @@ public class SceneDungeon : SceneMain
 		GameManager.Instance.player.collect_coin_count += rewardCoin + bonusCoin;
 		GameManager.Instance.player.total_exp += rewardExp + bonusExp;
 
+		if (meta.reward_item_chance > Random.Range(0.0f, 100.0f))
+		{
+			if ("" == meta.reward.item_id)
+			{
+				dungeon.data.current_room.item = EquipItemManager.Instance.GetRandomMeta();
+			}
+			else
+			{
+				dungeon.data.current_room.item = ItemManager.Instance.FindMeta<Item.Meta>(meta.reward.item_id);
+			}
+		}
+
 		Database.Execute(Database.Type.UserData, "UPDATE user_data SET player_coin=" + GameManager.Instance.player.coin);
 		ProgressManager.Instance.Update(ProgressType.EnemiesSlain, meta.id, 1);
 	
@@ -251,7 +263,7 @@ public class SceneDungeon : SceneMain
 		}
 
 		yield return GameManager.Instance.ui_textbox.Write(battleResult);
-		
+
 		mini_map.CurrentPosition(dungeon.data.current_room.id);
 		dungeon_move.touch_input.block_count--;
 	}

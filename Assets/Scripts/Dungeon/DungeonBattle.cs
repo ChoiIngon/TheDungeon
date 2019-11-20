@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class DungeonBattle : MonoBehaviour
 {
 	private TouchInput				touch_input;
+	private Dungeon					dungeon;
 	private Monster					monster;
 
 	private UIGaugeBar				player_health;
@@ -29,7 +30,7 @@ public class DungeonBattle : MonoBehaviour
 	private float enemy_attack_per_second = 0.0f;
 	private float enemy_preemptive_score = 0.0f;
 
-	private Coroutine				show_damage_text_coroutine;
+	private Coroutine show_damage_text_coroutine;
 
 	public enum BattleResult
 	{
@@ -42,6 +43,7 @@ public class DungeonBattle : MonoBehaviour
 
 	private void Awake()
 	{
+		dungeon = UIUtil.FindChild<Dungeon>(transform, "../Dungeon");
 		monster = UIUtil.FindChild<Monster>(transform, "Monster");
 		player_damage_effect_spot = UIUtil.FindChild<Transform>(transform, "../UI/BattleEffect");
 		player_health = UIUtil.FindChild<UIGaugeBar>(transform, "../UI/Player/Health");
@@ -52,6 +54,7 @@ public class DungeonBattle : MonoBehaviour
 		{
 			throw new MissingComponentException("TouchInput");
 		}
+		touch_input.block_count++;
 	}
 
 	void Start()
@@ -93,7 +96,9 @@ public class DungeonBattle : MonoBehaviour
 
 	public IEnumerator BattleStart(Monster.Meta monsterMeta)
 	{
-		touch_input.block_count = 0;
+		Util.EventSystem.Publish(EventID.Dungeon_Battle_Start);
+		Util.EventSystem.Publish<float>(EventID.MiniMap_Hide, 0.0f);
+
 		turn_count = 0;
 		battle_pause = true;
 		
@@ -104,7 +109,7 @@ public class DungeonBattle : MonoBehaviour
 		battle_result = BattleResult.Invalid;
 
 		monster.gameObject.SetActive(true);
-		monster.Init(monsterMeta);
+		monster.Init(monsterMeta, dungeon.level / (dungeon.max_level + 1) + 1);
 
 		InitButtons();
 		GameManager.Instance.player.on_attack = null;
@@ -168,19 +173,23 @@ public class DungeonBattle : MonoBehaviour
 		};
 
 		yield return StartCoroutine(monster.ColorTo(Color.black, Color.white, 1.0f));
-		Util.EventSystem.Publish(EventID.Dungeon_Battle_Start);
-		Util.EventSystem.Publish<float>(EventID.MiniMap_Hide, 0.0f);
 
 		battle_pause = false;
+		touch_input.block_count--;
 
 		while (BattleResult.Invalid == battle_result)
 		{
 			yield return new WaitForSeconds(0.1f);
 		}
 
+		touch_input.block_count++;
 		if (BattleResult.Win == battle_result)
 		{
 			yield return monster.Die();
+		}
+		else if (BattleResult.Lose == battle_result)
+		{
+			yield return StartCoroutine(GameManager.Instance.CameraFade(new Color(1.0f, 1.0f, 1.0f, 0.0f), new Color(1.0f, 1.0f, 1.0f, 0.0f), 1.0f));
 		}
 		
 		monster.meta = null;

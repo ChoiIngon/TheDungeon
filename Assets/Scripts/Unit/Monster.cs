@@ -10,6 +10,7 @@ public class Monster : MonoBehaviour
 		{
 			public int coin;
 			public int exp;
+			public string item_id;
 		}
 
 		public string id;
@@ -18,7 +19,9 @@ public class Monster : MonoBehaviour
 		public float defense;
 		public float attack;
 		public float speed;
+		public float critical;
 		public string sprite_path;
+		public float reward_item_chance;
 		public Reward reward;
 
 		public Meta()
@@ -104,7 +107,7 @@ public class Monster : MonoBehaviour
 		Util.EventSystem.Unsubscribe<Buff>(EventID.Buff_End, OnBuffEnd);
 	}
 
-	public void Init(Meta meta)
+	public void Init(Meta meta, int level)
 	{
 		foreach (Transform buff in buff_effects)
 		{
@@ -117,11 +120,18 @@ public class Monster : MonoBehaviour
 		data = new Unit();
 		data.Init();
 		data.max_health = meta.health;
-		data.cur_health = meta.health;
 		data.attack = meta.attack;
 		data.defense = meta.defense;
 		data.speed = meta.speed;
-		data.critical = 0.0f;
+		data.critical = meta.critical;
+		for (int i = 0; i < level-1; i++)
+		{
+			data.max_health = data.max_health + data.max_health * 0.1f;
+			data.attack = data.attack + data.attack * 0.1f;
+			data.defense = meta.defense + meta.defense * 0.1f;
+			data.speed = meta.speed + meta.speed * 0.1f;
+		}
+		data.cur_health = data.max_health;
 
 		ui_name.text = meta.name;
 		ui_health.max = data.max_health;

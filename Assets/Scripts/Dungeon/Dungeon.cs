@@ -14,16 +14,21 @@ public class Dungeon : MonoBehaviour
 		get { return data.level; }
 	}
 
+	public int max_level
+	{
+		get { return data.max_level; }
+	}
 	public class Data
 	{
 		public Room.Data current_room = null;
 		public Room.Data[] rooms = new Room.Data[WIDTH * HEIGHT];
 		public int level = 1;
-
+		public int max_level;
 		// Use this for initialization
 		public void Init(int dungeonLevel)
 		{
 			level = dungeonLevel;
+			max_level = GetMaxDungeonLevel();
 			for (int i = 0; i < WIDTH * HEIGHT; i++)
 			{
 				Room.Data room = new Room.Data();
@@ -108,7 +113,7 @@ public class Dungeon : MonoBehaviour
 			candidates.RemoveAt(start);
 
 			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-				"SELECT monster_id, monster_count, reward_item_chance, reward_item_id FROM meta_dungeon_monster WHERE dungeon_level=" + dungeonLevel
+				"SELECT monster_id, monster_count, reward_item_chance, reward_item_id FROM meta_dungeon_monster WHERE dungeon_level=" + Mathf.Max(1, dungeonLevel % (max_level+1))
 			);
 			
 			while (true == reader.Read())
@@ -124,20 +129,8 @@ public class Dungeon : MonoBehaviour
 					int index = Random.Range(0, candidates.Count);
 					Room.Data room = candidates[index];
 					room.monster = MonsterManager.Instance.FindMeta(reader.GetString("monster_id"));
-					room.item_chance = reader.GetFloat("reward_item_chance");
-					if (0.0f < room.item_chance)
-					{
-						string rewardItemID = reader.GetString("reward_item_id");
-						if ("" == rewardItemID)
-						{
-							room.item = EquipItemManager.Instance.GetRandomMeta();
-						}
-						else
-						{
-							room.item = ItemManager.Instance.FindMeta<Item.Meta>(rewardItemID);
-						}
-					}
-
+					room.monster.reward_item_chance = reader.GetFloat("reward_item_chance");
+					room.monster.reward.item_id = reader.GetString("reward_item_id");
 					candidates.RemoveAt(index);
 				}
 			}
@@ -281,6 +274,19 @@ public class Dungeon : MonoBehaviour
 					room.group = to;
 				}
 			}
+		}
+
+		private int GetMaxDungeonLevel()
+		{
+			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+				"select ifnull(max(dungeon_level), 0) max_dungeon_level from meta_dungeon_monster;"
+			);
+
+			while (true == reader.Read())
+			{
+				return reader.GetInt32("max_dungeon_level");
+			}
+			return 0;
 		}
 	}
 
