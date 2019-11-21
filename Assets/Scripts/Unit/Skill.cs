@@ -350,7 +350,7 @@ public class Skill_DamageRefection : Skill
 		if (10.0f > Random.Range(0.0f, 100.0f))
 		{
 			Unit.AttackResult clone = new Unit.AttackResult();
-			clone.type = "Reflection";
+			clone.type = meta.skill_name;
 			clone.damage = attack.damage * 0.5f;
 			clone.critical = attack.critical;
 			owner.on_attack?.Invoke(clone);
@@ -358,6 +358,7 @@ public class Skill_DamageRefection : Skill
 		}
 	}
 }
+
 public class SkillManager : Util.Singleton<SkillManager>
 {
 	private List<Skill.Meta> skill_gacha_metas = new List<Skill.Meta>();
