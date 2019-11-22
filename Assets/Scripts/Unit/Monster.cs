@@ -73,8 +73,9 @@ public class Monster : MonoBehaviour
 		buff_effects[(int)Buff.Type.Bleeding - 1] = UIUtil.FindChild<Transform>(buff_effect_spot, "Effect_MonsterBleeding");
 
 		damage_effect_spot = UIUtil.FindChild<Transform>(transform, "../../UI/BattleEffect");
-		damage_effects = new Effect_MonsterDamage[2];
-		for (int i = 0; i < damage_effects.Length; i++)
+		damage_effects = new Effect_MonsterDamage[5];
+		damage_effects[0] = UIUtil.FindChild<Effect_MonsterDamage>(damage_effect_spot, "Effect_MonsterDamage");
+		for (int i = 1; i < damage_effects.Length; i++)
 		{
 			damage_effects[i] = GameObject.Instantiate<Effect_MonsterDamage>(UIUtil.FindChild<Effect_MonsterDamage>(damage_effect_spot, "Effect_MonsterDamage"));
 			damage_effects[i].transform.SetParent(damage_effect_spot);

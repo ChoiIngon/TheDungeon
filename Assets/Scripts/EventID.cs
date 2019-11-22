@@ -36,9 +36,9 @@ public class EventID
 	public const string Buff_Effect = "Buff_Effect";
 
 	public const string Quest_Start = "Quest_Start";
-	
 	public const string Quest_Update = "Quest_Update";
 	public const string Quest_Complete = "Quest_Complete";
 
-	
+	public const string NPC_Dialogue_Start = "NPC_Dialogue_Start";
+	public const string NPC_Dialogue_Finish = "NPC_Dialogue_Finish";
 }

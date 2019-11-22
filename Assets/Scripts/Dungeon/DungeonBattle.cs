@@ -64,9 +64,10 @@ public class DungeonBattle : MonoBehaviour
 			CooldownButton((second_per_turn - delta_time) * (1.0f / second_per_turn));
 			delta_time = second_per_turn;
 		};
-		const int EFFECT_POOL_SIZE = 2;
+		const int EFFECT_POOL_SIZE = 5;
 		player_damage_effects = new Effect_PlayerDamage[EFFECT_POOL_SIZE];
-		for (int i = 0; i < player_damage_effects.Length; i++)
+		player_damage_effects[0] = UIUtil.FindChild<Effect_PlayerDamage>(player_damage_effect_spot, "Effect_PlayerDamage");
+		for (int i = 1; i < player_damage_effects.Length; i++)
 		{
 			player_damage_effects[i] = GameObject.Instantiate<Effect_PlayerDamage>(UIUtil.FindChild<Effect_PlayerDamage>(player_damage_effect_spot, "Effect_PlayerDamage"));
 			player_damage_effects[i].transform.SetParent(player_damage_effect_spot, false);
@@ -108,7 +109,6 @@ public class DungeonBattle : MonoBehaviour
 		battle_result = BattleResult.Invalid;
 
 		monster.gameObject.SetActive(true);
-		//monster.Init(monsterMeta, dungeon.level / (dungeon.max_level + 1) + 1);
 		monster.Init(monsterMeta, dungeon.level);
 
 		InitButtons();
@@ -121,15 +121,8 @@ public class DungeonBattle : MonoBehaviour
 		GameManager.Instance.player.on_defense = null;
 		GameManager.Instance.player.on_defense += (Unit.AttackResult result) =>
 		{
-			StartCoroutine(GameManager.Instance.CameraFade(Color.white, new Color(1.0f, 1.0f, 1.0f, 0.0f), 0.1f));
 			iTween.ShakePosition(Camera.main.gameObject, new Vector3(0.3f, 0.3f, 0.0f), 0.2f);
 			Effect_PlayerDamage effectPlayerDamage = player_damage_effects[Random.Range(0, player_damage_effects.Length)];
-			effectPlayerDamage.gameObject.SetActive(false);
-			effectPlayerDamage.transform.position = new Vector3(
-				Random.Range(Screen.width / 2 - Screen.width / 2 * 0.6f, Screen.width / 2 + Screen.width / 2 * 0.6f),
-				Random.Range(Screen.height / 2 - Screen.height / 2 * 0.3f, Screen.height / 2 + Screen.height / 2 * 0.9f),
-				0.0f
-			);
 			effectPlayerDamage.gameObject.SetActive(true);
 
 			UIDamageText damageText = GameObject.Instantiate<UIDamageText>(damage_text_prefab);
@@ -188,11 +181,6 @@ public class DungeonBattle : MonoBehaviour
 		{
 			yield return monster.Die();
 		}
-		else if (BattleResult.Lose == battle_result)
-		{
-			yield return StartCoroutine(GameManager.Instance.CameraFade(new Color(1.0f, 1.0f, 1.0f, 0.0f), new Color(1.0f, 1.0f, 1.0f, 0.0f), 1.0f));
-		}
-		
 		monster.meta = null;
 
 		runaway_button.gameObject.SetActive(false);

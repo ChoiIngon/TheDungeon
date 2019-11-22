@@ -146,7 +146,7 @@ public class Skill_Smash : Skill_Attack
 			skill_id = "SKILL_Smash";
 			sprite_path = "Skill/skill_icon_stun";
 			cooltime = 20;
-			description = "강력한 공격으로 50%의 확율로 3턴 동안 적을 기절 시킨다";
+			description = "강력한 공격으로 50%의 확율로 8턴 동안 적을 기절 시킨다";
 		}
 		public override Skill CreateInstance()
 		{
@@ -161,7 +161,7 @@ public class Skill_Smash : Skill_Attack
 		base.OnAttack(target);
 		if (50.0f >= Random.Range(0.0f, 100.0f) && 0 == target.GetBuffCount(Buff.Type.Stun))
 		{
-			Buff buff = new Buff("Stun", 3, Buff.Type.Stun);
+			Buff buff = new Buff("Stun", 8, Buff.Type.Stun);
 			target.AddBuff(buff);
 		}
 	}
@@ -177,7 +177,7 @@ public class Skill_Stun : Skill
 			skill_id = "SKILL_STUN";
 			sprite_path = "Item/item_equip_sword_004";
 			cooltime = 15;
-			description = "2턴 동안 대상을 기절 시킴";
+			description = "5턴 동안 대상을 기절 시킴";
 		}
 		public override Skill CreateInstance()
 		{
@@ -190,7 +190,7 @@ public class Skill_Stun : Skill
 	{
 		if (0 == target.GetBuffCount(Buff.Type.Stun))
 		{
-			Buff buff = new Buff("Stun", 2, Buff.Type.Stun);
+			Buff buff = new Buff("Stun", 5, Buff.Type.Stun);
 			target.AddBuff(buff);
 		}
 	}

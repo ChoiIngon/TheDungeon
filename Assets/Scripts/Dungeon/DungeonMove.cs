@@ -33,6 +33,8 @@ public class DungeonMove : MonoBehaviour
 		Util.EventSystem.Subscribe(EventID.Inventory_Close, () => { touch_input.block_count--; });
 		Util.EventSystem.Subscribe(EventID.TextBox_Open, () => { touch_input.block_count++; });
 		Util.EventSystem.Subscribe(EventID.TextBox_Close, () => { touch_input.block_count--; });
+		Util.EventSystem.Subscribe(EventID.NPC_Dialogue_Start, () => { touch_input.block_count++;  });
+		Util.EventSystem.Subscribe(EventID.NPC_Dialogue_Finish, () => { touch_input.block_count--; });
 	}
 
 	void Start()
@@ -113,6 +115,8 @@ public class DungeonMove : MonoBehaviour
 		Util.EventSystem.Unsubscribe(EventID.Inventory_Close);
 		Util.EventSystem.Unsubscribe(EventID.TextBox_Open);
 		Util.EventSystem.Unsubscribe(EventID.TextBox_Close);
+		Util.EventSystem.Unsubscribe(EventID.NPC_Dialogue_Start);
+		Util.EventSystem.Unsubscribe(EventID.NPC_Dialogue_Finish);
 	}
 
 	public IEnumerator Move(int direction)

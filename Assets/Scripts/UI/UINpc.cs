@@ -47,6 +47,7 @@ public class UINpc : MonoBehaviour {
 
 	public IEnumerator Write(List<Quest.Dialogue> dialogues)
 	{
+		Util.EventSystem.Publish(EventID.NPC_Dialogue_Start);
 		while (UITextBox.State.Idle != GameManager.Instance.ui_textbox.state)
 		{
 			yield return null;
@@ -56,6 +57,7 @@ public class UINpc : MonoBehaviour {
 		GameManager.Instance.ui_textbox.on_close += () =>
 		{
 			iTween.MoveTo(image.gameObject, iTween.Hash("x", 0.0f, "easeType", "easeInOutExpo", "time", 0.5f));
+			Util.EventSystem.Publish(EventID.NPC_Dialogue_Finish);
 		};
 		GameManager.Instance.ui_textbox.on_next += () =>
 		{
