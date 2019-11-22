@@ -23,45 +23,26 @@ public class EquipItem : Item
 		Shoes,
 		Max
 	}
-	/*
-	public enum EquipItemType
-	{
-		Invalid,
-		Dagger,
-		Sword,
-		Axe,
-		Buckler,
-		HeaterShield,
-		TowerShield,
-		LeatherArmor,
-		ChainMail,
-		PlateArmor,
-		Coif,
-		LeatherHat,
-		PlateHelmet,
-		Ring,
-		LeatherBoots,
-		IronShoes,
-		Max
-	}
-	*/
+	
 	public new class Meta : Item.Meta
 	{
 		public float weight;
 		public Part part = Part.Invalid;
 		public EquipItemStatMeta main_stat = new EquipItemStatMeta();
-		
+		public List<EquipItemStatMeta> sub_stats = new List<EquipItemStatMeta>();
 		public override Item CreateInstance()
 		{
 			EquipItem item = new EquipItem(this);
 			item.grade = EquipItemManager.Instance.grade_gacha.Random();
 			item.level = Mathf.Max(1, Random.Range(GameManager.Instance.player.level - 5, GameManager.Instance.player.level + 2));
-			item.main_stat.AddStat(item.CreateStat((item.meta as Meta).main_stat));
-			for (int i = 0; i < (int)item.grade - (int)EquipItem.Grade.Normal; i++)
+			item.main_stat.AddStat(item.CreateStat(main_stat));
+			if (0 < sub_stats.Count)
 			{
-				item.sub_stat.AddStat(item.CreateStat(EquipItemManager.Instance.sub_stat_gacha[(int)item.part].Random()));
+				for (int i = 0; i < (int)item.grade - (int)EquipItem.Grade.Normal; i++)
+				{
+					item.sub_stat.AddStat(item.CreateStat(sub_stats[Random.Range(0, sub_stats.Count)]));
+				}
 			}
-
 			if (EquipItem.Grade.Rare <= item.grade)
 			{
 				item.skill = SkillManager.Instance.CreateRandomInstance();
@@ -117,39 +98,67 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 {
 	public List<EquipItem.Meta> item_metas = new List<EquipItem.Meta>();
 	public Util.WeightRandom<Item.Grade> grade_gacha = new Util.WeightRandom<Item.Grade>();
-	public Util.WeightRandom<EquipItemStatMeta>[] sub_stat_gacha = new Util.WeightRandom<EquipItemStatMeta>[(int)EquipItem.Part.Max];
+	//public Util.WeightRandom<EquipItemStatMeta>[] sub_stat_gacha = new Util.WeightRandom<EquipItemStatMeta>[(int)EquipItem.Part.Max];
 
 	public void Init()
 	{
-		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-			"SELECT item_id, item_name, equip_part, price, weight, main_stat_type, main_base_value, main_rand_value, sprite_path, description FROM meta_item_equip"
-		);
-		while (true == reader.Read())
 		{
-			EquipItem.Meta meta = new EquipItem.Meta();
-			meta.id = reader.GetString("item_id");
-			meta.name = reader.GetString("item_name");
-			meta.part = (EquipItem.Part)reader.GetInt32("equip_part");
-			meta.price = reader.GetInt32("price");
-			meta.weight = reader.GetFloat("weight");
-			meta.type = Item.Type.Equipment;
-			meta.main_stat = new EquipItemStatMeta()
+			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+				"SELECT item_id, item_name, equip_part, price, weight, main_stat_type, main_base_value, main_rand_value, sprite_path, description FROM meta_item_equip"
+			);
+			while (true == reader.Read())
 			{
-				type = (StatType)reader.GetInt32("main_stat_type"),
-				base_value = reader.GetFloat("main_base_value"),
-				max_value = 0.0f,
-				rand_stat_meta = new RandomStatMeta()
+				EquipItem.Meta meta = new EquipItem.Meta();
+				meta.id = reader.GetString("item_id");
+				meta.name = reader.GetString("item_name");
+				meta.part = (EquipItem.Part)reader.GetInt32("equip_part");
+				meta.price = reader.GetInt32("price");
+				meta.weight = reader.GetFloat("weight");
+				meta.type = Item.Type.Equipment;
+				meta.main_stat = new EquipItemStatMeta()
 				{
 					type = (StatType)reader.GetInt32("main_stat_type"),
-					min_value = 0,
-					max_value = reader.GetFloat("main_rand_value"),
-					interval = 0.01f
+					base_value = reader.GetFloat("main_base_value"),
+					max_value = 0.0f,
+					rand_stat_meta = new RandomStatMeta()
+					{
+						type = (StatType)reader.GetInt32("main_stat_type"),
+						min_value = 0,
+						max_value = reader.GetFloat("main_rand_value"),
+						interval = 0.01f
+					}
+				};
+				meta.sprite_path = reader.GetString("sprite_path");
+				meta.description = reader.GetString("description");
+				item_metas.Add(meta);
+				ItemManager.Instance.AddItemMeta(meta);
+			}
+		}
+		{
+			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+				"SELECT item_id, stat_type, base_value, max_value, rand_min_value, rand_max_value, interval FROM meta_item_equip_sub_stat"
+			);
+			while (true == reader.Read())
+			{
+				EquipItem.Meta meta = ItemManager.Instance.FindMeta<EquipItem.Meta>(reader.GetString("item_id"));
+				if (null == meta)
+				{
+					throw new System.Exception("can't find item meta(id:" + reader.GetString("item_id") + ")");
 				}
-			};
-			meta.sprite_path = reader.GetString("sprite_path");
-			meta.description = reader.GetString("description");
-			item_metas.Add(meta);
-			ItemManager.Instance.AddItemMeta(meta);
+				meta.sub_stats.Add(new EquipItemStatMeta()
+				{
+					type = (StatType)reader.GetInt32("stat_type"),
+					base_value = reader.GetFloat("base_value"),
+					max_value = reader.GetFloat("max_value"),
+					rand_stat_meta = new RandomStatMeta()
+					{
+						type = (StatType)reader.GetInt32("stat_type"),
+						min_value = reader.GetFloat("rand_min_value"),
+						max_value = reader.GetFloat("rand_max_value"),
+						interval = reader.GetFloat("interval"),
+					}
+				});
+			}
 		}
 
 		grade_gacha.SetWeight(Item.Grade.Low, 20);
@@ -159,7 +168,7 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 		grade_gacha.SetWeight(Item.Grade.Rare, 12);
 		grade_gacha.SetWeight(Item.Grade.Legendary, 10);
 
-		InitStatGacha();
+		//InitStatGacha();
 	}
 
 	public EquipItem CreateRandomItem()
@@ -172,6 +181,8 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 	{
 		return item_metas[Random.Range(0, item_metas.Count)];
 	}
+
+	/*
 	private void InitStatGacha()
 	{
 		for (int i = 0; i < (int)EquipItem.Part.Max; i++)
@@ -247,4 +258,5 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 		sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(critical, 1);
 		sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(speedRate, 1);
 	}
+	*/
 }

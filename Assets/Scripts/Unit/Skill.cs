@@ -59,7 +59,7 @@ public class Skill_Attack : Skill
 
 		if (owner.critical >= Random.Range(0.0f, 100.0f))
 		{
-			result.damage *= owner.stats.GetStat(StatType.Critical_Damage);
+			result.damage *= owner.stats.GetStat(StatType.Critical_Damage) / 100;
 			result.critical = true;
 		}
 
@@ -78,7 +78,7 @@ public class Skill_DoubleAttack : Skill_Attack
 			skill_name = "Double Attack";
 			skill_id = "SKILL_DOUBLE_ATTACK";
 			sprite_path = "Skill/skill_icon_stun";
-			cooltime = 12;
+			cooltime = 20;
 			description = "연속 2회 공격한다";
 		}
 		public override Skill CreateInstance()
