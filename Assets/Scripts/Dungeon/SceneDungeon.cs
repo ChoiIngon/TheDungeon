@@ -55,10 +55,11 @@ public class SceneDungeon : SceneMain
 		ui_inventory.Init();
 
 		inventory_button = UIUtil.FindChild<Button>(transform, "UI/SideButtons/InventoryButton");
-		UIUtil.AddPointerUpListener(inventory_button.gameObject, () =>
+		inventory_button.onClick.AddListener(() =>
 		{
 			ui_inventory.gameObject.SetActive(true);
 		});
+		
 		text_inventory = UIUtil.FindChild<Text>(transform, "UI/SideButtons/InventoryButton/Text");
 		
 		mini_map = UIUtil.FindChild<UIMiniMap>(transform,		"UI/Dungeon/MiniMap");
@@ -143,7 +144,7 @@ public class SceneDungeon : SceneMain
 		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon_level.ToString();
 
 		ProgressManager.Instance.Update(ProgressType.DungeonLevel, "", dungeon.level);
-		StartCoroutine(GameManager.Instance.ui_textbox.Write(GameText.GetText("DUNGEON/WELCOME", dungeon.level)));
+		StartCoroutine(GameManager.Instance.ui_textbox.Write(GameText.GetText("DUNGEON/WELCOME", dungeon.level), false));
 	}
 
 	private IEnumerator Move(int direction)
@@ -214,8 +215,10 @@ public class SceneDungeon : SceneMain
 		int prevPlayerLevel = GameManager.Instance.player.level;
 		Stat stat = GameManager.Instance.player.stats;
 		int rewardCoin = meta.reward.coin + (int)Random.Range(-meta.reward.coin * 0.1f, meta.reward.coin * 0.1f);
+		rewardCoin += (int)(rewardCoin * 0.1f * dungeon.level);
 		int bonusCoin = (int)(rewardCoin * stat.GetStat(StatType.CoinBonus) / 100.0f);
 		int rewardExp = meta.reward.exp + (int)Random.Range(-meta.reward.exp * 0.1f, meta.reward.exp * 0.1f);
+		rewardExp += (int)(rewardExp * 0.1f * dungeon.level);
 		int bonusExp = (int)(rewardExp * stat.GetStat(StatType.ExpBonus) / 100.0f);
 
 		GameManager.Instance.player.ChangeCoin(rewardCoin + bonusCoin, false);
@@ -262,7 +265,7 @@ public class SceneDungeon : SceneMain
 			battleResult += "Level : " + prevPlayerLevel + " -> " + GameManager.Instance.player.level + "\n";
 		}
 
-		yield return GameManager.Instance.ui_textbox.Write(battleResult);
+		yield return GameManager.Instance.ui_textbox.Write(battleResult, false);
 
 		mini_map.CurrentPosition(dungeon.data.current_room.id);
 		dungeon_move.touch_input.block_count--;
@@ -318,7 +321,7 @@ public class SceneDungeon : SceneMain
 				yes = true;
 				GameManager.Instance.ui_textbox.Close();
 			};
-			yield return GameManager.Instance.ui_textbox.Write("Do you want to go down the stair?");
+			yield return GameManager.Instance.ui_textbox.Write("Do you want to go down the stair?", false);
 			if (true == yes)
 			{
 				yield return StartCoroutine(GoDown());

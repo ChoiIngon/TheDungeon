@@ -61,10 +61,8 @@ public class DungeonBattle : MonoBehaviour
 	{
 		touch_input.on_touch_down += (Vector3 position) =>
 		{
-			if (null == monster.meta)
-			{
-				return;
-			}
+			CooldownButton((second_per_turn - delta_time) * (1.0f / second_per_turn));
+			delta_time = second_per_turn;
 		};
 		const int EFFECT_POOL_SIZE = 2;
 		player_damage_effects = new Effect_PlayerDamage[EFFECT_POOL_SIZE];
@@ -102,14 +100,16 @@ public class DungeonBattle : MonoBehaviour
 		turn_count = 0;
 		battle_pause = true;
 		
-		player_attack_per_second = Mathf.Max(2.1f, GameManager.Instance.player.speed / monsterMeta.speed);
+		player_attack_per_second = Mathf.Max(0.35f, GameManager.Instance.player.speed / monsterMeta.speed);
+		player_attack_per_second = Mathf.Min(3.5f, player_attack_per_second);
 		enemy_attack_per_second = 1.0f;
 		player_preemptive_score = player_attack_per_second;
 		enemy_preemptive_score = enemy_attack_per_second;
 		battle_result = BattleResult.Invalid;
 
 		monster.gameObject.SetActive(true);
-		monster.Init(monsterMeta, dungeon.level / (dungeon.max_level + 1) + 1);
+		//monster.Init(monsterMeta, dungeon.level / (dungeon.max_level + 1) + 1);
+		monster.Init(monsterMeta, dungeon.level);
 
 		InitButtons();
 		GameManager.Instance.player.on_attack = null;
@@ -183,6 +183,7 @@ public class DungeonBattle : MonoBehaviour
 		}
 
 		touch_input.block_count++;
+		
 		if (BattleResult.Win == battle_result)
 		{
 			yield return monster.Die();
@@ -193,11 +194,9 @@ public class DungeonBattle : MonoBehaviour
 		}
 		
 		monster.meta = null;
-		monster.data = null;
 
 		runaway_button.gameObject.SetActive(false);
 		monster.gameObject.SetActive(false);
-		touch_input.block_count++;
 		
 		Util.EventSystem.Publish(EventID.MiniMap_Show);
 		Util.EventSystem.Publish<BattleResult>(EventID.Dungeon_Battle_Finish, battle_result);
@@ -210,6 +209,7 @@ public class DungeonBattle : MonoBehaviour
 		{
 			return;
 		}
+		
 		delta_time += Time.deltaTime;
 		CooldownButton(Time.deltaTime * (1.0f / second_per_turn));
 		if (second_per_turn > delta_time)
@@ -226,7 +226,7 @@ public class DungeonBattle : MonoBehaviour
 		{
 			attacker = GameManager.Instance.player;
 			defender = monster.data;
-			enemy_preemptive_score += enemy_attack_per_second + Random.Range(0.8f, 1.6f);
+			enemy_preemptive_score += enemy_attack_per_second * Random.Range(0.8f, 1.5f);
 		}
 		else
 		{

@@ -9,7 +9,7 @@ public class DebugEdit : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-		UIUtil.AddPointerUpListener(add_item.gameObject, () =>
+		add_item.onClick.AddListener(() =>
 		{
 			GameManager.Instance.player.inventory.Add(ItemManager.Instance.CreateRandomEquipItem());
 		});

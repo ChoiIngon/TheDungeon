@@ -47,7 +47,7 @@ public class RoomStair : MonoBehaviour
 					{
 						StopCoroutine(textbox_coroutine);
 					}
-					textbox_coroutine = StartCoroutine(GameManager.Instance.ui_textbox.Write(GameText.GetText("ERROR/UNLOCK_DOOR")));
+					textbox_coroutine = StartCoroutine(GameManager.Instance.ui_textbox.Write(GameText.GetText("ERROR/UNLOCK_DOOR"), false));
 					touch_input.gameObject.SetActive(true);
 					return;
 				}

@@ -60,7 +60,7 @@ public class UIInventory : MonoBehaviour
 			itr.Value.slot_index = -1;
 			slots.Add(itr.Value);
 		}
-		UIUtil.AddPointerUpListener(close.gameObject, () => { gameObject.SetActive(false); });
+		close.onClick.AddListener(() => { gameObject.SetActive(false); });
 
 		Util.EventSystem.Subscribe<Item>(EventID.Inventory_Add, OnItemAdd);
         Util.EventSystem.Subscribe<Item>(EventID.Inventory_Remove, OnItemRemove);

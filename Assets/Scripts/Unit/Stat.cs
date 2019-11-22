@@ -12,7 +12,7 @@ public enum StatType
 	Defense_Rate = 6,
 	Speed = 7,
 	Speed_Rate = 8,
-	Critical = 9,
+	Critical_Chance = 9,
 	Critical_Damage = 10,
 	ExpBonus = 11,
 	CoinBonus = 12,
@@ -21,6 +21,7 @@ public enum StatType
 	Lucky = 15,
 	Stamina = 16,
 	Stamina_Rate = 17,
+	Damage_Rate = 18
 }
 
 public class RandomStatMeta

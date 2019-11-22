@@ -19,8 +19,8 @@ public class Player : Unit
 {
 	public class Meta
 	{
-		public Dictionary<StatType, RandomStatMeta> base_stats = new Dictionary<StatType, RandomStatMeta>();
-		public Dictionary<StatType, RandomStatMeta> levelup_stats = new Dictionary<StatType, RandomStatMeta>();
+		public List<RandomStatMeta> base_stats = new List<RandomStatMeta>();
+		public List<RandomStatMeta> levelup_stats = new List<RandomStatMeta>();
 
 		public void Init()
 		{
@@ -34,8 +34,8 @@ public class Player : Unit
 			while (true == reader.Read())
 			{
 				StatType statType = (StatType)reader.GetInt32("stat_type");
-				base_stats.Add(statType, new RandomStatMeta() { type = statType, min_value = reader.GetFloat("base_min_value"), max_value = reader.GetFloat("base_max_value"), interval = reader.GetFloat("base_interval") });
-				levelup_stats.Add(statType, new RandomStatMeta() { type = statType, min_value = reader.GetFloat("levelup_min_value"), max_value = reader.GetFloat("levelup_max_value"), interval = reader.GetFloat("levelup_interval") });
+				base_stats.Add(new RandomStatMeta() { type = statType, min_value = reader.GetFloat("base_min_value"), max_value = reader.GetFloat("base_max_value"), interval = reader.GetFloat("base_interval") });
+				levelup_stats.Add(new RandomStatMeta() { type = statType, min_value = reader.GetFloat("levelup_min_value"), max_value = reader.GetFloat("levelup_max_value"), interval = reader.GetFloat("levelup_interval") });
 			}
 		}
 
@@ -209,13 +209,10 @@ public class Player : Unit
 				Debug.Log("achievement bonus:" + achieve.reward_stat.type.ToString() + " " + achieve.reward_stat.value);
 			}
 		}
-		stats.AddStat(meta.base_stats[StatType.Health].CreateInstance());
-		stats.AddStat(meta.base_stats[StatType.Attack].CreateInstance());
-		stats.AddStat(meta.base_stats[StatType.Defense].CreateInstance());
-		stats.AddStat(meta.base_stats[StatType.Speed].CreateInstance());
-		stats.AddStat(meta.base_stats[StatType.Critical].CreateInstance());
-		stats.AddStat(meta.base_stats[StatType.Critical_Damage].CreateInstance());
-		stats.AddStat(new Stat.Data() { type = StatType.Stamina, value = 100.0f });
+		foreach (var itr in meta.base_stats)
+		{
+			stats.SetStat(itr.CreateInstance());
+		}
 	}
 
 	public override void CalculateStat()
@@ -246,11 +243,10 @@ public class Player : Unit
 			exp -= meta.GetMaxExp(level);
 			level += 1;
 
-			stats.AddStat(meta.levelup_stats[StatType.Health].CreateInstance());
-			stats.AddStat(meta.levelup_stats[StatType.Attack].CreateInstance());
-			stats.AddStat(meta.levelup_stats[StatType.Defense].CreateInstance());
-			stats.AddStat(meta.levelup_stats[StatType.Speed].CreateInstance());
-			stats.AddStat(meta.levelup_stats[StatType.Critical].CreateInstance());
+			foreach (var itr in meta.levelup_stats)
+			{
+				stats.AddStat(itr.CreateInstance());
+			}
 			CalculateStat();
 			cur_health = max_health;
 			ProgressManager.Instance.Update(ProgressType.PlayerLevel, "", level);

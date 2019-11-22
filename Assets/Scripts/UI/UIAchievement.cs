@@ -14,7 +14,7 @@ public class UIAchievement : MonoBehaviour
 		content = UIUtil.FindChild<Transform>(transform, "Slots/Viewport/Content");
 		scrollbar = UIUtil.FindChild<Scrollbar>(transform, "Slots/Scrollbar Vertical");
 		Button close = UIUtil.FindChild<Button>(transform, "Close");
-		UIUtil.AddPointerUpListener(close.gameObject, () => { gameObject.SetActive(false); });
+		close.onClick.AddListener(() => { gameObject.SetActive(false); });
 	}
 
 	private void Start()

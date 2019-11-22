@@ -63,6 +63,7 @@ public class Skill_Attack : Skill
 			result.critical = true;
 		}
 
+		result.damage += result.damage * owner.stats.GetStat(StatType.Damage_Rate)/100;
 		owner.on_attack?.Invoke(result);
 		target.OnDamage(owner, result);
 	}
@@ -77,7 +78,7 @@ public class Skill_DoubleAttack : Skill_Attack
 			skill_name = "Double Attack";
 			skill_id = "SKILL_DOUBLE_ATTACK";
 			sprite_path = "Skill/skill_icon_stun";
-			cooltime = 6;
+			cooltime = 12;
 			description = "연속 2회 공격한다";
 		}
 		public override Skill CreateInstance()
@@ -104,7 +105,7 @@ public class Skill_Penetrate : Skill
 			skill_name = "Penetrate";
 			skill_id = "SKILL_PENETRATE";
 			sprite_path = "Skill/skill_icon_stun";
-			cooltime = 10;
+			cooltime = 15;
 			description = "방어력을 무시한 관통 공격";
 		}
 		public override Skill CreateInstance()
@@ -144,8 +145,8 @@ public class Skill_Smash : Skill_Attack
 			skill_name = "Smash";
 			skill_id = "SKILL_Smash";
 			sprite_path = "Skill/skill_icon_stun";
-			cooltime = 10;
-			description = "강력한 공격으로 20%의 확율로 3턴 동안 적을 기절 시킨다";
+			cooltime = 20;
+			description = "강력한 공격으로 50%의 확율로 3턴 동안 적을 기절 시킨다";
 		}
 		public override Skill CreateInstance()
 		{
@@ -175,7 +176,7 @@ public class Skill_Stun : Skill
 			skill_name = "Stun";
 			skill_id = "SKILL_STUN";
 			sprite_path = "Item/item_equip_sword_004";
-			cooltime = 10;
+			cooltime = 15;
 			description = "2턴 동안 대상을 기절 시킴";
 		}
 		public override Skill CreateInstance()
@@ -204,7 +205,7 @@ public class Skill_Fear : Skill
 			skill_name = "Fear";
 			skill_id = "SKILL_FEAR";
 			sprite_path = "Item/item_equip_sword_004";
-			cooltime = 10;
+			cooltime = 20;
 			description = "2턴 동안 적을 공포에 질리게 한다. 공포에 질린적은 무서워한다";
 		}
 		public override Skill CreateInstance()
@@ -233,7 +234,7 @@ public class Skill_Bleeding : Skill_Attack
 			skill_name = "Bleeding";
 			skill_id = "SKILL_BLEEDING";
 			sprite_path = "Item/item_equip_sword_004";
-			cooltime = 10;
+			cooltime = 30;
 			description = "20% 확율로 적에게 출혈 상처를 입힌다";
 		}
 		public override Skill CreateInstance()
@@ -264,7 +265,7 @@ public class Skill_Blindness : Skill
 			skill_name = "Blind";
 			skill_id = "SKILL_BLINDNESS";
 			sprite_path = "Item/item_equip_sword_004";
-			cooltime = 10;
+			cooltime = 15;
 			description = "높은 확율로 공격이 빗나감";
 		}
 		public override Skill CreateInstance()
@@ -359,6 +360,37 @@ public class Skill_DamageRefection : Skill
 	}
 }
 
+public class Skill_Rage : Skill
+{
+	public new class Meta : Skill.Meta
+	{
+		public Meta()
+		{
+			skill_name = "Rage";
+			skill_id = "SKILL_RAGE";
+			sprite_path = "Skill/item_equip_sword_004";
+			cooltime = 0;
+			description = "공격을 받을때 일정 확률로 크리티컬 확률 증가";
+		}
+		public override Skill CreateInstance()
+		{
+			Skill_Rage skill = new Skill_Rage();
+			skill.meta = this;
+			return skill;
+		}
+	}
+
+	float critical_chance = 0.0f;
+	public override void OnAttach(Unit owner)
+	{
+		critical_chance = 0.0f;
+		base.OnAttach(owner);
+	}
+	public override void OnDefense(Unit attacker, Unit.AttackResult attack)
+	{
+		critical_chance += owner.stats.GetStat(StatType.Critical_Chance);
+	}
+}
 public class SkillManager : Util.Singleton<SkillManager>
 {
 	private List<Skill.Meta> skill_gacha_metas = new List<Skill.Meta>();

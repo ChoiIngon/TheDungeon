@@ -9,13 +9,19 @@ public class UISkillButton : MonoBehaviour
 	public ImageOutline outline;
 	public Text title;
 	public Skill skill;
+	private Button button;
 	
 	private void Awake()
 	{
+		button = GetComponent<Button>();
+		if (null == button)
+		{
+			throw new MissingComponentException("Button");
+		}
 		background = GetComponent<Image>();
 		if (null == background)
 		{
-			throw new MissingComponentException("Button");
+			throw new MissingComponentException("Image");
 		}
 		skill_icon = UIUtil.FindChild<Image>(transform, "Image");
 		outline = UIUtil.FindChild<ImageOutline>(transform, "Image");
@@ -25,7 +31,7 @@ public class UISkillButton : MonoBehaviour
 	public void Init(Skill skill, System.Action action)
 	{
 		this.skill = skill;
-		UIUtil.AddPointerUpListener(gameObject, action);
+		button.onClick.AddListener(() => { action(); });
 		title.text = skill.meta.skill_name;
 		background.sprite = ResourceManager.Instance.Load<Sprite>(skill.meta.sprite_path);
 		skill_icon.sprite = ResourceManager.Instance.Load<Sprite>(skill.meta.sprite_path);

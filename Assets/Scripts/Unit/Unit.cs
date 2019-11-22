@@ -80,7 +80,7 @@ public class Unit
 		attack = stats.GetStat(StatType.Attack) + (stats.GetStat(StatType.Attack) * stats.GetStat(StatType.Attack_Rate) / 100);
 		defense = stats.GetStat(StatType.Defense) + (stats.GetStat(StatType.Defense) * stats.GetStat(StatType.Defense_Rate) / 100);
 		speed = stats.GetStat(StatType.Speed) + (stats.GetStat(StatType.Speed) * stats.GetStat(StatType.Speed_Rate) / 100);
-		critical = stats.GetStat(StatType.Critical);
+		critical = stats.GetStat(StatType.Critical_Chance);
 		max_health = stats.GetStat(StatType.Health) + (stats.GetStat(StatType.Health) * stats.GetStat(StatType.Health_Rate) / 100);
 
 		attack = Stat.Truncate(attack, 0.01f);

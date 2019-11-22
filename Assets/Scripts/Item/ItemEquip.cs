@@ -152,12 +152,12 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 			ItemManager.Instance.AddItemMeta(meta);
 		}
 
-		grade_gacha.SetWeight(Item.Grade.Low, 6);
-		grade_gacha.SetWeight(Item.Grade.Normal, 5);
-		grade_gacha.SetWeight(Item.Grade.High, 4);
-		grade_gacha.SetWeight(Item.Grade.Magic, 3);
-		grade_gacha.SetWeight(Item.Grade.Rare, 2);
-		grade_gacha.SetWeight(Item.Grade.Legendary, 1);
+		grade_gacha.SetWeight(Item.Grade.Low, 20);
+		grade_gacha.SetWeight(Item.Grade.Normal, 18);
+		grade_gacha.SetWeight(Item.Grade.High, 16);
+		grade_gacha.SetWeight(Item.Grade.Magic, 14);
+		grade_gacha.SetWeight(Item.Grade.Rare, 12);
+		grade_gacha.SetWeight(Item.Grade.Legendary, 10);
 
 		InitStatGacha();
 	}
@@ -217,8 +217,8 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 
 		EquipItemStatMeta critical = new EquipItemStatMeta()
 		{
-			type = StatType.Critical, base_value = 1.0f, max_value = 10.0f,
-			rand_stat_meta = new RandomStatMeta() { type = StatType.Critical, min_value = 0.0f, max_value = 0.5f, interval = 0.1f }
+			type = StatType.Critical_Chance, base_value = 1.0f, max_value = 10.0f,
+			rand_stat_meta = new RandomStatMeta() { type = StatType.Critical_Chance, min_value = 0.0f, max_value = 0.5f, interval = 0.1f }
 		};
 
 		sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(coinBonus, 1);

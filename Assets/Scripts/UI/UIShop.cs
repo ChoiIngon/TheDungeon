@@ -45,8 +45,8 @@ public class UIShop : MonoBehaviour
 
 	private void Start()
 	{
-		UIUtil.AddPointerUpListener(buy.gameObject, Buy);
-		UIUtil.AddPointerUpListener(close.gameObject, () => {
+		buy.onClick.AddListener(Buy);
+		close.onClick.AddListener(() => {
 			coin.GetComponent<RectTransform>().position = coin_position;
 			complete = true;
 		});

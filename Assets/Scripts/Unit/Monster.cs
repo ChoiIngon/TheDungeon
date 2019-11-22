@@ -51,7 +51,7 @@ public class Monster : MonoBehaviour
 	private void Awake()
 	{
 		meta = null;
-		data = null;
+		data = new Unit(); ;
 		ui_root = UIUtil.FindChild<Transform>(transform, "../../UI/Battle");
 		ui_name = UIUtil.FindChild<Text>(ui_root, "MonsterName");
 		ui_health = UIUtil.FindChild<UIGaugeBar>(ui_root, "MonsterHealth");
@@ -117,7 +117,7 @@ public class Monster : MonoBehaviour
 			}
 		}
 		this.meta = meta;
-		data = new Unit();
+		
 		data.Init();
 		data.max_health = meta.health;
 		data.attack = meta.attack;

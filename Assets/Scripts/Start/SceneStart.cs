@@ -34,17 +34,17 @@ public class SceneStart : SceneMain
 				
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
 		
-		UIUtil.AddPointerUpListener(start_button.gameObject, () =>
+		start_button.onClick.AddListener(() =>
 		{
 			StartCoroutine(OnStart());
 		});
-				
-		UIUtil.AddPointerUpListener(setting_button.gameObject, () =>
+
+		setting_button.onClick.AddListener(() =>
 		{
 			GameManager.Instance.ui_setting.gameObject.SetActive(true);
 		});
-				
-		UIUtil.AddPointerUpListener(reset_button.gameObject, () =>
+
+		reset_button.onClick.AddListener(() =>
 		{
 			Database.Disconnect(Database.Type.UserData);
 			System.IO.File.Delete(Application.persistentDataPath + "/user_data.db");
@@ -52,7 +52,7 @@ public class SceneStart : SceneMain
 			StartCoroutine(OnStart());
 		});
 
-		UIUtil.AddPointerUpListener(achievement_button.gameObject, () =>
+		achievement_button.onClick.AddListener(() =>
 		{
 			ui_achievement.gameObject.SetActive(true);
 		});
