@@ -328,7 +328,7 @@ public class DungeonBattle : MonoBehaviour
 			skill_button_spot.GetChild(0).transform.SetParent(null);
 		}
 
-		GameManager.Instance.player.RemoveSkill("SKILL_RUNAWAY");
+		GameManager.Instance.player.RemoveSkill(Skill_Runaway.SKILL_ID);
 		
 		skill_button_spot.gameObject.SetActive(true);
 		skill_buttons = new List<UISkillButton>();
@@ -354,9 +354,9 @@ public class DungeonBattle : MonoBehaviour
 		}
 
 		runaway_button.gameObject.SetActive(true);
-		GameManager.Instance.player.AddSkill(SkillManager.Instance.FindMeta<Skill_Runaway.Meta>("SKILL_RUNAWAY").CreateInstance());
+		GameManager.Instance.player.AddSkill(SkillManager.Instance.FindMeta<Skill_Runaway.Meta>(Skill_Runaway.SKILL_ID).CreateInstance());
 		{
-			Skill skill = GameManager.Instance.player.skills["SKILL_RUNAWAY"].skill_data;
+			Skill skill = GameManager.Instance.player.skills[Skill_Runaway.SKILL_ID].skill_data;
 			runaway_button.Init(skill, () =>
 			{
 				if (0 < skill.cooltime)

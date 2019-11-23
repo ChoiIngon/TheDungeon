@@ -42,9 +42,9 @@ public class UIEquipItem : UIItem
 			description += "<color=#4eb105> " + meta.ToString(stat.value) + "</color>\n";
 		}
 
-		if (null != equipItem.skill)
+		foreach(Skill skill in equipItem.skills)
 		{
-			description += "<color=red> " + equipItem.skill.meta.description + "</color>\n";
+			description += "<color=red> " + skill.meta.description + "</color>\n";
 		}
 		inventory.item_info.SetDescription(description);
 
@@ -225,13 +225,6 @@ public class UIEquipItem : UIItem
 			Stat prevStat = GameManager.Instance.player.stats + new Stat();
 			GameManager.Instance.player.Unequip(equipItem.part, equipItem.equip_index);
 			GameManager.Instance.player.inventory.Add(equipItem);
-
-			string changedStat = DiffStat(prevStat, GameManager.Instance.player.stats);
-			if (null != equipItem.skill)
-			{
-				changedStat += "<color=red> -" + equipItem.skill.meta.description + "</color>";
-			}
-			GameManager.Instance.ui_textbox.AsyncWrite(changedStat, false);
 		}
 		else
 		{
@@ -265,12 +258,14 @@ public class UIEquipItem : UIItem
 			GameManager.Instance.player.Unequip(equipItem.part, equipItem.equip_index);
 			GameManager.Instance.player.inventory.Add(equipItem);
 
+			/*
 			string changedStat = DiffStat(prev, GameManager.Instance.player.stats);
 			if (null != equipItem.skill)
 			{
 				changedStat += "<color=red> " + equipItem.skill.meta.description + "</color>";
 			}
 			GameManager.Instance.ui_textbox.AsyncWrite(changedStat, false);
+			*/
 		}
 		OnSelect();
 	}

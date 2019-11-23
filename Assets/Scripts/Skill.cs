@@ -3,8 +3,15 @@ using System.Collections.Generic;
 
 public abstract class Skill 
 {
+	public enum TriggerType
+	{
+		Invalid,
+		Active,
+		Passive
+	}
 	public abstract class Meta
 	{
+		public TriggerType trigger_type;
 		public string skill_id;
 		public string skill_name;
 		public string description;
@@ -26,15 +33,15 @@ public abstract class Skill
 	public virtual void OnAttack(Unit target) { }
 	public virtual void OnDefense(Unit attacker, Unit.AttackResult attack) { }
 }
-
 public class Skill_Attack : Skill
 {
 	public new class Meta : Skill.Meta
 	{
 		public Meta()
 		{
+			trigger_type = TriggerType.Active;
 			skill_name = "Attack";
-			skill_id = "SKILL_ATTACK";
+			skill_id = "Skill_Attack";
 			sprite_path = "Skill/skill_icon_stun";
 			cooltime = 0;
 			description = "";
@@ -50,7 +57,7 @@ public class Skill_Attack : Skill
 	public override void OnAttack(Unit target)
 	{
 		Unit.AttackResult result = new Unit.AttackResult();
-		
+
 		const float RANDOM_RANGE = 0.1f;
 		float attack = owner.attack + Random.Range(-owner.attack * RANDOM_RANGE, owner.attack * RANDOM_RANGE);
 		float defense = target.defense + Random.Range(-target.defense * RANDOM_RANGE, target.defense * RANDOM_RANGE);
@@ -63,7 +70,7 @@ public class Skill_Attack : Skill
 			result.critical = true;
 		}
 
-		result.damage += result.damage * owner.stats.GetStat(StatType.Damage_Rate)/100;
+		result.damage += result.damage * owner.stats.GetStat(StatType.Damage_Rate) / 100;
 		owner.on_attack?.Invoke(result);
 		target.OnDamage(owner, result);
 	}
@@ -76,7 +83,7 @@ public class Skill_DoubleAttack : Skill_Attack
 		public Meta()
 		{
 			skill_name = "Double Attack";
-			skill_id = "SKILL_DOUBLE_ATTACK";
+			skill_id = "Skill_DoubleAttack";
 			sprite_path = "Skill/skill_icon_stun";
 			cooltime = 20;
 			description = "연속 2회 공격한다";
@@ -103,7 +110,7 @@ public class Skill_Penetrate : Skill
 		public Meta()
 		{
 			skill_name = "Penetrate";
-			skill_id = "SKILL_PENETRATE";
+			skill_id = "Skill_Penetrate";
 			sprite_path = "Skill/skill_icon_stun";
 			cooltime = 15;
 			description = "방어력을 무시한 관통 공격";
@@ -121,16 +128,15 @@ public class Skill_Penetrate : Skill
 		Unit.AttackResult result = new Unit.AttackResult();
 		const float RANDOM_RANGE = 0.1f;
 		float attack = owner.attack + Random.Range(-owner.attack * RANDOM_RANGE, owner.attack * RANDOM_RANGE);
-		float defense = 0.0f; // target.defense + Random.Range(-target.defense * RANDOM_RANGE, target.defense * RANDOM_RANGE);
-		result.damage = attack * 100 / (100 + defense);
-		result.damage = (int)result.damage;
-
+		result.damage = attack;
 		if (owner.critical >= Random.Range(0.0f, 100.0f))
 		{
-			result.damage *= 3;
+			result.damage *= owner.stats.GetStat(StatType.Critical_Damage) / 100;
 			result.critical = true;
 		}
 
+		result.damage += result.damage * owner.stats.GetStat(StatType.Damage_Rate) / 100;
+		result.damage = (int)result.damage;
 		owner.on_attack?.Invoke(result);
 		target.OnDamage(owner, result);
 	}
@@ -143,7 +149,7 @@ public class Skill_Smash : Skill_Attack
 		public Meta()
 		{
 			skill_name = "Smash";
-			skill_id = "SKILL_Smash";
+			skill_id = "Skill_Smash";
 			sprite_path = "Skill/skill_icon_stun";
 			cooltime = 20;
 			description = "강력한 공격으로 50%의 확율로 8턴 동안 적을 기절 시킨다";
@@ -166,7 +172,6 @@ public class Skill_Smash : Skill_Attack
 		}
 	}
 }
-
 public class Skill_Stun : Skill
 {
 	public new class Meta : Skill.Meta
@@ -174,7 +179,7 @@ public class Skill_Stun : Skill
 		public Meta()
 		{
 			skill_name = "Stun";
-			skill_id = "SKILL_STUN";
+			skill_id = "Skill_Stun";
 			sprite_path = "Item/item_equip_sword_004";
 			cooltime = 15;
 			description = "5턴 동안 대상을 기절 시킴";
@@ -203,7 +208,7 @@ public class Skill_Fear : Skill
 		public Meta()
 		{
 			skill_name = "Fear";
-			skill_id = "SKILL_FEAR";
+			skill_id = "Skill_Fear";
 			sprite_path = "Item/item_equip_sword_004";
 			cooltime = 20;
 			description = "2턴 동안 적을 공포에 질리게 한다. 공포에 질린적은 무서워한다";
@@ -232,7 +237,7 @@ public class Skill_Bleeding : Skill_Attack
 		public Meta()
 		{
 			skill_name = "Bleeding";
-			skill_id = "SKILL_BLEEDING";
+			skill_id = "Skill_Bleeding";
 			sprite_path = "Item/item_equip_sword_004";
 			cooltime = 30;
 			description = "20% 확율로 적에게 출혈 상처를 입힌다";
@@ -263,7 +268,7 @@ public class Skill_Blindness : Skill
 		public Meta()
 		{
 			skill_name = "Blind";
-			skill_id = "SKILL_BLINDNESS";
+			skill_id = "Skill_Blindness";
 			sprite_path = "Item/item_equip_sword_004";
 			cooltime = 15;
 			description = "높은 확율로 공격이 빗나감";
@@ -283,13 +288,14 @@ public class Skill_Blindness : Skill
 
 public class Skill_Runaway : Skill
 {
+	public const string SKILL_ID = "Skill_Runaway";
 	public new class Meta : Skill.Meta
 	{
 		public int max_count;
 		public Meta()
 		{
 			skill_name = "Runaway";
-			skill_id = "SKILL_RUNAWAY";
+			skill_id = SKILL_ID;
 			sprite_path = "Skill/skill_icon_run";
 			cooltime = 2;
 			max_count = 3;
@@ -333,7 +339,7 @@ public class Skill_DamageRefection : Skill
 		public Meta()
 		{
 			skill_name = "Refection";
-			skill_id = "SKILL_DAMAGE_REFLECTION";
+			skill_id = "Skill_DamageRefection";
 			sprite_path = "Skill/skill_icon_stun";
 			cooltime = 0;
 			description = "10%의 확률로 받은 데미지의 절반을 반사한다";
@@ -367,8 +373,8 @@ public class Skill_Rage : Skill
 		public Meta()
 		{
 			skill_name = "Rage";
-			skill_id = "SKILL_RAGE";
-			sprite_path = "Skill/item_equip_sword_004";
+			skill_id = "Skill_Rage";
+			sprite_path = "Skill/skill_icon_stun";
 			cooltime = 0;
 			description = "공격을 받을때 일정 확률로 크리티컬 확률 증가";
 		}
@@ -391,40 +397,219 @@ public class Skill_Rage : Skill
 		critical_chance += owner.stats.GetStat(StatType.Critical_Chance);
 	}
 }
+
+public class Skill_CriticalAttack : Skill
+{
+	public new class Meta : Skill.Meta
+	{
+		public Meta()
+		{
+			skill_name = "Critical Attack";
+			skill_id = "Skill_CriticalAttack";
+			sprite_path = "Skill/skill_icon_stun";
+			cooltime = 0;
+			description = "공격을 받을때 일정 확률로 크리티컬 확률 증가";
+		}
+		public override Skill CreateInstance()
+		{
+			Skill_CriticalAttack skill = new Skill_CriticalAttack();
+			skill.meta = this;
+			return skill;
+		}
+	}
+
+	float critical_chance = 0.0f;
+	public override void OnAttach(Unit owner)
+	{
+		critical_chance = 0.0f;
+		base.OnAttach(owner);
+	}
+	public override void OnDefense(Unit attacker, Unit.AttackResult attack)
+	{
+		critical_chance += owner.stats.GetStat(StatType.Critical_Chance);
+	}
+}
+
+public class Skill_Poison : Skill
+{
+	public new class Meta : Skill.Meta
+	{
+		public Meta()
+		{
+			skill_name = "Critical Attack";
+			skill_id = "Skill_Poison";
+			sprite_path = "Skill/skill_icon_stun";
+			cooltime = 0;
+			description = "공격을 받을때 일정 확률로 크리티컬 확률 증가";
+		}
+		public override Skill CreateInstance()
+		{
+			Skill_Poison skill = new Skill_Poison();
+			skill.meta = this;
+			return skill;
+		}
+	}
+
+	float critical_chance = 0.0f;
+	public override void OnAttach(Unit owner)
+	{
+		critical_chance = 0.0f;
+		base.OnAttach(owner);
+	}
+	public override void OnDefense(Unit attacker, Unit.AttackResult attack)
+	{
+		critical_chance += owner.stats.GetStat(StatType.Critical_Chance);
+	}
+}
+
+public class Skill_CounterAttack : Skill
+{
+	public new class Meta : Skill.Meta
+	{
+		public Meta()
+		{
+			skill_name = "Critical Attack";
+			skill_id = "Skill_CounterAttack";
+			sprite_path = "Skill/skill_icon_stun";
+			cooltime = 0;
+			description = "공격을 받을때 일정 확률로 크리티컬 확률 증가";
+		}
+		public override Skill CreateInstance()
+		{
+			Skill_CounterAttack skill = new Skill_CounterAttack();
+			skill.meta = this;
+			return skill;
+		}
+	}
+
+	float critical_chance = 0.0f;
+	public override void OnAttach(Unit owner)
+	{
+		critical_chance = 0.0f;
+		base.OnAttach(owner);
+	}
+	public override void OnDefense(Unit attacker, Unit.AttackResult attack)
+	{
+		critical_chance += owner.stats.GetStat(StatType.Critical_Chance);
+	}
+}
+
+public class Skill_Parry : Skill
+{
+	public new class Meta : Skill.Meta
+	{
+		public Meta()
+		{
+			skill_name = "Critical Attack";
+			skill_id = "Skill_Parry";
+			sprite_path = "Skill/skill_icon_stun";
+			cooltime = 0;
+			description = "공격을 받을때 일정 확률로 크리티컬 확률 증가";
+		}
+		public override Skill CreateInstance()
+		{
+			Skill_Parry skill = new Skill_Parry();
+			skill.meta = this;
+			return skill;
+		}
+	}
+
+	float critical_chance = 0.0f;
+	public override void OnAttach(Unit owner)
+	{
+		critical_chance = 0.0f;
+		base.OnAttach(owner);
+	}
+	public override void OnDefense(Unit attacker, Unit.AttackResult attack)
+	{
+		critical_chance += owner.stats.GetStat(StatType.Critical_Chance);
+	}
+}
+
+public class Skill_PartsCrush : Skill
+{
+	public new class Meta : Skill.Meta
+	{
+		public Meta()
+		{
+			skill_name = "PartsCrush";
+			skill_id = "Skill_PartsCrush";
+			sprite_path = "Skill/skill_icon_stun";
+			cooltime = 0;
+			description = "공격을 받을때 일정 확률로 크리티컬 확률 증가";
+		}
+		public override Skill CreateInstance()
+		{
+			Skill_PartsCrush skill = new Skill_PartsCrush();
+			skill.meta = this;
+			return skill;
+		}
+	}
+
+	float critical_chance = 0.0f;
+	public override void OnAttach(Unit owner)
+	{
+		critical_chance = 0.0f;
+		base.OnAttach(owner);
+	}
+	public override void OnDefense(Unit attacker, Unit.AttackResult attack)
+	{
+		critical_chance += owner.stats.GetStat(StatType.Critical_Chance);
+	}
+}
+
+public class Skill_Fury : Skill
+{
+	public new class Meta : Skill.Meta
+	{
+		public Meta()
+		{
+			skill_name = "Fury";
+			skill_id = "Skill_Fury";
+			sprite_path = "Skill/skill_icon_stun";
+			cooltime = 0;
+			description = "공격을 받을때 일정 확률로 크리티컬 확률 증가";
+		}
+		public override Skill CreateInstance()
+		{
+			Skill_Fury skill = new Skill_Fury();
+			skill.meta = this;
+			return skill;
+		}
+	}
+
+	float critical_chance = 0.0f;
+	public override void OnAttach(Unit owner)
+	{
+		critical_chance = 0.0f;
+		base.OnAttach(owner);
+	}
+	public override void OnDefense(Unit attacker, Unit.AttackResult attack)
+	{
+		critical_chance += owner.stats.GetStat(StatType.Critical_Chance);
+	}
+}
+
 public class SkillManager : Util.Singleton<SkillManager>
 {
-	private List<Skill.Meta> skill_gacha_metas = new List<Skill.Meta>();
 	private Dictionary<string, Skill.Meta> metas = new Dictionary<string, Skill.Meta>();
 	public void Init()
 	{
-		Skill.Meta meta = null;
-
-		meta = RegisterSkill<Skill_Runaway.Meta>();
-		meta = RegisterSkill<Skill_Attack.Meta>();
-		meta = RegisterSkill<Skill_DoubleAttack.Meta>();
-		skill_gacha_metas.Add(meta);
-		meta = RegisterSkill<Skill_Bleeding.Meta>();
-		skill_gacha_metas.Add(meta);
-		meta = RegisterSkill<Skill_Blindness.Meta>();
-		skill_gacha_metas.Add(meta);
-		meta = RegisterSkill<Skill_Smash.Meta>();
-		skill_gacha_metas.Add(meta);
-		meta = RegisterSkill<Skill_Stun.Meta>();
-		skill_gacha_metas.Add(meta);
-		meta = RegisterSkill<Skill_Penetrate.Meta>();
-		skill_gacha_metas.Add(meta);
-		meta = RegisterSkill<Skill_DamageRefection.Meta>();
-		skill_gacha_metas.Add(meta);
-	}
-
-	public Skill CreateRandomInstance()
-	{
-		if (0 == skill_gacha_metas.Count)
-		{
-			return null;
-		}
-
-		return skill_gacha_metas[Random.Range(0, skill_gacha_metas.Count)].CreateInstance();
+		RegisterSkill<Skill_Runaway.Meta>();
+		RegisterSkill<Skill_Attack.Meta>();
+		RegisterSkill<Skill_DoubleAttack.Meta>();
+		RegisterSkill<Skill_Bleeding.Meta>();
+		RegisterSkill<Skill_Blindness.Meta>();
+		RegisterSkill<Skill_Smash.Meta>();
+		RegisterSkill<Skill_Stun.Meta>();
+		RegisterSkill<Skill_Penetrate.Meta>();
+		RegisterSkill<Skill_DamageRefection.Meta>();
+		RegisterSkill<Skill_CriticalAttack.Meta>();
+		RegisterSkill<Skill_Poison.Meta>();
+		RegisterSkill<Skill_CounterAttack.Meta>();
+		RegisterSkill<Skill_Parry.Meta>();
+		RegisterSkill<Skill_PartsCrush.Meta>();
+		RegisterSkill<Skill_Fury.Meta>();
 	}
 
 	public Skill.Meta FindMeta<T>(string id) where T : Skill.Meta

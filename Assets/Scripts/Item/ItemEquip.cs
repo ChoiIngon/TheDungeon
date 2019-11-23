@@ -28,8 +28,11 @@ public class EquipItem : Item
 	{
 		public float weight;
 		public Part part = Part.Invalid;
-		public EquipItemStatMeta main_stat = new EquipItemStatMeta();
+		public EquipItemStatMeta main_stat = null;
 		public List<EquipItemStatMeta> sub_stats = new List<EquipItemStatMeta>();
+		public Skill.Meta main_skill_meta = null;
+		public List<Skill.Meta> rand_skill_metas = new List<Skill.Meta>();
+
 		public override Item CreateInstance()
 		{
 			EquipItem item = new EquipItem(this);
@@ -43,9 +46,18 @@ public class EquipItem : Item
 					item.sub_stat.AddStat(item.CreateStat(sub_stats[Random.Range(0, sub_stats.Count)]));
 				}
 			}
-			if (EquipItem.Grade.Rare <= item.grade)
+
+			if (null != main_skill_meta)
 			{
-				item.skill = SkillManager.Instance.CreateRandomInstance();
+				item.skills.Add(main_skill_meta.CreateInstance());
+			}
+			if (EquipItem.Grade.Rare <= item.grade && 0 < rand_skill_metas.Count)
+			{
+				Skill.Meta skillMeta = rand_skill_metas[Random.Range(0, rand_skill_metas.Count)];
+				if (main_skill_meta != skillMeta)
+				{
+					item.skills.Add(rand_skill_metas[Random.Range(0, rand_skill_metas.Count)].CreateInstance());
+				}
 			}
 
 			Analytics.CustomEvent("CreateItem", new Dictionary<string, object>
@@ -73,7 +85,7 @@ public class EquipItem : Item
     public int  equip_index = -1;
 	public Stat main_stat = new Stat();
 	public Stat sub_stat = new Stat();
-	public Skill skill;
+	public List<Skill> skills = new List<Skill>();
 
 	public EquipItem(EquipItem.Meta meta) : base(meta)
 	{
@@ -98,69 +110,85 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 {
 	public List<EquipItem.Meta> item_metas = new List<EquipItem.Meta>();
 	public Util.WeightRandom<Item.Grade> grade_gacha = new Util.WeightRandom<Item.Grade>();
-	//public Util.WeightRandom<EquipItemStatMeta>[] sub_stat_gacha = new Util.WeightRandom<EquipItemStatMeta>[(int)EquipItem.Part.Max];
 
-	public void Init()
+	private void InitItemMeta()
 	{
+		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+			"SELECT item_id, item_name, equip_part, price, weight, main_stat_type, main_base_value, main_rand_value, skill_id, sprite_path, description FROM meta_item_equip"
+		);
+		while (true == reader.Read())
 		{
-			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-				"SELECT item_id, item_name, equip_part, price, weight, main_stat_type, main_base_value, main_rand_value, sprite_path, description FROM meta_item_equip"
-			);
-			while (true == reader.Read())
+			EquipItem.Meta meta = new EquipItem.Meta();
+			meta.id = reader.GetString("item_id");
+			meta.name = reader.GetString("item_name");
+			meta.part = (EquipItem.Part)reader.GetInt32("equip_part");
+			meta.price = reader.GetInt32("price");
+			meta.weight = reader.GetFloat("weight");
+			meta.type = Item.Type.Equipment;
+			meta.main_stat = new EquipItemStatMeta()
 			{
-				EquipItem.Meta meta = new EquipItem.Meta();
-				meta.id = reader.GetString("item_id");
-				meta.name = reader.GetString("item_name");
-				meta.part = (EquipItem.Part)reader.GetInt32("equip_part");
-				meta.price = reader.GetInt32("price");
-				meta.weight = reader.GetFloat("weight");
-				meta.type = Item.Type.Equipment;
-				meta.main_stat = new EquipItemStatMeta()
+				type = (StatType)reader.GetInt32("main_stat_type"),
+				base_value = reader.GetFloat("main_base_value"),
+				max_value = 0.0f,
+				rand_stat_meta = new RandomStatMeta()
 				{
 					type = (StatType)reader.GetInt32("main_stat_type"),
-					base_value = reader.GetFloat("main_base_value"),
-					max_value = 0.0f,
-					rand_stat_meta = new RandomStatMeta()
-					{
-						type = (StatType)reader.GetInt32("main_stat_type"),
-						min_value = 0,
-						max_value = reader.GetFloat("main_rand_value"),
-						interval = 0.01f
-					}
-				};
-				meta.sprite_path = reader.GetString("sprite_path");
-				meta.description = reader.GetString("description");
-				item_metas.Add(meta);
-				ItemManager.Instance.AddItemMeta(meta);
-			}
-		}
-		{
-			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-				"SELECT item_id, stat_type, base_value, max_value, rand_min_value, rand_max_value, interval FROM meta_item_equip_sub_stat"
-			);
-			while (true == reader.Read())
-			{
-				EquipItem.Meta meta = ItemManager.Instance.FindMeta<EquipItem.Meta>(reader.GetString("item_id"));
-				if (null == meta)
-				{
-					throw new System.Exception("can't find item meta(id:" + reader.GetString("item_id") + ")");
+					min_value = 0,
+					max_value = reader.GetFloat("main_rand_value"),
+					interval = 0.01f
 				}
-				meta.sub_stats.Add(new EquipItemStatMeta()
+			};
+			meta.main_skill_meta = SkillManager.Instance.FindMeta<Skill.Meta>(reader.GetString("skill_id"));
+			meta.sprite_path = reader.GetString("sprite_path");
+			meta.description = reader.GetString("description");
+			item_metas.Add(meta);
+			ItemManager.Instance.AddItemMeta(meta);
+		}
+	}
+	private void InitSubStatMeta()
+	{
+		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+			"SELECT item_id, stat_type, base_value, max_value, rand_min_value, rand_max_value, interval FROM meta_item_equip_substat"
+		);
+		while (true == reader.Read())
+		{
+			EquipItem.Meta meta = ItemManager.Instance.FindMeta<EquipItem.Meta>(reader.GetString("item_id"));
+			if (null == meta)
+			{
+				throw new System.Exception("can't find item meta(id:" + reader.GetString("item_id") + ")");
+			}
+			meta.sub_stats.Add(new EquipItemStatMeta()
+			{
+				type = (StatType)reader.GetInt32("stat_type"),
+				base_value = reader.GetFloat("base_value"),
+				max_value = reader.GetFloat("max_value"),
+				rand_stat_meta = new RandomStatMeta()
 				{
 					type = (StatType)reader.GetInt32("stat_type"),
-					base_value = reader.GetFloat("base_value"),
-					max_value = reader.GetFloat("max_value"),
-					rand_stat_meta = new RandomStatMeta()
-					{
-						type = (StatType)reader.GetInt32("stat_type"),
-						min_value = reader.GetFloat("rand_min_value"),
-						max_value = reader.GetFloat("rand_max_value"),
-						interval = reader.GetFloat("interval"),
-					}
-				});
-			}
+					min_value = reader.GetFloat("rand_min_value"),
+					max_value = reader.GetFloat("rand_max_value"),
+					interval = reader.GetFloat("interval"),
+				}
+			});
 		}
-
+	}
+	private void InitSkillMeta()
+	{
+		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+			"SELECT item_id, skill_name, skill_id, cooltime FROM meta_item_equip_skill"
+		);
+		while (true == reader.Read())
+		{
+			EquipItem.Meta meta = ItemManager.Instance.FindMeta<EquipItem.Meta>(reader.GetString("item_id"));
+			if (null == meta)
+			{
+				throw new System.Exception("can't find item meta(id:" + reader.GetString("item_id") + ")");
+			}
+			meta.rand_skill_metas.Add(SkillManager.Instance.FindMeta<Skill.Meta>(reader.GetString("skill_id")));
+		}
+	}
+	public void Init()
+	{
 		grade_gacha.SetWeight(Item.Grade.Low, 20);
 		grade_gacha.SetWeight(Item.Grade.Normal, 18);
 		grade_gacha.SetWeight(Item.Grade.High, 16);
@@ -168,6 +196,9 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 		grade_gacha.SetWeight(Item.Grade.Rare, 12);
 		grade_gacha.SetWeight(Item.Grade.Legendary, 10);
 
+		InitItemMeta();
+		InitSubStatMeta();
+		InitSkillMeta();
 		//InitStatGacha();
 	}
 

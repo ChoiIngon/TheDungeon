@@ -108,9 +108,9 @@ public class Player : Unit
 
 		CalculateStat();
 
-		if (null != item.skill)
+		foreach(Skill skill in item.skills)
 		{
-			AddSkill(item.skill);
+			AddSkill(skill);
 		}
         
         Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Equip, new ItemEquipEvent() { prev_item = prev, curr_item = item, equip_index = equip_index } );
@@ -136,9 +136,9 @@ public class Player : Unit
 
 		CalculateStat();
 
-		if (null != item.skill)
+		foreach(Skill skill in item.skills)
 		{
-			RemoveSkill(item.skill.meta.skill_id);
+			RemoveSkill(skill.meta.skill_id);
 		}
 		
         Util.EventSystem.Publish<ItemEquipEvent>(EventID.Item_Unequip, new ItemEquipEvent() { curr_item = item, equip_index = equip_index });
