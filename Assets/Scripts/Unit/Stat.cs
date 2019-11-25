@@ -85,7 +85,7 @@ public class Stat
 	{
 		if (true == datas.ContainsKey(type))
 		{
-			return datas[type];
+			return Mathf.Max(0.0f, Truncate(datas[type], 0.01f));
 		}
 		return 0.0f;
 	}
@@ -112,7 +112,6 @@ public class Stat
 			datas[data.type] = data.value;
 			//Database.Execute(Database.Type.UserData, "INSERT INTO user_stats (stat_type, stat_value) VALUES (" + (int)data.type + ", " + data.value + ")");
 		}
-		datas[data.type] = Truncate(datas[data.type], 0.01f);
 	}
 
 	public void SubtractStat(Data data)
@@ -130,7 +129,6 @@ public class Stat
 		}
 #endif
 		datas[data.type] -= data.value;
-		datas[data.type] = Truncate(datas[data.type], 0.01f);
 		/*
 		if (EPSILON >= datas[data.type])
 		{
@@ -169,7 +167,7 @@ public class Stat
 		return stat;
 	}
 
-	static public float Truncate(float value, float trunc)
+	static public float Truncate(float value, float trunc = 0.01f)
 	{
 		return trunc * (int)(value / trunc);
 	}

@@ -11,7 +11,9 @@ public class Buff
 		Fear = 3,
 		Bleeding = 4,
 		Runaway = 5,
-		Max	= 5
+		Debuff = 6,
+		Poison = 7,
+		Max	= 7
 	}
 
 	public string buff_name;
@@ -27,6 +29,12 @@ public class Buff
 		this.duration = duration;
 		active = true;
 	}
+
+	public virtual void OnAttach(Unit target)
+	{
+		this.target = target;
+	}
+	public virtual void OnDetach() { }
 
 	public virtual void OnEffect()
 	{
@@ -63,15 +71,31 @@ public class Buff_DOT : Buff
 	}
 }
 
-/*
-public class Buff_Defense : Buff
-{
-}
-*/
-
 public class Buff_Bleeding : Buff_DOT			   
 {
     public Buff_Bleeding(int duration, float damage) : base("Bleeding", duration, damage, Type.Bleeding)
     {
+	}
+}
+
+public class Buff_SubstractStat : Buff
+{
+	private Stat.Data debuff_stat_data = new Stat.Data();
+	public Buff_SubstractStat(string buffName, int duration, StatType debuffType, float debuffValue) : base("Debuff", duration, Type.Debuff)
+	{
+		debuff_stat_data.type = debuffType;
+		debuff_stat_data.value = debuffValue;
+	}
+
+	public override void OnAttach(Unit target)
+	{
+		base.OnAttach(target);
+
+		target.stats.SubtractStat(debuff_stat_data);
+	}
+
+	public override void OnDetach()
+	{
+		target.stats.AddStat(debuff_stat_data);
 	}
 }

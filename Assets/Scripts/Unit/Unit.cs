@@ -136,7 +136,7 @@ public class Unit
 	public void AddBuff(Buff buff)
 	{
 		Debug.Log("add buff(buff_id:" + buff.buff_name + ")");
-		buff.target = this;
+		buff.OnAttach(this);
 		buffs[(int)buff.buff_type - 1].Add(buff);
 		Util.EventSystem.Publish<Buff>(EventID.Buff_Start, buff);
 	}
@@ -144,6 +144,7 @@ public class Unit
 	public void RemoveBuff(Buff buff)
 	{
 		buffs[(int)buff.buff_type - 1].Remove(buff);
+		buff.OnDetach();
 		Util.EventSystem.Publish<Buff>(EventID.Buff_End, buff);
 		Debug.Log("remove buff(buff_id:" + buff.buff_name + ")");
 	}
