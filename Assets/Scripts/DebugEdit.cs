@@ -11,7 +11,10 @@ public class DebugEdit : MonoBehaviour
     {
 		add_item.onClick.AddListener(() =>
 		{
-			GameManager.Instance.player.inventory.Add(ItemManager.Instance.CreateRandomEquipItem());
+			StartCoroutine(GameManager.Instance.advertisement.Show(Advertisement.PlacementType.Rewarded, () =>
+			{
+				GameManager.Instance.player.inventory.Add(ItemManager.Instance.CreateRandomEquipItem());
+			}));
 		});
     }
 

@@ -160,6 +160,7 @@ public class Player : Unit
 		}
 		CalculateStat();
 		cur_health = max_health;
+		cur_health = 1;
 		cur_stamina = max_stamina;
 	}
 	private void LoadPlayer()

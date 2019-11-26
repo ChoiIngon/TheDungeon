@@ -18,6 +18,10 @@ public class GameManager : Util.MonoSingleton<GameManager>
 	private Image camera_fade;
 	public Canvas canvas;
 
+	public void EnableUI(bool flag)
+	{
+		camera_fade.gameObject.SetActive(!flag);
+	}
 	private IEnumerator Start()
 	{
 		const float fixedHorizontalFOV = 58.7f;

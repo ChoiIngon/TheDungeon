@@ -272,6 +272,7 @@ public class SceneDungeon : SceneMain
 	}
 	private IEnumerator Lose()
 	{
+		dungeon_move.touch_input.block_count++;
 		ProgressManager.Instance.Update(ProgressType.DieCount, "", 1);
 
 		Rect prev = GameManager.Instance.ui_textbox.Resize(1000 /*Screen.currentResolution.height * GameManager.Instance.canvas.scaleFactor * 0.8f*/);
@@ -285,7 +286,8 @@ public class SceneDungeon : SceneMain
 		));
 		GameManager.Instance.ui_textbox.Resize(prev.height);
 		yield return GameManager.Instance.CameraFade(new Color(0.0f, 0.0f, 0.0f, 0.0f), Color.black, 1.5f);
-		yield return GameManager.Instance.advertisement.ShowAds();
+		yield return GameManager.Instance.advertisement.Show(Advertisement.PlacementType.Video);
+		dungeon_move.touch_input.block_count--;
 		yield return GameManager.Instance.AsyncLoadScene("Start");
 		yield return GameManager.Instance.AsyncUnloadScene("Dungeon");
 	}
