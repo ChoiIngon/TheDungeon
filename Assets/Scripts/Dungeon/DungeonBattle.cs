@@ -223,13 +223,14 @@ public class DungeonBattle : MonoBehaviour
 			player_preemptive_score += player_attack_per_second;
 		}
 
-		if (0 < attacker.GetBuffCount(Buff.Type.Stun) || 0 < attacker.GetBuffCount(Buff.Type.Fear))
+		attacker.OnBattleTurn();
+		defender.OnBattleTurn();
+
+		if (0 < attacker.GetBuffCount(Buff.Type.Stun))
 		{
 			return;
 		}
 
-		attacker.OnBattleTurn();
-		defender.OnBattleTurn();
 		attacker.Attack(defender);
 		
 		if (null == show_damage_text_coroutine)

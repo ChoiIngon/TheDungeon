@@ -10,9 +10,9 @@ public class Buff
 		Blind = 2,
 		Fear = 3,
 		Bleeding = 4,
-		Runaway = 5,
-		Debuff = 6,
-		Poison = 7,
+		Poison = 5,
+		Runaway = 6,
+		Stats = 7,
 		Max	= 7
 	}
 
@@ -78,24 +78,30 @@ public class Buff_Bleeding : Buff_DOT
 	}
 }
 
-public class Buff_SubstractStat : Buff
+public class Buff_Stats : Buff
 {
-	private Stat.Data debuff_stat_data = new Stat.Data();
-	public Buff_SubstractStat(string buffName, int duration, StatType debuffType, float debuffValue) : base("Debuff", duration, Type.Debuff)
+	private Stat stats;
+	public Buff_Stats(string buffName, int duration, Stat stats, Type buffType) : base(buffName, duration, buffType)
 	{
-		debuff_stat_data.type = debuffType;
-		debuff_stat_data.value = debuffValue;
+		this.stats = stats;
 	}
 
 	public override void OnAttach(Unit target)
 	{
 		base.OnAttach(target);
-
-		target.stats.SubtractStat(debuff_stat_data);
+		target.stats += stats;
 	}
 
 	public override void OnDetach()
 	{
-		target.stats.AddStat(debuff_stat_data);
+		target.stats -= stats;
 	}
 }
+
+public class Buff_Fear : Buff_Stats
+{
+	public Buff_Fear(int duration, Stat stats) : base("Fear", duration, stats, Type.Fear)
+	{
+	}
+}
+

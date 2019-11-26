@@ -231,14 +231,11 @@ public class Skill_Fear : Skill
 	{
 		if (0 == target.GetBuffCount(Buff.Type.Fear))
 		{
-			Buff buff = new Buff(meta.skill_name, 10, Buff.Type.Fear);
+			Stat stats = new Stat();
+			stats.SetStat(new Stat.Data() { type = StatType.Attack_Rate, value = -0.5f });
+			stats.SetStat(new Stat.Data() { type = StatType.Speed_Rate, value = -0.5f });
+			Buff buff = new Buff_Fear(7, stats);
 			target.AddBuff(buff);
-
-			Buff debuff_1 = new Buff_SubstractStat(meta.skill_name, 10, StatType.Attack_Rate, 0.5f);
-			target.AddBuff(debuff_1);
-
-			Buff debuff_2 = new Buff_SubstractStat(meta.skill_name, 10, StatType.Speed_Rate, 0.5f);
-			target.AddBuff(debuff_2);
 		}
 	}
 }
@@ -496,7 +493,6 @@ public class Skill_CriticalAttack : Skill
 		target.OnDamage(owner, result);
 	}
 }
-
 
 public class Skill_CounterAttack : Skill
 {
