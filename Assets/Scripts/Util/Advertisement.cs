@@ -32,6 +32,7 @@ public class Advertisement : MonoBehaviour {
 		//private string ad_unit_id = "ca-app-pub-5331343349322603/5159059190";
 		private string ad_unit_id = "ca-app-pub-3940256099942544/5224354917";
 		private bool complete;
+		private bool reward;
 		private System.Action on_success;
 
 		public override void Init()
@@ -59,6 +60,7 @@ public class Advertisement : MonoBehaviour {
 		public override IEnumerator Show(System.Action onSuccess)
 		{
 			complete = false;
+			reward = false;
 			on_success = null;
 			on_success += onSuccess;
 #if UNITY_EDITOR
@@ -69,6 +71,11 @@ public class Advertisement : MonoBehaviour {
 			while (false == complete)
 			{
 				yield return new WaitForSeconds(0.1f);
+			}
+
+			if(true == reward)
+			{
+				on_success?.Invoke();
 			}
 #endif
 		}
@@ -115,10 +122,8 @@ public class Advertisement : MonoBehaviour {
 
 		public void HandleUserEarnedReward(object sender, Reward args)
 		{
-			string type = args.Type;
-			double amount = args.Amount;
-			on_success?.Invoke();
-			MonoBehaviour.print("HandleRewardedAdRewarded event received for " + amount.ToString() + " " + type);
+			reward = true;
+			MonoBehaviour.print("HandleRewardedAdRewarded event received");
 		}
 	}
 	public class AdMobAdvertisement : AdvertisementImpl
