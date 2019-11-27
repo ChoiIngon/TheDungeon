@@ -5,12 +5,11 @@ using UnityEngine;
 using UnityEngine.Advertisements;
 using GoogleMobileAds.Api;
 
-public class Advertisement : MonoBehaviour {
+public class Advertisement : MonoBehaviour
+{
 	//#if !UNITY_ADS // If the Ads service is not enabled...
 	public string unity_game_id = "1305819"; // Set this value from the inspector.
 											 //#endif
-	private BannerView bannerView;
-
 	public enum PlacementType
 	{
 		Invalid,
