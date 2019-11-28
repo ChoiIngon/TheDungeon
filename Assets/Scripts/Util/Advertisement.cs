@@ -13,6 +13,7 @@ public class Advertisement : MonoBehaviour
 	public enum PlacementType
 	{
 		Invalid,
+		Banner,
 		Video,
 		Rewarded,
 	}
@@ -24,26 +25,41 @@ public class Advertisement : MonoBehaviour
 		public abstract IEnumerator Show(System.Action onSuccess);
 	}
 
+	public class AdMobBannerAdvertisement : AdvertisementImpl
+	{
+		private BannerView banner_view;
+
+		public override void Init()
+		{
+			//string ad_unit_id = "ca-app-pub-5331343349322603/2002078706";
+			string ad_unit_id = "ca-app-pub-3940256099942544/6300978111";
+			banner_view = new BannerView(ad_unit_id, AdSize.Banner, AdPosition.Bottom);
+			AdRequest request = new AdRequest.Builder().Build();
+			banner_view.LoadAd(request);
+			banner_view.Show();
+		}
+
+		public override bool IsReady()
+		{
+			return true;
+		}
+
+		public override IEnumerator Show(Action onSuccess)
+		{
+			yield break;
+		}
+	}
+
 	public class AdMobRewardAdvertisement : AdvertisementImpl
 	{
 		private RewardedAd rewarded_ad;
-		private BannerView banner_view;
 		//private string ad_unit_id = "ca-app-pub-5331343349322603/5159059190";
 		private string ad_unit_id = "ca-app-pub-3940256099942544/5224354917";
 		private bool complete;
 		private bool reward;
-		private System.Action on_success;
-
+		
 		public override void Init()
 		{
-			//string adUnitID = "ca-app-pub-5331343349322603/2002078706";
-			string adUnitID = "ca-app-pub-3940256099942544/6300978111";
-			banner_view = new BannerView(adUnitID, AdSize.Banner, AdPosition.Bottom);
-
-			AdRequest request = new AdRequest.Builder().Build();
-			banner_view.LoadAd(request);
-			banner_view.Show();
-
 			LoadAd();
 		}
 
@@ -58,14 +74,13 @@ public class Advertisement : MonoBehaviour
 
 		public override IEnumerator Show(System.Action onSuccess)
 		{
-			complete = false;
-			reward = false;
-			on_success = null;
-			on_success += onSuccess;
+			
 #if UNITY_EDITOR
-			on_success?.Invoke();
+			onSuccess?.Invoke();
 			yield break;
 #else
+			complete = false;
+			reward = false;
 			rewarded_ad.Show();
 			while (false == complete)
 			{
@@ -74,7 +89,7 @@ public class Advertisement : MonoBehaviour
 
 			if(true == reward)
 			{
-				on_success?.Invoke();
+				onSuccess?.Invoke();
 			}
 #endif
 		}
@@ -110,6 +125,7 @@ public class Advertisement : MonoBehaviour
 		public void HandleRewardedAdFailedToShow(object sender, AdErrorEventArgs args)
 		{
 			MonoBehaviour.print("HandleRewardedAdFailedToShow event received with message: " + args.Message);
+			complete = true;
 		}
 
 		public void HandleRewardedAdClosed(object sender, EventArgs args)
@@ -121,8 +137,8 @@ public class Advertisement : MonoBehaviour
 
 		public void HandleUserEarnedReward(object sender, Reward args)
 		{
-			reward = true;
 			MonoBehaviour.print("HandleRewardedAdRewarded event received");
+			reward = true;
 		}
 	}
 	public class AdMobAdvertisement : AdvertisementImpl
@@ -186,6 +202,7 @@ public class Advertisement : MonoBehaviour
 		public void HandleOnAdFailedToLoad(object sender, AdFailedToLoadEventArgs args)
 		{
 			MonoBehaviour.print("HandleFailedToReceiveAd event received with message: " + args.Message);
+			complete = true;
 		}
 
 		public void HandleOnAdOpened(object sender, EventArgs args)
@@ -203,13 +220,13 @@ public class Advertisement : MonoBehaviour
 		public void HandleOnAdLeavingApplication(object sender, EventArgs args)
 		{
 			MonoBehaviour.print("HandleAdLeavingApplication event received");
+			complete = true;
 		}
 	}
 	public class UnityRewardAdvertisement : AdvertisementImpl
 	{
 		private bool complete;
-		private System.Action on_success;
-		private string unity_game_id = "1305819"; // Set this value from the inspector.
+		private bool reward;
 		private const string placement_id = "rewardedVideo";
 		
 		public override void Init()
@@ -224,16 +241,20 @@ public class Advertisement : MonoBehaviour
 		public override IEnumerator Show(System.Action onSuccess)
 		{
 			complete = false;
-			on_success = null;
+			reward = false;
 			if (true == UnityEngine.Advertisements.Advertisement.IsReady(placement_id))
 			{
-				on_success += onSuccess;
 				var options = new ShowOptions { resultCallback = HandleShowResult };
 				UnityEngine.Advertisements.Advertisement.Show(placement_id, options);
 			}
 			while (false == complete)
 			{
 				yield return new WaitForSeconds(0.1f);
+			}
+
+			if (true == reward)
+			{
+				onSuccess?.Invoke();
 			}
 		}
 
@@ -244,7 +265,7 @@ public class Advertisement : MonoBehaviour
 			{
 				case ShowResult.Finished:
 					Debug.Log("The ad was successfully shown.");
-					on_success?.Invoke();
+					reward = true;
 					break;
 				case ShowResult.Skipped:
 					Debug.Log("The ad was skipped before reaching the end.");
@@ -304,15 +325,20 @@ public class Advertisement : MonoBehaviour
 	private Dictionary<PlacementType, List<AdvertisementImpl>> advertisement_impls = new Dictionary<PlacementType, List<AdvertisementImpl>>()
 	{
 		{
+			PlacementType.Banner, new List<AdvertisementImpl>() {
+				new AdMobBannerAdvertisement()
+			}
+		},
+		{
 			PlacementType.Video, new List<AdvertisementImpl>() {
+				new UnityAdvertisement(),
 				new AdMobAdvertisement(),
-				new UnityAdvertisement()
 			}
 		},
 		{
 			PlacementType.Rewarded, new List<AdvertisementImpl>() {
+				new UnityRewardAdvertisement(),
 				new AdMobRewardAdvertisement(),
-				new UnityRewardAdvertisement()
 			}
 		}
 	};
