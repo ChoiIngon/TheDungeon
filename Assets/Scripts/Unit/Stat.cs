@@ -47,14 +47,13 @@ public class RandomStatMeta
 
 public class Stat
 {
-    const float EPSILON = 0.0001f;
 	public class Data
 	{
 		public StatType type;
 		public float value;
 		public override string ToString()
 		{
-			Meta meta = Stat.GetMeta(type);
+			Meta meta = Manager.Instance.FindMeta(type);
 			return meta.ToString(value);
 		}
 	}
@@ -129,12 +128,6 @@ public class Stat
 		}
 #endif
 		datas[data.type] -= data.value;
-		/*
-		if (EPSILON >= datas[data.type])
-		{
-			datas.Remove(data.type);
-		}
-		*/
 	}
 
 	static public Stat operator + (Stat rhs, Stat lhs)
@@ -172,18 +165,38 @@ public class Stat
 		return trunc * (int)(value / trunc);
 	}
 
-	static public Meta GetMeta(StatType type)
+	public class Manager : Util.Singleton<Manager>
 	{
-		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData, "SELECT stat_name, description FROM meta_stat where stat_type=" + (int)type);
-		while (true == reader.Read())
+		private Dictionary<StatType, Meta> metas = new Dictionary<StatType, Meta>();
+		public void Init()
 		{
-			Meta meta = new Meta();
-			meta.type = type;
-			meta.name = reader.GetString("stat_name");
-			meta.description = reader.GetString("description");
-			return meta;			
+			GoogleSheetReader sheetReader = new GoogleSheetReader(GameManager.GOOGLESHEET_ID, GameManager.GOOGLESHEET_API_KEY);
+			if (false == sheetReader.Load("meta_stat"))
+			{
+				GameManager.Instance.ui_textbox.on_close = () =>
+				{
+					Application.Quit();
+				};
+				GameManager.Instance.ui_textbox.AsyncWrite("error:'meta_stat' load fail", false);
+			}
+			foreach (GoogleSheetReader.Row row in sheetReader)
+			{
+				Meta meta = new Meta();
+				meta.type = (StatType)System.Enum.Parse(typeof(StatType), row["stat_name"]);
+				meta.name = row["stat_name"];
+				meta.description = row["description"];
+				metas.Add(meta.type, meta);
+			}
 		}
-		throw new System.Exception("can not find stat meta data(stat_type:" + type.ToString() + ")");
+
+		public Meta FindMeta(StatType type)
+		{
+			if (false == metas.ContainsKey(type))
+			{
+				return null;
+			}
+			return metas[type];
+		}
 	}
 }
 

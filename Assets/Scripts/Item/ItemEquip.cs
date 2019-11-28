@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Analytics;
 
@@ -37,13 +38,13 @@ public class EquipItem : Item
 		{
 			EquipItem item = new EquipItem(this);
 			item.grade = EquipItemManager.Instance.grade_gacha.Random();
-			item.level = Mathf.Max(1, Random.Range(GameManager.Instance.player.level - 5, GameManager.Instance.player.level + 2));
+			item.level = Mathf.Max(1, UnityEngine.Random.Range(GameManager.Instance.player.level - 5, GameManager.Instance.player.level + 2));
 			item.main_stat.AddStat(item.CreateStat(main_stat));
 			if (0 < sub_stats.Count)
 			{
 				for (int i = 0; i < (int)item.grade - (int)EquipItem.Grade.Normal; i++)
 				{
-					item.sub_stat.AddStat(item.CreateStat(sub_stats[Random.Range(0, sub_stats.Count)]));
+					item.sub_stat.AddStat(item.CreateStat(sub_stats[UnityEngine.Random.Range(0, sub_stats.Count)]));
 				}
 			}
 
@@ -53,10 +54,10 @@ public class EquipItem : Item
 			}
 			if (EquipItem.Grade.Rare <= item.grade && 0 < rand_skill_metas.Count)
 			{
-				Skill.Meta skillMeta = rand_skill_metas[Random.Range(0, rand_skill_metas.Count)];
+				Skill.Meta skillMeta = rand_skill_metas[UnityEngine.Random.Range(0, rand_skill_metas.Count)];
 				if (main_skill_meta != skillMeta)
 				{
-					item.skills.Add(rand_skill_metas[Random.Range(0, rand_skill_metas.Count)].CreateInstance());
+					item.skills.Add(rand_skill_metas[UnityEngine.Random.Range(0, rand_skill_metas.Count)].CreateInstance());
 				}
 			}
 
@@ -113,36 +114,50 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 
 	private void InitItemMeta()
 	{
-		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-			"SELECT item_id, item_name, equip_part, price, weight, main_stat_type, main_base_value, main_rand_value, skill_id, sprite_path, description FROM meta_item_equip"
-		);
-		while (true == reader.Read())
+		try
 		{
-			EquipItem.Meta meta = new EquipItem.Meta();
-			meta.id = reader.GetString("item_id");
-			meta.name = reader.GetString("item_name");
-			meta.part = (EquipItem.Part)reader.GetInt32("equip_part");
-			meta.price = reader.GetInt32("price");
-			meta.weight = reader.GetFloat("weight");
-			meta.type = Item.Type.Equipment;
-			meta.main_stat = new EquipItemStatMeta()
+			GoogleSheetReader sheetReader = new GoogleSheetReader(GameManager.GOOGLESHEET_ID, GameManager.GOOGLESHEET_API_KEY);
+			if (false == sheetReader.Load("meta_item_equip"))
 			{
-				type = (StatType)reader.GetInt32("main_stat_type"),
-				base_value = reader.GetFloat("main_base_value"),
-				max_value = 0.0f,
-				rand_stat_meta = new RandomStatMeta()
+
+			}
+
+			foreach (GoogleSheetReader.Row row in sheetReader)
+			{
+				EquipItem.Meta meta = new EquipItem.Meta();
+				meta.id = row["item_id"];
+				meta.name = row["item_name"];
+				meta.part = (EquipItem.Part)Enum.Parse(typeof(EquipItem.Part), row["equip_part"]);
+				meta.price = Int32.Parse(row["price"]);
+				meta.weight = float.Parse(row["weight"]);
+				meta.type = Item.Type.Equipment;
+				meta.main_stat = new EquipItemStatMeta()
 				{
-					type = (StatType)reader.GetInt32("main_stat_type"),
-					min_value = 0,
-					max_value = reader.GetFloat("main_rand_value"),
-					interval = 0.01f
-				}
+					type = (StatType)Enum.Parse(typeof(StatType), row["main_stat_type"]),
+					base_value = float.Parse(row["main_base_value"]),
+					max_value = 0.0f,
+					rand_stat_meta = new RandomStatMeta()
+					{
+						type = (StatType)Enum.Parse(typeof(StatType), row["main_stat_type"]),
+						min_value = 0,
+						max_value = float.Parse(row["main_rand_value"]),
+						interval = 0.01f
+					}
+				};
+				meta.main_skill_meta = SkillManager.Instance.FindMeta<Skill.Meta>(row["skill_id"]);
+				meta.sprite_path = row["sprite_path"];
+				meta.description = row["description"];
+				item_metas.Add(meta);
+				ItemManager.Instance.AddItemMeta(meta);
+			}
+		}
+		catch (System.Net.WebException e)
+		{
+			GameManager.Instance.ui_textbox.on_close = () =>
+			{
+				Application.Quit();
 			};
-			meta.main_skill_meta = SkillManager.Instance.FindMeta<Skill.Meta>(reader.GetString("skill_id"));
-			meta.sprite_path = reader.GetString("sprite_path");
-			meta.description = reader.GetString("description");
-			item_metas.Add(meta);
-			ItemManager.Instance.AddItemMeta(meta);
+			GameManager.Instance.ui_textbox.AsyncWrite(e.Message, false);
 		}
 	}
 	private void InitSubStatMeta()
@@ -210,84 +225,6 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 
 	public EquipItem.Meta GetRandomMeta()
 	{
-		return item_metas[Random.Range(0, item_metas.Count)];
+		return item_metas[UnityEngine.Random.Range(0, item_metas.Count)];
 	}
-
-	/*
-	private void InitStatGacha()
-	{
-		for (int i = 0; i < (int)EquipItem.Part.Max; i++)
-		{
-			sub_stat_gacha[i] = new Util.WeightRandom<EquipItemStatMeta>();
-		}
-
-		EquipItemStatMeta coinBonus = new EquipItemStatMeta()
-		{
-			type = StatType.CoinBonus, base_value = 3.0f, max_value = 0.0f,
-			rand_stat_meta = new RandomStatMeta() { type = StatType.CoinBonus, min_value = 0.0f, max_value = 0.5f, interval = 0.1f }
-		};
-
-		EquipItemStatMeta expBonus = new EquipItemStatMeta()
-		{
-			type = StatType.ExpBonus, base_value = 5.0f, max_value = 0.0f,
-			rand_stat_meta = new RandomStatMeta() { type = StatType.CoinBonus, min_value = 0.0f, max_value = 5.0f, interval = 0.1f }
-		};
-
-		EquipItemStatMeta healthRate = new EquipItemStatMeta()
-		{
-			type = StatType.Health_Rate, base_value = 1.0f, max_value = 0.0f,
-			rand_stat_meta = new RandomStatMeta() { type = StatType.Health_Rate, min_value = 0.0f, max_value = 0.5f, interval = 0.01f }
-		};
-
-		EquipItemStatMeta attackRate = new EquipItemStatMeta()
-		{
-			type = StatType.Attack_Rate, base_value = 1.0f, max_value = 0.0f,
-			rand_stat_meta = new RandomStatMeta() { type = StatType.Attack_Rate, min_value = 0.0f, max_value = 0.5f, interval = 0.1f }
-		};
-
-		EquipItemStatMeta defenseRate = new EquipItemStatMeta()
-		{
-			type = StatType.Defense_Rate, base_value = 1.0f, max_value = 0.0f,
-			rand_stat_meta = new RandomStatMeta() { type = StatType.Defense_Rate, min_value = 0.0f, max_value = 0.5f, interval = 0.1f }
-		};
-
-		EquipItemStatMeta speedRate = new EquipItemStatMeta()
-		{
-			type = StatType.Speed_Rate, base_value = 1.0f, max_value = 0.0f,
-			rand_stat_meta = new RandomStatMeta() { type = StatType.Speed_Rate, min_value = 0.0f, max_value = 0.5f, interval = 0.1f }
-		};
-
-		EquipItemStatMeta critical = new EquipItemStatMeta()
-		{
-			type = StatType.Critical_Chance, base_value = 1.0f, max_value = 10.0f,
-			rand_stat_meta = new RandomStatMeta() { type = StatType.Critical_Chance, min_value = 0.0f, max_value = 0.5f, interval = 0.1f }
-		};
-
-		sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(coinBonus, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(expBonus, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(healthRate, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Helmet].SetWeight(defenseRate, 1);
-
-		sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(attackRate, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(defenseRate, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Hand].SetWeight(critical, 1);
-
-		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(coinBonus, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(expBonus, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(healthRate, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(attackRate, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(defenseRate, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(speedRate, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Ring].SetWeight(critical, 1);
-
-		sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(coinBonus, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(expBonus, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(healthRate, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Armor].SetWeight(defenseRate, 1);
-
-		sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(defenseRate, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(critical, 1);
-		sub_stat_gacha[(int)EquipItem.Part.Shoes].SetWeight(speedRate, 1);
-	}
-	*/
 }

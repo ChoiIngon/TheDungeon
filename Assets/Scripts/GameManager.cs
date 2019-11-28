@@ -8,6 +8,8 @@ using UnityEngine.Networking;
 public class GameManager : Util.MonoSingleton<GameManager>
 {
     public const string VERSION = "1.2";
+	public const string GOOGLESHEET_API_KEY = "AIzaSyAgbURPgPodcmpMpuXcCyhasaEqHlMPTdo";
+	public const string GOOGLESHEET_ID = "1mq1O4JJrY5SvRdbxwxjtbg5OR7SsPg9anTVnPVTjTqI";
 	public Player player;
 	
 	public UINpc ui_npc;
@@ -60,6 +62,8 @@ public class GameManager : Util.MonoSingleton<GameManager>
 			throw new MissingComponentException("Advertisement");
 		}
 
+		ui_textbox.Init();
+
 		if (Application.platform != RuntimePlatform.Android)
 		{
 			Database.Connect(Database.Type.MetaData, Application.streamingAssetsPath + "/meta_data.db");
@@ -89,6 +93,7 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		ItemManager.Instance.Init();
 		MonsterManager.Instance.Init();
 		AudioManager.Instance.Init();
+		Stat.Manager.Instance.Init();
 
 		player = new Player();
 		player.meta.Init();
@@ -97,7 +102,6 @@ public class GameManager : Util.MonoSingleton<GameManager>
 		ui_setting.Init();
 		ui_setting.gameObject.SetActive(false);
 		ui_npc.Init();
-		ui_textbox.Init();
 	}
 
 	public IEnumerator CameraFade(Color from, Color to, float time, bool stay = false)

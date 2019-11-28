@@ -32,13 +32,13 @@ public class UIEquipItem : UIItem
 
 		foreach (Stat.Data stat in equipItem.main_stat.GetStats())
 		{
-			Stat.Meta meta = Stat.GetMeta(stat.type);
+			Stat.Meta meta = Stat.Manager.Instance.FindMeta(stat.type);
 			description += "<color=white> " + meta.ToString(stat.value) + "</color>\n";
 		}
 
 		foreach (Stat.Data stat in equipItem.sub_stat.GetStats())
 		{
-			Stat.Meta meta = Stat.GetMeta(stat.type);
+			Stat.Meta meta = Stat.Manager.Instance.FindMeta(stat.type);
 			description += "<color=#4eb105> " + meta.ToString(stat.value) + "</color>\n";
 		}
 
@@ -276,7 +276,7 @@ public class UIEquipItem : UIItem
 		string statText = "";
 		foreach (Stat.Data stat in curr.GetStats())
 		{
-			Stat.Meta meta = Stat.GetMeta(stat.type);
+			Stat.Meta meta = Stat.Manager.Instance.FindMeta(stat.type);
 
 			if (0.0f < stat.value)
 			{
