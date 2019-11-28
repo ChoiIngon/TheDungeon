@@ -336,6 +336,10 @@ public class DungeonBattle : MonoBehaviour
 
 		foreach (var itr in GameManager.Instance.player.skills)
 		{
+			if (Skill.TriggerType.Passive == itr.Value.skill_data.meta.trigger_type)
+			{
+				continue;
+			}
 			UISkillButton skillButton = GameObject.Instantiate<UISkillButton>(skill_button_prefab);
 			Skill skill = itr.Value.skill_data;
 			skillButton.Init(skill, () => 

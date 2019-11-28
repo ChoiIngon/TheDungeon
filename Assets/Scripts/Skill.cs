@@ -461,7 +461,7 @@ public class Skill_CriticalAttack : Skill
 			skill_name = "Critical Attack";
 			skill_id = "Skill_CriticalAttack";
 			sprite_path = "Skill/skill_icon_stun";
-			cooltime = 0;
+			cooltime = 24;
 			description = "크리티컬 확률 100%";
 		}
 		public override Skill CreateInstance()

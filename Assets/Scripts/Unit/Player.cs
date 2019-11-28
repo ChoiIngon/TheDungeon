@@ -24,18 +24,25 @@ public class Player : Unit
 
 		public void Init()
 		{
-			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-				"SELECT " + 
-					"stat_type," +
-					"base_min_value,base_max_value,base_interval," +
-					"levelup_min_value,levelup_max_value,levelup_interval " +
-				"FROM meta_player_stat"
-			);
-			while (true == reader.Read())
+			try
 			{
-				StatType statType = (StatType)reader.GetInt32("stat_type");
-				base_stats.Add(new RandomStatMeta() { type = statType, min_value = reader.GetFloat("base_min_value"), max_value = reader.GetFloat("base_max_value"), interval = reader.GetFloat("base_interval") });
-				levelup_stats.Add(new RandomStatMeta() { type = statType, min_value = reader.GetFloat("levelup_min_value"), max_value = reader.GetFloat("levelup_max_value"), interval = reader.GetFloat("levelup_interval") });
+				GoogleSheetReader sheetReader = new GoogleSheetReader(GameManager.GOOGLESHEET_ID, GameManager.GOOGLESHEET_API_KEY);
+				sheetReader.Load("meta_player_stat");
+				
+				foreach(GoogleSheetReader.Row row in sheetReader)
+				{
+					StatType statType = row.GetEnum<StatType>("stat_type");
+					base_stats.Add(new RandomStatMeta() { type = statType, min_value = row.GetFloat("base_min_value"), max_value = row.GetFloat("base_max_value"), interval = row.GetFloat("base_interval") });
+					levelup_stats.Add(new RandomStatMeta() { type = statType, min_value = row.GetFloat("levelup_min_value"), max_value = row.GetFloat("levelup_max_value"), interval = row.GetFloat("levelup_interval") });
+				}
+			}
+			catch (System.Exception e)
+			{
+				GameManager.Instance.ui_textbox.on_close = () =>
+				{
+					Application.Quit();
+				};
+				GameManager.Instance.ui_textbox.AsyncWrite("error: " + e.Message + "\n" + e.ToString(), false);
 			}
 		}
 

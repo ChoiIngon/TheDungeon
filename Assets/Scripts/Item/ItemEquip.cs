@@ -112,95 +112,114 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 	public List<EquipItem.Meta> item_metas = new List<EquipItem.Meta>();
 	public Util.WeightRandom<Item.Grade> grade_gacha = new Util.WeightRandom<Item.Grade>();
 
-	private void InitItemMeta()
+	private bool InitItemMeta()
 	{
 		try
 		{
 			GoogleSheetReader sheetReader = new GoogleSheetReader(GameManager.GOOGLESHEET_ID, GameManager.GOOGLESHEET_API_KEY);
-			if (false == sheetReader.Load("meta_item_equip"))
-			{
-
-			}
-
+			sheetReader.Load("meta_item_equip");
 			foreach (GoogleSheetReader.Row row in sheetReader)
 			{
 				EquipItem.Meta meta = new EquipItem.Meta();
-				meta.id = row["item_id"];
-				meta.name = row["item_name"];
-				meta.part = (EquipItem.Part)Enum.Parse(typeof(EquipItem.Part), row["equip_part"]);
-				meta.price = Int32.Parse(row["price"]);
-				meta.weight = float.Parse(row["weight"]);
+				meta.id = row.GetString("item_id");
+				meta.name = row.GetString("item_name");
+				meta.part = row.GetEnum<EquipItem.Part>("equip_part");
+				meta.price = row.GetInt32("price");
+				meta.weight = row.GetFloat("weight");
 				meta.type = Item.Type.Equipment;
 				meta.main_stat = new EquipItemStatMeta()
 				{
-					type = (StatType)Enum.Parse(typeof(StatType), row["main_stat_type"]),
-					base_value = float.Parse(row["main_base_value"]),
+					type = row.GetEnum<StatType>("main_stat_type"),
+					base_value = row.GetFloat("main_base_value"),
 					max_value = 0.0f,
 					rand_stat_meta = new RandomStatMeta()
 					{
-						type = (StatType)Enum.Parse(typeof(StatType), row["main_stat_type"]),
+						type = row.GetEnum<StatType>("main_stat_type"),
 						min_value = 0,
-						max_value = float.Parse(row["main_rand_value"]),
+						max_value = row.GetFloat("main_rand_value"),
 						interval = 0.01f
 					}
 				};
-				meta.main_skill_meta = SkillManager.Instance.FindMeta<Skill.Meta>(row["skill_id"]);
-				meta.sprite_path = row["sprite_path"];
-				meta.description = row["description"];
+
+				meta.main_skill_meta = null;
+				if ("" != row.GetString("skill_id"))
+				{
+					meta.main_skill_meta = SkillManager.Instance.FindMeta<Skill.Meta>(row.GetString("skill_id"));
+				}
+				meta.sprite_path = row.GetString("sprite_path");
+				meta.description = row.GetString("description");
 				item_metas.Add(meta);
 				ItemManager.Instance.AddItemMeta(meta);
 			}
 		}
-		catch (System.Net.WebException e)
+		catch (System.Exception e)
 		{
 			GameManager.Instance.ui_textbox.on_close = () =>
 			{
 				Application.Quit();
 			};
-			GameManager.Instance.ui_textbox.AsyncWrite(e.Message, false);
+			GameManager.Instance.ui_textbox.AsyncWrite("error: " + e.Message + "\n" + e.ToString(), false);
+			return false;
 		}
+		return true;
 	}
-	private void InitSubStatMeta()
+	private bool InitSubStatMeta()
 	{
-		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-			"SELECT item_id, stat_type, base_value, max_value, rand_min_value, rand_max_value, interval FROM meta_item_equip_substat"
-		);
-		while (true == reader.Read())
+		try
 		{
-			EquipItem.Meta meta = ItemManager.Instance.FindMeta<EquipItem.Meta>(reader.GetString("item_id"));
-			if (null == meta)
+			GoogleSheetReader sheetReader = new GoogleSheetReader(GameManager.GOOGLESHEET_ID, GameManager.GOOGLESHEET_API_KEY);
+			sheetReader.Load("meta_item_equip_substat");
+			foreach(GoogleSheetReader.Row row in sheetReader)
 			{
-				throw new System.Exception("can't find item meta(id:" + reader.GetString("item_id") + ")");
-			}
-			meta.sub_stats.Add(new EquipItemStatMeta()
-			{
-				type = (StatType)reader.GetInt32("stat_type"),
-				base_value = reader.GetFloat("base_value"),
-				max_value = reader.GetFloat("max_value"),
-				rand_stat_meta = new RandomStatMeta()
+				EquipItem.Meta meta = ItemManager.Instance.FindMeta<EquipItem.Meta>(row.GetString("item_id"));
+				meta.sub_stats.Add(new EquipItemStatMeta()
 				{
-					type = (StatType)reader.GetInt32("stat_type"),
-					min_value = reader.GetFloat("rand_min_value"),
-					max_value = reader.GetFloat("rand_max_value"),
-					interval = reader.GetFloat("interval"),
-				}
-			});
-		}
-	}
-	private void InitSkillMeta()
-	{
-		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
-			"SELECT item_id, skill_name, skill_id, cooltime FROM meta_item_equip_skill"
-		);
-		while (true == reader.Read())
-		{
-			EquipItem.Meta meta = ItemManager.Instance.FindMeta<EquipItem.Meta>(reader.GetString("item_id"));
-			if (null == meta)
-			{
-				throw new System.Exception("can't find item meta(id:" + reader.GetString("item_id") + ")");
+					type = row.GetEnum<StatType>("stat_type"),
+					base_value = row.GetFloat("base_value"),
+					max_value = row.GetFloat("max_value"),
+					rand_stat_meta = new RandomStatMeta()
+					{
+						type = row.GetEnum<StatType>("stat_type"),
+						min_value = row.GetFloat("rand_min_value"),
+						max_value = row.GetFloat("rand_max_value"),
+						interval = row.GetFloat("interval"),
+					}
+				});
 			}
-			meta.rand_skill_metas.Add(SkillManager.Instance.FindMeta<Skill.Meta>(reader.GetString("skill_id")));
 		}
+		catch (System.Exception e)
+		{
+			GameManager.Instance.ui_textbox.on_close = () =>
+			{
+				Application.Quit();
+			};
+			GameManager.Instance.ui_textbox.AsyncWrite("error: " + e.Message + "\n" + e.ToString(), false);
+			return false;
+		}
+		return true;
+	}
+	private bool InitSkillMeta()
+	{
+		try
+		{
+			GoogleSheetReader sheetReader = new GoogleSheetReader(GameManager.GOOGLESHEET_ID, GameManager.GOOGLESHEET_API_KEY);
+			sheetReader.Load("meta_item_equip_skill");
+			foreach (GoogleSheetReader.Row row in sheetReader)
+			{
+				EquipItem.Meta meta = ItemManager.Instance.FindMeta<EquipItem.Meta>(row.GetString("item_id"));
+				meta.rand_skill_metas.Add(SkillManager.Instance.FindMeta<Skill.Meta>(row.GetString("skill_id")));
+			}
+		}
+		catch (System.Exception e)
+		{
+			GameManager.Instance.ui_textbox.on_close = () =>
+			{
+				Application.Quit();
+			};
+			GameManager.Instance.ui_textbox.AsyncWrite("error: " + e.Message + "\n" + e.ToString(), false);
+			return false;
+		}
+		return true;
 	}
 	public void Init()
 	{

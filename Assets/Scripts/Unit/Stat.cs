@@ -170,22 +170,26 @@ public class Stat
 		private Dictionary<StatType, Meta> metas = new Dictionary<StatType, Meta>();
 		public void Init()
 		{
-			GoogleSheetReader sheetReader = new GoogleSheetReader(GameManager.GOOGLESHEET_ID, GameManager.GOOGLESHEET_API_KEY);
-			if (false == sheetReader.Load("meta_stat"))
+			try
+			{
+				GoogleSheetReader sheetReader = new GoogleSheetReader(GameManager.GOOGLESHEET_ID, GameManager.GOOGLESHEET_API_KEY);
+				sheetReader.Load("meta_stat");
+				foreach (GoogleSheetReader.Row row in sheetReader)
+				{
+					Meta meta = new Meta();
+					meta.type = row.GetEnum<StatType>("stat_name");
+					meta.name = row.GetString("stat_name");
+					meta.description = row.GetString("description");
+					metas.Add(meta.type, meta);
+				}
+			}
+			catch (System.Exception e)
 			{
 				GameManager.Instance.ui_textbox.on_close = () =>
 				{
 					Application.Quit();
 				};
-				GameManager.Instance.ui_textbox.AsyncWrite("error:'meta_stat' load fail", false);
-			}
-			foreach (GoogleSheetReader.Row row in sheetReader)
-			{
-				Meta meta = new Meta();
-				meta.type = (StatType)System.Enum.Parse(typeof(StatType), row["stat_name"]);
-				meta.name = row["stat_name"];
-				meta.description = row["description"];
-				metas.Add(meta.type, meta);
+				GameManager.Instance.ui_textbox.AsyncWrite("error: " + e.Message + "\n" + e.ToString(), false);
 			}
 		}
 

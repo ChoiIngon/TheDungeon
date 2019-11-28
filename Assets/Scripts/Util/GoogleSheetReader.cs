@@ -27,7 +27,7 @@ public class GoogleSheetReader : IEnumerable
 			}
 		}
 
-		public string GetData(string column)
+		public string GetString(string column)
 		{
 			if (false == reader.columnToIndex.ContainsKey(column))
 			{
@@ -37,10 +37,46 @@ public class GoogleSheetReader : IEnumerable
 			return values[index];
 		}
 
+		public bool GetBoolean(string column)
+		{
+			return bool.Parse(GetString(column));
+		}
+
+		public double GetDouble(string column)
+		{
+			return double.Parse(GetString(column));
+		}
+
+		public float GetFloat(string column)
+		{
+			return float.Parse(GetString(column));
+		}
+
+		public short GetInt16(string column)
+		{
+			return short.Parse(GetString(column));
+		}
+
+		public int GetInt32(string column)
+		{
+			return int.Parse(GetString(column));
+		}
+
+		public long GetInt64(string column)
+		{
+			return int.Parse(GetString(column));
+		}
+
+		public T GetEnum<T>(string column)
+		{
+			return (T)System.Enum.Parse(typeof(T), GetString(column));
+		}
+
 		public string this[string column]
 		{
-			get { return GetData(column); }
+			get { return GetString(column); }
 		}
+
 	}
 
 	public Dictionary<string, int> columnToIndex;
@@ -56,30 +92,22 @@ public class GoogleSheetReader : IEnumerable
 		api_key = apiKey;
 	}
 
-	public bool Load(string sheetName, int timeout = 10000 /* 10 secs */)
+	public void Load(string sheetName, int timeout = 10000 /* 10 secs */)
 	{
 		HttpWebRequest req = (HttpWebRequest)WebRequest.Create("https://sheets.googleapis.com/v4/spreadsheets/" + sheet_id + "/values/" + sheetName + "?key=" + api_key);
 		req.Method = "GET";
 		req.Timeout = timeout;
 
-		try
+		using (HttpWebResponse response = (HttpWebResponse)req.GetResponse())
 		{
-			using (HttpWebResponse response = (HttpWebResponse)req.GetResponse())
-			{
-				HttpStatusCode status = response.StatusCode;
+			HttpStatusCode status = response.StatusCode;
 
-				Stream stream = response.GetResponseStream();
-				using (StreamReader reader = new StreamReader(stream))
-				{
-					BuildRows(reader);
-				}
+			Stream stream = response.GetResponseStream();
+			using (StreamReader reader = new StreamReader(stream))
+			{
+				BuildRows(reader);
 			}
 		}
-		catch (WebException e)
-		{
-			return false;
-		}
-		return true;
 	}
 
 	public IEnumerator AsyncLoad(string sheetName, int timeout = 10000 /* 10 secs */)

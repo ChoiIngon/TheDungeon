@@ -160,6 +160,34 @@ public class QuestProgress : Progress
 
 public class QuestManager : Util.Singleton<QuestManager>
 {
+	private Dictionary<string, Quest> quests = new Dictionary<string, Quest>();
+	public void Init()
+	{
+		try
+		{
+			GoogleSheetReader sheetReader = new GoogleSheetReader(GameManager.GOOGLESHEET_ID, GameManager.GOOGLESHEET_API_KEY);
+			sheetReader.Load("meta_quest");
+
+			foreach (GoogleSheetReader.Row row in sheetReader)
+			{
+				Quest quest = new Quest();
+				quest.quest_id = row.GetString("quest_id");
+				quest.quest_name = row.GetString("quest_name");
+				quest.sprite_path = row.GetString("sprite_path");
+				quest.reward.coin = row.GetInt32("reward_coin");
+				quest.reward.item_id = row.GetString("reward_item_id");
+				quests.Add(quest.quest_id, quest);
+			}
+		}
+		catch (System.Exception e)
+		{
+			GameManager.Instance.ui_textbox.on_close = () =>
+			{
+				Application.Quit();
+			};
+			GameManager.Instance.ui_textbox.AsyncWrite("error: " + e.Message + "\n" + e.ToString(), false);
+		}
+	}
 	public Quest Find(string questID)
 	{
 		Quest quest = null;

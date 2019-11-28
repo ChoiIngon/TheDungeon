@@ -87,13 +87,13 @@ public class GameManager : Util.MonoSingleton<GameManager>
 			Database.Connect(Database.Type.MetaData, targetDBPath);
 		}
 		Database.Connect(Database.Type.UserData, Application.persistentDataPath + "/user_data.db");
+		Stat.Manager.Instance.Init();
 		ResourceManager.Instance.Init();
 		AchieveManager.Instance.Init();
 		SkillManager.Instance.Init();
 		ItemManager.Instance.Init();
 		MonsterManager.Instance.Init();
 		AudioManager.Instance.Init();
-		Stat.Manager.Instance.Init();
 
 		player = new Player();
 		player.meta.Init();
