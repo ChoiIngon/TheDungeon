@@ -76,7 +76,6 @@ public class GoogleSheetReader : IEnumerable
 		{
 			get { return GetString(column); }
 		}
-
 	}
 
 	public Dictionary<string, int> columnToIndex;

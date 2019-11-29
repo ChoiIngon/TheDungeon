@@ -153,7 +153,7 @@ public class AchieveManager : Util.Singleton<AchieveManager>
 
 	private void LoadAchieveDatas()
 	{
-		Util.Database.DataReader reader = Database.Execute(Database.Type.UserData,
+		Util.Sqlite.DataReader reader = Database.Execute(Database.Type.UserData,
 			"SELECT achieve_name, achieve_type, achieve_step, achieve_count, achieve_goal FROM user_achieve"
 		);
 		while (true == reader.Read())
@@ -175,7 +175,7 @@ public class AchieveManager : Util.Singleton<AchieveManager>
 	{
 		Dictionary<string, List<Achieve.Meta>> achieve_metas = new Dictionary<string, List<Achieve.Meta>>();
 
-		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+		Util.Sqlite.DataReader reader = Database.Execute(Database.Type.MetaData,
 			"SELECT achieve_type, achieve_step, achieve_name, achieve_goal, sprite_path, reward_stat_type, reward_stat_value, description FROM meta_achieve order by achieve_type, achieve_step"
 		);
 		while (true == reader.Read())

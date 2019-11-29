@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-using DataReader = Util.Database.DataReader;
+using DataReader = Util.Sqlite.DataReader;
 public class Database
 {
 	public enum Type
@@ -15,11 +15,11 @@ public class Database
 		MetaData,
 		UserData
 	}
-	private static Dictionary<Type, Util.Database> databases = new Dictionary<Type, Util.Database>();
+	private static Dictionary<Type, Util.Sqlite> databases = new Dictionary<Type, Util.Sqlite>();
 
 	public static void Connect(Type type, string db)
 	{
-		databases[type] = new Util.Database(db);
+		databases[type] = new Util.Sqlite(db);
 	}
 
 	public static void Disconnect(Type type)

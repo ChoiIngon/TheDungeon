@@ -112,7 +112,7 @@ public class Dungeon : MonoBehaviour
 			current_room = rooms[start];
 			candidates.RemoveAt(start);
 
-			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+			Util.Sqlite.DataReader reader = Database.Execute(Database.Type.MetaData,
 				"SELECT monster_id, monster_count, reward_item_chance, reward_item_id FROM meta_dungeon_monster WHERE dungeon_level=" + Mathf.Max(1, dungeonLevel % (max_level+1))
 			);
 			
@@ -278,7 +278,7 @@ public class Dungeon : MonoBehaviour
 
 		private int GetMaxDungeonLevel()
 		{
-			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+			Util.Sqlite.DataReader reader = Database.Execute(Database.Type.MetaData,
 				"select ifnull(max(dungeon_level), 0) max_dungeon_level from meta_dungeon_monster;"
 			);
 

@@ -192,7 +192,7 @@ public class QuestManager : Util.Singleton<QuestManager>
 	{
 		Quest quest = null;
 		{
-			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+			Util.Sqlite.DataReader reader = Database.Execute(Database.Type.MetaData,
 				"SELECT quest_id, quest_name, reward_coin, reward_item_id, sprite_path FROM meta_quest WHERE quest_id='" + questID + "'"
 			);
 			while (true == reader.Read())
@@ -211,7 +211,7 @@ public class QuestManager : Util.Singleton<QuestManager>
 			}
 		}
 		{
-			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+			Util.Sqlite.DataReader reader = Database.Execute(Database.Type.MetaData,
 				"SELECT quest_step, progress_name, progress_type, progress_key, progress_goal FROM meta_quest_progress WHERE quest_id='" + questID + "' ORDER BY quest_step"
 			);
 			while (true == reader.Read())
@@ -231,7 +231,7 @@ public class QuestManager : Util.Singleton<QuestManager>
 			}
 		}
 		{
-			Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+			Util.Sqlite.DataReader reader = Database.Execute(Database.Type.MetaData,
 				"SELECT dialogue_type, dialogue_num, dialogue_text, sprite_path FROM meta_quest_dialogue WHERE quest_id='" + questID + "' ORDER BY dialogue_type, dialogue_num"
 			);
 			while (true == reader.Read())
@@ -260,7 +260,7 @@ public class QuestManager : Util.Singleton<QuestManager>
 
 	public Quest GetAvailableQuest()
 	{
-		Util.Database.DataReader reader = Database.Execute(Database.Type.MetaData,
+		Util.Sqlite.DataReader reader = Database.Execute(Database.Type.MetaData,
 			"SELECT quest_id FROM meta_quest ORDER BY RANDOM() LIMIT 1"
 		);
 

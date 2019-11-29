@@ -61,7 +61,6 @@ public class Stat
 	public class Meta
 	{
 		public StatType type;
-		public string name;
 		public string description;
 		public string ToString(float value)
 		{
@@ -177,8 +176,7 @@ public class Stat
 				foreach (GoogleSheetReader.Row row in sheetReader)
 				{
 					Meta meta = new Meta();
-					meta.type = row.GetEnum<StatType>("stat_name");
-					meta.name = row.GetString("stat_name");
+					meta.type = row.GetEnum<StatType>("stat_type");
 					meta.description = row.GetString("description");
 					metas.Add(meta.type, meta);
 				}

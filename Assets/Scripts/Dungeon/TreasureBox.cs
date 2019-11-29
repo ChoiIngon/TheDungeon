@@ -61,8 +61,10 @@ public class TreasureBox : MonoBehaviour
 		lock_icon.gameObject.SetActive(false);
 		AudioManager.Instance.Play(AudioManager.BOX_OPEN);
 		StartCoroutine(Util.UITween.Overlap(close, open, time));
-		yield return GameManager.Instance.ui_textbox.Write(GameText.GetText("DUNGEON/HAVE_ITEM", "You", room.item.name), false);
-		GameManager.Instance.player.inventory.Add(room.item.CreateInstance());
+
+		Item item = room.item.CreateInstance();
+		GameManager.Instance.player.inventory.Add(item);
+		yield return GameManager.Instance.ui_textbox.Write(GameText.GetText("DUNGEON/HAVE_ITEM", "You", "<color=#" + ColorUtility.ToHtmlStringRGB(UIItem.GetGradeColor(item.grade)) + ">" + room.item.name + "</color>"), false);
 		ProgressManager.Instance.Update(ProgressType.CollectItem, "", 1);
 		room.item = null;
 		gameObject.SetActive(false);

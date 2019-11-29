@@ -182,7 +182,7 @@ public class Player : Unit
 			")"
 		);
 
-		Util.Database.DataReader reader = Database.Execute(Database.Type.UserData,
+		Util.Sqlite.DataReader reader = Database.Execute(Database.Type.UserData,
 			"SELECT player_coin, total_play_time FROM user_data"
 		);
 

@@ -20,7 +20,7 @@ public class UISetting : MonoBehaviour
 	{
 		CreateAchieveTableIfNotExists();
 
-		Util.Database.DataReader reader = Database.Execute(Database.Type.UserData,
+		Util.Sqlite.DataReader reader = Database.Execute(Database.Type.UserData,
 			"SELECT bgm_volume, sfx_volume FROM user_setting"
 		);
 

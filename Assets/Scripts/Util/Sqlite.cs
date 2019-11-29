@@ -2,11 +2,10 @@
 using System.Data;
 using Mono.Data.Sqlite;
 using UnityEngine;
-using UnityEditor;
 
 namespace Util
 {
-	public class Database : System.IDisposable
+	public class Sqlite : System.IDisposable
 	{
 		private IDbConnection conn;
 		private bool disposed;
@@ -92,18 +91,23 @@ namespace Util
 				}
 				return impl.GetString(nameToIndex[name]);
 			}
+
+			public T GetEnum<T>(string column)
+			{
+				return (T)System.Enum.Parse(typeof(T), GetString(column));
+			}
 		}
 
-		public Database()
+		public Sqlite()
 		{
 			conn = null;
 		}
 
-		public Database(string db)
+		public Sqlite(string db)
 		{
 			Open(db);
 		}
-		~Database()
+		~Sqlite()
 		{
 			this.Dispose(false);
 		}
