@@ -21,7 +21,9 @@ public enum StatType
 	Lucky = 15,
 	Stamina = 16,
 	Stamina_Rate = 17,
-	Damage_Rate = 18
+	Damage_Rate = 18,
+	Detect_Monster = 19,
+	Detect_Treasure = 20,
 }
 
 public class RandomStatMeta

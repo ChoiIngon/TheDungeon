@@ -63,7 +63,7 @@ public class UIMiniMap : MonoBehaviour
 		current_room_id = dungeon.data.current_room.id;
 	}
 
-	public void CurrentPosition (int id)
+	public void CurrentPosition(int id)
 	{
 		if (null == dungeon)
 		{
@@ -107,7 +107,13 @@ public class UIMiniMap : MonoBehaviour
 		minimapRoom.gameObject.SetActive(true);
 		for (int i = 0; i < Room.Max; i++)
 		{
-			minimapRoom.next[i].gameObject.SetActive((bool)(null != dungeon.data.rooms[id].nexts[i]));
+			Room.Data data = dungeon.data.rooms[id].nexts[i];
+			minimapRoom.next[i].gameObject.SetActive(false);
+			if (null != data)
+			{
+				rooms[data.id].next[(i + 2) % 4].gameObject.SetActive(false);
+				minimapRoom.next[i].gameObject.SetActive(true);
+			}
 		}
 	}
 

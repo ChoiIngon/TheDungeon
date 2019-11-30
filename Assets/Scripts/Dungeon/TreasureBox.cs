@@ -27,17 +27,36 @@ public class TreasureBox : MonoBehaviour
 		{
 			StartCoroutine(Open());
 		};
+
+		Util.EventSystem.Subscribe(EventID.Shop_Open, () => { touch_input.block_count++; });
+		Util.EventSystem.Subscribe(EventID.Shop_Close, () => { touch_input.block_count--; });
+		Util.EventSystem.Subscribe(EventID.Inventory_Open, () => { touch_input.block_count++; });
+		Util.EventSystem.Subscribe(EventID.Inventory_Close, () => { touch_input.block_count--; });
+		Util.EventSystem.Subscribe(EventID.TextBox_Open, () => { touch_input.block_count++; });
+		Util.EventSystem.Subscribe(EventID.TextBox_Close, () => { touch_input.block_count--; });
+		Util.EventSystem.Subscribe(EventID.NPC_Dialogue_Start, () => { touch_input.block_count++; });
+		Util.EventSystem.Subscribe(EventID.NPC_Dialogue_Finish, () => { touch_input.block_count--; });
+	}
+
+	private void OnDestroy()
+	{
+		Util.EventSystem.Unsubscribe(EventID.Shop_Open);
+		Util.EventSystem.Unsubscribe(EventID.Shop_Close);
+		Util.EventSystem.Unsubscribe(EventID.Inventory_Open);
+		Util.EventSystem.Unsubscribe(EventID.Inventory_Close);
+		Util.EventSystem.Unsubscribe(EventID.TextBox_Open);
+		Util.EventSystem.Unsubscribe(EventID.TextBox_Close);
+		Util.EventSystem.Unsubscribe(EventID.NPC_Dialogue_Start);
+		Util.EventSystem.Unsubscribe(EventID.NPC_Dialogue_Finish);
 	}
 
 	private void OnEnable()
 	{
 		touch_input.touch_collider.enabled = true;
-		Util.EventSystem.Publish<float>(EventID.MiniMap_Hide, 0.0f);
 	}
 
 	private void OnDisable()
 	{
-		Util.EventSystem.Publish(EventID.MiniMap_Show);
 	}
 
 	public void Show(Room.Data room)

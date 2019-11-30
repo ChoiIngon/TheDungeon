@@ -44,7 +44,7 @@ public class Dungeon : MonoBehaviour
 				if (0 < outerRooms.Count)
 				{
 					Room.Data room = outerRooms[Random.Range(0, outerRooms.Count)];
-					int directionCount = Random.Range(1, 3);
+					int directionCount = Random.Range(0, 3);
 					for (int i = 0; i < directionCount; i++)
 					{
 						int direction = Random.Range(0, Room.Max);

@@ -22,7 +22,6 @@ public class SceneDungeon : SceneMain
 	public UIShop shop;
 	public UIInventory ui_inventory;
 
-	private Text ui_dungeon_level;
 	private Transform coin_spot;
     private Coin coin_prefab;
 	private DungeonMove dungeon_move;
@@ -54,26 +53,23 @@ public class SceneDungeon : SceneMain
 		ui_inventory.gameObject.SetActive(false);
 		ui_inventory.Init();
 
-		inventory_button = UIUtil.FindChild<Button>(transform, "UI/SideButtons/InventoryButton");
+		inventory_button = UIUtil.FindChild<Button>(transform, "UI/Dungeon/SideButtons/InventoryButton");
 		inventory_button.onClick.AddListener(() =>
 		{
 			ui_inventory.gameObject.SetActive(true);
 		});
 		
-		text_inventory = UIUtil.FindChild<Text>(transform, "UI/SideButtons/InventoryButton/Text");
+		text_inventory = UIUtil.FindChild<Text>(transform, "UI/Dungeon/SideButtons/InventoryButton/Text");
 		
 		mini_map = UIUtil.FindChild<UIMiniMap>(transform,		"UI/Dungeon/MiniMap");
 		mini_map.gameObject.SetActive(true);
-
-		ui_dungeon_level = UIUtil.FindChild<Text>(transform,	"UI/Dungeon/Level");
-		ui_dungeon_level.gameObject.SetActive(true);
-
+		
 		ui_player_transform = UIUtil.FindChild<Transform>(transform, "UI/Player");
 		ui_player_transform.gameObject.SetActive(true);
 		player_health = UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Health");
 		player_exp =	UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Exp");
 
-		UICoin uiCoin = UIUtil.FindChild<UICoin>(transform, "UI/UICoin");
+		UICoin uiCoin = UIUtil.FindChild<UICoin>(transform, "UI/Dungeon/UICoin");
 		uiCoin.gameObject.SetActive(true);
 		
 		coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot");
@@ -141,8 +137,6 @@ public class SceneDungeon : SceneMain
 		dungeon.InitRooms();
 		mini_map.CurrentPosition(dungeon.data.current_room.id);
 
-		ui_dungeon_level.text = "<size=" + (ui_dungeon_level.fontSize * 0.8f) + ">B</size> " + dungeon_level.ToString();
-
 		ProgressManager.Instance.Update(ProgressType.DungeonLevel, "", dungeon.level);
 		StartCoroutine(GameManager.Instance.ui_textbox.Write(GameText.GetText("DUNGEON/WELCOME", dungeon.level), false));
 	}
@@ -150,15 +144,7 @@ public class SceneDungeon : SceneMain
 	private IEnumerator Move(int direction)
 	{
 		mini_map.CurrentPosition(dungeon.data.current_room.id);
-		if (Room.Type.Exit == dungeon.data.current_room.type || Room.Type.Lock == dungeon.data.current_room.type)
-		{
-			StartCoroutine(mini_map.Hide(0.5f, 0.3f));
-		}
-		else
-		{
-			StartCoroutine(mini_map.Show(0.5f));
-		}
-
+		
 		yield return OnExitUnlock();
 		yield return OnMonser();
 		if (null != dungeon.data.current_room.monster)

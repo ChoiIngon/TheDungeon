@@ -48,7 +48,7 @@ public class DungeonBattle : MonoBehaviour
 		player_damage_effect_spot = UIUtil.FindChild<Transform>(transform, "../UI/BattleEffect");
 		player_health = UIUtil.FindChild<UIGaugeBar>(transform, "../UI/Player/Health");
 		skill_button_spot = UIUtil.FindChild<Transform>(transform, "../UI/Battle/SkillButtons");
-		runaway_button = UIUtil.FindChild<UISkillButton>(transform, "../UI/SideButtons/RunawayButton");
+		runaway_button = UIUtil.FindChild<UISkillButton>(transform, "../UI/Dungeon/SideButtons/RunawayButton");
 		touch_input = GetComponent<TouchInput>();
 		if (null == touch_input)
 		{

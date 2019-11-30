@@ -64,7 +64,7 @@ public class Player : Unit
 		get { return _coin; }
 	}
 	
-	public int start_item_count = 1;
+	public int start_item_count = 0;
 	public Meta meta = new Meta();
 
 	public int enemy_slain_count;
@@ -160,6 +160,11 @@ public class Player : Unit
 		//LoadEquipItem();
 		//LoadExpendableItem();
 		LoadStats();
+
+		{
+			EquipItem item = EquipItemManager.Instance.CreateRandomItem(EquipItem.Part.Hand);
+			Equip(item);
+		}
 		for (int i = 0; i < start_item_count; i++)
 		{
 			EquipItem item = ItemManager.Instance.CreateRandomEquipItem();
@@ -225,7 +230,7 @@ public class Player : Unit
 	public override void CalculateStat()
 	{
 		base.CalculateStat();
-		start_item_count = (int)stats.GetStat(StatType.StartItemCount) + 1;
+		start_item_count = (int)stats.GetStat(StatType.StartItemCount);
 		float weight = 0.0f;
 		foreach (var itr in equip_items)
 		{

@@ -9,6 +9,18 @@ public class EquipItemStatMeta
 	public float base_value;
 	public float max_value;
 	public RandomStatMeta rand_stat_meta;
+
+	public Stat.Data CreateStat(int level)
+	{
+		Stat.Data data = new Stat.Data();
+		data.type = type;
+		data.value = base_value;
+		for (int i = 0; i < level; i++)
+		{
+			data.value += rand_stat_meta.value;
+		}
+		return data;
+	}
 }
 
 public class EquipItem : Item
@@ -31,33 +43,37 @@ public class EquipItem : Item
 		public Part part = Part.Invalid;
 		public EquipItemStatMeta main_stat = null;
 		public List<EquipItemStatMeta> sub_stats = new List<EquipItemStatMeta>();
-		public Skill.Meta main_skill_meta = null;
-		public List<Skill.Meta> rand_skill_metas = new List<Skill.Meta>();
+
+		public Skill.Meta main_skill = null;
+		public List<Skill.Meta> rand_skill = new List<Skill.Meta>();
 
 		public override Item CreateInstance()
 		{
 			EquipItem item = new EquipItem(this);
 			item.grade = EquipItemManager.Instance.grade_gacha.Random();
 			item.level = Mathf.Max(1, UnityEngine.Random.Range(GameManager.Instance.player.level - 5, GameManager.Instance.player.level + 2));
-			item.main_stat.AddStat(item.CreateStat(main_stat));
-			if (0 < sub_stats.Count)
+
+			item.main_stat.AddStat(main_stat.CreateStat(item.level));
+
+			if (EquipItem.Grade.Normal <= item.grade && 0 < sub_stats.Count)
 			{
-				for (int i = 0; i < (int)item.grade - (int)EquipItem.Grade.Normal; i++)
+				for (int i = 0; i < ((int)item.grade - (int)EquipItem.Grade.Normal); i++)
 				{
-					item.sub_stat.AddStat(item.CreateStat(sub_stats[UnityEngine.Random.Range(0, sub_stats.Count)]));
+					item.sub_stat.AddStat(sub_stats[UnityEngine.Random.Range(0, sub_stats.Count)].CreateStat(item.level));
 				}
 			}
 
-			if (null != main_skill_meta)
+			if (null != main_skill)
 			{
-				item.skills.Add(main_skill_meta.CreateInstance());
+				item.skills.Add(main_skill.CreateInstance());
 			}
-			if (EquipItem.Grade.Rare <= item.grade && 0 < rand_skill_metas.Count)
+
+			if (EquipItem.Grade.Rare <= item.grade && 0 < rand_skill.Count)
 			{
-				Skill.Meta skillMeta = rand_skill_metas[UnityEngine.Random.Range(0, rand_skill_metas.Count)];
-				if (main_skill_meta != skillMeta)
+				Skill.Meta skillMeta = rand_skill[UnityEngine.Random.Range(0, rand_skill.Count)];
+				if (main_skill != skillMeta)
 				{
-					item.skills.Add(rand_skill_metas[UnityEngine.Random.Range(0, rand_skill_metas.Count)].CreateInstance());
+					item.skills.Add(rand_skill[UnityEngine.Random.Range(0, rand_skill.Count)].CreateInstance());
 				}
 			}
 
@@ -69,7 +85,6 @@ public class EquipItem : Item
 				{ "grade", item.grade.ToString()},
 				{ "level", item.level}
 			});
-
 			return item;
 		}
 	}
@@ -92,24 +107,11 @@ public class EquipItem : Item
 	{
 		part = meta.part;
 	}
-
-	private Stat.Data CreateStat(EquipItemStatMeta meta)
-	{
-		Stat.Data data = new Stat.Data();
-		data.type = meta.type;
-		data.value = meta.base_value;
-		for (int i = 0; i < level; i++)
-		{
-			data.value += meta.rand_stat_meta.value;
-		}
-		data.value = Mathf.Round(data.value * 100) / 100.0f;
-		return data;
-	}
 }
 
 public class EquipItemManager : Util.Singleton<EquipItemManager>
 {
-	public List<EquipItem.Meta> item_metas = new List<EquipItem.Meta>();
+	public List<EquipItem.Meta>[] item_metas = new List<EquipItem.Meta>[(int)EquipItem.Part.Max];
 	public Util.WeightRandom<Item.Grade> grade_gacha = new Util.WeightRandom<Item.Grade>();
 
 	private bool InitItemMeta()
@@ -141,14 +143,16 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 					}
 				};
 
-				meta.main_skill_meta = null;
+				meta.main_skill = null;
 				if ("" != row.GetString("skill_id"))
 				{
-					meta.main_skill_meta = SkillManager.Instance.FindMeta<Skill.Meta>(row.GetString("skill_id"));
+					meta.main_skill = SkillManager.Instance.FindMeta<Skill.Meta>(row.GetString("skill_id"));
 				}
 				meta.sprite_path = row.GetString("sprite_path");
 				meta.description = row.GetString("description");
-				item_metas.Add(meta);
+
+				item_metas[(int)EquipItem.Part.Invalid].Add(meta);
+				item_metas[(int)meta.part].Add(meta);
 				ItemManager.Instance.AddItemMeta(meta);
 			}
 		}
@@ -207,7 +211,7 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 			foreach (GoogleSheetReader.Row row in sheetReader)
 			{
 				EquipItem.Meta meta = ItemManager.Instance.FindMeta<EquipItem.Meta>(row.GetString("item_id"));
-				meta.rand_skill_metas.Add(SkillManager.Instance.FindMeta<Skill.Meta>(row.GetString("skill_id")));
+				meta.rand_skill.Add(SkillManager.Instance.FindMeta<Skill.Meta>(row.GetString("skill_id")));
 			}
 		}
 		catch (System.Exception e)
@@ -230,20 +234,30 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 		grade_gacha.SetWeight(Item.Grade.Rare, 12);
 		grade_gacha.SetWeight(Item.Grade.Legendary, 10);
 
+		for (int i = 0; i < (int)EquipItem.Part.Max; i++)
+		{
+			item_metas[i] = new List<EquipItem.Meta>();
+		}
 		InitItemMeta();
 		InitSubStatMeta();
 		InitSkillMeta();
-		//InitStatGacha();
 	}
 
-	public EquipItem CreateRandomItem()
+	public EquipItem CreateRandomItem(EquipItem.Part part = EquipItem.Part.Invalid)
 	{
-		EquipItem.Meta meta = GetRandomMeta();
-		return meta.CreateInstance() as EquipItem;
+		EquipItem.Meta meta = GetRandomMeta(part);
+		return CreateItem(meta);
 	}
 
-	public EquipItem.Meta GetRandomMeta()
+	public EquipItem.Meta GetRandomMeta(EquipItem.Part part = EquipItem.Part.Invalid)
 	{
-		return item_metas[UnityEngine.Random.Range(0, item_metas.Count)];
+		List<EquipItem.Meta> metas = item_metas[(int)part];
+		return metas[UnityEngine.Random.Range(0, metas.Count)];
+	}
+
+	public EquipItem CreateItem(EquipItem.Meta meta)
+	{
+		EquipItem item = meta.CreateInstance() as EquipItem;
+		return item;
 	}
 }
