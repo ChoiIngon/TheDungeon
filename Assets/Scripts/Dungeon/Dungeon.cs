@@ -50,7 +50,7 @@ public class Dungeon : MonoBehaviour
 						int direction = Random.Range(0, Room.Max);
 						for (int j = 0; j < Room.Max; j++)
 						{
-							Room.Data other = GetNeighbor(room.id, direction);
+							Room.Data other = GetNextRoom(room.id, direction);
 							if (null == other)
 							{
 								direction = (direction + 1) % Room.Max;
@@ -209,7 +209,7 @@ public class Dungeon : MonoBehaviour
 			return current_room;
 		}
 
-		private Room.Data GetNeighbor(int id, int direction)
+		private Room.Data GetNextRoom(int id, int direction)
 		{
 			if (0 > direction || Room.Max <= direction)
 			{
@@ -253,7 +253,7 @@ public class Dungeon : MonoBehaviour
 				{
 					for (int direction = 0; direction < Room.Max; direction++)
 					{
-						Room.Data other = GetNeighbor(room.id, direction);
+						Room.Data other = GetNextRoom(room.id, direction);
 						if (null != other && group != other.group)
 						{
 							outerRooms.Add(room);

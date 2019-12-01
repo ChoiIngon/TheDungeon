@@ -47,6 +47,10 @@ public class UIMiniMap : MonoBehaviour
 				room.transform.SetParent (this.transform, false);
 				room.transform.localPosition = new Vector3 (x * ROOM_SIZE, -y * ROOM_SIZE, 0.0f);
 				room.gameObject.SetActive (false);
+				for (int direction = 0; direction < Room.Max; direction++)
+				{
+					room.next[direction].gameObject.SetActive(false);
+				}
 				rooms [y * Dungeon.WIDTH + x] = room;
 			}
 		}
@@ -69,45 +73,66 @@ public class UIMiniMap : MonoBehaviour
 		{
 			return;
 		}
+
+		/*
+		for (int direction = 0; direction < Room.Max; direction++)
+		{
+			Room.Data nextRoom = dungeon.data.current_room.GetNext(direction);
+			if (null != nextRoom && null != nextRoom.item)
+			{
+				RevealRoom(nextRoom.id, ROOM_DEACTIVATE_COLOR);
+			}
+		}
+
+		for (int direction = 0; direction < Room.Max; direction++)
+		{
+			Room.Data nextRoom = dungeon.data.current_room.GetNext(direction);
+			if (null != nextRoom && null != nextRoom.monster)
+			{
+				RevealRoom(nextRoom.id, ROOM_DEACTIVATE_COLOR);
+			}
+		}
+		*/
 		UIMiniMapRoom minimapRoom = rooms[current_room_id];
 		minimapRoom.room.sprite = GetRoomSprite(current_room_id);
 		minimapRoom.color = ROOM_DEACTIVATE_COLOR;
-		
 		RevealRoom(id, ROOM_ACTIVATE_COLOR);
 		current_room_id = id;
-	}
 
-	private Sprite GetRoomSprite(int id)
-	{
-		Room.Data room = dungeon.data.rooms[id];
-		if (Room.Type.Exit == room.type || Room.Type.Lock == room.type)
+		for (int direction = 0; direction < Room.Max; direction++)
 		{
-			return stair_mini_icon;
+			Room.Data nextRoom = dungeon.data.current_room.GetNext(direction);
+			if (null != nextRoom)
+			{
+				UIMiniMapRoom next = rooms[nextRoom.id];
+				next.gameObject.SetActive(true);
+				next.room.sprite = room_mini_icon;
+
+				/*
+				if (null != dungeon.data.rooms[nextRoom.id].item)
+				{
+					next.room.sprite = treasure_mini_icon;
+				}
+				if (null != dungeon.data.rooms[nextRoom.id].monster)
+				{
+					next.room.sprite = monster_mini_icon;
+				}
+				*/
+				next.color = ROOM_DEACTIVATE_COLOR;
+				next.next[(direction + 2) % 4].gameObject.SetActive(false);
+			}
 		}
-		else if (null != room.monster)
-		{
-			return monster_mini_icon;
-		}
-		else if (null != room.item)
-		{
-			return treasure_mini_icon;
-		}
-		else if ("" != room.npc_sprite_path)
-		{
-			return npc_mini_icon;
-		}
-		return this.room_mini_icon;
 	}
 
 	private void RevealRoom(int id, Color color)
 	{
 		UIMiniMapRoom minimapRoom = rooms[id];
+		minimapRoom.gameObject.SetActive(true);
 		minimapRoom.room.sprite = GetRoomSprite(id);
 		minimapRoom.color = color;
-		minimapRoom.gameObject.SetActive(true);
 		for (int i = 0; i < Room.Max; i++)
 		{
-			Room.Data data = dungeon.data.rooms[id].nexts[i];
+			Room.Data data = dungeon.data.rooms[id].GetNext(i);
 			minimapRoom.next[i].gameObject.SetActive(false);
 			if (null != data)
 			{
@@ -238,5 +263,29 @@ public class UIMiniMap : MonoBehaviour
             yield return null;
         }
     }
+
+	private Sprite GetRoomSprite(int id)
+	{
+		Room.Data room = dungeon.data.rooms[id];
+		if (Room.Type.Exit == room.type || Room.Type.Lock == room.type)
+		{
+			return stair_mini_icon;
+		}
+		else if (null != room.monster)
+		{
+			return monster_mini_icon;
+		}
+		else if (null != room.item)
+		{
+			return treasure_mini_icon;
+		}
+		else if ("" != room.npc_sprite_path)
+		{
+			return npc_mini_icon;
+		}
+		return this.room_mini_icon;
+	}
+
+
 }
 
