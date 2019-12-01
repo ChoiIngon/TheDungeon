@@ -18,6 +18,12 @@ public class UICoin : MonoBehaviour
 		Util.EventSystem.Subscribe(EventID.CoinAmountChanged, OnCoinAmountChanged);
 	}
 
+	public void OnEnable()
+	{
+		current_amount = GameManager.Instance.player.coin;
+		text.text = current_amount.ToString();
+	}
+
 	private void OnDestroy()
 	{
 		Util.EventSystem.Unsubscribe(EventID.CoinAmountChanged, OnCoinAmountChanged);

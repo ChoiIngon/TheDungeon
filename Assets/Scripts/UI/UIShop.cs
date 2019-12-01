@@ -18,8 +18,6 @@ public class UIShop : MonoBehaviour
 
 	private const int PRODUCT_COUNT = 3;
 	private UICoin coin;
-	private Vector3 coin_position;
-	private Vector3 coin_spot;
 	private Text item_name;
 	private Text price;
 	private Text description;
@@ -38,16 +36,13 @@ public class UIShop : MonoBehaviour
 		buy = UIUtil.FindChild<Button>(transform, "ItemInfo/Buy");
 		buy_button_text = UIUtil.FindChild<Text>(transform, "ItemInfo/Buy/Text");
 		close = UIUtil.FindChild<Button>(transform, "BottomBar/Close");
-		coin = UIUtil.FindChild<UICoin>(transform, "../UICoin");
-		coin_position = coin.transform.position;
-		coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot").position;
+		coin = UIUtil.FindChild<UICoin>(transform, "Npc/UICoin");
 	}
 
 	private void Start()
 	{
 		buy.onClick.AddListener(Buy);
 		close.onClick.AddListener(() => {
-			coin.GetComponent<RectTransform>().position = coin_position;
 			complete = true;
 		});
 	}
@@ -62,7 +57,6 @@ public class UIShop : MonoBehaviour
 		Util.EventSystem.Publish(EventID.Shop_Close);
 	}
 
-
 	public IEnumerator Open()
 	{
 		gameObject.SetActive(true);
@@ -76,7 +70,6 @@ public class UIShop : MonoBehaviour
 			}
 		}
 
-		coin.GetComponent<RectTransform>().position = coin_spot;
 		products = new List<Product>();
 		Transform slots = UIUtil.FindChild<Transform>(transform, "ItemSlots");
 		Transform productPrefab = UIUtil.FindChild<Transform>(slots, "ItemSlot");
