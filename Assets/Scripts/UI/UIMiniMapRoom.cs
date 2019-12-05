@@ -12,7 +12,7 @@ public class UIMiniMapRoom : MonoBehaviour
 		set
 		{
 			room.color = value;
-			for (int i = 0; i < Room.Max; i++)
+			for (int i = 0; i < Room.DirectionMax; i++)
 			{
 				next[i].color = value;
 			}
@@ -29,5 +29,14 @@ public class UIMiniMapRoom : MonoBehaviour
 		{
 			next[direction].color = color;
 		}
+	}
+
+	public void Init()
+	{
+		for (int direction = 0; direction < Room.DirectionMax; direction++)
+		{
+			next[direction].gameObject.SetActive(false);
+		}
+		gameObject.SetActive(false);
 	}
 }

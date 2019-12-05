@@ -47,13 +47,13 @@ public class Dungeon : MonoBehaviour
 					int directionCount = Random.Range(0, 3);
 					for (int i = 0; i < directionCount; i++)
 					{
-						int direction = Random.Range(0, Room.Max);
-						for (int j = 0; j < Room.Max; j++)
+						int direction = Random.Range(0, Room.DirectionMax);
+						for (int j = 0; j < Room.DirectionMax; j++)
 						{
 							Room.Data other = GetNextRoom(room.id, direction);
 							if (null == other)
 							{
-								direction = (direction + 1) % Room.Max;
+								direction = (direction + 1) % Room.DirectionMax;
 								continue;
 							}
 
@@ -87,7 +87,7 @@ public class Dungeon : MonoBehaviour
 								break;
 							}
 
-							direction = (direction + 1) % Room.Max;
+							direction = (direction + 1) % Room.DirectionMax;
 						}
 					}
 				}
@@ -110,6 +110,7 @@ public class Dungeon : MonoBehaviour
 			int start = Random.Range(0, candidates.Count);
 			rooms[start].type = Room.Type.Start;
 			current_room = rooms[start];
+			current_room.visit = true;
 			candidates.RemoveAt(start);
 
 			Util.Sqlite.DataReader reader = Database.Execute(Database.Type.MetaData,
@@ -211,7 +212,7 @@ public class Dungeon : MonoBehaviour
 
 		private Room.Data GetNextRoom(int id, int direction)
 		{
-			if (0 > direction || Room.Max <= direction)
+			if (0 > direction || Room.DirectionMax <= direction)
 			{
 				throw new System.Exception("room id:" + direction + ", invalid direction:" + direction);
 			}
@@ -251,7 +252,7 @@ public class Dungeon : MonoBehaviour
 			{
 				if (group == room.group)
 				{
-					for (int direction = 0; direction < Room.Max; direction++)
+					for (int direction = 0; direction < Room.DirectionMax; direction++)
 					{
 						Room.Data other = GetNextRoom(room.id, direction);
 						if (null != other && group != other.group)
@@ -292,7 +293,7 @@ public class Dungeon : MonoBehaviour
 
 	public Data data;
 	public Room current_room;
-	private readonly Room[] next_rooms = new Room[Room.Max];
+	private readonly Room[] next_rooms = new Room[Room.DirectionMax];
 	private SpriteRenderer south_door_arrow;
 	private void Awake()
 	{
@@ -331,7 +332,7 @@ public class Dungeon : MonoBehaviour
 	{
 		transform.position = Vector3.zero;
 		current_room.Init(data.current_room);
-		for (int i = 0; i < Room.Max; i++)
+		for (int i = 0; i < Room.DirectionMax; i++)
 		{
 			Room.Data room = data.current_room.nexts[i];
 			next_rooms[i].Init(room);

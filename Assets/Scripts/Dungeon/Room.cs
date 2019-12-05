@@ -7,7 +7,7 @@ public class Room : MonoBehaviour
 	public const int East = 1;
 	public const int South = 2;
 	public const int West = 3;
-	public const int Max = 4;
+	public const int DirectionMax = 4;
 
 	public enum Type
 	{
@@ -25,7 +25,7 @@ public class Room : MonoBehaviour
 		public bool visit = false;
 		public Type type = Type.Normal;
 
-		public Data[] nexts = new Data[Max];
+		public Data[] nexts = new Data[DirectionMax];
 
 		public Item.Meta item = null;
 		public float item_chance = 0.0f;
@@ -34,7 +34,7 @@ public class Room : MonoBehaviour
 
 		public Data GetNext(int direction)
 		{
-			if (0 > direction || Max <= direction)
+			if (0 > direction || DirectionMax <= direction)
 			{
 				throw new System.Exception("room id:" + direction + ", invalid direction:" + direction);
 			}
@@ -49,7 +49,7 @@ public class Room : MonoBehaviour
 	public int sorting_order;
 	private void Awake()
 	{
-		nexts = new GameObject[Max];
+		nexts = new GameObject[DirectionMax];
 		nexts[North] = UIUtil.FindChild<Transform>(transform, "NorthDoor").gameObject;
 		nexts[East] = UIUtil.FindChild<Transform>(transform, "EastDoor").gameObject;
 		nexts[West] = UIUtil.FindChild<Transform>(transform, "WestDoor").gameObject;

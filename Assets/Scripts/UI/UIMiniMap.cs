@@ -11,11 +11,11 @@ public class UIMiniMap : MonoBehaviour
 	public Sprite monster_mini_icon;
 	public Sprite treasure_mini_icon;
 	public Sprite npc_mini_icon;
+	public Color CURRENT_ROOM_COLOR = new Color (1.0f, 1.0f, 1.0f, 1.0f);
+	public Color VISIT_ROOM_COLOR = new Color(0.5f, 0.5f, 0.5f, 1.0f);
+	public Color REVEAL_ROOM_COLOR = new Color(0.5f, 0.5f, 0.5f, 0.5f);
 
 	private UIMiniMapRoom[] rooms;
-	private int current_room_id;
-	private Color ROOM_ACTIVATE_COLOR = new Color (1.0f, 1.0f, 1.0f, 1.0f);
-	private Color ROOM_DEACTIVATE_COLOR = new Color(0.5f, 0.5f, 0.5f, 1.0f);
 	private Dungeon dungeon;
 
 	void Awake()
@@ -25,10 +25,11 @@ public class UIMiniMap : MonoBehaviour
 		{
 			throw new System.Exception("can not find component 'RectTransform'");
 		}
+
 		float width = Dungeon.WIDTH * ROOM_SIZE;
 		float height = Dungeon.HEIGHT * ROOM_SIZE;
 		rectTransform.sizeDelta = new Vector2 (width, height);
-		
+
 		rooms = new UIMiniMapRoom[Dungeon.WIDTH * Dungeon.HEIGHT];
 		for (int y = 0; y < Dungeon.HEIGHT; y++)
 		{
@@ -44,13 +45,10 @@ public class UIMiniMap : MonoBehaviour
 				{
 					throw new System.Exception("door object count has to be '4'");
 				}
-				room.transform.SetParent (this.transform, false);
+
+				room.transform.SetParent(transform, false);
 				room.transform.localPosition = new Vector3 (x * ROOM_SIZE, -y * ROOM_SIZE, 0.0f);
-				room.gameObject.SetActive (false);
-				for (int direction = 0; direction < Room.Max; direction++)
-				{
-					room.next[direction].gameObject.SetActive(false);
-				}
+				room.Init();
 				rooms [y * Dungeon.WIDTH + x] = room;
 			}
 		}
@@ -61,10 +59,8 @@ public class UIMiniMap : MonoBehaviour
 		this.dungeon = dungeon;
 		foreach (Room.Data room in dungeon.data.rooms)
 		{
-			UIMiniMapRoom miniRoom = rooms[room.id];
-			miniRoom.gameObject.SetActive(false);
+			rooms[room.id].Init();
 		}
-		current_room_id = dungeon.data.current_room.id;
 	}
 
 	public void CurrentPosition(int id)
@@ -74,71 +70,48 @@ public class UIMiniMap : MonoBehaviour
 			return;
 		}
 
-		/*
-		for (int direction = 0; direction < Room.Max; direction++)
-		{
-			Room.Data nextRoom = dungeon.data.current_room.GetNext(direction);
-			if (null != nextRoom && null != nextRoom.item)
-			{
-				RevealRoom(nextRoom.id, ROOM_DEACTIVATE_COLOR);
-			}
-		}
-
-		for (int direction = 0; direction < Room.Max; direction++)
-		{
-			Room.Data nextRoom = dungeon.data.current_room.GetNext(direction);
-			if (null != nextRoom && null != nextRoom.monster)
-			{
-				RevealRoom(nextRoom.id, ROOM_DEACTIVATE_COLOR);
-			}
-		}
-		*/
-		UIMiniMapRoom minimapRoom = rooms[current_room_id];
-		minimapRoom.room.sprite = GetRoomSprite(current_room_id);
-		minimapRoom.color = ROOM_DEACTIVATE_COLOR;
-		RevealRoom(id, ROOM_ACTIVATE_COLOR);
-		current_room_id = id;
-
-		for (int direction = 0; direction < Room.Max; direction++)
+		for (int direction = 0; direction < Room.DirectionMax; direction++)
 		{
 			Room.Data nextRoom = dungeon.data.current_room.GetNext(direction);
 			if (null != nextRoom)
 			{
-				UIMiniMapRoom next = rooms[nextRoom.id];
-				next.gameObject.SetActive(true);
-				next.room.sprite = room_mini_icon;
-
-				/*
-				if (null != dungeon.data.rooms[nextRoom.id].item)
+				RevealRoom(nextRoom);
+				if (false == nextRoom.visit)
 				{
-					next.room.sprite = treasure_mini_icon;
+					UIMiniMapRoom next = rooms[nextRoom.id];
+					next.room.sprite = room_mini_icon;
 				}
-				if (null != dungeon.data.rooms[nextRoom.id].monster)
-				{
-					next.room.sprite = monster_mini_icon;
-				}
-				*/
-				next.color = ROOM_DEACTIVATE_COLOR;
-				next.next[(direction + 2) % 4].gameObject.SetActive(false);
 			}
 		}
+
+		RevealRoom(dungeon.data.current_room);
 	}
 
-	private void RevealRoom(int id, Color color)
+	private void RevealRoom(Room.Data room)
 	{
-		UIMiniMapRoom minimapRoom = rooms[id];
+		UIMiniMapRoom minimapRoom = rooms[room.id];
 		minimapRoom.gameObject.SetActive(true);
-		minimapRoom.room.sprite = GetRoomSprite(id);
-		minimapRoom.color = color;
-		for (int i = 0; i < Room.Max; i++)
+		minimapRoom.room.sprite = GetRoomSprite(room);
+		minimapRoom.color = REVEAL_ROOM_COLOR;
+
+		if (true == room.visit)
 		{
-			Room.Data data = dungeon.data.rooms[id].GetNext(i);
-			minimapRoom.next[i].gameObject.SetActive(false);
-			if (null != data)
+			minimapRoom.color = VISIT_ROOM_COLOR;
+			for (int i = 0; i < Room.DirectionMax; i++)
 			{
-				rooms[data.id].next[(i + 2) % 4].gameObject.SetActive(false);
-				minimapRoom.next[i].gameObject.SetActive(true);
+				minimapRoom.next[i].gameObject.SetActive(false);
+				Room.Data data = dungeon.data.rooms[room.id].GetNext(i);
+				if (null != data)
+				{
+					minimapRoom.next[i].gameObject.SetActive(true);
+					rooms[data.id].next[(i + 2) % 4].gameObject.SetActive(false);
+				}
 			}
+		}
+
+		if (dungeon.data.current_room.id == room.id)
+		{
+			minimapRoom.color = CURRENT_ROOM_COLOR;
 		}
 	}
 
@@ -151,20 +124,18 @@ public class UIMiniMap : MonoBehaviour
 				continue;
 			}
 
-			UIMiniMapRoom minimapRoom = rooms[room.id];
-			bool active = minimapRoom.gameObject.activeSelf;
-			RevealRoom(room.id, ROOM_DEACTIVATE_COLOR);
-			if (false == active)
+			RevealRoom(room);
+			if (false == room.visit)
 			{
+				UIMiniMapRoom minimapRoom = rooms[room.id];
 				minimapRoom.room.sprite = this.room_mini_icon;
 				if (Room.Type.Exit == dungeon.data.rooms[room.id].type || Room.Type.Lock == dungeon.data.rooms[room.id].type)
 				{
 					minimapRoom.room.sprite = stair_mini_icon;
 				}
 			}
-			minimapRoom.gameObject.SetActive(true);
 		}
-		RevealRoom(current_room_id, ROOM_ACTIVATE_COLOR);
+		RevealRoom(dungeon.data.current_room);
 	}
 	public void RevealTreasure()
 	{
@@ -175,10 +146,10 @@ public class UIMiniMap : MonoBehaviour
 				continue;
 			}
 			bool active = rooms[room.id].gameObject.activeSelf;
-			RevealRoom(room.id, ROOM_DEACTIVATE_COLOR);
+			RevealRoom(room);
 			if (false == active)
 			{
-				for (int i = 0; i < Room.Max; i++)
+				for (int i = 0; i < Room.DirectionMax; i++)
 				{
 					rooms[room.id].next[i].gameObject.SetActive(false);
 				}
@@ -194,10 +165,10 @@ public class UIMiniMap : MonoBehaviour
 				continue;
 			}
 			bool active = rooms[room.id].gameObject.activeSelf;
-			RevealRoom(room.id, ROOM_DEACTIVATE_COLOR);
+			RevealRoom(room);
 			if (false == active)
 			{
-				for (int i = 0; i < Room.Max; i++)
+				for (int i = 0; i < Room.DirectionMax; i++)
 				{
 					rooms[room.id].next[i].gameObject.SetActive(false);
 				}
@@ -241,7 +212,7 @@ public class UIMiniMap : MonoBehaviour
                 Color color = miniRoom.color;
                 color.a = Mathf.Max(color.a, alpha);
                 miniRoom.color = color;
-
+				/*
 				if (current_room_id == id - 1)
 				{
 					miniRoom.SetGateColor(Room.West, rooms[current_room_id].next[Room.East].color);
@@ -258,15 +229,15 @@ public class UIMiniMap : MonoBehaviour
 				{
 					miniRoom.SetGateColor(Room.South, rooms[current_room_id].next[Room.North].color);
 				}
+				*/
 			}
             alpha += Time.deltaTime / time;
             yield return null;
         }
     }
 
-	private Sprite GetRoomSprite(int id)
+	private Sprite GetRoomSprite(Room.Data room)
 	{
-		Room.Data room = dungeon.data.rooms[id];
 		if (Room.Type.Exit == room.type || Room.Type.Lock == room.type)
 		{
 			return stair_mini_icon;
