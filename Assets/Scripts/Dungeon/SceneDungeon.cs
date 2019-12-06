@@ -57,7 +57,7 @@ public class SceneDungeon : SceneMain
 		inventory_button.onClick.AddListener(() =>
 		{
 			ui_inventory.gameObject.SetActive(true);
-			Util.EventSystem.Publish(EventID.Dungeon_Map_Reveal);
+			Util.EventSystem.Publish(EventID.Dungeon_Monster_Reveal);
 		});
 		
 		text_inventory = UIUtil.FindChild<Text>(transform, "UI/Dungeon/SideButtons/InventoryButton/Text");

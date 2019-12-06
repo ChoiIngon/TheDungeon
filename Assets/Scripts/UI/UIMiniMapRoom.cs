@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class UIMiniMapRoom : MonoBehaviour
 {
+	public Room.Data data;
 	public Image room;
 	public Image[] next;
 	public Color color
@@ -31,8 +32,9 @@ public class UIMiniMapRoom : MonoBehaviour
 		}
 	}
 
-	public void Init()
+	public void Init(Room.Data roomData)
 	{
+		data = roomData;
 		for (int direction = 0; direction < Room.DirectionMax; direction++)
 		{
 			next[direction].gameObject.SetActive(false);
