@@ -15,10 +15,7 @@ public class Coin : MonoBehaviour
 	// Use this for initialization
 
 	public int amount;
-	public void Init(int amount)
-	{
-		this.amount = amount;
-	}
+	public Vector3 destroy_position;
 
 	void Awake ()
 	{
@@ -59,7 +56,7 @@ public class Coin : MonoBehaviour
 		}
 
 		iTween.MoveTo(gameObject, iTween.Hash(
-			"position", UICoin.position,
+			"position", destroy_position,
 			"time", 0.25f,
 			"easetype", iTween.EaseType.easeOutQuint,
 			"oncomplete", "OnComplete",

@@ -134,46 +134,46 @@ public class UIMiniMap : MonoBehaviour
 			minimapRoom.room.sprite = monster_mini_icon;
 		}
 	}
-
-	public IEnumerator Hide(float time, float alpha = 0.0f)
-    {
-        float delta = 1.0f;
-        while (alpha < delta)
-        {
-			foreach (UIMiniMapRoom minimapRoom in rooms)
-			{
-                Color color = minimapRoom.color;
-                color.a *= delta;
-				minimapRoom.color = color;
-            }
-            delta = delta - Time.deltaTime/time;
-            yield return null;
-        }
-
-		foreach (UIMiniMapRoom minimapRoom in rooms)
+	/*
+		public IEnumerator Hide(float time, float alpha = 0.0f)
 		{
-            Color color = minimapRoom.color;
-            color.a = alpha;
-			minimapRoom.color = color;
-        }
-    }
+			float delta = 1.0f;
+			while (alpha < delta)
+			{
+				foreach (UIMiniMapRoom minimapRoom in rooms)
+				{
+					Color color = minimapRoom.color;
+					color.a *= delta;
+					minimapRoom.color = color;
+				}
+				delta = delta - Time.deltaTime/time;
+				yield return null;
+			}
 
-    public IEnumerator Show(float time)
-    {
-        float alpha = 0.0f;
-        while (1.0f > alpha)
-        {
 			foreach (UIMiniMapRoom minimapRoom in rooms)
 			{
-                Color color = minimapRoom.color;
-                color.a = Mathf.Max(color.a, alpha);
+				Color color = minimapRoom.color;
+				color.a = alpha;
 				minimapRoom.color = color;
 			}
-            alpha += Time.deltaTime / time;
-            yield return null;
-        }
-    }
+		}
 
+		public IEnumerator Show(float time)
+		{
+			float alpha = 0.0f;
+			while (1.0f > alpha)
+			{
+				foreach (UIMiniMapRoom minimapRoom in rooms)
+				{
+					Color color = minimapRoom.color;
+					color.a = Mathf.Max(color.a, alpha);
+					minimapRoom.color = color;
+				}
+				alpha += Time.deltaTime / time;
+				yield return null;
+			}
+		}
+	*/
 	private void RevealRoom(UIMiniMapRoom minimapRoom)
 	{
 		minimapRoom.gameObject.SetActive(true);

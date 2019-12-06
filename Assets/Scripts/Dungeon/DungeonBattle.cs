@@ -96,8 +96,7 @@ public class DungeonBattle : MonoBehaviour
 	public IEnumerator BattleStart(Monster.Meta monsterMeta)
 	{
 		Util.EventSystem.Publish(EventID.Dungeon_Battle_Start);
-		Util.EventSystem.Publish<float>(EventID.MiniMap_Hide, 0.0f);
-
+		
 		turn_count = 0;
 		battle_pause = true;
 		
@@ -186,7 +185,7 @@ public class DungeonBattle : MonoBehaviour
 		runaway_button.gameObject.SetActive(false);
 		monster.gameObject.SetActive(false);
 		
-		Util.EventSystem.Publish(EventID.MiniMap_Show);
+		//Util.EventSystem.Publish(EventID.MiniMap_Show);
 		Util.EventSystem.Publish<BattleResult>(EventID.Dungeon_Battle_Finish, battle_result);
 	}
 

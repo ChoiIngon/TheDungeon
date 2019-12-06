@@ -2960,7 +2960,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1961506270785740, guid: 0ad89dcb9961546b1a554ccae9ce5ab3, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224291350536354562, guid: 0ad89dcb9961546b1a554ccae9ce5ab3,
         type: 3}
@@ -4272,6 +4272,9 @@ MonoBehaviour:
   monster_mini_icon: {fileID: 21300000, guid: 3b0a20ae585750240801e9a40c067828, type: 3}
   treasure_mini_icon: {fileID: 21300000, guid: 56ba8bc35bc88904d8ca204879b0e9af, type: 3}
   npc_mini_icon: {fileID: 21300000, guid: f61efd2120e982544936874efb9ac8a9, type: 3}
+  CURRENT_ROOM_COLOR: {r: 1, g: 1, b: 1, a: 1}
+  VISIT_ROOM_COLOR: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  REVEAL_ROOM_COLOR: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 0.5019608}
 --- !u!1 &1442570841
 GameObject:
   m_ObjectHideFlags: 0

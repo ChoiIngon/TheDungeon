@@ -101,6 +101,7 @@ public class UIShop : MonoBehaviour
 		InitProduct(products[Random.Range(0, products.Count)], ItemManager.Instance.FindMeta<HealPotionItem.Meta>("ITEM_POTION_HEALING"));
 		SelectProduct(0);
 
+		Util.EventSystem.Publish(EventID.CoinAmountChanged);
 		while (false == complete)
 		{
 			yield return null;

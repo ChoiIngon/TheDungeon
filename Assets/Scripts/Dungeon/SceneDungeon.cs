@@ -22,6 +22,8 @@ public class SceneDungeon : SceneMain
 	public UIShop shop;
 	public UIInventory ui_inventory;
 
+	private UICoin ui_coin;
+	private Vector3 ui_coin_position;
 	private Transform coin_spot;
     private Coin coin_prefab;
 	private DungeonMove dungeon_move;
@@ -70,9 +72,16 @@ public class SceneDungeon : SceneMain
 		player_health = UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Health");
 		player_exp =	UIUtil.FindChild<UIGaugeBar>(ui_player_transform, "Exp");
 
-		UICoin uiCoin = UIUtil.FindChild<UICoin>(transform, "UI/Dungeon/UICoin");
-		uiCoin.gameObject.SetActive(true);
-		
+		ui_coin = UIUtil.FindChild<UICoin>(transform, "UI/Dungeon/UICoin");
+		ui_coin.gameObject.SetActive(true);
+		{
+			Image image = UIUtil.FindChild<Image>(ui_coin.transform, "Image");
+			ui_coin_position = Camera.main.ScreenToWorldPoint(
+				new Vector3(image.rectTransform.position.x, image.rectTransform.position.y, Camera.main.transform.position.z * -1.0f)
+			);
+		}
+
+
 		coin_spot = UIUtil.FindChild<Transform>(transform, "CoinSpot");
 		coin_spot.gameObject.SetActive(true);
 		coin_prefab = UIUtil.FindChild<Coin>(transform, "Prefabs/Coin");
@@ -89,11 +98,9 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Subscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
 		Util.EventSystem.Subscribe<Quest>(EventID.Quest_Start, OnQuestStart);
 		Util.EventSystem.Subscribe<Quest>(EventID.Quest_Complete, OnQuestComplete);
-		Util.EventSystem.Subscribe(EventID.MiniMap_Show, OnShowMiniMap);
-		Util.EventSystem.Subscribe<float>(EventID.MiniMap_Hide, OnHideMiniMap);
 		AudioManager.Instance.Play(AudioManager.DUNGEON_BGM, true);
 
-		InitScene();			
+		InitScene();
 	}
 
 	private void OnDestroy()
@@ -108,8 +115,6 @@ public class SceneDungeon : SceneMain
 		Util.EventSystem.Unsubscribe(EventID.Player_Stat_Change, OnPlayerStatChange);
 		Util.EventSystem.Unsubscribe<Quest>(EventID.Quest_Start, OnQuestStart);
 		Util.EventSystem.Unsubscribe<Quest>(EventID.Quest_Complete, OnQuestComplete);
-		Util.EventSystem.Unsubscribe(EventID.MiniMap_Show, OnShowMiniMap);
-		Util.EventSystem.Unsubscribe<float>(EventID.MiniMap_Hide, OnHideMiniMap);
 	}
 
 	private void InitScene()
@@ -323,8 +328,6 @@ public class SceneDungeon : SceneMain
 	{
 		if (Room.Type.Shop == dungeon.data.current_room.type)
 		{
-			StartCoroutine(mini_map.Hide(0.5f));
-
 			dungeon.data.current_room.npc_sprite_path = "Npc/npc_graverobber";
 			dungeon.current_room.Init(dungeon.data.current_room);
 			bool yes = false;
@@ -338,7 +341,7 @@ public class SceneDungeon : SceneMain
 				yield return shop.Open();
 			}
 			yield return GameManager.Instance.ui_npc.Write("Npc/npc_graverobber_portrait", new string[] { "[전설의 상인]\n그럼 좋은 여행하게나..킬킬킬!" });
-			StartCoroutine(mini_map.Show(0.5f));
+			
 			dungeon.data.current_room.npc_sprite_path = "";
 			dungeon.data.current_room.type = Room.Type.Normal;
 			dungeon.current_room.npc.gameObject.SetActive(false);
@@ -357,6 +360,7 @@ public class SceneDungeon : SceneMain
 			{
 				Coin coin = GameObject.Instantiate<Coin>(coin_prefab);
 				coin.amount = Mathf.Min(total, multiply);
+				coin.destroy_position = ui_coin_position;
 				coin.transform.SetParent(coin_spot, false);
 				coin.transform.localScale = new Vector3(scale, scale, 1.0f);
 				coin.transform.localPosition = Vector3.zero;
@@ -415,15 +419,5 @@ public class SceneDungeon : SceneMain
 	{
 		dungeon.data.current_room.npc_sprite_path = "";
 		dungeon.current_room.Init(dungeon.data.current_room);
-	}
-
-	public void OnShowMiniMap()
-	{
-		mini_map.CurrentPosition(dungeon.data.current_room.id);
-		StartCoroutine(mini_map.Show(0.5f));
-	}
-	public void OnHideMiniMap(float alpha)
-	{
-		StartCoroutine(mini_map.Hide(0.5f, alpha));
 	}
 }

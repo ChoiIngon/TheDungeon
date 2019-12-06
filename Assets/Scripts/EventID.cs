@@ -19,9 +19,7 @@ public class EventID
 	public const string Dungeon_Map_Reveal = "Dungeon_Map_Reveal";
 	public const string Dungeon_Monster_Reveal = "Dungeon_Monster_Reveal";
 	public const string Dungeon_Treasure_Reveal = "Dungeon_Treasure_Reveal";
-	public const string MiniMap_Show = "MiniMap_Show";
-	public const string MiniMap_Hide = "MiniMap_Hide";
-
+	
 	public const string TextBox_Open = "TextBox_Open";
 	public const string TextBox_Close = "TextBox_Close";
 
