@@ -10,14 +10,18 @@ public class UICoin : MonoBehaviour
 	private void Awake()
 	{
 		text = UIUtil.FindChild<Text>(transform, "Amount");
+	}
+
+	private void OnEnable()
+	{
 		Util.EventSystem.Subscribe(EventID.CoinAmountChanged, OnCoinAmountChanged);
 	}
 
-	private void OnDestroy()
+	private void OnDisable()
 	{
 		Util.EventSystem.Unsubscribe(EventID.CoinAmountChanged, OnCoinAmountChanged);
 	}
-
+	
 	public IEnumerator ChangeAmount()
 	{
 		int changedAmount = GameManager.Instance.player.coin - current_amount;
