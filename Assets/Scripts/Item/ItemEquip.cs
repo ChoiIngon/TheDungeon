@@ -246,18 +246,12 @@ public class EquipItemManager : Util.Singleton<EquipItemManager>
 	public EquipItem CreateRandomItem(EquipItem.Part part = EquipItem.Part.Invalid)
 	{
 		EquipItem.Meta meta = GetRandomMeta(part);
-		return CreateItem(meta);
+		return meta.CreateInstance() as EquipItem;
 	}
 
 	public EquipItem.Meta GetRandomMeta(EquipItem.Part part = EquipItem.Part.Invalid)
 	{
 		List<EquipItem.Meta> metas = item_metas[(int)part];
 		return metas[UnityEngine.Random.Range(0, metas.Count)];
-	}
-
-	public EquipItem CreateItem(EquipItem.Meta meta)
-	{
-		EquipItem item = meta.CreateInstance() as EquipItem;
-		return item;
 	}
 }

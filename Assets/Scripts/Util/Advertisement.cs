@@ -10,6 +10,7 @@ public class Advertisement : MonoBehaviour
 	//#if !UNITY_ADS // If the Ads service is not enabled...
 	public string unity_game_id = "1305819"; // Set this value from the inspector.
 											 //#endif
+	private int ad_ready_index = 0;
 	public enum PlacementType
 	{
 		Invalid,
@@ -365,8 +366,10 @@ public class Advertisement : MonoBehaviour
 	{
 		GameManager.Instance.EnableUI(false);
 		List<AdvertisementImpl> impls = advertisement_impls[placementType];
-		foreach (var impl in impls)
+		for(int i=0; i<impls.Count; i++)
 		{
+			ad_ready_index = ad_ready_index % impls.Count;
+			AdvertisementImpl impl = impls[ad_ready_index++];
 			if (true == impl.IsReady())
 			{
 				yield return impl.Show(onSuccess);
