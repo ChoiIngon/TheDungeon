@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Advertisements;
 using GoogleMobileAds.Api;
+using AudienceNetwork;
 
 public class Advertisement : MonoBehaviour
 {
-	//#if !UNITY_ADS // If the Ads service is not enabled...
 	public string unity_game_id = "1305819"; // Set this value from the inspector.
-											 //#endif
-	private int ad_ready_index = 0;
 	public enum PlacementType
 	{
 		Invalid,
@@ -26,6 +24,127 @@ public class Advertisement : MonoBehaviour
 		public abstract IEnumerator Show(System.Action onSuccess);
 	}
 
+	public class FacebookRewardAdvertisement : AdvertisementImpl
+	{
+		private AudienceNetwork.RewardedVideoAd rewarded_video;
+		private GameObject game_object;
+		private bool is_loaded;
+		private bool complete;
+		private bool did_close;
+		private bool reward;
+		public FacebookRewardAdvertisement(GameObject gameObject)
+		{
+			game_object = gameObject;
+			is_loaded = false;
+		}
+
+		public override void Init()
+		{
+#if UNITY_EDITOR
+#else
+			LoadAd();
+#endif
+		}
+
+		public override bool IsReady()
+		{
+#if UNITY_EDITOR
+			return false;
+#else
+			if (null == rewarded_video && false == is_loaded)
+			{
+				LoadAd();
+			}
+			return is_loaded;
+#endif
+		}
+
+		public override IEnumerator Show(System.Action onSuccess)
+		{
+#if UNITY_EDITOR
+			onSuccess?.Invoke();
+			yield break;
+#else
+			complete = false;
+			reward = false;
+			did_close = false;
+
+			if (true == is_loaded)
+			{
+				rewarded_video.Show();
+				is_loaded = false;
+			}
+
+			while (false == complete)
+			{
+				yield return new WaitForSeconds(0.1f);
+			}
+
+			if (true == reward)
+			{
+				onSuccess?.Invoke();
+			}
+#endif
+		}
+
+		private void LoadAd()
+		{
+			rewarded_video = new AudienceNetwork.RewardedVideoAd("445801979415468_445805622748437");
+			rewarded_video.Register(game_object);
+			rewarded_video.RewardedVideoAdDidLoad = () =>
+			{
+				is_loaded = true;
+			};
+
+			rewarded_video.RewardedVideoAdDidFailWithError = (string error) =>
+			{
+				Debug.LogError(error);
+			};
+
+			rewarded_video.RewardedVideoAdWillLogImpression = (delegate () {
+				Debug.Log("RewardedVideo ad logged impression.");
+				complete = true;
+			});
+
+			rewarded_video.RewardedVideoAdDidClick = (delegate () {
+				Debug.Log("RewardedVideo ad clicked.");
+				complete = true;
+			});
+
+			rewarded_video.RewardedVideoAdDidClose = (delegate () {
+				Debug.Log("Rewarded video ad did close.");
+				complete = true;
+				reward = true;
+				did_close = true;
+				if (null != rewarded_video)
+				{
+					rewarded_video.Dispose();
+					rewarded_video = null;
+				}
+			});
+			
+#if UNITY_ANDROID
+			/*
+			 * Android에만 적용됩니다. 
+			 * 보상형 동영상 활동이 적절히 닫히지 않은 상태에서 
+			 * 폐기되었을 경우에만 이 콜백이 트리거됩니다.  launchMode:singleTask가 있는 앱(예: Unity 게임)을 
+			 * 백그라운드로 돌렸다가 아이콘을 탭해서 다시 시작하면 이렇게 될 수 있습니다. 
+			 */
+			rewarded_video.rewardedVideoAdActivityDestroyed = (delegate() 
+			{
+				if (false == did_close)
+				{
+					Debug.Log("Rewarded video activity destroyed without being closed first.");
+					Debug.Log("Game should resume. User should not get a reward.");
+				}
+			}); 
+#endif
+
+			// Initiate the request to load the ad.
+			rewarded_video.LoadAd();
+		}
+	}
+
 	public class AdMobBannerAdvertisement : AdvertisementImpl
 	{
 		private BannerView banner_view;
@@ -34,7 +153,7 @@ public class Advertisement : MonoBehaviour
 		{
 			//string ad_unit_id = "ca-app-pub-5331343349322603/2002078706";
 			string ad_unit_id = "ca-app-pub-3940256099942544/6300978111";
-			banner_view = new BannerView(ad_unit_id, AdSize.Banner, AdPosition.Bottom);
+			banner_view = new BannerView(ad_unit_id, GoogleMobileAds.Api.AdSize.Banner, GoogleMobileAds.Api.AdPosition.Bottom);
 			AdRequest request = new AdRequest.Builder().Build();
 			banner_view.LoadAd(request);
 			banner_view.Show();
@@ -67,7 +186,7 @@ public class Advertisement : MonoBehaviour
 		public override bool IsReady()
 		{
 #if UNITY_EDITOR
-			return true;
+			return false;
 #else
 			return rewarded_ad.IsLoaded();
 #endif
@@ -144,7 +263,7 @@ public class Advertisement : MonoBehaviour
 	}
 	public class AdMobAdvertisement : AdvertisementImpl
 	{
-		private InterstitialAd interstitial;
+		private GoogleMobileAds.Api.InterstitialAd interstitial;
 		//private string ad_unit_id = "ca-app-pub-5331343349322603/2888119077";
 		private string ad_unit_id = "ca-app-pub-3940256099942544/1033173712";
 		private bool complete;
@@ -157,7 +276,7 @@ public class Advertisement : MonoBehaviour
 		public override bool IsReady()
 		{
 #if UNITY_EDITOR
-			return true;
+			return false;
 #else
 			return interstitial.IsLoaded();
 #endif
@@ -184,7 +303,7 @@ public class Advertisement : MonoBehaviour
 				interstitial.Destroy();
 			}
 
-			interstitial = new InterstitialAd(ad_unit_id);
+			interstitial = new GoogleMobileAds.Api.InterstitialAd(ad_unit_id);
 			interstitial.OnAdLoaded += HandleOnAdLoaded;
 			interstitial.OnAdFailedToLoad += HandleOnAdFailedToLoad;
 			interstitial.OnAdOpening += HandleOnAdOpened;
@@ -323,29 +442,32 @@ public class Advertisement : MonoBehaviour
 		}
 	}
 
-	private Dictionary<PlacementType, List<AdvertisementImpl>> advertisement_impls = new Dictionary<PlacementType, List<AdvertisementImpl>>()
-	{
-		{
-			PlacementType.Banner, new List<AdvertisementImpl>() {
-				new AdMobBannerAdvertisement()
-			}
-		},
-		{
-			PlacementType.Video, new List<AdvertisementImpl>() {
-				new UnityAdvertisement(),
-				new AdMobAdvertisement(),
-			}
-		},
-		{
-			PlacementType.Rewarded, new List<AdvertisementImpl>() {
-				new UnityRewardAdvertisement(),
-				new AdMobRewardAdvertisement(),
-			}
-		}
-	};
+	private Dictionary<PlacementType, List<AdvertisementImpl>> advertisement_impls;
 
 	void Start()
     {
+		advertisement_impls = new Dictionary<PlacementType, List<AdvertisementImpl>>()
+		{
+			{
+				PlacementType.Banner, new List<AdvertisementImpl>() {
+					new AdMobBannerAdvertisement()
+				}
+			},
+			{
+				PlacementType.Video, new List<AdvertisementImpl>() {
+					new AdMobAdvertisement(),
+					new UnityAdvertisement(),
+				}
+			},
+			{
+				PlacementType.Rewarded, new List<AdvertisementImpl>() {
+					new FacebookRewardAdvertisement(gameObject),
+					new AdMobRewardAdvertisement(),
+					new UnityRewardAdvertisement(),
+				}
+			}
+		};
+
 		MobileAds.Initialize(initStatus => { });
 		if (true == UnityEngine.Advertisements.Advertisement.isSupported)
 		{
@@ -366,10 +488,8 @@ public class Advertisement : MonoBehaviour
 	{
 		GameManager.Instance.EnableUI(false);
 		List<AdvertisementImpl> impls = advertisement_impls[placementType];
-		for(int i=0; i<impls.Count; i++)
+		foreach(AdvertisementImpl impl in impls)
 		{
-			ad_ready_index = ad_ready_index % impls.Count;
-			AdvertisementImpl impl = impls[ad_ready_index++];
 			if (true == impl.IsReady())
 			{
 				yield return impl.Show(onSuccess);
