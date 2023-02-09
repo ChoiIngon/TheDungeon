@@ -17,6 +17,7 @@ public class Achieve : Progress
 		public int goal;
 		public string description;
 		public Stat.Data reward_stat;
+
 	}
 
 	public string name = "";
